@@ -73,18 +73,20 @@ private:
 			return methodProxy->getProxy();
 		}
 
-		static MethodMock<R, arglist...> * createFunc(Mock<C> * mock, R(C::*vMethod)(arglist...)){
-			VirtualOffsetSelector<MethodMockBase<C, R, arglist...>::VirtualMethodProxy> c;
-			void * obj = c.create(vMethod);
-			auto methodProxy = reinterpret_cast<MethodProxy<R, arglist...>*>(obj);
+		static MethodMock<R, arglist...> * createFunc(Mock<C> * mocka, R(C::*vMethod)(arglist...)){
+			auto methodProxy = createMethodProxy(vMethod);
 			return new MethodMockBase<C, R, arglist...>(methodProxy, new DefaultReturnMock<R>());
 		}
 
-		static MethodMock<R, arglist...> * createProc(Mock<C> * mock, R(C::*vMethod)(arglist...)){
+		static MethodMock<R, arglist...> * createProc(Mock<C> * mocka, R(C::*vMethod)(arglist...)){
+			auto methodProxy = createMethodProxy(vMethod);
+			return new MethodMockBase<C, R, arglist...>(methodProxy, new VoidMock());
+		}
+
+		static MethodProxy<R, arglist...> * createMethodProxy(R(C::*vMethod)(arglist...)){
 			VirtualOffsetSelector<MethodMockBase<C, R, arglist...>::VirtualMethodProxy> c;
 			void * obj = c.create(vMethod);
-			auto methodProxy = reinterpret_cast<MethodProxy<R, arglist...>*>(obj);
-			return new MethodMockBase<C, R, arglist...>(methodProxy, new VoidMock());
+			return reinterpret_cast<MethodProxy<R, arglist...>*>(obj);
 		}
 
 	private:
@@ -97,7 +99,7 @@ private:
 		}
 
 		template <unsigned int OFFSET>
-		struct VirtualMethodProxy : public MethodProxy<R, arglist...>{
+		struct VirtualMethodProxy : public MethodProxy<R, arglist...> {
 
 			unsigned int getOffset() override { return OFFSET; }
 

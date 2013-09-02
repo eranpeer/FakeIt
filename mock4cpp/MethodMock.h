@@ -109,12 +109,6 @@ struct DefaultInvocationMock : public InvocationMockBase<R, arglist...>
 template <typename R, typename... arglist>
 struct MethodMock
 {
-	struct ActualIvocationBase{
-	};
-
-	struct ExpectedIvocationBase {
-		virtual bool matches(ActualIvocationBase * actualInvocation) = 0;
-	};
 
 	~MethodMock(){}
 
