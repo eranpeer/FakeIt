@@ -54,20 +54,6 @@ struct Mock
 		return *stubClouse;
 	}
 
-	template <typename MethodMockType>
-	MethodMockType& prepare(MethodMockType* methodMock)
-	{
-		auto offset = methodMock->getOffset();
-		methodMocks.set(offset, methodMock);
-		vtable.setMethod(methodMock->getOffset(), methodMock->getProxy());
-		return *methodMock;
-	}
-
-	template <typename T>
-	T getMethodMock(unsigned int offset){
-		return methodMocks.get<T>(offset);
-	}
-
 private:
 	VirtualTable vtable;
 
@@ -118,13 +104,27 @@ private:
 			void * getProxy() override { return union_cast<void *>(&VirtualMethodProxy::methodProxy); }
 
 			R methodProxy(arglist... args){
-				Mock * m = union_cast<Mock *>(this);
+				Mock<C> * m = union_cast<Mock<C> *>(this);
 				MethodMock<R, arglist...> * methodMock = m->getMethodMock<MethodMockBase<C, R, arglist...> *>(OFFSET);
 				ActualInvocation<arglist...>* actualInvocation = new ActualInvocation<arglist...>(args...);
 				return methodMock->play(*actualInvocation);
 			}
 		};
 	};
+
+	template <typename T>
+	T getMethodMock(unsigned int offset){
+		return methodMocks.get<T>(offset);
+	}
+
+	template <typename MethodMockType>
+	MethodMockType& prepare(MethodMockType* methodMock)
+	{
+		auto offset = methodMock->getOffset();
+		methodMocks.set(offset, methodMock);
+		vtable.setMethod(methodMock->getOffset(), methodMock->getProxy());
+		return *methodMock;
+	}
 
 	bool isMocked(int index){
 		return vtable.getMethod(index) != &unmocked;
