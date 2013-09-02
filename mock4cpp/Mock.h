@@ -11,12 +11,6 @@
 #include "utils.h"
 #include "ClousesImpl.h"
 
-template <typename R, typename... arglist>
-struct MethodProxy {
-	virtual unsigned int getOffset() = 0;
-	virtual void * getProxy() = 0;
-};
-
 struct UnmockedMethodException : public std::exception {
 } unmockedMethodException;
 
@@ -60,6 +54,12 @@ private:
 	Table methodMocks;
 	VirtualMethodOffsetLocator offsetLocator;
 	std::string name;
+
+	template <typename R, typename... arglist>
+	struct MethodProxy {
+		virtual unsigned int getOffset() = 0;
+		virtual void * getProxy() = 0;
+	};
 
 	template <typename C, typename R, typename... arglist>
 	struct MethodMockBase : public MethodMock <R, arglist...>
