@@ -40,7 +40,7 @@ struct Mock
 
 	template <typename R, typename... arglist>
 	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...)){
-		auto methodMock = FunctionMock<R, arglist...>::create(this, vMethod);
+		auto methodMock = MethodMockBase<R, arglist...>::createFunc(this, vMethod);
 		auto stubClouse = new StubFunctionClouseImpl<R, arglist...>(methodMock);
 		prepare(methodMock);
 		return *stubClouse;
@@ -48,7 +48,7 @@ struct Mock
 
 	template <typename... arglist>
 	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...)){
-		auto methodMock = ProcedureMock<arglist...>::create(this, vMethod);
+		auto methodMock = MethodMockBase<void,arglist...>::createProc(this, vMethod);
 		auto stubClouse = new StubProcedureeClouseImpl<arglist...>(methodMock);
 		prepare(methodMock);
 		return *stubClouse;
@@ -87,11 +87,18 @@ private:
 			return methodProxy->getProxy();
 		}
 
-		static MethodMockBase<R, arglist...> * create(Mock<C> * mock, R(C::*vMethod)(arglist...)){
-			VirtualOffsetSelector<VirtualMethodProxy> c;
+		static MethodMockBase<R, arglist...> * createFunc(Mock<C> * mock, R(C::*vMethod)(arglist...)){
+			VirtualOffsetSelector<MethodMockBase<R, arglist...>::VirtualMethodProxy> c;
 			void * obj = c.create(vMethod);
-			auto methodProxy = reinterpret_cast<MethodMockBase<R, arglist...>*>(obj);
-			return  new FunctionMock<R, arglist...>(methodProxy);
+			auto methodProxy = reinterpret_cast<MethodProxy<R, arglist...>*>(obj);
+			return new MethodMockBase<R, arglist...>(methodProxy, new DefaultReturnMock<R>());
+		}
+
+		static MethodMockBase<R, arglist...> * createProc(Mock<C> * mock, R(C::*vMethod)(arglist...)){
+			VirtualOffsetSelector<MethodMockBase<R, arglist...>::VirtualMethodProxy> c;
+			void * obj = c.create(vMethod);
+			auto methodProxy = reinterpret_cast<MethodProxy<R, arglist...>*>(obj);
+			return new MethodMockBase<R, arglist...>(methodProxy, new VoidMock());
 		}
 
 	private:
@@ -117,98 +124,6 @@ private:
 				return methodMock->play(*actualInvocation);
 			}
 		};
-	};
-
-
-
-	template <typename R, typename... arglist>
-	struct FunctionMock : public MethodMock <R, arglist...>
-	{
-
-		virtual unsigned int getOffset() {
-			return methodProxy->getOffset();
-		}
-
-		void *getProxy(){
-			return methodProxy->getProxy();
-		}
-
-		static FunctionMock<R, arglist...> * create(Mock<C> * mock, R(C::*vMethod)(arglist...)){
-			VirtualOffsetSelector<VirtualMethodProxy> c;
-			void * obj = c.create(vMethod);
-			auto methodProxy = reinterpret_cast<MethodProxy<R,arglist...>*>(obj);
-			return  new FunctionMock<R, arglist...>(methodProxy);
-		}
-
-	private:
-		MethodProxy<R, arglist...> * methodProxy;
-
-		FunctionMock(MethodProxy<R,arglist...> * methodProxy) :
-			methodProxy(methodProxy)
-		{
-			append(new DefaultInvocationMock<R, arglist...>(new DefaultReturnMock<R>()));
-		}
-
-		template <unsigned int OFFSET>
-		struct VirtualMethodProxy : public MethodProxy<R, arglist...>{
-
-			unsigned int getOffset() override { return OFFSET; }
-
-			void * getProxy() override { return union_cast<void *>(&VirtualMethodProxy::methodProxy); }
-
-			R methodProxy(arglist... args){
-				Mock * m = union_cast<Mock *>(this);
-				FunctionMock<R, arglist...> * methodMock = m->getMethodMock<FunctionMock<R, arglist...> *>(OFFSET);
-				ActualInvocation<arglist...>* actualInvocation = new ActualInvocation<arglist...>(args...);
-				return methodMock->play(*actualInvocation);
-			}
-		};
-
-	};
-
-	template <typename... arglist>
-	struct ProcedureMock : public MethodMock<void, arglist...>
-	{
-
-		ProcedureMock(MethodProxy<void, arglist...> * methodProxy) :
-			methodProxy(methodProxy)
-		{
-			append(new DefaultInvocationMock<void, arglist...>(new VoidMock()));
-		}
-
-		virtual unsigned int getOffset() {
-			return methodProxy->getOffset();
-		}
-
-		void *getProxy(){
-			return methodProxy->getProxy();
-		}
-
-		static ProcedureMock<arglist...> * create(Mock * mock, void(C::*vMethod)(arglist...)){
-			VirtualOffsetSelector<VirtualMethodProxy> c;
-			void * obj = c.create(vMethod);
-			auto methodProxy = reinterpret_cast<MethodProxy<void,arglist...>*>(obj);
-			return  new ProcedureMock<arglist...>(methodProxy);
-		}
-
-	private:
-		MethodProxy<void, arglist...> * methodProxy;
-
-		template <unsigned int OFFSET>
-		struct VirtualMethodProxy : public MethodProxy<void, arglist...>{
-
-			unsigned int getOffset() override { return OFFSET; }
-
-			void * getProxy() override { return union_cast<void *>(&VirtualMethodProxy::methodProxy); }
-
-			void methodProxy(arglist... args){
-				Mock * m = union_cast<Mock *>(this);
-				ProcedureMock<arglist...> * methodMock = m->getMethodMock<ProcedureMock<arglist...> *>(OFFSET);
-				ActualInvocation<arglist...>* actualInvocation = new ActualInvocation<arglist...>(args...);
-				return methodMock->play(*actualInvocation);
-			}
-		};
-
 	};
 
 	bool isMocked(int index){
