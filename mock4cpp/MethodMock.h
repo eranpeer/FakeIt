@@ -95,29 +95,16 @@ private:
 };
 
 template <typename R, typename... arglist>
-struct DefaultFunctionInvocationMock : public InvocationMockBase<R, arglist...>
+struct DefaultInvocationMock : public InvocationMockBase<R, arglist...>
 {
-	DefaultFunctionInvocationMock() {
-		append(new DefaultReturnMock<R>());
+	DefaultInvocationMock(BehaviorMock<R> * defaultBehavior) {
+		append(defaultBehavior);
 	}
 
 	virtual bool matches(ActualInvocation<arglist...>& actualInvocation){
 		return true;
 	}
 };
-
-template <typename... arglist>
-struct DefaultProcedureInvocationMock : public InvocationMockBase<void, arglist...>
-{
-	DefaultProcedureInvocationMock() {
-		append(new VoidMock());
-	}
-
-	virtual bool matches(ActualInvocation<arglist...>& actualInvocation){
-		return true;
-	}
-};
-
 
 template <typename R, typename... arglist>
 struct MethodMock

@@ -24,7 +24,9 @@
 *.suo
 *.sdf
 *.filters
+*.opensdf
 Debug/
+
 
 
 
