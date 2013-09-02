@@ -34,7 +34,8 @@ struct Mock
 
 	template <typename R, typename... arglist>
 	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...)){
-		auto methodMock = MethodMockBase<C, R, arglist...>::createFunc(this, vMethod);
+		auto methodProxy = MethodMockBase<C, R, arglist...>::createMethodProxy(vMethod);
+		auto methodMock = new MethodMockBase<C, R, arglist...>(methodProxy, new DefaultReturnMock<R>());;
 		auto stubClouse = new StubFunctionClouseImpl<R, arglist...>(methodMock);
 		prepare(methodMock);
 		return *stubClouse;
@@ -42,7 +43,8 @@ struct Mock
 
 	template <typename... arglist>
 	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...)){
-		auto methodMock = MethodMockBase<C, void,arglist...>::createProc(this, vMethod);
+		auto methodProxy = MethodMockBase<C, void, arglist...>::createMethodProxy(vMethod);
+		auto methodMock = new MethodMockBase<C, void, arglist...>(methodProxy, new VoidMock());;
 		auto stubClouse = new StubProcedureClouseImpl<arglist...>(methodMock);
 		prepare(methodMock);
 		return *stubClouse;
@@ -73,30 +75,20 @@ private:
 			return methodProxy->getProxy();
 		}
 
-		static MethodMock<R, arglist...> * createFunc(Mock<C> * mocka, R(C::*vMethod)(arglist...)){
-			auto methodProxy = createMethodProxy(vMethod);
-			return new MethodMockBase<C, R, arglist...>(methodProxy, new DefaultReturnMock<R>());
-		}
-
-		static MethodMock<R, arglist...> * createProc(Mock<C> * mocka, R(C::*vMethod)(arglist...)){
-			auto methodProxy = createMethodProxy(vMethod);
-			return new MethodMockBase<C, R, arglist...>(methodProxy, new VoidMock());
-		}
-
 		static MethodProxy<R, arglist...> * createMethodProxy(R(C::*vMethod)(arglist...)){
 			VirtualOffsetSelector<MethodMockBase<C, R, arglist...>::VirtualMethodProxy> c;
 			void * obj = c.create(vMethod);
 			return reinterpret_cast<MethodProxy<R, arglist...>*>(obj);
 		}
 
-	private:
-		MethodProxy<R, arglist...> * methodProxy;
-
 		MethodMockBase(MethodProxy<R, arglist...> * methodProxy, BehaviorMock<R> * defaultBehaviour) :
 			methodProxy(methodProxy)
 		{
 			append(new DefaultInvocationMock<R, arglist...>(defaultBehaviour));
 		}
+
+	private:
+		MethodProxy<R, arglist...> * methodProxy;
 
 		template <unsigned int OFFSET>
 		struct VirtualMethodProxy : public MethodProxy<R, arglist...> {
