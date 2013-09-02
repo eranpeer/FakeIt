@@ -40,7 +40,7 @@ struct Mock
 
 	template <typename R, typename... arglist>
 	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...)){
-		auto methodMock = MethodMockBase<R, arglist...>::createFunc(this, vMethod);
+		auto methodMock = MethodMockBase<C, R, arglist...>::createFunc(this, vMethod);
 		auto stubClouse = new StubFunctionClouseImpl<R, arglist...>(methodMock);
 		prepare(methodMock);
 		return *stubClouse;
@@ -48,7 +48,7 @@ struct Mock
 
 	template <typename... arglist>
 	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...)){
-		auto methodMock = MethodMockBase<void,arglist...>::createProc(this, vMethod);
+		auto methodMock = MethodMockBase<C, void,arglist...>::createProc(this, vMethod);
 		auto stubClouse = new StubProcedureeClouseImpl<arglist...>(methodMock);
 		prepare(methodMock);
 		return *stubClouse;
@@ -75,7 +75,7 @@ private:
 	VirtualMethodOffsetLocator offsetLocator;
 	std::string name;
 
-	template <typename R, typename... arglist>
+	template <typename C, typename R, typename... arglist>
 	struct MethodMockBase : public MethodMock <R, arglist...>
 	{
 
@@ -87,18 +87,18 @@ private:
 			return methodProxy->getProxy();
 		}
 
-		static MethodMockBase<R, arglist...> * createFunc(Mock<C> * mock, R(C::*vMethod)(arglist...)){
-			VirtualOffsetSelector<MethodMockBase<R, arglist...>::VirtualMethodProxy> c;
+		static MethodMock<R, arglist...> * createFunc(Mock<C> * mock, R(C::*vMethod)(arglist...)){
+			VirtualOffsetSelector<MethodMockBase<C, R, arglist...>::VirtualMethodProxy> c;
 			void * obj = c.create(vMethod);
 			auto methodProxy = reinterpret_cast<MethodProxy<R, arglist...>*>(obj);
-			return new MethodMockBase<R, arglist...>(methodProxy, new DefaultReturnMock<R>());
+			return new MethodMockBase<C, R, arglist...>(methodProxy, new DefaultReturnMock<R>());
 		}
 
-		static MethodMockBase<R, arglist...> * createProc(Mock<C> * mock, R(C::*vMethod)(arglist...)){
-			VirtualOffsetSelector<MethodMockBase<R, arglist...>::VirtualMethodProxy> c;
+		static MethodMock<R, arglist...> * createProc(Mock<C> * mock, R(C::*vMethod)(arglist...)){
+			VirtualOffsetSelector<MethodMockBase<C, R, arglist...>::VirtualMethodProxy> c;
 			void * obj = c.create(vMethod);
 			auto methodProxy = reinterpret_cast<MethodProxy<R, arglist...>*>(obj);
-			return new MethodMockBase<R, arglist...>(methodProxy, new VoidMock());
+			return new MethodMockBase<C, R, arglist...>(methodProxy, new VoidMock());
 		}
 
 	private:
@@ -119,7 +119,7 @@ private:
 
 			R methodProxy(arglist... args){
 				Mock * m = union_cast<Mock *>(this);
-				MethodMockBase<R, arglist...> * methodMock = m->getMethodMock<MethodMockBase<R, arglist...> *>(OFFSET);
+				MethodMock<R, arglist...> * methodMock = m->getMethodMock<MethodMockBase<C, R, arglist...> *>(OFFSET);
 				ActualInvocation<arglist...>* actualInvocation = new ActualInvocation<arglist...>(args...);
 				return methodMock->play(*actualInvocation);
 			}
