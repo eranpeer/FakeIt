@@ -43,7 +43,7 @@ struct Mock
 	template <typename... arglist>
 	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...)){
 		auto methodMock = MethodMockBase<C, void,arglist...>::createProc(this, vMethod);
-		auto stubClouse = new StubProcedureeClouseImpl<arglist...>(methodMock);
+		auto stubClouse = new StubProcedureClouseImpl<arglist...>(methodMock);
 		prepare(methodMock);
 		return *stubClouse;
 	}

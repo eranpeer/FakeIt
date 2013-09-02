@@ -125,8 +125,8 @@ private:
 };
 
 template <typename... arglist>
-struct StubProcedureeClouseImpl : public StubProcedureClouse<arglist...> {
-	StubProcedureeClouseImpl(MethodMock<void, arglist...>* methodMock) : methodMock(methodMock) {
+struct StubProcedureClouseImpl : public StubProcedureClouse<arglist...> {
+	StubProcedureClouseImpl(MethodMock<void, arglist...>* methodMock) : methodMock(methodMock) {
 	}
 
 	FirstProcedureWhenClouse<arglist...>& When(arglist... args) override {
