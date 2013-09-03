@@ -82,26 +82,21 @@ namespace mock4cpp_tests
 		}
 
 		static int defaultFuncBehavior(int a){
-			return 2;
+			return 1;
 		}
 
-		static void defaultProcBehavior(){
+		static void defaultProcBehavior(int a){
 			return;
 		}
 
 
-		TEST_METHOD(StubOnlySpecifiedCallsToDefaultBeavior)
+		TEST_METHOD(StubDefaultBehavior)
 		{
-			std::function<int(int)> a = [](int a){return 1; };
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func, &defaultFuncBehavior).When(1);
-			//mock.Stub2(&SomeInterface::func, [](int a){return 1; }).When(1);
-			mock.Stub(&SomeInterface::func, std::function<int(int) > ([](int a){return 1; })).When(1);
-			//mock.Stub3(&SomeInterface::func, [](int a){return 1; }).When(1);
-
+			mock.Stub(&SomeInterface::func).Do(&defaultFuncBehavior);
+			mock.Stub(&SomeInterface::proc).Do(&defaultProcBehavior);
 			SomeInterface &i = mock.get();
-
-			Assert::AreEqual(0, i.func(1));
+			Assert::AreEqual(1, i.func(1));
 			i.proc(1);
 		}
 

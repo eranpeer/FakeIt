@@ -44,6 +44,13 @@ struct FunctionWhenClouseImpl :
 		return *this;
 	};
 
+	NextFunctionWhenClouse<R, arglist...>& Do(R(*method)(arglist...)) override {
+		auto doMock = new DoMock<R, arglist...>(method);
+		invocationMock->clear();
+		invocationMock->append(doMock);
+		return *this;
+	}
+
 private:
 	InvocationMockBase<R, arglist...>* invocationMock;
 };
@@ -76,6 +83,12 @@ struct StubFunctionClouseImpl : public StubFunctionClouse<R, arglist...> {
 		FunctionWhenClouseImpl<R, arglist...> * whenClouse = new FunctionWhenClouseImpl<R, arglist...>(
 			methodMock->last());
 		whenClouse->Throw();
+		return *whenClouse;
+	}
+
+	NextFunctionWhenClouse<R, arglist...>& Do(R(*method)(arglist...)) override {
+		FunctionWhenClouseImpl<R, arglist...> * whenClouse = new FunctionWhenClouseImpl<R,arglist...>(methodMock->last());
+		whenClouse->Do(method);
 		return *whenClouse;
 	}
 
@@ -123,6 +136,13 @@ struct ProcedureWhenClouseImpl :
 			return *this;
 		};
 
+		NextProcedureWhenClouse<arglist...>& Do(void(*method)(arglist...)) override {
+			auto doMock = new DoMock<void, arglist...>(method);
+			invocationMock->clear();
+			invocationMock->append(doMock);
+			return *this;
+
+		}
 private:
 	InvocationMockBase<void, arglist...>* invocationMock;
 };
@@ -154,6 +174,12 @@ struct StubProcedureClouseImpl : public StubProcedureClouse<arglist...> {
 		ProcedureWhenClouseImpl<arglist...> * whenClouse = new ProcedureWhenClouseImpl<arglist...>(
 			methodMock->last());
 		whenClouse->Throw();
+		return *whenClouse;
+	}
+
+	NextProcedureWhenClouse<arglist...>& Do(void(*method)(arglist...)) override {
+		ProcedureWhenClouseImpl<arglist...> * whenClouse = new ProcedureWhenClouseImpl<arglist...>(methodMock->last());
+		whenClouse->Do(method);
 		return *whenClouse;
 	}
 

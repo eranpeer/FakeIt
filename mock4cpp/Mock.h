@@ -35,47 +35,9 @@ struct Mock
 	}
 
 	template <typename R, typename... arglist>
-	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...), std::function<R(arglist...)> def){
-		auto methodProxy = MethodMockBase<C, R, arglist...>::createMethodProxy(vMethod);
-
-		auto methodMock = getMethodMock<MethodMockBase<C, R, arglist...>*>(methodProxy->getOffset());
-		if (methodMock == nullptr) {
-			methodMock = new MethodMockBase<C, R, arglist...>(methodProxy, new DoMock<R,arglist...>(def));
-			prepare(methodMock);
-		}
-		auto stubClouse = new StubFunctionClouseImpl<R, arglist...>(methodMock);
-		return *stubClouse;
-	}
-
-	template <typename R, typename... arglist>
-	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...), R(*defaultMethod)(arglist...)){
-		return Stub(vMethod, std::function <R(arglist...)>(defaultMethod));
-	}
-
-	template <typename R, typename... arglist>
 	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...)){
 		return Stub(vMethod, std::function<R(arglist...)>([](arglist... args)->R{return defualtFunc<R,arglist...>(args...); }));
 	}
-
-
-	template <typename... arglist>
-	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...), std::function<void(arglist...)> def){
-		auto methodProxy = MethodMockBase<C, void, arglist...>::createMethodProxy(vMethod);
-		
-		auto methodMock = getMethodMock<MethodMockBase<C, void, arglist...>*>(methodProxy->getOffset());
-		if (methodMock == nullptr)
-			methodMock = new MethodMockBase<C, void, arglist...>(methodProxy, new DoMock<void, arglist...>(def));
-
-		auto stubClouse = new StubProcedureClouseImpl<arglist...>(methodMock);
-		prepare(methodMock);
-		return *stubClouse;
-	}
-
-	template <typename... arglist>
-	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...), void(*defaultMethod)(arglist...)){
-		return Stub(vMethod, std::function <void(arglist...)>(defaultMethod));
-	}
-
 
 	template <typename... arglist>
 	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...)){
@@ -175,6 +137,43 @@ private:
 	template<typename... arglist>
 	static void defualtProc(arglist...){
 	}
+
+	template <typename R, typename... arglist>
+	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...), std::function<R(arglist...)> def){
+		auto methodProxy = MethodMockBase<C, R, arglist...>::createMethodProxy(vMethod);
+
+		auto methodMock = getMethodMock<MethodMockBase<C, R, arglist...>*>(methodProxy->getOffset());
+		if (methodMock == nullptr) {
+			methodMock = new MethodMockBase<C, R, arglist...>(methodProxy, new DoMock<R, arglist...>(def));
+			prepare(methodMock);
+		}
+		auto stubClouse = new StubFunctionClouseImpl<R, arglist...>(methodMock);
+		return *stubClouse;
+	}
+
+	template <typename R, typename... arglist>
+	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...), R(*defaultMethod)(arglist...)){
+		return Stub(vMethod, std::function <R(arglist...)>(defaultMethod));
+	}
+
+	template <typename... arglist>
+	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...), std::function<void(arglist...)> def){
+		auto methodProxy = MethodMockBase<C, void, arglist...>::createMethodProxy(vMethod);
+
+		auto methodMock = getMethodMock<MethodMockBase<C, void, arglist...>*>(methodProxy->getOffset());
+		if (methodMock == nullptr)
+			methodMock = new MethodMockBase<C, void, arglist...>(methodProxy, new DoMock<void, arglist...>(def));
+
+		auto stubClouse = new StubProcedureClouseImpl<arglist...>(methodMock);
+		prepare(methodMock);
+		return *stubClouse;
+	}
+
+	template <typename... arglist>
+	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...), void(*defaultMethod)(arglist...)){
+		return Stub(vMethod, std::function <void(arglist...)>(defaultMethod));
+	}
+
 
 };
 
