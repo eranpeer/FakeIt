@@ -21,7 +21,9 @@ struct FirstFunctionWhenClouse {
 	virtual NextFunctionWhenClouse<R, arglist...>& Throw() = 0;
 
 	virtual NextFunctionWhenClouse<R, arglist...>& Do(R(*method)(arglist...)) = 0;
-
+	
+	virtual NextFunctionWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) = 0;
+	
 };
 
 
@@ -53,7 +55,8 @@ struct FirstProcedureWhenClouse {
 	virtual NextProcedureWhenClouse<arglist...>& Throw() = 0;
 
 	virtual NextProcedureWhenClouse<arglist...>& Do(void(*method)(arglist...)) = 0;
-
+	
+	virtual NextProcedureWhenClouse<arglist...>& Do(std::function<void(arglist...)> method) = 0;
 };
 
 template <typename... arglist>

@@ -174,7 +174,6 @@ private:
 		return Stub(vMethod, std::function <void(arglist...)>(defaultMethod));
 	}
 
-
 };
 
 #endif // Mock_h__

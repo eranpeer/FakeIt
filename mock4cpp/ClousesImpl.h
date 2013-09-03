@@ -45,12 +45,17 @@ struct FunctionWhenClouseImpl :
 	};
 
 	NextFunctionWhenClouse<R, arglist...>& Do(R(*method)(arglist...)) override {
+		return Do(std::function<R(arglist...)>(method));
+	}
+
+	NextFunctionWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 		auto doMock = new DoMock<R, arglist...>(method);
 		invocationMock->clear();
 		invocationMock->append(doMock);
 		return *this;
 	}
 
+	
 private:
 	InvocationMockBase<R, arglist...>* invocationMock;
 };
@@ -87,10 +92,16 @@ struct StubFunctionClouseImpl : public StubFunctionClouse<R, arglist...> {
 	}
 
 	NextFunctionWhenClouse<R, arglist...>& Do(R(*method)(arglist...)) override {
-		FunctionWhenClouseImpl<R, arglist...> * whenClouse = new FunctionWhenClouseImpl<R,arglist...>(methodMock->last());
+		return Do(std::function<R(arglist...)>(method));
+	}
+
+	NextFunctionWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) override {
+		FunctionWhenClouseImpl<R, arglist...> * whenClouse = new FunctionWhenClouseImpl<R, arglist...>(methodMock->last());
 		whenClouse->Do(method);
 		return *whenClouse;
 	}
+
+	
 
 private:
 	MethodMock<R, arglist...>* methodMock;
@@ -137,12 +148,17 @@ struct ProcedureWhenClouseImpl :
 		};
 
 		NextProcedureWhenClouse<arglist...>& Do(void(*method)(arglist...)) override {
+			return Do(std::function<void(arglist...)>(method));
+		}
+
+		NextProcedureWhenClouse<arglist...>& Do(std::function<void(arglist...)> method) override {
 			auto doMock = new DoMock<void, arglist...>(method);
 			invocationMock->clear();
 			invocationMock->append(doMock);
 			return *this;
-
 		}
+
+		
 private:
 	InvocationMockBase<void, arglist...>* invocationMock;
 };
@@ -178,11 +194,15 @@ struct StubProcedureClouseImpl : public StubProcedureClouse<arglist...> {
 	}
 
 	NextProcedureWhenClouse<arglist...>& Do(void(*method)(arglist...)) override {
+		return Do(std::function<void(arglist...)>(method));
+	}
+
+	NextProcedureWhenClouse<arglist...>& Do(std::function<void(arglist...)> method) override {
 		ProcedureWhenClouseImpl<arglist...> * whenClouse = new ProcedureWhenClouseImpl<arglist...>(methodMock->last());
 		whenClouse->Do(method);
 		return *whenClouse;
 	}
-
+	
 private:
 	MethodMock<void, arglist...>* methodMock;
 };
