@@ -5,7 +5,8 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace mock4cpp_tests
-{		
+{
+	
 	TEST_CLASS(MockTest)
 	{
 	public:	
@@ -80,20 +81,28 @@ namespace mock4cpp_tests
 			Assert::ExpectException<char*>([&i]{ i.proc(2); }, L"should throw exception");
 		}
 
+		static int defaultFuncBehavior(int a){
+			return 2;
+		}
+
+		static void defaultProcBehavior(){
+			return;
+		}
+
+
 		TEST_METHOD(StubOnlySpecifiedCallsToDefaultBeavior)
 		{
+			std::function<int(int)> a = [](int a){return 1; };
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func).When(1);
-			mock.Stub(&SomeInterface::proc).When(1);
+			mock.Stub2(&SomeInterface::func, &defaultFuncBehavior).When(1);
+			//mock.Stub2(&SomeInterface::func, [](int a){return 1; }).When(1);
+			mock.Stub3(&SomeInterface::func, std::function<int(int) >([](int a){return 1; })).When(1);
+			//mock.Stub3(&SomeInterface::func, [](int a){return 1; }).When(1);
 
 			SomeInterface &i = mock.get();
 
-			Assert::IsTrue(0 == i.func(1), L"Default behavior");
-			Assert::ExpectException<char*>([&i]{ i.func(2); }, L"should throw exception");
-
-			// Default behavior of a procedure is to do nothing
+			Assert::AreEqual(0, i.func(1));
 			i.proc(1);
-			Assert::ExpectException<char*>([&i]{ i.proc(2); }, L"should throw exception");
 		}
 
 		TEST_METHOD(StubOnlySpecifiedCallsToAlternateBehavior)
@@ -104,13 +113,13 @@ namespace mock4cpp_tests
 
 			SomeInterface &i = mock.get();
 
-			Assert::IsTrue(1 == i.func(1), L"should return 1");
-			Assert::IsTrue(1 == i.func(1), L"should return 1");
-			Assert::ExpectException<char*>([&i]{ i.func(2); }, L"should throw exception");
+			Assert::AreEqual(1,i.func(1));
+			Assert::AreEqual(1, i.func(1));
+			Assert::AreEqual(0, i.func(2));
 
 			i.proc(1);
 			i.proc(1);
-			Assert::ExpectException<char*>([&i]{ i.proc(2); }, L"should throw exception");
+			i.proc(2);
 		}
 
 
@@ -141,6 +150,18 @@ namespace mock4cpp_tests
 
 			Assert::AreEqual(2, i.func(10));
 			Assert::AreEqual(2, i.func(11));
+		}
+
+		TEST_METHOD(StubAllButOne)
+		{
+			Mock<SomeInterface> mock;
+			mock.Stub(&SomeInterface::func).Return(1);
+			mock.Stub(&SomeInterface::func).When(1).Return(2);
+
+			SomeInterface &i = mock.get();
+
+			Assert::AreEqual(1, i.func(0));
+			Assert::AreEqual(2, i.func(1));
 		}
 
 // 		TEST_METHOD(StubWithWhenClouse_AndWithoutThenClouse_ShouldStubOnlySpecifiedCallsToDefaultBeaviour)

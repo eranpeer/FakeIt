@@ -13,32 +13,32 @@ struct FunctionWhenClouseImpl :
 	FunctionWhenClouseImpl(InvocationMockBase<R, arglist...> * invocationMock) :
 		invocationMock(invocationMock)
 	{
-		invocationMock->append(new DefaultReturnMock<R>());
+		invocationMock->append(new DefaultReturnMock<R,arglist...>());
 	}
 
 	~FunctionWhenClouseImpl(){}
 
 	NextFunctionWhenClouse<R, arglist...>& ThenReturn(R r) override {
-		ReturnMock<R>* returnMock = new ReturnMock<R>(r);
+		ReturnMock<R,arglist...>* returnMock = new ReturnMock<R,arglist...>(r);
 		invocationMock->append(returnMock);
 		return *this;
 	};
 
 	NextFunctionWhenClouse<R, arglist...>& ThenThrow() override {
-		ThrowMock<R>* throwMock = new ThrowMock<R>();
+		ThrowMock<R, arglist...>* throwMock = new ThrowMock<R,arglist...>();
 		invocationMock->append(throwMock);
 		return *this;
 	};
 
 	NextFunctionWhenClouse<R, arglist...>& Return(R r) override {
-		ReturnMock<R>* returnMock = new ReturnMock<R>(r);
+		ReturnMock<R, arglist...>* returnMock = new ReturnMock<R, arglist...>(r);
 		invocationMock->clear();
 		invocationMock->append(returnMock);
 		return *this;
 	};
 
 	NextFunctionWhenClouse<R, arglist...>& Throw() override {
-		ThrowMock<R>* throwMock = new ThrowMock<R>();
+		ThrowMock<R, arglist...>* throwMock = new ThrowMock<R, arglist...>();
 		invocationMock->clear();
 		invocationMock->append(throwMock);
 		return *this;
@@ -54,24 +54,27 @@ struct StubFunctionClouseImpl : public StubFunctionClouse<R, arglist...> {
 	}
 
 	FirstFunctionWhenClouse<R, arglist...>& When(arglist... args) override {
-		InvocationMock<R, arglist...> * invocationMock = new InvocationMock<R, arglist...>(args...);
+		InvocationMockBase<R, arglist...> * invocationMock = methodMock->getInvocationMock(args...);
+		if (invocationMock == nullptr) {
+			invocationMock = new InvocationMock<R, arglist...>(args...);
+			methodMock->append(invocationMock);
+		}
+
 		FunctionWhenClouseImpl<R, arglist...> * whenClouse = new FunctionWhenClouseImpl<R, arglist...>
 			(invocationMock);
-		methodMock->clear();
-		methodMock->append(invocationMock);
 		return *whenClouse;
 	}
 
 	NextFunctionWhenClouse<R, arglist...>& Return(R r)  override  {
 		FunctionWhenClouseImpl<R, arglist...> * whenClouse = new FunctionWhenClouseImpl<R, arglist...>(
-			methodMock->first());
+			methodMock->last());
 		whenClouse->Return(r);
 		return *whenClouse;
 	}
 
 	NextFunctionWhenClouse<R, arglist...>& Throw()  override {
 		FunctionWhenClouseImpl<R, arglist...> * whenClouse = new FunctionWhenClouseImpl<R, arglist...>(
-			methodMock->first());
+			methodMock->last());
 		whenClouse->Throw();
 		return *whenClouse;
 	}
@@ -89,32 +92,32 @@ struct ProcedureWhenClouseImpl :
 		ProcedureWhenClouseImpl(InvocationMockBase<void, arglist...>* invocationMock) :
 			invocationMock(invocationMock)
 		{
-			invocationMock->append(new VoidMock());
+			invocationMock->append(new VoidMock<arglist...>());
 		}
 
 		virtual ~ProcedureWhenClouseImpl() {}
 
 		NextProcedureWhenClouse<arglist...>& ThenReturn() {
-			VoidMock* voidMock = new VoidMock();
+			VoidMock<arglist...>* voidMock = new VoidMock<arglist...>();
 			invocationMock->append(voidMock);
 			return *this;
 		};
 
 		NextProcedureWhenClouse<arglist...>& ThenThrow() {
-			ThrowMock<void>* throwMock = new ThrowMock<void>();
+			ThrowMock<void, arglist...>* throwMock = new ThrowMock<void, arglist...>();
 			invocationMock->append(throwMock);
 			return *this;
 		};
 
 		NextProcedureWhenClouse<arglist...>& Return() {
-			VoidMock* voidMock = new VoidMock();
+			VoidMock<arglist...>* voidMock = new VoidMock<arglist...>();
 			invocationMock->clear();
 			invocationMock->append(voidMock);
 			return *this;
 		};
 
 		NextProcedureWhenClouse<arglist...>& Throw() {
-			ThrowMock<void>* throwMock = new ThrowMock<void>();
+			ThrowMock<void, arglist...>* throwMock = new ThrowMock<void, arglist...>();
 			invocationMock->clear();
 			invocationMock->append(throwMock);
 			return *this;
@@ -130,25 +133,26 @@ struct StubProcedureClouseImpl : public StubProcedureClouse<arglist...> {
 	}
 
 	FirstProcedureWhenClouse<arglist...>& When(arglist... args) override {
-		InvocationMock<void, arglist...> * invocationMock =
-			new InvocationMock<void, arglist...>(args...);
-		ProcedureWhenClouseImpl<arglist...> * whenClouse =
-			new ProcedureWhenClouseImpl<arglist...>(invocationMock);
-		methodMock->clear();
-		methodMock->append(invocationMock);
+
+		InvocationMockBase<void, arglist...> * invocationMock = methodMock->getInvocationMock(args...);
+		if (invocationMock == nullptr) {
+			invocationMock = new InvocationMock<void, arglist...>(args...);
+			methodMock->append(invocationMock);
+		}
+		ProcedureWhenClouseImpl<arglist...> * whenClouse = new ProcedureWhenClouseImpl<arglist...>(invocationMock);
 		return *whenClouse;
 	};
 
 	NextProcedureWhenClouse<arglist...>& Return() override {
 		ProcedureWhenClouseImpl<arglist...> * whenClouse = new ProcedureWhenClouseImpl<arglist...>(
-			methodMock->first());
+			methodMock->last());
 		whenClouse->Return();
 		return *whenClouse;
 	};
 
 	NextProcedureWhenClouse<arglist...>& Throw() override {
 		ProcedureWhenClouseImpl<arglist...> * whenClouse = new ProcedureWhenClouseImpl<arglist...>(
-			methodMock->first());
+			methodMock->last());
 		whenClouse->Throw();
 		return *whenClouse;
 	}

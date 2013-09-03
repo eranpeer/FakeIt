@@ -2,14 +2,14 @@
 #define MethodMock_h__
 #include <vector>
 
-template < typename R>
+template < typename R, typename... arglist>
 struct BehaviorMock
 {
 	virtual R play() = 0;
 };
 
-template < typename R>
-struct ReturnMock : public BehaviorMock<R>
+template < typename R, typename... arglist>
+struct ReturnMock : public BehaviorMock<R, arglist...>
 {
 	ReturnMock(R r) : r(r){}
 	virtual R play() override {
@@ -19,29 +19,30 @@ private:
 	R r;
 };
 
-template < typename R>
-struct DefaultReturnMock : public ReturnMock<R>
+template < typename R, typename... arglist>
+struct DefaultReturnMock : public ReturnMock<R, arglist...>
 {
-	DefaultReturnMock() : ReturnMock<R>(R{}){}
+	DefaultReturnMock() : ReturnMock<R,arglist...>(R{}){}
 };
 
-struct VoidMock : public BehaviorMock<void>
+template <typename... arglist>
+struct VoidMock : public BehaviorMock<void,arglist...>
 {
 	virtual void play() override {
 		return;
 	}
 };
 
-template < typename R>
-struct ThrowMock : public BehaviorMock<R>
+template < typename R, typename... arglist>
+struct ThrowMock : public BehaviorMock<R, arglist...>
 {
 	virtual R play() override {
 		throw "error";
 	}
 };
 
-template < typename R>
-struct DoMock : public BehaviorMock<R>
+template <typename R, typename... arglist>
+struct DoMock : public BehaviorMock<R, arglist...>
 {
 };
 
@@ -49,6 +50,7 @@ template <typename... arglist>
 struct ActualInvocation
 {
 	ActualInvocation(arglist... args) : arguments(args...){}
+	
 	std::tuple <arglist...>& getArguments(){
 		return arguments;
 	}
@@ -60,7 +62,7 @@ private:
 template <typename R, typename... arglist>
 struct InvocationMockBase
 {
-	void append(BehaviorMock<R>* mock){
+	void append(BehaviorMock<R, arglist...>* mock){
 		behaviorMocks.push_back(mock);
 	}
 
@@ -68,17 +70,23 @@ struct InvocationMockBase
 		behaviorMocks.clear();
 	}
 
-	virtual bool matches(ActualInvocation<arglist...>& actualInvocation) = 0;
+	virtual bool matchesActual(ActualInvocation<arglist...>& actualInvocation) {
+		return matchesActual(actualInvocation.getArguments());
+	}
+	
+	virtual bool matchesActual(std::tuple<arglist...> &args) = 0;
+
+	virtual bool matchesExpected(std::tuple<arglist...> &args) = 0;
 
 	R play(ActualInvocation<arglist...> & actualInvocation){
-		BehaviorMock<R>* behavior = behaviorMocks.front();
+		BehaviorMock<R, arglist...>* behavior = behaviorMocks.front();
 		if (behaviorMocks.size() > 1)
 			behaviorMocks.erase(behaviorMocks.begin());
 		return behavior->play();
 	}
 
 private:
-	std::vector<BehaviorMock<R>*> behaviorMocks;
+	std::vector<BehaviorMock<R, arglist...>*> behaviorMocks;
 };
 
 template <typename R, typename... arglist>
@@ -86,8 +94,12 @@ struct InvocationMock : public InvocationMockBase<R, arglist...>
 {
 	InvocationMock(arglist... args) : expectedArguments(args...){}
 
-	virtual bool matches(ActualInvocation<arglist...>& actualInvocation) override {
-		return expectedArguments == actualInvocation.getArguments();
+	virtual bool matchesActual(std::tuple<arglist...> &args) override {
+		return expectedArguments == args;
+	}
+
+	virtual bool matchesExpected(std::tuple<arglist...> &args) override {
+		return expectedArguments == args;
 	}
 
 private:
@@ -97,13 +109,18 @@ private:
 template <typename R, typename... arglist>
 struct DefaultInvocationMock : public InvocationMockBase<R, arglist...>
 {
-	DefaultInvocationMock(BehaviorMock<R> * defaultBehavior) {
+	DefaultInvocationMock(BehaviorMock<R, arglist...> * defaultBehavior) {
 		append(defaultBehavior);
 	}
 
-	virtual bool matches(ActualInvocation<arglist...>& actualInvocation){
+	virtual bool matchesActual(std::tuple<arglist...>& args) override {
 		return true;
 	}
+
+	virtual bool matchesExpected(std::tuple<arglist...>& args) override {
+		return false;
+	}
+
 };
 
 template <typename R, typename... arglist>
@@ -127,17 +144,31 @@ struct MethodMock
 		return invocationMocks.front();
 	}
 
+	InvocationMockBase<R, arglist...>* last(){
+		return invocationMocks.back();
+	}
+
 	std::vector<InvocationMockBase<R, arglist...>*>& getInvocationMocks(){
 		return invocationMocks;
 	}
 
 	R play(ActualInvocation<arglist...> & actualInvocation){
 		for (auto i = invocationMocks.rbegin(); i != invocationMocks.rend(); ++i) {
-			if ((*i)->matches(actualInvocation)){
+			if ((*i)->matchesActual(actualInvocation)){
 				return (*i)->play(actualInvocation);
 			}
 		}
 		throw "error";
+	}
+
+	InvocationMockBase<R, arglist...> * getInvocationMock(arglist... expectedArgs){
+		std::tuple<arglist...> tuple(expectedArgs...);
+		for (auto i = invocationMocks.rbegin(); i != invocationMocks.rend(); ++i) {
+			if ((*i)->matchesExpected(tuple)){
+				return (*i);
+			}
+		}
+		return nullptr;
 	}
 
 private:

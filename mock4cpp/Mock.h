@@ -11,12 +11,24 @@
 #include "utils.h"
 #include "ClousesImpl.h"
 
+template <typename R, typename... arglist>
+std::function <R(arglist...)> toFunc(R(*f)(arglist... args)){
+	return std::function<R(arglist...)>([args....](){f(args...)});
+}
+
+template <typename R, typename... arglist>
+std::function <R(arglist...)> toFunc(std::function < R(arglist...)> f){
+	return f;
+}
+
 struct UnmockedMethodException : public std::exception {
 } unmockedMethodException;
 
 template <typename C>
 struct Mock
 {	
+
+
 
 	Mock() : vtable(10),methodMocks(10),name("Eran"){
 		auto mptr = union_cast<void*>(&Mock::unmocked);
@@ -31,17 +43,46 @@ struct Mock
 	{
 		return reinterpret_cast<C&>(*this);
 	}
+	//std::function < parser*() >> m
+
+
+	template <typename R, typename... arglist>
+	StubFunctionClouse<R, arglist...>& Stub3(R(C::*vMethod)(arglist...), std::function<R(arglist...)> def){
+		auto methodProxy = MethodMockBase<C, R, arglist...>::createMethodProxy(vMethod);
+
+		auto methodMock = getMethodMock<MethodMockBase<C, R, arglist...>*>(methodProxy->getOffset());
+		if (methodMock == nullptr) {
+			methodMock = new MethodMockBase<C, R, arglist...>(methodProxy, new DefaultReturnMock<R,arglist...>());;
+			prepare(methodMock);
+		}
+		auto stubClouse = new StubFunctionClouseImpl<R, arglist...>(methodMock);
+		return *stubClouse;
+	}
+
+	template <typename R, typename... arglist>
+	StubFunctionClouse<R, arglist...>& Stub2(R(C::*vMethod)(arglist...), R(*defaultMethod)(arglist...)){
+		std::function <R(arglist...)> f(defaultMethod);
+		auto methodProxy = MethodMockBase<C, R, arglist...>::createMethodProxy(vMethod);
+
+		auto methodMock = getMethodMock<MethodMockBase<C, R, arglist...>*>(methodProxy->getOffset());
+		if (methodMock == nullptr) {
+			methodMock = new MethodMockBase<C, R, arglist...>(methodProxy, new DefaultReturnMock<R,arglist...>());;
+			prepare(methodMock);
+		}
+		auto stubClouse = new StubFunctionClouseImpl<R, arglist...>(methodMock);
+		return *stubClouse;
+	}
 
 	template <typename R, typename... arglist>
 	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...)){
 		auto methodProxy = MethodMockBase<C, R, arglist...>::createMethodProxy(vMethod);
 		
 		auto methodMock = getMethodMock<MethodMockBase<C, R, arglist...>*>(methodProxy->getOffset());
-		if (methodMock == nullptr)
-			methodMock = new MethodMockBase<C, R, arglist...>(methodProxy, new DefaultReturnMock<R>());;
-		
+		if (methodMock == nullptr) {
+			methodMock = new MethodMockBase<C, R, arglist...>(methodProxy, new DefaultReturnMock<R, arglist...>());;
+			prepare(methodMock);
+		}
 		auto stubClouse = new StubFunctionClouseImpl<R, arglist...>(methodMock);
-		prepare(methodMock);
 		return *stubClouse;
 	}
 
@@ -51,7 +92,7 @@ struct Mock
 		
 		auto methodMock = getMethodMock<MethodMockBase<C, void, arglist...>*>(methodProxy->getOffset());
 		if (methodMock == nullptr)
-			methodMock = new MethodMockBase<C, void, arglist...>(methodProxy, new VoidMock());
+			methodMock = new MethodMockBase<C, void, arglist...>(methodProxy, new VoidMock<arglist...>());
 
 		auto stubClouse = new StubProcedureClouseImpl<arglist...>(methodMock);
 		prepare(methodMock);
@@ -89,7 +130,7 @@ private:
 			return reinterpret_cast<MethodProxy<R, arglist...>*>(obj);
 		}
 
-		MethodMockBase(MethodProxy<R, arglist...> * methodProxy, BehaviorMock<R> * defaultBehaviour) :
+		MethodMockBase(MethodProxy<R, arglist...> * methodProxy, BehaviorMock<R, arglist...> * defaultBehaviour) :
 			methodProxy(methodProxy)
 		{
 			append(new DefaultInvocationMock<R, arglist...>(defaultBehaviour));
