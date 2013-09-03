@@ -35,7 +35,11 @@ struct Mock
 	template <typename R, typename... arglist>
 	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...)){
 		auto methodProxy = MethodMockBase<C, R, arglist...>::createMethodProxy(vMethod);
-		auto methodMock = new MethodMockBase<C, R, arglist...>(methodProxy, new DefaultReturnMock<R>());;
+		
+		auto methodMock = getMethodMock<MethodMockBase<C, R, arglist...>*>(methodProxy->getOffset());
+		if (methodMock == nullptr)
+			methodMock = new MethodMockBase<C, R, arglist...>(methodProxy, new DefaultReturnMock<R>());;
+		
 		auto stubClouse = new StubFunctionClouseImpl<R, arglist...>(methodMock);
 		prepare(methodMock);
 		return *stubClouse;
@@ -44,7 +48,11 @@ struct Mock
 	template <typename... arglist>
 	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...)){
 		auto methodProxy = MethodMockBase<C, void, arglist...>::createMethodProxy(vMethod);
-		auto methodMock = new MethodMockBase<C, void, arglist...>(methodProxy, new VoidMock());;
+		
+		auto methodMock = getMethodMock<MethodMockBase<C, void, arglist...>*>(methodProxy->getOffset());
+		if (methodMock == nullptr)
+			methodMock = new MethodMockBase<C, void, arglist...>(methodProxy, new VoidMock());
+
 		auto stubClouse = new StubProcedureClouseImpl<arglist...>(methodMock);
 		prepare(methodMock);
 		return *stubClouse;
@@ -99,7 +107,7 @@ private:
 
 			R methodProxy(arglist... args){
 				Mock<C> * m = union_cast<Mock<C> *>(this);
-				MethodMock<R, arglist...> * methodMock = m->getMethodMock<MethodMockBase<C, R, arglist...> *>(OFFSET);
+				MethodMock<R, arglist...> * methodMock = m->getMethodProxy<MethodMockBase<C, R, arglist...> *>(OFFSET);
 				ActualInvocation<arglist...>* actualInvocation = new ActualInvocation<arglist...>(args...);
 				return methodMock->play(*actualInvocation);
 			}
@@ -108,6 +116,13 @@ private:
 
 	template <typename T>
 	T getMethodMock(unsigned int offset){
+		if (!isMocked(offset))
+			return nullptr;
+		return methodMocks.get<T>(offset);
+	}
+
+	template <typename T>
+	T getMethodProxy(unsigned int offset){
 		return methodMocks.get<T>(offset);
 	}
 
@@ -120,8 +135,8 @@ private:
 		return *methodMock;
 	}
 
-	bool isMocked(int index){
-		return vtable.getMethod(index) != &unmocked;
+	bool isMocked(unsigned int index){
+		return vtable.getMethod(index) != union_cast<void*>(&Mock<C>::unmocked);
 	}
 
 	void unmocked(){

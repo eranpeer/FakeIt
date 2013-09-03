@@ -139,7 +139,7 @@ namespace mock4cpp_tests
 
 			SomeInterface &i = mock.get();
 
-			Assert::AreEqual(1,i.func(10));
+			Assert::AreEqual(2, i.func(10));
 			Assert::AreEqual(2, i.func(11));
 		}
 
