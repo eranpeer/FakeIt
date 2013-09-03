@@ -11,16 +11,6 @@
 #include "utils.h"
 #include "ClousesImpl.h"
 
-template <typename R, typename... arglist>
-std::function <R(arglist...)> toFunc(R(*f)(arglist... args)){
-	return std::function<R(arglist...)>([args....](){f(args...)});
-}
-
-template <typename R, typename... arglist>
-std::function <R(arglist...)> toFunc(std::function < R(arglist...)> f){
-	return f;
-}
-
 struct UnmockedMethodException : public std::exception {
 } unmockedMethodException;
 
@@ -43,16 +33,14 @@ struct Mock
 	{
 		return reinterpret_cast<C&>(*this);
 	}
-	//std::function < parser*() >> m
-
 
 	template <typename R, typename... arglist>
-	StubFunctionClouse<R, arglist...>& Stub3(R(C::*vMethod)(arglist...), std::function<R(arglist...)> def){
+	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...), std::function<R(arglist...)> def){
 		auto methodProxy = MethodMockBase<C, R, arglist...>::createMethodProxy(vMethod);
 
 		auto methodMock = getMethodMock<MethodMockBase<C, R, arglist...>*>(methodProxy->getOffset());
 		if (methodMock == nullptr) {
-			methodMock = new MethodMockBase<C, R, arglist...>(methodProxy, new DefaultReturnMock<R,arglist...>());;
+			methodMock = new MethodMockBase<C, R, arglist...>(methodProxy, new DoMock<R,arglist...>(def));
 			prepare(methodMock);
 		}
 		auto stubClouse = new StubFunctionClouseImpl<R, arglist...>(methodMock);
@@ -60,43 +48,38 @@ struct Mock
 	}
 
 	template <typename R, typename... arglist>
-	StubFunctionClouse<R, arglist...>& Stub2(R(C::*vMethod)(arglist...), R(*defaultMethod)(arglist...)){
-		std::function <R(arglist...)> f(defaultMethod);
-		auto methodProxy = MethodMockBase<C, R, arglist...>::createMethodProxy(vMethod);
-
-		auto methodMock = getMethodMock<MethodMockBase<C, R, arglist...>*>(methodProxy->getOffset());
-		if (methodMock == nullptr) {
-			methodMock = new MethodMockBase<C, R, arglist...>(methodProxy, new DefaultReturnMock<R,arglist...>());;
-			prepare(methodMock);
-		}
-		auto stubClouse = new StubFunctionClouseImpl<R, arglist...>(methodMock);
-		return *stubClouse;
+	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...), R(*defaultMethod)(arglist...)){
+		return Stub(vMethod, std::function <R(arglist...)>(defaultMethod));
 	}
 
 	template <typename R, typename... arglist>
 	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...)){
-		auto methodProxy = MethodMockBase<C, R, arglist...>::createMethodProxy(vMethod);
-		
-		auto methodMock = getMethodMock<MethodMockBase<C, R, arglist...>*>(methodProxy->getOffset());
-		if (methodMock == nullptr) {
-			methodMock = new MethodMockBase<C, R, arglist...>(methodProxy, new DefaultReturnMock<R, arglist...>());;
-			prepare(methodMock);
-		}
-		auto stubClouse = new StubFunctionClouseImpl<R, arglist...>(methodMock);
-		return *stubClouse;
+		return Stub(vMethod, std::function<R(arglist...)>([](arglist... args)->R{return defualtFunc<R,arglist...>(args...); }));
 	}
 
+
 	template <typename... arglist>
-	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...)){
+	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...), std::function<void(arglist...)> def){
 		auto methodProxy = MethodMockBase<C, void, arglist...>::createMethodProxy(vMethod);
 		
 		auto methodMock = getMethodMock<MethodMockBase<C, void, arglist...>*>(methodProxy->getOffset());
 		if (methodMock == nullptr)
-			methodMock = new MethodMockBase<C, void, arglist...>(methodProxy, new VoidMock<arglist...>());
+			methodMock = new MethodMockBase<C, void, arglist...>(methodProxy, new DoMock<void, arglist...>(def));
 
 		auto stubClouse = new StubProcedureClouseImpl<arglist...>(methodMock);
 		prepare(methodMock);
 		return *stubClouse;
+	}
+
+	template <typename... arglist>
+	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...), void(*defaultMethod)(arglist...)){
+		return Stub(vMethod, std::function <void(arglist...)>(defaultMethod));
+	}
+
+
+	template <typename... arglist>
+	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...)){
+		return Stub(vMethod, std::function<void(arglist...)>([](arglist... args)->void{return defualtProc<arglist...>(args...); }));
 	}
 
 private:
@@ -149,8 +132,7 @@ private:
 			R methodProxy(arglist... args){
 				Mock<C> * m = union_cast<Mock<C> *>(this);
 				MethodMock<R, arglist...> * methodMock = m->getMethodProxy<MethodMockBase<C, R, arglist...> *>(OFFSET);
-				ActualInvocation<arglist...>* actualInvocation = new ActualInvocation<arglist...>(args...);
-				return methodMock->play(*actualInvocation);
+				return methodMock->play(args...);
 			}
 		};
 	};
@@ -184,6 +166,16 @@ private:
 		Mock * m = this; // this should work
 		throw unmockedMethodException;
 	}
+
+	template<typename R, typename... arglist>
+	static R defualtFunc(arglist...){
+		return R{};
+	}
+
+	template<typename... arglist>
+	static void defualtProc(arglist...){
+	}
+
 };
 
 #endif // Mock_h__

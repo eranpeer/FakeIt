@@ -94,9 +94,9 @@ namespace mock4cpp_tests
 		{
 			std::function<int(int)> a = [](int a){return 1; };
 			Mock<SomeInterface> mock;
-			mock.Stub2(&SomeInterface::func, &defaultFuncBehavior).When(1);
+			mock.Stub(&SomeInterface::func, &defaultFuncBehavior).When(1);
 			//mock.Stub2(&SomeInterface::func, [](int a){return 1; }).When(1);
-			mock.Stub3(&SomeInterface::func, std::function<int(int) >([](int a){return 1; })).When(1);
+			mock.Stub(&SomeInterface::func, std::function<int(int) > ([](int a){return 1; })).When(1);
 			//mock.Stub3(&SomeInterface::func, [](int a){return 1; }).When(1);
 
 			SomeInterface &i = mock.get();
