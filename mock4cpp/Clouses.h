@@ -10,8 +10,9 @@ struct NextFunctionWhenClouse {
 		return ThenDo(std::function<R(arglist...)>([r](...)->R{return r; }));
 	}
 
-	NextFunctionWhenClouse<R, arglist...>& ThenThrow() {
-		return ThenDo(std::function<R(arglist...)>([](...)->R{throw "error"; }));
+	template <typename E>
+	NextFunctionWhenClouse<R, arglist...>& ThenThrow(E e) {
+		return ThenDo(std::function<R(arglist...)>([e](...)->R{throw e; }));
 	}
 
 	NextFunctionWhenClouse<R, arglist...>& ThenDo(R(*method)(arglist...)) {
@@ -31,8 +32,9 @@ struct FirstFunctionWhenClouse {
 		return Do(std::function<R(arglist...)>([r](...)->R{return r; }));
 	}
 
-	NextFunctionWhenClouse<R, arglist...>& Throw()  {
-		return Do(std::function<R(arglist...)>([](...)->R{throw "error"; }));
+	template <typename E>
+	NextFunctionWhenClouse<R, arglist...>& Throw(E e)  {
+		return Do(std::function<R(arglist...)>([e](...)->R{throw e; }));
 	}
 
 	NextFunctionWhenClouse<R, arglist...>& Do(R(*method)(arglist...)) {
@@ -60,8 +62,9 @@ struct NextProcedureWhenClouse {
 		return ThenDo(std::function<void(arglist...)>([](...)->void{}));
 	}
 
-	NextProcedureWhenClouse<arglist...>& ThenThrow() {
-		return ThenDo(std::function<void(arglist...)>([](...)->void{ throw "error"; }));
+	template <typename E>
+	NextProcedureWhenClouse<arglist...>& ThenThrow(E e) {
+		return ThenDo(std::function<void(arglist...)>([e](...)->void{ throw e; }));
 	}
 
 	NextProcedureWhenClouse<arglist...>& ThenDo(void(*method)(arglist...))  {
@@ -82,8 +85,9 @@ struct FirstProcedureWhenClouse {
 		return Do(std::function<void(arglist...)>([](...)->void{}));
 	};
 
-	NextProcedureWhenClouse<arglist...>& Throw() {
-		return Do(std::function<void(arglist...)>([](...)->void{ throw "error"; }));
+	template <typename E>
+	NextProcedureWhenClouse<arglist...>& Throw(E e) {
+		return Do(std::function<void(arglist...)>([e](...)->void{ throw e; }));
 	};
 
 	NextProcedureWhenClouse<arglist...>& Do(void(*method)(arglist...)) {
