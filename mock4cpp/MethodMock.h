@@ -21,39 +21,6 @@ struct BehaviorMock
 	virtual R play(arglist... args) = 0;
 };
 
-template < typename R, typename... arglist>
-struct ReturnMock : public BehaviorMock<R, arglist...>
-{
-	ReturnMock(R r) : r(r){}
-	virtual R play(arglist... args) override {
-		return r;
-	}
-private:
-	R r;
-};
-
-template < typename R, typename... arglist>
-struct DefaultReturnMock : public ReturnMock<R, arglist...>
-{
-	DefaultReturnMock() : ReturnMock<R,arglist...>(R{}){}
-};
-
-template <typename... arglist>
-struct VoidMock : public BehaviorMock<void,arglist...>
-{
-	virtual void play(arglist... args) override {
-		return;
-	}
-};
-
-template < typename R, typename... arglist>
-struct ThrowMock : public BehaviorMock<R, arglist...>
-{
-	virtual R play(arglist... args) override {
-		throw "error";
-	}
-};
-
 template <typename R, typename... arglist>
 struct DoMock : public BehaviorMock<R, arglist...>
 {

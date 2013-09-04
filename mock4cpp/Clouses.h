@@ -6,11 +6,17 @@ struct NextFunctionWhenClouse {
 	
 	virtual ~NextFunctionWhenClouse() = 0 {};
 
-	virtual NextFunctionWhenClouse<R, arglist...>& ThenReturn(R r) = 0;
+	NextFunctionWhenClouse<R, arglist...>& ThenReturn(R r)  {
+		return ThenDo(std::function<R(arglist...)>([r](...)->R{return r; }));
+	}
 
-	virtual NextFunctionWhenClouse<R, arglist...>& ThenThrow() = 0;
+	NextFunctionWhenClouse<R, arglist...>& ThenThrow() {
+		return ThenDo(std::function<R(arglist...)>([](...)->R{throw "error"; }));
+	}
 
-	virtual NextFunctionWhenClouse<R, arglist...>& ThenDo(R(*method)(arglist...)) = 0;
+	NextFunctionWhenClouse<R, arglist...>& ThenDo(R(*method)(arglist...)) {
+		return ThenDo(std::function<R(arglist...)>(method));
+	}
 
 	virtual NextFunctionWhenClouse<R, arglist...>& ThenDo(std::function<R(arglist...)> method) = 0;
 
@@ -21,12 +27,18 @@ template <typename R, typename... arglist>
 struct FirstFunctionWhenClouse {
 	virtual ~FirstFunctionWhenClouse() = 0 {};
 
-	virtual NextFunctionWhenClouse<R, arglist...>& Return(R r) = 0;
+	NextFunctionWhenClouse<R, arglist...>& Return(R r)   {
+		return Do(std::function<R(arglist...)>([r](...)->R{return r; }));
+	}
 
-	virtual NextFunctionWhenClouse<R, arglist...>& Throw() = 0;
+	NextFunctionWhenClouse<R, arglist...>& Throw()  {
+		return Do(std::function<R(arglist...)>([](...)->R{throw "error"; }));
+	}
 
-	virtual NextFunctionWhenClouse<R, arglist...>& Do(R(*method)(arglist...)) = 0;
-	
+	NextFunctionWhenClouse<R, arglist...>& Do(R(*method)(arglist...)) {
+		return Do(std::function<R(arglist...)>(method));
+	}
+
 	virtual NextFunctionWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) = 0;
 	
 };
@@ -44,11 +56,17 @@ template <typename... arglist>
 struct NextProcedureWhenClouse {
 	virtual ~NextProcedureWhenClouse() = 0 {};
 
-	virtual NextProcedureWhenClouse<arglist...>& ThenReturn() = 0;
+	NextProcedureWhenClouse<arglist...>& ThenReturn() {
+		return ThenDo(std::function<void(arglist...)>([](...)->void{}));
+	}
 
-	virtual NextProcedureWhenClouse<arglist...>& ThenThrow() = 0;
+	NextProcedureWhenClouse<arglist...>& ThenThrow() {
+		return ThenDo(std::function<void(arglist...)>([](...)->void{ throw "error"; }));
+	}
 
-	virtual NextProcedureWhenClouse<arglist...>& ThenDo(void(*method)(arglist...)) = 0;
+	NextProcedureWhenClouse<arglist...>& ThenDo(void(*method)(arglist...))  {
+		return ThenDo(std::function<void(arglist...)>(method));
+	}
 
 	virtual NextProcedureWhenClouse<arglist...>& ThenDo(std::function<void(arglist...)> method) = 0;
 
@@ -60,12 +78,18 @@ struct FirstProcedureWhenClouse {
 
 	virtual ~FirstProcedureWhenClouse() = 0 {};
 
-	virtual NextProcedureWhenClouse<arglist...>& Return() = 0;
+	NextProcedureWhenClouse<arglist...>& Return() {
+		return Do(std::function<void(arglist...)>([](...)->void{}));
+	};
 
-	virtual NextProcedureWhenClouse<arglist...>& Throw() = 0;
+	NextProcedureWhenClouse<arglist...>& Throw() {
+		return Do(std::function<void(arglist...)>([](...)->void{ throw "error"; }));
+	};
 
-	virtual NextProcedureWhenClouse<arglist...>& Do(void(*method)(arglist...)) = 0;
-	
+	NextProcedureWhenClouse<arglist...>& Do(void(*method)(arglist...)) {
+		return Do(std::function<void(arglist...)>(method));
+	}
+
 	virtual NextProcedureWhenClouse<arglist...>& Do(std::function<void(arglist...)> method) = 0;
 };
 
