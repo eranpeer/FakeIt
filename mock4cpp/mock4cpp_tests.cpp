@@ -174,7 +174,7 @@ namespace mock4cpp_tests
 		TEST_METHOD(StubReference){
 			Mock<ReferenceInterface> mock;
 			//mock.Stub(&ReferenceInterface::func);
-			mock.Stub(&ReferenceInterface::proc);
+			//mock.Stub(&ReferenceInterface::proc);
 		}
 
 // 		TEST_METHOD(StubWithoutWhenClouse_ShouldStubAllCallsToDefaultBeaviour)
