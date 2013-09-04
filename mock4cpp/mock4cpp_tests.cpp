@@ -89,15 +89,31 @@ namespace mock4cpp_tests
 			return;
 		}
 
-
-		TEST_METHOD(StubDefaultBehavior)
+		TEST_METHOD(StubDefaultBehaviorWithStaticMethod)
 		{
 			Mock<SomeInterface> mock;
 			mock.Stub(&SomeInterface::func).Do(&defaultFuncBehavior);
 			mock.Stub(&SomeInterface::proc).Do(&defaultProcBehavior);
+			
 			SomeInterface &i = mock.get();
+			
 			Assert::AreEqual(1, i.func(1));
 			i.proc(1);
+		}
+
+		TEST_METHOD(StubDefaultBehaviorWithLambda)
+		{
+			std::function<int(int) > funcStub = [](int a){return a; };
+			std::function<void(int) > procStub = [](int a){throw a; };
+
+			Mock<SomeInterface> mock;
+			mock.Stub(&SomeInterface::func).Do(funcStub);
+			mock.Stub(&SomeInterface::proc).Do(procStub);
+			
+			SomeInterface &i = mock.get();
+			
+			Assert::AreEqual(1, i.func(1));
+			Assert::ExpectException<int>([&i]{ i.proc(1); });
 		}
 
 		TEST_METHOD(StubOnlySpecifiedCallsToAlternateBehavior)
@@ -110,11 +126,34 @@ namespace mock4cpp_tests
 
 			Assert::AreEqual(1,i.func(1));
 			Assert::AreEqual(1, i.func(1));
-			Assert::AreEqual(0, i.func(2));
+			Assert::AreEqual(0, i.func(2),L"default behavior");
 
 			i.proc(1);
 			i.proc(1);
 			i.proc(2);
+		}
+
+		TEST_METHOD(StubOnlySpecifiedCallsToAlternateBehavior_WithExplicitDefaultBehavior)
+		{
+			std::function<int(int) > funcStub = [](int a){return 1; };
+			std::function<void(int) > procStub = [](int a){ throw a; };
+
+			Mock<SomeInterface> mock;
+			mock.Stub(&SomeInterface::func).Do(funcStub);
+			mock.Stub(&SomeInterface::proc).Do(procStub);
+
+			mock.Stub(&SomeInterface::func).When(1).Return(2);
+			mock.Stub(&SomeInterface::proc).When(1).Return();
+
+			SomeInterface &i = mock.get();
+
+			Assert::AreEqual(2, i.func(1));
+			Assert::AreEqual(2, i.func(1));
+			Assert::AreEqual(1, i.func(2), L"default behavior");
+
+			i.proc(1);
+			i.proc(1);
+			Assert::ExpectException<int>([&i]{ i.proc(2); });
 		}
 
 
@@ -158,22 +197,6 @@ namespace mock4cpp_tests
 			Assert::AreEqual(1, i.func(0));
 			Assert::AreEqual(2, i.func(1));
 		}
-
-// 		TEST_METHOD(StubWithWhenClouse_AndWithoutThenClouse_ShouldStubOnlySpecifiedCallsToDefaultBeaviour)
-// 		{
-// 			Mock<SomeInterface> mock;
-// 			mock.Stub(&SomeInterface::func).when(1);
-// 			mock.Stub(&SomeInterface::proc).when(1);
-// 
-// 			SomeInterface &i = mock.get();
-// 
-// 			Assert::IsTrue(0 == i.func(1), L"Default behavior");
-// 			Assert::ExpectException<char*>([&i]{ i.func(2); }, L"should throw exception");
-// 
-// 			// Default behavior of a procedure is to do nothing
-// 			i.proc(1);
-// 			Assert::ExpectException<char*>([&i]{ i.proc(2); }, L"should throw exception");
-// 		}
 
 
 // 		TEST_METHOD(StubWithoutWhenClouse_ShouldStubAllCallsToDefaultBeaviour)

@@ -19,9 +19,7 @@ struct FunctionWhenClouseImpl :
 	~FunctionWhenClouseImpl(){}
 
 	NextFunctionWhenClouse<R, arglist...>& ThenReturn(R r) override {
-		ReturnMock<R,arglist...>* returnMock = new ReturnMock<R,arglist...>(r);
-		invocationMock->append(returnMock);
-		return *this;
+		return ThenDo(std::function<R(arglist...)>([r](...)->R{return r; }));
 	};
 
 	NextFunctionWhenClouse<R, arglist...>& ThenThrow() override {
@@ -30,11 +28,18 @@ struct FunctionWhenClouseImpl :
 		return *this;
 	};
 
-	NextFunctionWhenClouse<R, arglist...>& Return(R r) override {
-		ReturnMock<R, arglist...>* returnMock = new ReturnMock<R, arglist...>(r);
-		invocationMock->clear();
-		invocationMock->append(returnMock);
+	NextFunctionWhenClouse<R, arglist...>& ThenDo(R(*method)(arglist...)) override {
+		return ThenDo(std::function<R(arglist...)>(method));
+	}
+
+	NextFunctionWhenClouse<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
+		auto doMock = new DoMock<R, arglist...>(method);
+		invocationMock->append(doMock);
 		return *this;
+	}
+
+	NextFunctionWhenClouse<R, arglist...>& Return(R r) override {
+		return Do(std::function<R(arglist...)>([r](...)->R{return r; }));
 	};
 
 	NextFunctionWhenClouse<R, arglist...>& Throw() override {
@@ -54,7 +59,6 @@ struct FunctionWhenClouseImpl :
 		invocationMock->append(doMock);
 		return *this;
 	}
-
 	
 private:
 	InvocationMockBase<R, arglist...>* invocationMock;
@@ -78,10 +82,7 @@ struct StubFunctionClouseImpl : public StubFunctionClouse<R, arglist...> {
 	}
 
 	NextFunctionWhenClouse<R, arglist...>& Return(R r)  override  {
-		FunctionWhenClouseImpl<R, arglist...> * whenClouse = new FunctionWhenClouseImpl<R, arglist...>(
-			methodMock->last());
-		whenClouse->Return(r);
-		return *whenClouse;
+		return Do(std::function<R(arglist...)>([r](...)->R{return r; }));
 	}
 
 	NextFunctionWhenClouse<R, arglist...>& Throw()  override {
@@ -122,9 +123,7 @@ struct ProcedureWhenClouseImpl :
 		virtual ~ProcedureWhenClouseImpl() {}
 
 		NextProcedureWhenClouse<arglist...>& ThenReturn() {
-			VoidMock<arglist...>* voidMock = new VoidMock<arglist...>();
-			invocationMock->append(voidMock);
-			return *this;
+			return ThenDo(std::function<void(arglist...)>([](...)->void{}));
 		};
 
 		NextProcedureWhenClouse<arglist...>& ThenThrow() {
@@ -133,11 +132,18 @@ struct ProcedureWhenClouseImpl :
 			return *this;
 		};
 
-		NextProcedureWhenClouse<arglist...>& Return() {
-			VoidMock<arglist...>* voidMock = new VoidMock<arglist...>();
-			invocationMock->clear();
-			invocationMock->append(voidMock);
+		NextProcedureWhenClouse<arglist...>& ThenDo(void(*method)(arglist...)) override {
+			return ThenDo(std::function<void(arglist...)>(method));
+		}
+
+		NextProcedureWhenClouse<arglist...>& ThenDo(std::function<void(arglist...)> method) override {
+			auto doMock = new DoMock<void, arglist...>(method);
+			invocationMock->append(doMock);
 			return *this;
+		}
+
+		NextProcedureWhenClouse<arglist...>& Return() {
+			return Do(std::function<void(arglist...)>([](...)->void{}));
 		};
 
 		NextProcedureWhenClouse<arglist...>& Throw() {

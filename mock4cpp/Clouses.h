@@ -9,6 +9,11 @@ struct NextFunctionWhenClouse {
 	virtual NextFunctionWhenClouse<R, arglist...>& ThenReturn(R r) = 0;
 
 	virtual NextFunctionWhenClouse<R, arglist...>& ThenThrow() = 0;
+
+	virtual NextFunctionWhenClouse<R, arglist...>& ThenDo(R(*method)(arglist...)) = 0;
+
+	virtual NextFunctionWhenClouse<R, arglist...>& ThenDo(std::function<R(arglist...)> method) = 0;
+
 };
 
 
@@ -42,6 +47,11 @@ struct NextProcedureWhenClouse {
 	virtual NextProcedureWhenClouse<arglist...>& ThenReturn() = 0;
 
 	virtual NextProcedureWhenClouse<arglist...>& ThenThrow() = 0;
+
+	virtual NextProcedureWhenClouse<arglist...>& ThenDo(void(*method)(arglist...)) = 0;
+
+	virtual NextProcedureWhenClouse<arglist...>& ThenDo(std::function<void(arglist...)> method) = 0;
+
 };
 
 
