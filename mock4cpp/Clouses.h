@@ -51,7 +51,7 @@ struct StubFunctionClouse : public FirstFunctionWhenClouse<R, arglist...>{
 
 	virtual ~StubFunctionClouse() = 0 {};
 
-	virtual FirstFunctionWhenClouse<R, arglist...>& When(arglist...) = 0;
+	virtual FirstFunctionWhenClouse<R, arglist...>& When(const arglist&...) = 0;
 };
 
 template <typename... arglist>
@@ -102,7 +102,7 @@ struct StubProcedureClouse : public FirstProcedureWhenClouse<arglist...>{
 
 	virtual ~StubProcedureClouse() = 0 {};
 
-	virtual FirstProcedureWhenClouse<arglist...>& When(arglist...) = 0;
+	virtual FirstProcedureWhenClouse<arglist...>& When(const arglist&...) = 0;
 };
 
 #endif // Clouses_h__

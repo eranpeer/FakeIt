@@ -177,6 +177,37 @@ namespace mock4cpp_tests
 			//mock.Stub(&ReferenceInterface::proc);
 		}
 
+		template<typename... arglist>
+		struct ArgsHolder {
+
+			ArgsHolder(const arglist&... args) : tuple(args...){
+			}
+ 			
+			bool match(const arglist& ... args){
+				return tuple == std::tuple<arglist...>(args...);
+			}
+
+		private:
+			std::tuple<arglist...> tuple;
+		};
+
+		void f(const int&& a){
+		}
+
+		void f(const int & a){
+		}
+
+		TEST_METHOD(TestTuple){
+			int a = 1;
+			int& ar = a;
+			int b = 1;
+			int& br = b;
+
+			f(ar);
+ 			ArgsHolder<int, int> ah(ar, a);
+ 			Assert::IsTrue(ah.match(1, 1));
+		}
+
 // 		TEST_METHOD(StubWithoutWhenClouse_ShouldStubAllCallsToDefaultBeaviour)
 // 		{
 // 			Mock<PrimitiveFunctions> mock;

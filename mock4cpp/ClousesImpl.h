@@ -40,7 +40,7 @@ struct StubFunctionClouseImpl : public StubFunctionClouse<R, arglist...> {
 	StubFunctionClouseImpl(MethodMock<R, arglist...>* methodMock) : methodMock(methodMock) {
 	}
 
-	FirstFunctionWhenClouse<R, arglist...>& When(arglist... args) override {
+	FirstFunctionWhenClouse<R, arglist...>& When(const arglist&... args) override {
 		InvocationMockBase<R, arglist...> * invocationMock = methodMock->getInvocationMock(args...);
 		if (invocationMock == nullptr) {
 			invocationMock = new InvocationMock<R, arglist...>(args...);
@@ -98,7 +98,7 @@ struct StubProcedureClouseImpl : public StubProcedureClouse<arglist...> {
 	StubProcedureClouseImpl(MethodMock<void, arglist...>* methodMock) : methodMock(methodMock) {
 	}
 
-	FirstProcedureWhenClouse<arglist...>& When(arglist... args) override {
+	FirstProcedureWhenClouse<arglist...>& When(const arglist&... args) override {
 		
 		InvocationMockBase<void, arglist...> * invocationMock = methodMock->getInvocationMock(args...);
 		if (invocationMock == nullptr) {

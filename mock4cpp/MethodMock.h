@@ -18,14 +18,14 @@ private:
 template < typename R, typename... arglist>
 struct BehaviorMock
 {
-	virtual R play(arglist... args) = 0;
+	virtual R play(const arglist&... args) = 0;
 };
 
 template <typename R, typename... arglist>
 struct DoMock : public BehaviorMock<R, arglist...>
 {
 	DoMock(std::function<R(arglist...)> f):f(f){}
-	virtual R play(arglist... args) override {
+	virtual R play(const arglist&... args) override {
 		return f(args...);
 	}
 private:
@@ -42,16 +42,12 @@ struct InvocationMockBase
 	void clear(){
 		behaviorMocks.clear();
 	}
-
-	virtual bool matchesActual(arglist... args) {
-		return matchesActual(std::tuple<const arglist...>(args...));
-	}
 	
-	virtual bool matchesActual(const std::tuple<const arglist...> &args) = 0;
+	virtual bool matchesActual(const arglist&... args) = 0;
 
-	virtual bool matchesExpected(const std::tuple<const arglist...> &args) = 0;
+	virtual bool matchesExpected(const arglist&... args) = 0;
 
-	R play(arglist... args){
+	R play(const arglist&... args){
 		BehaviorMock<R, arglist...>* behavior = behaviorMocks.front();
 		if (behaviorMocks.size() > 1)
 			behaviorMocks.erase(behaviorMocks.begin());
@@ -65,24 +61,19 @@ private:
 template <typename R, typename... arglist>
 struct InvocationMock : public InvocationMockBase<R, arglist...>
 {
-	InvocationMock(arglist... args) : expectedArguments( args... ), tuple1( 
-		std::tuple<typename std::add_reference<arglist>::type...>(args...)
-		
-		){}
+	InvocationMock(const arglist&... args) : expectedArguments( args... )
+	{}
 
-	virtual bool matchesActual(const std::tuple<const arglist...> &args) override {
-		//std::tuple<typename std::add_reference<arglist>::type...> argsTuple { args };
-		return tuple1 == args;
+	virtual bool matchesActual(const arglist&... args) override {
+		return expectedArguments == std::tuple<arglist...>(args...);
 	}
 
-	virtual bool matchesExpected(const std::tuple<const arglist...> &args) override {
-		return tuple1 == args;
+	virtual bool matchesExpected(const arglist&... args) override {
+		return expectedArguments == std::tuple<arglist...>(args...);
 	}
 
 private:
 	const std::tuple <arglist...> expectedArguments;
-	//std::tuple<typename std::decay<arglist>::type...> tuple;
-	std::tuple<typename std::add_reference<arglist>::type...> tuple1;
 };
 
 template <typename R, typename... arglist>
@@ -92,11 +83,11 @@ struct DefaultInvocationMock : public InvocationMockBase<R, arglist...>
 		append(defaultBehavior);
 	}
 
-	virtual bool matchesActual(const std::tuple<const arglist...>& args) override {
+	virtual bool matchesActual(const arglist&... args) override {
 		return true;
 	}
 
-	virtual bool matchesExpected(const std::tuple<const arglist...>& args) override {
+	virtual bool matchesExpected(const arglist&... args) override {
 		return false;
 	}
 
@@ -131,7 +122,7 @@ struct MethodMock
 		return invocationMocks;
 	}
 
-	R play(const arglist... args){
+	R play(const arglist&... args){
 		for (auto i = invocationMocks.rbegin(); i != invocationMocks.rend(); ++i) {
 			if ((*i)->matchesActual(args...)){
 				return (*i)->play(args...);
@@ -140,10 +131,9 @@ struct MethodMock
 		throw "error";
 	}
 
-	InvocationMockBase<R, arglist...> * getInvocationMock(const arglist... expectedArgs){
-		const std::tuple<arglist...> tuple(expectedArgs...);
+	InvocationMockBase<R, arglist...> * getInvocationMock(const arglist&... expectedArgs){
 		for (auto i = invocationMocks.rbegin(); i != invocationMocks.rend(); ++i) {
-			if ((*i)->matchesExpected(tuple)){
+			if ((*i)->matchesExpected(expectedArgs...)){
 				return (*i);
 			}
 		}
