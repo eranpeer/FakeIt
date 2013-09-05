@@ -84,6 +84,7 @@
   <ItemGroup>
     <ClInclude Include="Clouses.h" />
     <ClInclude Include="ClousesImpl.h" />
+    <ClInclude Include="is_equality_comparable.hpp" />
     <ClInclude Include="MethodMock.h" />
     <ClInclude Include="Mock.h" />
     <ClInclude Include="stdafx.h" />

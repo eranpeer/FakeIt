@@ -10,6 +10,7 @@
 #include "VirtualOffestSelector.h"
 #include "utils.h"
 #include "ClousesImpl.h"
+#include <typeinfo>
 
 struct UnmockedMethodException : public std::exception {
 } unmockedMethodException;
@@ -17,8 +18,6 @@ struct UnmockedMethodException : public std::exception {
 template <typename C>
 struct Mock
 {	
-
-
 
 	Mock() : vtable(10),methodMocks(10),name("Eran"){
 		auto mptr = union_cast<void*>(&Mock::unmocked);
@@ -45,6 +44,7 @@ struct Mock
 	}
 
 private:
+
 	VirtualTable vtable;
 
 	Table methodMocks;

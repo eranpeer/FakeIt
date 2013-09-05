@@ -4,9 +4,10 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
+
 namespace mock4cpp_tests
 {
-	
+
 	TEST_CLASS(MockTest)
 	{
 	public:	
@@ -167,14 +168,22 @@ namespace mock4cpp_tests
 		}
 
 		struct ReferenceInterface {
-			virtual ReferenceInterface& func() = 0;
-			virtual void proc(ReferenceInterface &) = 0;
+			virtual int& func1() = 0;
+			virtual ReferenceInterface& func2() = 0;
+
+			virtual void proc1(int&) = 0;
+			virtual void proc2(ReferenceInterface &) = 0;
+
+			//bool operator == (const ReferenceInterface& other){return this == &other;}
 		};
+
+
+
 		
-		TEST_METHOD(StubReference){
+		TEST_METHOD(StubProcWithReferenceParams){
 			Mock<ReferenceInterface> mock;
-			//mock.Stub(&ReferenceInterface::func);
-			//mock.Stub(&ReferenceInterface::proc);
+			mock.Stub(&ReferenceInterface::proc1);
+			mock.Stub(&ReferenceInterface::proc2);
 		}
 
 		template<typename... arglist>

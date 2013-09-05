@@ -1,6 +1,8 @@
 #ifndef MethodMock_h__
 #define MethodMock_h__
 #include <vector>
+#include "is_equality_comparable.hpp"
+
 
 template <typename... arglist>
 struct ActualInvocation
@@ -62,7 +64,9 @@ template <typename R, typename... arglist>
 struct InvocationMock : public InvocationMockBase<R, arglist...>
 {
 	InvocationMock(const arglist&... args) : expectedArguments( args... )
-	{}
+	{
+		//static_assert(is_equality_comparable<arglist...>::value, "Hi");
+	}
 
 	virtual bool matchesActual(const arglist&... args) override {
 		return expectedArguments == std::tuple<arglist...>(args...);
