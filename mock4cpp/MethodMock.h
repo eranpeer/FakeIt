@@ -36,7 +36,7 @@ private:
 };
 
 template <typename R, typename... arglist>
-struct InvocationMockBase
+struct MethodCallMock
 {
 	void append(BehaviorMock<R, arglist...>* mock){
 		behaviorMocks.push_back(mock);
@@ -67,9 +67,9 @@ private:
 };
 
 template <typename R, typename... arglist>
-struct InvocationMock : public InvocationMockBase<R, arglist...>
+struct SimpleMethodCallMock : public MethodCallMock<R, arglist...>
 {
-	InvocationMock(const arglist&... args) : expectedArguments( args... )
+	SimpleMethodCallMock(const arglist&... args) : expectedArguments( args... )
 	{
 	}
 
@@ -86,9 +86,9 @@ private:
 };
 
 template <typename R, typename... arglist>
-struct DefaultInvocationMock : public InvocationMockBase<R, arglist...>
+struct DefaultMethodCallMockMock : public MethodCallMock<R, arglist...>
 {
-	DefaultInvocationMock(BehaviorMock<R, arglist...> * defaultBehavior) {
+	DefaultMethodCallMockMock(BehaviorMock<R, arglist...> * defaultBehavior) {
 		append(defaultBehavior);
 	}
 
@@ -111,7 +111,7 @@ struct MethodMock
 	virtual unsigned int getOffset() = 0;
 	virtual void * getProxy() = 0;
 
-	void addInvocation(InvocationMockBase<R, arglist...> * mock){
+	void addInvocation(MethodCallMock<R, arglist...> * mock){
 		invocationMocks.push_back(mock);
  	}
 
@@ -119,7 +119,7 @@ struct MethodMock
 		invocationMocks.clear();
 	}
 
-	InvocationMockBase<R, arglist...>* last(){
+	MethodCallMock<R, arglist...>* last(){
 		return invocationMocks.back();
 	}
 
@@ -132,23 +132,23 @@ struct MethodMock
 		throw "error";
 	}
 
-	InvocationMockBase<R, arglist...> * stubMethodCall(const arglist&... args){
-		InvocationMockBase<R, arglist...> * invocationMock = getInvocationMock(args...);
+	MethodCallMock<R, arglist...> * stubMethodCall(const arglist&... args){
+		MethodCallMock<R, arglist...> * invocationMock = getInvocationMock(args...);
 		if (invocationMock == nullptr) {
-			invocationMock = new InvocationMock<R, arglist...>(args...);
+			invocationMock = new SimpleMethodCallMock<R, arglist...>(args...);
 			addInvocation(invocationMock);
 		}
 		return invocationMock;
 	}
 
 private:
-	std::vector<InvocationMockBase<R, arglist...>*> invocationMocks;
+	std::vector<MethodCallMock<R, arglist...>*> invocationMocks;
 
-	std::vector<InvocationMockBase<R, arglist...>*>& getInvocationMocks(){
+	std::vector<MethodCallMock<R, arglist...>*>& getInvocationMocks(){
 		return invocationMocks;
 	}
 
-	InvocationMockBase<R, arglist...> * getInvocationMock(const arglist&... expectedArgs){
+	MethodCallMock<R, arglist...> * getInvocationMock(const arglist&... expectedArgs){
 		for (auto i = invocationMocks.rbegin(); i != invocationMocks.rend(); ++i) {
 			if ((*i)->matchesExpected(expectedArgs...)){
 				return (*i);

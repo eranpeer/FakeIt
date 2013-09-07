@@ -11,7 +11,7 @@ struct FunctionWhenClouseImpl :
 	public NextFunctionWhenClouse<R, arglist...>
 {
 
-	FunctionWhenClouseImpl(InvocationMockBase<R, arglist...> * invocationMock) :
+	FunctionWhenClouseImpl(MethodCallMock<R, arglist...> * invocationMock) :
 		invocationMock(invocationMock)
 	{
 		ThenReturn(R{});
@@ -31,7 +31,7 @@ struct FunctionWhenClouseImpl :
 	}
 	
 private:
-	InvocationMockBase<R, arglist...>* invocationMock;
+	MethodCallMock<R, arglist...>* invocationMock;
 };
 
 template <typename R, typename... arglist>
@@ -40,7 +40,7 @@ struct StubFunctionClouseImpl : public StubFunctionClouse<R, arglist...> {
 	}
 
 	FirstFunctionWhenClouse<R, arglist...>& When(const arglist&... args) override {
-		InvocationMockBase<R, arglist...> * invocationMock = methodMock->stubMethodCall(args...);
+		MethodCallMock<R, arglist...> * invocationMock = methodMock->stubMethodCall(args...);
 		FunctionWhenClouseImpl<R, arglist...> * whenClouse = new FunctionWhenClouseImpl<R, arglist...>
 			(invocationMock);
 		return *whenClouse;
@@ -62,7 +62,7 @@ struct ProcedureWhenClouseImpl :
 	public FirstProcedureWhenClouse<arglist...>,
 	public NextProcedureWhenClouse<arglist...>{
 
-		ProcedureWhenClouseImpl(InvocationMockBase<void, arglist...>* invocationMock) :
+		ProcedureWhenClouseImpl(MethodCallMock<void, arglist...>* invocationMock) :
 			invocationMock(invocationMock)
 		{
 			ThenReturn();
@@ -82,7 +82,7 @@ struct ProcedureWhenClouseImpl :
 		}
 		
 private:
-	InvocationMockBase<void, arglist...>* invocationMock;
+	MethodCallMock<void, arglist...>* invocationMock;
 };
 
 template <typename... arglist>
@@ -91,7 +91,7 @@ struct StubProcedureClouseImpl : public StubProcedureClouse<arglist...> {
 	}
 
 	FirstProcedureWhenClouse<arglist...>& When(const arglist&... args) override {
-		InvocationMockBase<void, arglist...> * invocationMock = methodMock->stubMethodCall(args...);
+		MethodCallMock<void, arglist...> * invocationMock = methodMock->stubMethodCall(args...);
 		ProcedureWhenClouseImpl<arglist...> * whenClouse = new ProcedureWhenClouseImpl<arglist...>(invocationMock);
 		return *whenClouse;
 	};
