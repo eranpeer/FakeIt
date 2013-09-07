@@ -31,10 +31,10 @@ struct MockObject
 
 	template <typename R, typename... arglist>
 	MethodMock<R, arglist...>* stubMethod(R(C::*vMethod)(arglist...), std::function<R(arglist...)> def){
-		auto methodProxy = MethodMockBase<C, R, arglist...>::createMethodProxy(vMethod);
-		auto methodMock = getMethodMock<MethodMockBase<C, R, arglist...>*>(methodProxy->getOffset());
+		auto methodProxy = InnerMethodMock<C, R, arglist...>::createMethodProxy(vMethod);
+		auto methodMock = getMethodMock<InnerMethodMock<C, R, arglist...>*>(methodProxy->getOffset());
 		if (methodMock == nullptr) {
-		 	methodMock = new MethodMockBase<C, R, arglist...>(methodProxy, new DoMock<R, arglist...>(def));
+		 	methodMock = new InnerMethodMock<C, R, arglist...>(methodProxy, new DoMock<R, arglist...>(def));
 		 	bind(methodMock);
 		}
 		return methodMock;
@@ -52,7 +52,7 @@ private:
 	};
 
 	template <typename C, typename R, typename... arglist>
-	struct MethodMockBase : public MethodMock <R, arglist...>
+	struct InnerMethodMock : public MethodMock <R, arglist...>
 	{
 
 		virtual unsigned int getOffset() override {
@@ -64,12 +64,12 @@ private:
 		}
 
 		static MethodProxy<R, arglist...> * createMethodProxy(R(C::*vMethod)(arglist...)){
-			VirtualOffsetSelector<MethodMockBase<C, R, arglist...>::VirtualMethodProxy> c;
+			VirtualOffsetSelector<InnerMethodMock<C, R, arglist...>::VirtualMethodProxy> c;
 			void * obj = c.create(vMethod);
 			return reinterpret_cast<MethodProxy<R, arglist...>*>(obj);
 		}
 
-		MethodMockBase(MethodProxy<R, arglist...> * methodProxy, BehaviorMock<R, arglist...> * defaultBehaviour) :
+		InnerMethodMock(MethodProxy<R, arglist...> * methodProxy, BehaviorMock<R, arglist...> * defaultBehaviour) :
 			methodProxy(methodProxy)
 		{
 			addInvocation(new DefaultInvocationMock<R, arglist...>(defaultBehaviour));
@@ -88,7 +88,7 @@ private:
 		private:
 			R methodProxy(arglist... args){
 				MockObject<C> * m = union_cast<MockObject<C> *>(this);
-				MethodMock<R, arglist...> * methodMock = m->getMethodProxy<MethodMockBase<C, R, arglist...> *>(OFFSET);
+				MethodMock<R, arglist...> * methodMock = m->getMethodProxy<InnerMethodMock<C, R, arglist...> *>(OFFSET);
 				return methodMock->handleMethodInvocation(args...);
 			}
 		};
