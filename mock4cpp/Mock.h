@@ -61,11 +61,11 @@ private:
 	struct MethodMockBase : public MethodMock <R, arglist...>
 	{
 
-		virtual unsigned int getOffset() {
+		virtual unsigned int getOffset() override {
 			return methodProxy->getOffset();
 		}
 
-		void *getProxy(){
+		void *getProxy() override {
 			return methodProxy->getProxy();
 		}
 
@@ -173,6 +173,7 @@ private:
 	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...), void(*defaultMethod)(arglist...)){
 		return Stub(vMethod, std::function <void(arglist...)>(defaultMethod));
 	}
+
 
 };
 

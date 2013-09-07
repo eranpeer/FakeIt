@@ -143,7 +143,7 @@ namespace mock4cpp_tests
 			i.proc(0);
 		}
 
-		TEST_METHOD(StubReturnValue)
+		TEST_METHOD(RestubDefaultReturnValue)
 		{
 			Mock<SomeInterface> mock;
 			mock.Stub(&SomeInterface::func).Return(1);
@@ -154,6 +154,18 @@ namespace mock4cpp_tests
 			Assert::AreEqual(2, i.func(10));
 			Assert::AreEqual(2, i.func(11));
 		}
+
+		TEST_METHOD(RestubReturnValue)
+		{
+			Mock<SomeInterface> mock;
+			mock.Stub(&SomeInterface::func).When(1).Return(1);
+			mock.Stub(&SomeInterface::func).When(1).Return(2);
+
+			SomeInterface &i = mock.get();
+
+			Assert::AreEqual(2, i.func(1));
+		}
+
 
 		TEST_METHOD(StubAllButOne)
 		{
@@ -176,14 +188,13 @@ namespace mock4cpp_tests
 
 			//bool operator == (const ReferenceInterface& other){return this == &other;}
 		};
-
-
-
 		
 		TEST_METHOD(StubProcWithReferenceParams){
 			Mock<ReferenceInterface> mock;
 			mock.Stub(&ReferenceInterface::proc1);
-			mock.Stub(&ReferenceInterface::proc2);
+			//int thread_local a;
+			//when(mock().proc(1)).Return(1);
+			//mock.Stub(&ReferenceInterface::proc2);
 		}
 
 		template<typename... arglist>

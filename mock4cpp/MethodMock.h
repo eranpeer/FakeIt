@@ -65,7 +65,6 @@ struct InvocationMock : public InvocationMockBase<R, arglist...>
 {
 	InvocationMock(const arglist&... args) : expectedArguments( args... )
 	{
-		//static_assert(is_equality_comparable<arglist...>::value, "Hi");
 	}
 
 	virtual bool matchesActual(const arglist&... args) override {
@@ -122,10 +121,6 @@ struct MethodMock
 		return invocationMocks.back();
 	}
 
-	std::vector<InvocationMockBase<R, arglist...>*>& getInvocationMocks(){
-		return invocationMocks;
-	}
-
 	R play(const arglist&... args){
 		for (auto i = invocationMocks.rbegin(); i != invocationMocks.rend(); ++i) {
 			if ((*i)->matchesActual(args...)){
@@ -144,8 +139,21 @@ struct MethodMock
 		return nullptr;
 	}
 
+	InvocationMockBase<R, arglist...> * append(const arglist&... args){
+		InvocationMockBase<R, arglist...> * invocationMock = getInvocationMock(args...);
+		if (invocationMock == nullptr) {
+			invocationMock = new InvocationMock<R, arglist...>(args...);
+			append(invocationMock);
+		}
+		return invocationMock;
+	}
+
 private:
 	std::vector<InvocationMockBase<R, arglist...>*> invocationMocks;
+
+	std::vector<InvocationMockBase<R, arglist...>*>& getInvocationMocks(){
+		return invocationMocks;
+	}
 };
 
 #endif // MethodMock_h__
