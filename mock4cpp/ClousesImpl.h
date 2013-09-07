@@ -1,8 +1,9 @@
 #ifndef ClousesImpl_h__
 #define ClousesImpl_h__
 
-#include "utils.h"
+#include <functional>
 #include "MethodMock.h"
+#include "Clouses.h"
 
 template <typename R, typename... arglist>
 struct FunctionWhenClouseImpl :

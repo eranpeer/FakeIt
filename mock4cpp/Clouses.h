@@ -2,6 +2,7 @@
 #define Clouses_h__
 
 #include <type_traits>
+#include <functional>
 
 template <typename R, typename... arglist>
 struct NextFunctionWhenClouse {

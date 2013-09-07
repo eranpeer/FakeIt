@@ -1,8 +1,9 @@
 #ifndef MethodMock_h__
 #define MethodMock_h__
 #include <vector>
-#include "is_equality_comparable.hpp"
+#include <functional>
 
+#include "is_equality_comparable.hpp"
 
 template <typename... arglist>
 struct ActualInvocation

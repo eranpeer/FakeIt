@@ -1,4 +1,3 @@
-
 #ifndef is_equality_comparable_h__
 #define is_equality_comparable_h__
 
