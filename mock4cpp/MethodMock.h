@@ -118,10 +118,6 @@ struct MethodMock
 		invocationMocks.clear();
 	}
 
-	InvocationMockBase<R, arglist...>* first(){
-		return invocationMocks.front();
-	}
-
 	InvocationMockBase<R, arglist...>* last(){
 		return invocationMocks.back();
 	}
