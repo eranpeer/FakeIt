@@ -30,29 +30,20 @@ struct MockObject
 	}
 
 	template <typename R, typename... arglist>
-	void bind(MethodMock<R, arglist...> * methodMock)
-	{
-		auto offset = methodMock->getOffset();
-		vtable.setMethod(offset, methodMock->getProxy());
-		methodMocks.set(offset, methodMock);
+	MethodMock<R, arglist...>* stubMethod(R(C::*vMethod)(arglist...), std::function<R(arglist...)> def){
+		auto methodProxy = MethodMockBase<C, R, arglist...>::createMethodProxy(vMethod);
+		auto methodMock = getMethodMock<MethodMockBase<C, R, arglist...>*>(methodProxy->getOffset());
+		if (methodMock == nullptr) {
+		 	methodMock = new MethodMockBase<C, R, arglist...>(methodProxy, new DoMock<R, arglist...>(def));
+		 	bind(methodMock);
+		}
+		return methodMock;
 	}
 
-	template <typename T>
-	T getMethodMock(unsigned int offset){
-		if (!isMocked(offset))
-			return nullptr;
-		return methodMocks.get<T>(offset);
-	}
+private:
 
-	template <typename T>
-	T getMethodProxy(unsigned int offset){
-		return methodMocks.get<T>(offset);
-	}
-
-	bool isMocked(unsigned int index){
-		return vtable.getMethod(index) != union_cast<void*>(&MockObject<C>::unmocked);
-	}
-
+	VirtualTable vtable;
+	Table methodMocks;
 
 	template <typename R, typename... arglist>
 	struct MethodProxy {
@@ -103,21 +94,6 @@ struct MockObject
 		};
 	};
 
-	template <typename R, typename... arglist>
-	MethodMockBase<C, R, arglist...>* stubMethod(R(C::*vMethod)(arglist...), std::function<R(arglist...)> def){
-		auto methodProxy = MethodMockBase<C, R, arglist...>::createMethodProxy(vMethod);
-		auto methodMock = getMethodMock<MethodMockBase<C, R, arglist...>*>(methodProxy->getOffset());
-		if (methodMock == nullptr) {
-		 	methodMock = new MethodMockBase<C, R, arglist...>(methodProxy, new DoMock<R, arglist...>(def));
-		 	bind(methodMock);
-		}
-		return methodMock;
-	}
-
-private:
-
-	VirtualTable vtable;
-	Table methodMocks;
 
 
 	void unmocked(){
@@ -132,6 +108,30 @@ private:
 
 	template<typename... arglist>
 	static void defualtProc(arglist...){
+	}
+
+	template <typename T>
+	T getMethodProxy(unsigned int offset){
+		return methodMocks.get<T>(offset);
+	}
+
+	bool isMocked(unsigned int index){
+		return vtable.getMethod(index) != union_cast<void*>(&MockObject<C>::unmocked);
+	}
+
+	template <typename R, typename... arglist>
+	void bind(MethodMock<R, arglist...> * methodMock)
+	{
+		auto offset = methodMock->getOffset();
+		vtable.setMethod(offset, methodMock->getProxy());
+		methodMocks.set(offset, methodMock);
+	}
+
+	template <typename T>
+	T getMethodMock(unsigned int offset){
+		if (!isMocked(offset))
+			return nullptr;
+		return methodMocks.get<T>(offset);
 	}
 
 };

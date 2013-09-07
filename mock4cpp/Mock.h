@@ -48,7 +48,6 @@ private:
 		auto stubClouse = new StubFunctionClouseImpl<R, arglist...>(methodMock);
 		return *stubClouse;
 	}
-
 	
 	template <typename R, typename... arglist>
 	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...), R(*defaultMethod)(arglist...)){
