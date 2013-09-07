@@ -19,15 +19,13 @@ struct FunctionWhenClouseImpl :
 	~FunctionWhenClouseImpl(){}
 
 	NextFunctionWhenClouse<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
-		auto doMock = new DoMock<R, arglist...>(method);
-		invocationMock->append(doMock);
+		invocationMock->appendDo(method);
 		return *this;
 	}
 
 	NextFunctionWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-		auto doMock = new DoMock<R, arglist...>(method);
 		invocationMock->clear();
-		invocationMock->append(doMock);
+		invocationMock->appendDo(method);
 		return *this;
 	}
 	
@@ -72,15 +70,13 @@ struct ProcedureWhenClouseImpl :
 		virtual ~ProcedureWhenClouseImpl() {}
 
 		NextProcedureWhenClouse<arglist...>& ThenDo(std::function<void(arglist...)> method) override {
-			auto doMock = new DoMock<void, arglist...>(method);
-			invocationMock->append(doMock);
+			invocationMock->appendDo(method);
 			return *this;
 		}
 
 		NextProcedureWhenClouse<arglist...>& Do(std::function<void(arglist...)> method) override {
-			auto doMock = new DoMock<void, arglist...>(method);
 			invocationMock->clear();
-			invocationMock->append(doMock);
+			invocationMock->appendDo(method);
 			return *this;
 		}
 		

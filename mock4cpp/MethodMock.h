@@ -41,6 +41,11 @@ struct InvocationMockBase
 		behaviorMocks.push_back(mock);
 	}
 
+	void appendDo(std::function<R(arglist...)> method) {
+		auto doMock = new DoMock<R, arglist...>(method);
+		append(doMock);
+	}
+
 	void clear(){
 		behaviorMocks.clear();
 	}
