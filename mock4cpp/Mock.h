@@ -110,12 +110,12 @@ private:
 		return methodMocks.get<T>(offset);
 	}
 
-	template <typename MethodMockType>
-	void prepare(MethodMockType* methodProxy)
+	template <typename R, typename... arglist>
+	void prepare(MethodMock<R,arglist...> * methodMock)
 	{
-		auto offset = methodProxy->getOffset();
-		methodMocks.set(offset, methodProxy);
-		vtable.setMethod(methodProxy->getOffset(), methodProxy->getProxy());
+		auto offset = methodMock->getOffset();
+		vtable.setMethod(offset, methodMock->getProxy());
+		methodMocks.set(offset, methodMock);
 	}
 
 	bool isMocked(unsigned int index){
