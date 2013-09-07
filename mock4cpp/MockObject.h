@@ -34,7 +34,7 @@ struct MockObject
 		auto methodProxy = InnerMethodMock<C, R, arglist...>::createMethodProxy(vMethod);
 		auto methodMock = getMethodMock<MethodMock<R, arglist...>*>(methodProxy->getOffset());
 		if (methodMock == nullptr) {
-		 	methodMock = new InnerMethodMock<C, R, arglist...>(methodProxy, new DoMock<R, arglist...>(initialMethodBehavior));
+		 	methodMock = new InnerMethodMock<C, R, arglist...>(methodProxy, initialMethodBehavior);
 		 	bind(methodMock);
 		}
 		return methodMock;
@@ -63,10 +63,10 @@ private:
 			return reinterpret_cast<MethodProxy<R, arglist...>*>(obj);
 		}
 
-		InnerMethodMock(MethodProxy<R, arglist...> * methodProxy, BehaviorMock<R, arglist...> * defaultBehaviour) :
+		InnerMethodMock(MethodProxy<R, arglist...> * methodProxy, std::function<R(arglist...)> initialMethodBehavior) :
 			methodProxy(methodProxy)
-		{
-			addMethodCall(new DefaultMethodCallMockMock<R, arglist...>(defaultBehaviour));
+		{	
+			addMethodCall(new DefaultMethodCallMockMock<R, arglist...>(initialMethodBehavior));
 		}
 
 	private:

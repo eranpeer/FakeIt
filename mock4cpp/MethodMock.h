@@ -88,8 +88,8 @@ private:
 template <typename R, typename... arglist>
 struct DefaultMethodCallMockMock : public MethodCallMock<R, arglist...>
 {
-	DefaultMethodCallMockMock(BehaviorMock<R, arglist...> * defaultBehavior) {
-		append(defaultBehavior);
+	DefaultMethodCallMockMock(std::function<R(arglist...)> methodBehavior) {
+		appendDo(methodBehavior);
 	}
 
 	virtual bool matchesActual(const arglist&... args) override {
