@@ -45,9 +45,8 @@ struct Mock
 private:
 
 	VirtualTable vtable;
-
+	
 	Table methodMocks;
-	VirtualMethodOffsetLocator offsetLocator;
 	std::string name;
 
 	template <typename R, typename... arglist>
@@ -89,7 +88,8 @@ private:
 			unsigned int getOffset() override { return OFFSET; }
 
 			void * getProxy() override { return union_cast<void *>(&VirtualMethodProxy::methodProxy); }
-
+		
+		private:
 			R methodProxy(arglist... args){
 				Mock<C> * m = union_cast<Mock<C> *>(this);
 				MethodMock<R, arglist...> * methodMock = m->getMethodProxy<MethodMockBase<C, R, arglist...> *>(OFFSET);
@@ -111,12 +111,11 @@ private:
 	}
 
 	template <typename MethodMockType>
-	MethodMockType& prepare(MethodMockType* methodMock)
+	void prepare(MethodMockType* methodProxy)
 	{
-		auto offset = methodMock->getOffset();
-		methodMocks.set(offset, methodMock);
-		vtable.setMethod(methodMock->getOffset(), methodMock->getProxy());
-		return *methodMock;
+		auto offset = methodProxy->getOffset();
+		methodMocks.set(offset, methodProxy);
+		vtable.setMethod(methodProxy->getOffset(), methodProxy->getProxy());
 	}
 
 	bool isMocked(unsigned int index){
