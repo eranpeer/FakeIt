@@ -10,7 +10,6 @@
 #include "VirtualOffestSelector.h"
 #include "utils.h"
 #include "ClousesImpl.h"
-#include <typeinfo>
 
 struct UnmockedMethodException : public std::exception {
 } unmockedMethodException;
