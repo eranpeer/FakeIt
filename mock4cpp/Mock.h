@@ -43,25 +43,25 @@ private:
 	}
 
 	template <typename R, typename... arglist>
-	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...), std::function<R(arglist...)> def){		
-		auto methodMock = mo.stubMethod(vMethod, def);
+	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...), std::function<R(arglist...)> initialMethodBehavior){		
+		auto methodMock = mo.stubMethod(vMethod, initialMethodBehavior);
 		auto stubClouse = new StubFunctionClouseImpl<R, arglist...>(methodMock);
 		return *stubClouse;
 	}
 	
 	template <typename R, typename... arglist>
-	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...), R(*defaultMethod)(arglist...)){
-		return Stub(vMethod, std::function <R(arglist...)>(defaultMethod));
+	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...), R(*initialMethodBehavior)(arglist...)){
+		return Stub(vMethod, std::function <R(arglist...)>(initialMethodBehavior));
 	}
 
 	template <typename... arglist>
-	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...), void(*defaultMethod)(arglist...)){
-		return Stub(vMethod, std::function <void(arglist...)>(defaultMethod));
+	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...), void(*initialMethodBehavior)(arglist...)){
+		return Stub(vMethod, std::function <void(arglist...)>(initialMethodBehavior));
 	}
 
 	template <typename... arglist>
-	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...), std::function<void(arglist...)> def){
-		auto methodMock = mo.stubMethod(vMethod, def);
+	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...), std::function<void(arglist...)> initialMethodBehavior){
+		auto methodMock = mo.stubMethod(vMethod, initialMethodBehavior);
 		auto stubClouse = new StubProcedureClouseImpl<arglist...>(methodMock);
 		return *stubClouse;
 	}

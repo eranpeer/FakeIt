@@ -30,11 +30,11 @@ struct MockObject
 	}
 
 	template <typename R, typename... arglist>
-	MethodMock<R, arglist...>* stubMethod(R(C::*vMethod)(arglist...), std::function<R(arglist...)> def){
+	MethodMock<R, arglist...>* stubMethod(R(C::*vMethod)(arglist...), std::function<R(arglist...)> initialMethodBehavior){
 		auto methodProxy = InnerMethodMock<C, R, arglist...>::createMethodProxy(vMethod);
-		auto methodMock = getMethodMock<InnerMethodMock<C, R, arglist...>*>(methodProxy->getOffset());
+		auto methodMock = getMethodMock<MethodMock<R, arglist...>*>(methodProxy->getOffset());
 		if (methodMock == nullptr) {
-		 	methodMock = new InnerMethodMock<C, R, arglist...>(methodProxy, new DoMock<R, arglist...>(def));
+		 	methodMock = new InnerMethodMock<C, R, arglist...>(methodProxy, new DoMock<R, arglist...>(initialMethodBehavior));
 		 	bind(methodMock);
 		}
 		return methodMock;
