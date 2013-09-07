@@ -78,7 +78,7 @@ private:
 		MethodMockBase(MethodProxy<R, arglist...> * methodProxy, BehaviorMock<R, arglist...> * defaultBehaviour) :
 			methodProxy(methodProxy)
 		{
-			append(new DefaultInvocationMock<R, arglist...>(defaultBehaviour));
+			addInvocation(new DefaultInvocationMock<R, arglist...>(defaultBehaviour));
 		}
 
 	private:

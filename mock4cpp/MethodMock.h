@@ -110,7 +110,7 @@ struct MethodMock
 	virtual unsigned int getOffset() = 0;
 	virtual void * getProxy() = 0;
 
-	void append(InvocationMockBase<R, arglist...> * mock){
+	void addInvocation(InvocationMockBase<R, arglist...> * mock){
 		invocationMocks.push_back(mock);
  	}
 
@@ -135,20 +135,11 @@ struct MethodMock
 		throw "error";
 	}
 
-	InvocationMockBase<R, arglist...> * getInvocationMock(const arglist&... expectedArgs){
-		for (auto i = invocationMocks.rbegin(); i != invocationMocks.rend(); ++i) {
-			if ((*i)->matchesExpected(expectedArgs...)){
-				return (*i);
-			}
-		}
-		return nullptr;
-	}
-
-	InvocationMockBase<R, arglist...> * append(const arglist&... args){
+	InvocationMockBase<R, arglist...> * record(const arglist&... args){
 		InvocationMockBase<R, arglist...> * invocationMock = getInvocationMock(args...);
 		if (invocationMock == nullptr) {
 			invocationMock = new InvocationMock<R, arglist...>(args...);
-			append(invocationMock);
+			addInvocation(invocationMock);
 		}
 		return invocationMock;
 	}
@@ -159,6 +150,16 @@ private:
 	std::vector<InvocationMockBase<R, arglist...>*>& getInvocationMocks(){
 		return invocationMocks;
 	}
+
+	InvocationMockBase<R, arglist...> * getInvocationMock(const arglist&... expectedArgs){
+		for (auto i = invocationMocks.rbegin(); i != invocationMocks.rend(); ++i) {
+			if ((*i)->matchesExpected(expectedArgs...)){
+				return (*i);
+			}
+		}
+		return nullptr;
+	}
+
 };
 
 #endif // MethodMock_h__

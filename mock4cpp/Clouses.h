@@ -1,6 +1,8 @@
 #ifndef Clouses_h__
 #define Clouses_h__
 
+#include <type_traits>
+
 template <typename R, typename... arglist>
 struct NextFunctionWhenClouse {
 	
