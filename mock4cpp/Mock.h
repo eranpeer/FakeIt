@@ -161,11 +161,11 @@ private:
 		auto methodProxy = MethodMockBase<C, void, arglist...>::createMethodProxy(vMethod);
 
 		auto methodMock = getMethodMock<MethodMockBase<C, void, arglist...>*>(methodProxy->getOffset());
-		if (methodMock == nullptr)
+		if (methodMock == nullptr) {
 			methodMock = new MethodMockBase<C, void, arglist...>(methodProxy, new DoMock<void, arglist...>(def));
-
+			prepare(methodMock);
+		}
 		auto stubClouse = new StubProcedureClouseImpl<arglist...>(methodMock);
-		prepare(methodMock);
 		return *stubClouse;
 	}
 
@@ -173,7 +173,6 @@ private:
 	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...), void(*defaultMethod)(arglist...)){
 		return Stub(vMethod, std::function <void(arglist...)>(defaultMethod));
 	}
-
 
 };
 
