@@ -131,7 +131,7 @@ struct MethodMock
 		throw "error";
 	}
 
-	InvocationMockBase<R, arglist...> * record(const arglist&... args){
+	InvocationMockBase<R, arglist...> * stubMethodCall(const arglist&... args){
 		InvocationMockBase<R, arglist...> * invocationMock = getInvocationMock(args...);
 		if (invocationMock == nullptr) {
 			invocationMock = new InvocationMock<R, arglist...>(args...);
