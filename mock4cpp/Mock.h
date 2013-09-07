@@ -18,7 +18,7 @@ template <typename C>
 struct Mock
 {	
 
-	Mock() : vtable(10),methodMocks(10),name("Eran"){
+	Mock() : vtable(10),methodMocks(10){
 		auto mptr = union_cast<void*>(&Mock::unmocked);
 		for (unsigned int i = 0; i < vtable.getSize(); i++)
 			vtable.setMethod(i, mptr);
@@ -45,9 +45,7 @@ struct Mock
 private:
 
 	VirtualTable vtable;
-	
 	Table methodMocks;
-	std::string name;
 
 	template <typename R, typename... arglist>
 	struct MethodProxy {
@@ -92,8 +90,8 @@ private:
 		private:
 			R methodProxy(arglist... args){
 				Mock<C> * m = union_cast<Mock<C> *>(this);
-				MethodMock<R, arglist...> * methodMock = m->getMethodProxy<MethodMockBase<C, R, arglist...> *>(OFFSET);
-				return methodMock->play(args...);
+ 				MethodMock<R, arglist...> * methodMock = m->getMethodProxy<MethodMockBase<C, R, arglist...> *>(OFFSET);
+ 				return methodMock->handleMethodInvocation(args...);
 			}
 		};
 	};
@@ -111,7 +109,7 @@ private:
 	}
 
 	template <typename R, typename... arglist>
-	void prepare(MethodMock<R,arglist...> * methodMock)
+	void bind(MethodMock<R,arglist...> * methodMock)
 	{
 		auto offset = methodMock->getOffset();
 		vtable.setMethod(offset, methodMock->getProxy());
@@ -142,7 +140,7 @@ private:
 		auto methodMock = getMethodMock<MethodMockBase<C, R, arglist...>*>(methodProxy->getOffset());
 		if (methodMock == nullptr) {
 			methodMock = new MethodMockBase<C, R, arglist...>(methodProxy, new DoMock<R, arglist...>(def));
-			prepare(methodMock);
+			bind(methodMock);
 		}
 		return methodMock;
 	}

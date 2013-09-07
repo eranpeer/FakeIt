@@ -20,14 +20,14 @@ private:
 template < typename R, typename... arglist>
 struct BehaviorMock
 {
-	virtual R play(const arglist&... args) = 0;
+	virtual R invoke(const arglist&... args) = 0;
 };
 
 template <typename R, typename... arglist>
 struct DoMock : public BehaviorMock<R, arglist...>
 {
 	DoMock(std::function<R(arglist...)> f):f(f){}
-	virtual R play(const arglist&... args) override {
+	virtual R invoke(const arglist&... args) override {
 		return f(args...);
 	}
 private:
@@ -54,11 +54,11 @@ struct InvocationMockBase
 
 	virtual bool matchesExpected(const arglist&... args) = 0;
 
-	R play(const arglist&... args){
+	R handleMethodInvocation(const arglist&... args){
 		BehaviorMock<R, arglist...>* behavior = behaviorMocks.front();
 		if (behaviorMocks.size() > 1)
 			behaviorMocks.erase(behaviorMocks.begin());
-		return behavior->play(args...);
+		return behavior->invoke(args...);
 	}
 
 private:
@@ -122,10 +122,10 @@ struct MethodMock
 		return invocationMocks.back();
 	}
 
-	R play(const arglist&... args){
+	R handleMethodInvocation(const arglist&... args){
 		for (auto i = invocationMocks.rbegin(); i != invocationMocks.rend(); ++i) {
 			if ((*i)->matchesActual(args...)){
-				return (*i)->play(args...);
+				return (*i)->handleMethodInvocation(args...);
 			}
 		}
 		throw "error";
