@@ -45,12 +45,6 @@ private:
 	VirtualTable vtable;
 	Table methodMocks;
 
-	template <typename R, typename... arglist>
-	struct MethodProxy {
-		virtual unsigned int getOffset() = 0;
-		virtual void * getProxy() = 0;
-	};
-
 	template <typename C, typename R, typename... arglist>
 	struct InnerMethodMock : public MethodMock <R, arglist...>
 	{
@@ -93,8 +87,6 @@ private:
 			}
 		};
 	};
-
-
 
 	void unmocked(){
 		MockObject * m = this; // this should work
