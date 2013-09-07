@@ -55,17 +55,16 @@ private:
 	}
 
 	template <typename... arglist>
+	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...), void(*defaultMethod)(arglist...)){
+		return Stub(vMethod, std::function <void(arglist...)>(defaultMethod));
+	}
+
+	template <typename... arglist>
 	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...), std::function<void(arglist...)> def){
 		auto methodMock = mo.stubMethod(vMethod, def);
 		auto stubClouse = new StubProcedureClouseImpl<arglist...>(methodMock);
 		return *stubClouse;
 	}
-
-	template <typename... arglist>
-	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...), void(*defaultMethod)(arglist...)){
-		return Stub(vMethod, std::function <void(arglist...)>(defaultMethod));
-	}
-
 };
 
 #endif // Mock_h__

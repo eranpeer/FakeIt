@@ -72,7 +72,7 @@ private:
 		InnerMethodMock(MethodProxy<R, arglist...> * methodProxy, BehaviorMock<R, arglist...> * defaultBehaviour) :
 			methodProxy(methodProxy)
 		{
-			addInvocation(new DefaultMethodCallMockMock<R, arglist...>(defaultBehaviour));
+			addMethodCall(new DefaultMethodCallMockMock<R, arglist...>(defaultBehaviour));
 		}
 
 	private:
@@ -88,7 +88,7 @@ private:
 		private:
 			R methodProxy(arglist... args){
 				MockObject<C> * mo = union_cast<MockObject<C> *>(this);
-				MethodMock<R, arglist...> * methodMock = mo->getMethodProxy<InnerMethodMock<C, R, arglist...> *>(OFFSET);
+				MethodInvocationHandler<R, arglist...> * methodMock = mo->getMethodProxy<MethodInvocationHandler<R, arglist...> *>(OFFSET);
 				return methodMock->handleMethodInvocation(args...);
 			}
 		};

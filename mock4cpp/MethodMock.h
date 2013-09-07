@@ -103,15 +103,22 @@ struct DefaultMethodCallMockMock : public MethodCallMock<R, arglist...>
 };
 
 template <typename R, typename... arglist>
-struct MethodMock
+struct MethodInvocationHandler
+{
+	virtual ~MethodInvocationHandler() = 0 {};
+	virtual R handleMethodInvocation(const arglist&... args) = 0;
+};
+
+template <typename R, typename... arglist>
+struct MethodMock : public MethodInvocationHandler <R, arglist...>
 {
 
-	~MethodMock(){}
+	virtual ~MethodMock() override {}
 
 	virtual unsigned int getOffset() = 0;
 	virtual void * getProxy() = 0;
 
-	void addInvocation(MethodCallMock<R, arglist...> * mock){
+	void addMethodCall(MethodCallMock<R, arglist...> * mock){
 		methodCallMocks.push_back(mock);
  	}
 
@@ -123,7 +130,7 @@ struct MethodMock
 		return methodCallMocks.back();
 	}
 
-	R handleMethodInvocation(const arglist&... args){
+	R handleMethodInvocation(const arglist&... args) override {
 		for (auto i = methodCallMocks.rbegin(); i != methodCallMocks.rend(); ++i) {
 			if ((*i)->matchesActual(args...)){
 				return (*i)->handleMethodInvocation(args...);
@@ -136,7 +143,7 @@ struct MethodMock
 		MethodCallMock<R, arglist...> * invocationMock = getInvocationMock(args...);
 		if (invocationMock == nullptr) {
 			invocationMock = new SimpleMethodCallMock<R, arglist...>(args...);
-			addInvocation(invocationMock);
+			addMethodCall(invocationMock);
 		}
 		return invocationMock;
 	}
