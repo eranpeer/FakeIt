@@ -112,19 +112,19 @@ struct MethodMock
 	virtual void * getProxy() = 0;
 
 	void addInvocation(MethodCallMock<R, arglist...> * mock){
-		invocationMocks.push_back(mock);
+		methodCallMocks.push_back(mock);
  	}
 
 	void clear(){
-		invocationMocks.clear();
+		methodCallMocks.clear();
 	}
 
 	MethodCallMock<R, arglist...>* last(){
-		return invocationMocks.back();
+		return methodCallMocks.back();
 	}
 
 	R handleMethodInvocation(const arglist&... args){
-		for (auto i = invocationMocks.rbegin(); i != invocationMocks.rend(); ++i) {
+		for (auto i = methodCallMocks.rbegin(); i != methodCallMocks.rend(); ++i) {
 			if ((*i)->matchesActual(args...)){
 				return (*i)->handleMethodInvocation(args...);
 			}
@@ -142,14 +142,14 @@ struct MethodMock
 	}
 
 private:
-	std::vector<MethodCallMock<R, arglist...>*> invocationMocks;
+	std::vector<MethodCallMock<R, arglist...>*> methodCallMocks;
 
-	std::vector<MethodCallMock<R, arglist...>*>& getInvocationMocks(){
-		return invocationMocks;
+	std::vector<MethodCallMock<R, arglist...>*>& getMethodCallMocks(){
+		return methodCallMocks;
 	}
 
 	MethodCallMock<R, arglist...> * getInvocationMock(const arglist&... expectedArgs){
-		for (auto i = invocationMocks.rbegin(); i != invocationMocks.rend(); ++i) {
+		for (auto i = methodCallMocks.rbegin(); i != methodCallMocks.rend(); ++i) {
 			if ((*i)->matchesExpected(expectedArgs...)){
 				return (*i);
 			}
