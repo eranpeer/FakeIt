@@ -86,6 +86,7 @@
     <ClInclude Include="ClousesImpl.h" />
     <ClInclude Include="is_equality_comparable.hpp" />
     <ClInclude Include="MethodMock.h" />
+    <ClInclude Include="MethodProxy.h" />
     <ClInclude Include="Mock.h" />
     <ClInclude Include="MockObject.h" />
     <ClInclude Include="stdafx.h" />

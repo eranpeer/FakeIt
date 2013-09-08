@@ -2,9 +2,9 @@
 #define MockObject_h__
 
 #include <functional>
+#include "MethodProxy.h"
 #include "VirtualTable.h"
 #include "Table.h"
-#include "MethodMock.h"
 #include "VirtualOffestSelector.h"
 #include "utils.h"
 

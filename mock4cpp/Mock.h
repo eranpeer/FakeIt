@@ -1,8 +1,8 @@
 #ifndef Mock_h__
 #define Mock_h__
 
-#include "ClousesImpl.h"
 #include "MockObject.h"
+#include "ClousesImpl.h"
 
 template <typename C>
 struct Mock

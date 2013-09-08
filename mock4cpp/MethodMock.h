@@ -4,6 +4,7 @@
 #include <functional>
 
 #include "is_equality_comparable.hpp"
+#include "MethodProxy.h"
 
 template <typename... arglist>
 struct ActualInvocation
@@ -100,19 +101,6 @@ struct DefaultMethodCallMockMock : public MethodCallMock<R, arglist...>
 		return false;
 	}
 
-};
-
-template <typename R, typename... arglist>
-struct MethodProxy {
-	virtual unsigned int getOffset() = 0;
-	virtual void * getProxy() = 0;
-};
-
-template <typename R, typename... arglist>
-struct MethodInvocationHandler
-{
-	virtual ~MethodInvocationHandler() = 0 {};
-	virtual R handleMethodInvocation(const arglist&... args) = 0;
 };
 
 template <typename R, typename... arglist>
