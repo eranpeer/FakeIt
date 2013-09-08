@@ -31,7 +31,7 @@ struct MockObject
 
 	template <typename R, typename... arglist>
 	MethodMock<R, arglist...>* stubMethod(R(C::*vMethod)(arglist...), std::function<R(arglist...)> initialMethodBehavior){
-		auto methodProxy = InnerMethodMock<C, R, arglist...>::createMethodProxy(vMethod);
+		auto methodProxy = MethodProxyCreator<R, arglist...>::createMethodProxy(vMethod);
 		auto methodMock = getMethodMock<MethodMock<R, arglist...>*>(methodProxy->getOffset());
 		if (methodMock == nullptr) {
 		 	methodMock = new InnerMethodMock<C, R, arglist...>(methodProxy, initialMethodBehavior);
@@ -41,6 +41,33 @@ struct MockObject
 	}
 
 private:
+
+	template <typename R, typename... arglist>
+	struct MethodProxyCreator
+	{
+		static MethodProxy<R, arglist...> * createMethodProxy(R(C::*vMethod)(arglist...)){
+			VirtualOffsetSelector<VirtualMethodProxy> c;
+			void * obj = c.create(vMethod);
+			return reinterpret_cast<MethodProxy<R, arglist...>*>(obj);
+		}
+	private:
+
+		template <unsigned int OFFSET>
+		struct VirtualMethodProxy : public MethodProxy<R, arglist...> {
+
+			unsigned int getOffset() override { return OFFSET; }
+
+			void * getProxy() override { return union_cast<void *>(&VirtualMethodProxy::methodProxy); }
+
+		private:
+			R methodProxy(arglist... args){
+				MockObject<C> * mo = union_cast<MockObject<C> *>(this);
+				MethodInvocationHandler<R, arglist...> * methodMock = mo->getMethodProxy<MethodInvocationHandler<R, arglist...> *>(OFFSET);
+				return methodMock->handleMethodInvocation(args...);
+			}
+		};
+
+	};
 
 	VirtualTable vtable;
 	Table methodMocks;
@@ -57,12 +84,6 @@ private:
 			return methodProxy->getProxy();
 		}
 
-		static MethodProxy<R, arglist...> * createMethodProxy(R(C::*vMethod)(arglist...)){
-			VirtualOffsetSelector<InnerMethodMock<C, R, arglist...>::VirtualMethodProxy> c;
-			void * obj = c.create(vMethod);
-			return reinterpret_cast<MethodProxy<R, arglist...>*>(obj);
-		}
-
 		InnerMethodMock(MethodProxy<R, arglist...> * methodProxy, std::function<R(arglist...)> initialMethodBehavior) :
 			methodProxy(methodProxy)
 		{	
@@ -71,22 +92,8 @@ private:
 
 	private:
 		MethodProxy<R, arglist...> * methodProxy;
-
-		template <unsigned int OFFSET>
-		struct VirtualMethodProxy : public MethodProxy<R, arglist...> {
-
-			unsigned int getOffset() override { return OFFSET; }
-
-			void * getProxy() override { return union_cast<void *>(&VirtualMethodProxy::methodProxy); }
-
-		private:
-			R methodProxy(arglist... args){
-				MockObject<C> * mo = union_cast<MockObject<C> *>(this);
-				MethodInvocationHandler<R, arglist...> * methodMock = mo->getMethodProxy<MethodInvocationHandler<R, arglist...> *>(OFFSET);
-				return methodMock->handleMethodInvocation(args...);
-			}
-		};
 	};
+
 
 	void unmocked(){
 		MockObject * m = this; // this should work
