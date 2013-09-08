@@ -47,8 +47,6 @@ private:
 		if (!mo.isStubbed(vMethod)){
 			auto methodMock = mo.stubMethod(vMethod);
 			methodMock->addMethodCall(new DefaultMethodCallMockMock<R, arglist...>(initialMethodBehavior));
-			auto stubClouse = new StubFunctionClouseImpl<R, arglist...>(methodMock);
-			return *stubClouse;
 		}
 		MethodMock<R, arglist...> * methodMock = mo.getMethodMock<MethodMock<R, arglist...> *>(vMethod);
 		auto stubClouse = new StubFunctionClouseImpl<R, arglist...>(methodMock);
@@ -70,8 +68,6 @@ private:
 		if (!mo.isStubbed(vMethod)){
 			auto methodMock = mo.stubMethod(vMethod);
 			methodMock->addMethodCall(new DefaultMethodCallMockMock<void, arglist...>(initialMethodBehavior));
-			auto stubClouse = new StubProcedureClouseImpl<arglist...>(methodMock);
-			return *stubClouse;
 		}
 		MethodMock<void, arglist...> * methodMock = mo.getMethodMock<MethodMock<void, arglist...> *>(vMethod);
 		auto stubClouse = new StubProcedureClouseImpl<arglist...>(methodMock);
