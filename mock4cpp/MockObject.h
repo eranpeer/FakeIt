@@ -17,8 +17,9 @@ struct MockObject
 
 	MockObject() : vtable(10), methodMocks(10){
 		auto mptr = union_cast<void*>(&MockObject::unmocked);
-		for (unsigned int i = 0; i < vtable.getSize(); i++)
+		for (unsigned int i = 0; i < vtable.getSize(); i++) {
 			vtable.setMethod(i, mptr);
+		}
 	}
 
 	~MockObject(){
@@ -30,14 +31,26 @@ struct MockObject
 	}
 
 	template <typename R, typename... arglist>
-	MethodMock<R, arglist...>* stubMethod(R(C::*vMethod)(arglist...), std::function<R(arglist...)> initialMethodBehavior){
+	MethodMock<R, arglist...>* stubMethod(R(C::*vMethod)(arglist...)){
 		MethodProxy<R,arglist...> * methodProxy = MethodProxyCreator<R, arglist...>::createMethodProxy(vMethod);
 		MethodInvocationHandler<R, arglist...>* methodInvocationHandler = getMethodMock<MethodInvocationHandler<R, arglist...>*>(methodProxy->getOffset());
 		if (methodInvocationHandler == nullptr) {
-			methodInvocationHandler = new InnerMethodMock<C, R, arglist...>(initialMethodBehavior);
+			methodInvocationHandler = new MethodMock<R, arglist...>();
 			bind(methodProxy, methodInvocationHandler);
 		}
 		return (MethodMock<R, arglist...>*)methodInvocationHandler;
+	}
+
+	template <typename C, typename R, typename... arglist>
+	bool isStubbed(R(C::*vMethod)(arglist...)){
+		MethodProxy<R, arglist...> * methodProxy = MethodProxyCreator<R, arglist...>::createMethodProxy(vMethod);
+		return methodMocks.get<void *>(methodProxy->getOffset()) != nullptr;
+	}
+
+	template <typename MOCK, typename C, typename R, typename... arglist>
+	MOCK getMethodMock(R(C::*vMethod)(arglist...)){
+		MethodProxy<R, arglist...> * methodProxy = MethodProxyCreator<R, arglist...>::createMethodProxy(vMethod);
+		return methodMocks.get<MOCK>(methodProxy->getOffset());
 	}
 
 private:
@@ -62,7 +75,7 @@ private:
 		private:
 			R methodProxy(arglist... args){
 				MockObject<C> * mo = union_cast<MockObject<C> *>(this);
-				MethodInvocationHandler<R, arglist...> * methodMock = mo->getMethodProxy<MethodInvocationHandler<R, arglist...> *>(OFFSET);
+				MethodInvocationHandler<R, arglist...> * methodMock = mo->getMethodMock<MethodInvocationHandler<R, arglist...> *>(OFFSET);
 				return methodMock->handleMethodInvocation(args...);
 			}
 		};
@@ -70,15 +83,6 @@ private:
 
 	VirtualTable vtable;
 	Table methodMocks;
-
-	template <typename C, typename R, typename... arglist>
-	struct InnerMethodMock : public MethodMock <R, arglist...>
-	{
-		InnerMethodMock(std::function<R(arglist...)> initialMethodBehavior) 
-		{	
-			addMethodCall(new DefaultMethodCallMockMock<R, arglist...>(initialMethodBehavior));
-		}
-	};
 
 
 	void unmocked(){
@@ -95,15 +99,6 @@ private:
 	static void defualtProc(arglist...){
 	}
 
-	template <typename T>
-	T getMethodProxy(unsigned int offset){
-		return methodMocks.get<T>(offset);
-	}
-
-	bool isMocked(unsigned int index){
-		return vtable.getMethod(index) != union_cast<void*>(&MockObject<C>::unmocked);
-	}
-
 	template <typename R, typename... arglist>
 	void bind(MethodProxy<R, arglist...> * methodProxy, MethodInvocationHandler<R, arglist...> * invocationHandler)
 	{
@@ -114,8 +109,6 @@ private:
 
 	template <typename T>
 	T getMethodMock(unsigned int offset){
-		if (!isMocked(offset))
-			return nullptr;
 		return methodMocks.get<T>(offset);
 	}
 
