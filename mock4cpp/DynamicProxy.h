@@ -1,5 +1,5 @@
-#ifndef MockObject_h__
-#define MockObject_h__
+#ifndef DynamicProxy_h__
+#define DynamicProxy_h__
 
 #include <functional>
 #include "MethodProxy.h"
@@ -12,17 +12,17 @@ struct UnmockedMethodException : public std::exception {
 } unmockedMethodException;
 
 template <typename C>
-struct MockObject
+struct DynamicProxy
 {
 
-	MockObject() : vtable(10), methodMocks(10){
-		auto mptr = union_cast<void*>(&MockObject::unmocked);
+	DynamicProxy() : vtable(10), methodMocks(10){
+		auto mptr = union_cast<void*>(&DynamicProxy::unmocked);
 		for (unsigned int i = 0; i < vtable.getSize(); i++) {
 			vtable.setMethod(i, mptr);
 		}
 	}
 
-	~MockObject(){
+	~DynamicProxy(){
 	}
 
 	C& get()
@@ -70,7 +70,7 @@ private:
 
 		private:
 			R methodProxy(arglist... args){
-				MockObject<C> * mo = union_cast<MockObject<C> *>(this);
+				DynamicProxy<C> * mo = union_cast<DynamicProxy<C> *>(this);
 				MethodInvocationHandler<R, arglist...> * methodMock = mo->getMethodMock<MethodInvocationHandler<R, arglist...> *>(OFFSET);
 				return methodMock->handleMethodInvocation(args...);
 			}
@@ -80,9 +80,8 @@ private:
 	VirtualTable vtable;
 	Table methodMocks;
 
-
 	void unmocked(){
-		MockObject * m = this; // this should work
+		DynamicProxy * m = this; // this should work
 		throw unmockedMethodException;
 	}
 
@@ -109,4 +108,4 @@ private:
 	}
 
 };
-#endif // MockObject_h__
+#endif // DynamicProxy_h__

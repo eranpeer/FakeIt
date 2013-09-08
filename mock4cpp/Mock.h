@@ -1,7 +1,7 @@
 #ifndef Mock_h__
 #define Mock_h__
 
-#include "MockObject.h"
+#include "DynamicProxy.h"
 #include "ClousesImpl.h"
 
 template <typename C>
@@ -31,7 +31,7 @@ struct Mock
 
 private:
 
-	MockObject<C> mo;
+	DynamicProxy<C> mo;
 
 	template<typename R, typename... arglist>
 	static R defualtFunc(arglist...){
