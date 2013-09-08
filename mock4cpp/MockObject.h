@@ -32,13 +32,12 @@ struct MockObject
 	template <typename R, typename... arglist>
 	MethodMock<R, arglist...>* stubMethod(R(C::*vMethod)(arglist...), std::function<R(arglist...)> initialMethodBehavior){
 		MethodProxy<R,arglist...> * methodProxy = MethodProxyCreator<R, arglist...>::createMethodProxy(vMethod);
-		auto methodMock = getMethodMock<MethodMock<R, arglist...>*>(methodProxy->getOffset());
-		if (methodMock == nullptr) {
-			MethodInvocationHandler<R, arglist...>* methodInvocationHandler = 
-				new InnerMethodMock<C, R, arglist...>(initialMethodBehavior);
+		MethodInvocationHandler<R, arglist...>* methodInvocationHandler = getMethodMock<MethodInvocationHandler<R, arglist...>*>(methodProxy->getOffset());
+		if (methodInvocationHandler == nullptr) {
+			methodInvocationHandler = new InnerMethodMock<C, R, arglist...>(initialMethodBehavior);
 			bind(methodProxy, methodInvocationHandler);
 		}
-		return methodMock;
+		return (MethodMock<R, arglist...>*)methodInvocationHandler;
 	}
 
 private:
