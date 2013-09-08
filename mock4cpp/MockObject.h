@@ -31,7 +31,7 @@ struct MockObject
 	}
 
 	template <typename R, typename... arglist>
-	void stubMethod(R(C::*vMethod)(arglist...), MethodMock<R, arglist...> * methodMock){
+	void stubMethod(R(C::*vMethod)(arglist...), MethodInvocationHandler<R, arglist...> * methodMock){
 		MethodProxy<R,arglist...> * methodProxy = MethodProxyCreator<R, arglist...>::createMethodProxy(vMethod);
 		MethodInvocationHandler<R, arglist...>* methodInvocationHandler = methodMock;
 		bind(methodProxy, methodInvocationHandler);
