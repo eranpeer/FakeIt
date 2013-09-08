@@ -43,10 +43,11 @@ private:
 	}
 
 	template <typename R, typename... arglist>
-	MethodMock<R, arglist...>* stubMethod(R(C::*vMethod)(arglist...), std::function<R(arglist...)> initialMethodBehavior){
+	MethodMock<R, arglist...>* stubMethodIfNotStubbed(R(C::*vMethod)(arglist...), std::function<R(arglist...)> initialMethodBehavior){
 		if (!mo.isStubbed(vMethod)){
-			auto methodMock = mo.stubMethod(vMethod);
+			auto methodMock = new MethodMock<R, arglist...>();
 			methodMock->addMethodCall(new DefaultMethodCallMockMock<R, arglist...>(initialMethodBehavior));
+			mo.stubMethod(vMethod, methodMock);
 		}
 		MethodMock<R, arglist...> * methodMock = mo.getMethodMock<MethodMock<R, arglist...> *>(vMethod);
 		return methodMock;
@@ -54,7 +55,7 @@ private:
 
 	template <typename R, typename... arglist>
 	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...), std::function<R(arglist...)> initialMethodBehavior){
-		auto methodMock = stubMethod(vMethod, initialMethodBehavior);
+		auto methodMock = stubMethodIfNotStubbed(vMethod, initialMethodBehavior);
 		auto stubClouse = new StubFunctionClouseImpl<R, arglist...>(methodMock);
 		return *stubClouse;
 	}
@@ -71,7 +72,7 @@ private:
 
 	template <typename... arglist>
 	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...), std::function<void(arglist...)> initialMethodBehavior){
-		auto methodMock = stubMethod(vMethod, initialMethodBehavior);
+		auto methodMock = stubMethodIfNotStubbed(vMethod, initialMethodBehavior);
 		auto stubClouse = new StubProcedureClouseImpl<arglist...>(methodMock);
 		return *stubClouse;
 	}
