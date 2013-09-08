@@ -116,13 +116,10 @@ struct MethodInvocationHandler
 };
 
 template <typename R, typename... arglist>
-struct MethodMock : public MethodInvocationHandler <R, arglist...>, public MethodProxy<R,arglist...>
+struct MethodMock : public MethodInvocationHandler <R, arglist...>
 {
 
 	virtual ~MethodMock() override {}
-
-	virtual unsigned int getOffset() override = 0;
-	virtual void * getProxy() override = 0;
 
 	void addMethodCall(MethodCallMock<R, arglist...> * mock){
 		methodCallMocks.push_back(mock);

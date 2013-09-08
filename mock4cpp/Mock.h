@@ -45,6 +45,7 @@ private:
 	template <typename R, typename... arglist>
 	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...), std::function<R(arglist...)> initialMethodBehavior){		
 		auto methodMock = mo.stubMethod(vMethod, initialMethodBehavior);
+		//methodMock->a(initialMethodBehavior);
 		auto stubClouse = new StubFunctionClouseImpl<R, arglist...>(methodMock);
 		return *stubClouse;
 	}

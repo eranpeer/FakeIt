@@ -31,11 +31,12 @@ struct MockObject
 
 	template <typename R, typename... arglist>
 	MethodMock<R, arglist...>* stubMethod(R(C::*vMethod)(arglist...), std::function<R(arglist...)> initialMethodBehavior){
-		auto methodProxy = MethodProxyCreator<R, arglist...>::createMethodProxy(vMethod);
+		MethodProxy<R,arglist...> * methodProxy = MethodProxyCreator<R, arglist...>::createMethodProxy(vMethod);
 		auto methodMock = getMethodMock<MethodMock<R, arglist...>*>(methodProxy->getOffset());
 		if (methodMock == nullptr) {
-		 	methodMock = new InnerMethodMock<C, R, arglist...>(methodProxy, initialMethodBehavior);
-		 	bind(methodMock);
+			MethodInvocationHandler<R, arglist...>* methodInvocationHandler = 
+				new InnerMethodMock<C, R, arglist...>(initialMethodBehavior);
+			bind(methodProxy, methodInvocationHandler);
 		}
 		return methodMock;
 	}
@@ -66,7 +67,6 @@ private:
 				return methodMock->handleMethodInvocation(args...);
 			}
 		};
-
 	};
 
 	VirtualTable vtable;
@@ -75,23 +75,10 @@ private:
 	template <typename C, typename R, typename... arglist>
 	struct InnerMethodMock : public MethodMock <R, arglist...>
 	{
-
-		virtual unsigned int getOffset() override {
-			return methodProxy->getOffset();
-		}
-
-		void *getProxy() override {
-			return methodProxy->getProxy();
-		}
-
-		InnerMethodMock(MethodProxy<R, arglist...> * methodProxy, std::function<R(arglist...)> initialMethodBehavior) :
-			methodProxy(methodProxy)
+		InnerMethodMock(std::function<R(arglist...)> initialMethodBehavior) 
 		{	
 			addMethodCall(new DefaultMethodCallMockMock<R, arglist...>(initialMethodBehavior));
 		}
-
-	private:
-		MethodProxy<R, arglist...> * methodProxy;
 	};
 
 
@@ -119,11 +106,11 @@ private:
 	}
 
 	template <typename R, typename... arglist>
-	void bind(MethodMock<R, arglist...> * methodMock)
+	void bind(MethodProxy<R, arglist...> * methodProxy, MethodInvocationHandler<R, arglist...> * invocationHandler)
 	{
-		auto offset = methodMock->getOffset();
-		vtable.setMethod(offset, methodMock->getProxy());
-		methodMocks.set(offset, methodMock);
+		auto offset = methodProxy->getOffset();
+		vtable.setMethod(offset, methodProxy->getProxy());
+		methodMocks.set(offset, invocationHandler);
 	}
 
 	template <typename T>
