@@ -8,7 +8,7 @@ template <typename C>
 struct Mock
 {	
 
-	Mock() : mo(){
+	Mock() : dynamicProxy(){
 	}
 	
 	~Mock(){
@@ -16,7 +16,7 @@ struct Mock
 	
 	C& get()
 	{
-		return mo.get();
+		return dynamicProxy.get();
 	}
 
 	template <typename R, typename... arglist>
@@ -31,7 +31,7 @@ struct Mock
 
 private:
 
-	DynamicProxy<C> mo;
+	DynamicProxy<C> dynamicProxy;
 
 	template<typename R, typename... arglist>
 	static R defualtFunc(arglist...){
@@ -44,12 +44,12 @@ private:
 
 	template <typename R, typename... arglist>
 	MethodMock<R, arglist...>* stubMethodIfNotStubbed(R(C::*vMethod)(arglist...), std::function<R(arglist...)> initialMethodBehavior){
-		if (!mo.isStubbed(vMethod)){
+		if (!dynamicProxy.isStubbed(vMethod)){
 			auto methodMock = new MethodMock<R, arglist...>();
 			methodMock->addMethodCall(new DefaultMethodCallMockMock<R, arglist...>(initialMethodBehavior));
-			mo.stubMethod(vMethod, methodMock);
+			dynamicProxy.stubMethod(vMethod, methodMock);
 		}
-		MethodMock<R, arglist...> * methodMock = mo.getMethodMock<MethodMock<R, arglist...> *>(vMethod);
+		MethodMock<R, arglist...> * methodMock = dynamicProxy.getMethodMock<MethodMock<R, arglist...> *>(vMethod);
 		return methodMock;
 	}
 
