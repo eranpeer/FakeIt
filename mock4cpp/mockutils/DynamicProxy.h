@@ -21,8 +21,8 @@ struct DynamicProxy
 		for (unsigned int i = 0; i < vtable.getSize(); i++) {
 			vtable.setMethod(i, mptr);
 		}
-		for (int i = 0; i < sizeof(C); i++)
-			instanceMembersAra[i] = (char)0;
+		for (int i = 0; i < sizeof(instanceMembersArea); i++)
+			instanceMembersArea[i] = (char)0;
 	}
 
 	~DynamicProxy(){
@@ -81,7 +81,11 @@ private:
 	};
 
 	VirtualTable<10> vtable;
-	char instanceMembersAra[sizeof(C)];
+
+	// Here we alloc too many bytes since sizeof(C) includes the pointer to the virtual table.
+	// Should be sizeof(C) - ptr_size.
+	// No harm is done if we alloc more space for data but don't use it.
+	char instanceMembersArea[sizeof(C)];
 	
 	Table methodMocks;
 
