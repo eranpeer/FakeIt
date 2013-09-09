@@ -1,12 +1,12 @@
 #ifndef VirtualTable_h__
 #define VirtualTable_h__
 
+template <int SIZE>
 struct VirtualTable {
 
-	VirtualTable(unsigned int size){
-		methods = new void*[size];
-		this->size = size;
-		for (unsigned int i = 0; i < size; i++){
+	VirtualTable(){
+		methods = new void*[SIZE];
+		for (unsigned int i = 0; i < SIZE; i++){
 			methods[i] = 0;
 		}
 	}
@@ -17,7 +17,7 @@ struct VirtualTable {
 
 	void setMethod(unsigned int index, void *method)
 	{
-		if (index >= size){
+		if (index >= SIZE){
 			throw "error";
 		}
 		methods[index] = method;
@@ -28,12 +28,11 @@ struct VirtualTable {
 	}
 
 	unsigned int getSize(){
-		return size;
+		return SIZE;
 	}
 
 private:
 	void** methods;
-	unsigned int size;
 };
 #endif // VirtualTable_h__
 

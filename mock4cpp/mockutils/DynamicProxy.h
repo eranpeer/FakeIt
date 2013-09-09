@@ -2,6 +2,7 @@
 #define DynamicProxy_h__
 
 #include <functional>
+#include <new>  
 #include "../mockutils/MethodProxy.h"
 #include "../mockutils/VirtualTable.h"
 #include "../mockutils/Table.h"
@@ -9,17 +10,19 @@
 #include "../mockutils/utils.h"
 
 struct UnmockedMethodException : public std::exception {
-} unmockedMethodException;
+};
 
 template <typename C>
 struct DynamicProxy
 {
 
-	DynamicProxy() : vtable(10), methodMocks(10){
+	DynamicProxy() : vtable(), methodMocks(vtable.getSize()){
 		auto mptr = union_cast<void*>(&DynamicProxy::unmocked);
 		for (unsigned int i = 0; i < vtable.getSize(); i++) {
 			vtable.setMethod(i, mptr);
 		}
+		for (int i = 0; i < sizeof(C); i++)
+			instanceMembersAra[i] = (char)0;
 	}
 
 	~DynamicProxy(){
@@ -77,12 +80,14 @@ private:
 		};
 	};
 
-	VirtualTable vtable;
+	VirtualTable<10> vtable;
+	char instanceMembersAra[sizeof(C)];
+	
 	Table methodMocks;
 
 	void unmocked(){
 		DynamicProxy * m = this; // this should work
-		throw unmockedMethodException;
+		throw UnmockedMethodException{};
 	}
 
 	template<typename R, typename... arglist>
