@@ -198,16 +198,14 @@ namespace mock4cpp_tests
 
 		struct AbstractClass
 		{
-			AbstractClass() : c(1)
-// 				, s(1), i(1), f(1), d(1), l(1)
-			{}
+			AbstractClass() : c(1), s(1), i(1), f(1), d(1), l(1){}
  			
 			char c;
-// 			short s;
-// 			int i;
-// 			float f;
-// 			double d;
-// 			long l;
+			short s;
+			int i;
+			float f;
+			double d;
+			long l;
 
 			virtual void proc() = 0;
 		};
@@ -216,11 +214,11 @@ namespace mock4cpp_tests
 			Mock<AbstractClass> mock;
 			AbstractClass &i = mock.get();
 			Assert::AreEqual((char) 0, i.c);
-// 			Assert::AreEqual((short)0, i.s);
-// 			Assert::AreEqual((int) 0, i.i);
-// 			Assert::AreEqual((float) 0, i.f);
-// 			Assert::AreEqual((double) 0, i.d);
-// 			Assert::AreEqual((long) 0, i.l);
+			Assert::AreEqual((short)0, i.s);
+			Assert::AreEqual((int) 0, i.i);
+			Assert::AreEqual((float) 0, i.f);
+			Assert::AreEqual((double) 0, i.d);
+			Assert::AreEqual((long) 0, i.l);
 		}
 
 		struct ReferenceInterface {
