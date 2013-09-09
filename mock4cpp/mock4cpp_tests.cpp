@@ -192,8 +192,7 @@ namespace mock4cpp_tests
 		TEST_METHOD(StubProcWithReferenceParams){
 			Mock<ReferenceInterface> mock;
 			mock.Stub(&ReferenceInterface::proc1);
-			//int thread_local a;
-			//when(mock().proc(1)).Return(1);
+			//int  a;
 			//mock.Stub(&ReferenceInterface::proc2);
 		}
 
