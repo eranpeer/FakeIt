@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include "Mock.h"
+#include <iostream>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -206,11 +207,12 @@ namespace mock4cpp_tests
 			float f;
 			double d;
 			long l;
+			std::string str;
 
 			virtual void proc() = 0;
 		};
 
-		TEST_METHOD(InitDataMembersToZero){
+		TEST_METHOD(DataMembersAreInitiatedToZero){
 			Mock<AbstractClass> mock;
 			AbstractClass &i = mock.get();
 			Assert::AreEqual((char) 0, i.c);
@@ -219,6 +221,34 @@ namespace mock4cpp_tests
 			Assert::AreEqual((float) 0, i.f);
 			Assert::AreEqual((double) 0, i.d);
 			Assert::AreEqual((long) 0, i.l);
+		}
+
+		TEST_METHOD(StubPrimitiveDataMembers){
+			Mock<AbstractClass> mock;
+			AbstractClass &i = mock.get();
+			i.s = 1;
+			i.s = 1;
+			i.i = 1;
+			i.f = 1;
+			i.d = 1;
+			i.l = 1;
+			Assert::AreEqual((char) 1, i.c);
+			Assert::AreEqual((short) 1, i.s);
+			Assert::AreEqual((int) 1, i.i);
+			Assert::AreEqual((float) 1.0, i.f);
+			Assert::AreEqual((double) 1.0, i.d);
+			Assert::AreEqual((long) 1, i.l);
+		}
+
+		TEST_METHOD(StubObjectDataMembers){
+			Mock<AbstractClass> mock;
+ 			mock.Stub(&AbstractClass::str);
+			AbstractClass &i = mock.get();
+			Assert::AreEqual(std::string(), i.str);
+			i.str = "text";
+			Assert::AreEqual(std::string("text"), i.str);
+			mock.Stub(&AbstractClass::str);
+			Assert::AreEqual(std::string(), i.str);
 		}
 
 		struct ReferenceInterface {

@@ -11,7 +11,7 @@ struct VirtualTable {
 		}
 	}
 
-	~VirtualTable(){
+	~VirtualTable() {
 		delete [] methods;
 	}
 

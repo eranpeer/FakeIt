@@ -29,6 +29,11 @@ struct Mock
 		return Stub(vMethod, std::function<void(arglist...)>([](arglist... args)->void{return defualtProc<arglist...>(args...); }));
 	}
 
+	template <class C, typename B>
+	void Stub(C B::*member)
+	{
+		dynamicProxy.stubDataMember(member);
+	}
 private:
 
 	DynamicProxy<C> dynamicProxy;

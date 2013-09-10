@@ -2,7 +2,9 @@
 #define DynamicProxy_h__
 
 #include <functional>
-#include <new>  
+#include <vector>
+#include <new>
+
 #include "../mockutils/MethodProxy.h"
 #include "../mockutils/VirtualTable.h"
 #include "../mockutils/Table.h"
@@ -21,11 +23,14 @@ struct DynamicProxy
 		for (unsigned int i = 0; i < vtable.getSize(); i++) {
 			vtable.setMethod(i, mptr);
 		}
-		for (int i = 0; i < sizeof(instanceMembersArea); i++)
-			instanceMembersArea[i] = (char)0;
+		initializeDataMembersArea();
 	}
 
 	~DynamicProxy(){
+		for (std::vector<Destructable *>::iterator i = members.begin(); i != members.end(); ++i)
+		{
+			delete *i;
+		}
 	}
 
 	C& get()
@@ -51,6 +56,15 @@ struct DynamicProxy
 		MethodProxy<R, arglist...> * methodProxy = MethodProxyCreator<R, arglist...>::createMethodProxy(vMethod);
 		return methodMocks.get<MOCK>(methodProxy->getOffset());
 	}
+
+	template <class B, typename MT>
+ 	void stubDataMember(MT B::*member)
+ 	{
+		MT C::*realMember = (MT C::*)member;
+		C& mock = get();
+		MT *realRealMember = &(mock.*realMember);
+		members.push_back(new DataMemeberWrapper<MT>(realRealMember));
+ 	}
 
 private:
 
@@ -80,6 +94,27 @@ private:
 		};
 	};
 
+	class Destructable {
+	public:
+		virtual ~Destructable() {}
+	};
+
+	template <typename T>
+	class DataMemeberWrapper : public Destructable {
+	private:
+		T *dataMember;
+	public:
+		DataMemeberWrapper(T *dataMember)
+			: dataMember(dataMember)
+		{
+			new (dataMember) T{};
+		}
+		~DataMemeberWrapper()
+		{
+			dataMember->~T();
+		}
+	};
+
 	VirtualTable<10> vtable;
 
 	// Here we alloc too many bytes since sizeof(C) includes the pointer to the virtual table.
@@ -88,6 +123,7 @@ private:
 	char instanceMembersArea[sizeof(C)];
 	
 	Table methodMocks;
+	std::vector<Destructable *> members;
 
 	void unmocked(){
 		DynamicProxy * m = this; // this should work
@@ -109,6 +145,12 @@ private:
 		auto offset = methodProxy->getOffset();
 		vtable.setMethod(offset, methodProxy->getProxy());
 		methodMocks.set(offset, invocationHandler);
+	}
+
+	void initializeDataMembersArea()
+	{
+		for (int i = 0; i < sizeof(instanceMembersArea); i++)
+			instanceMembersArea[i] = (char) 0;
 	}
 
 	template <typename T>
