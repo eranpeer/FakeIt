@@ -223,10 +223,10 @@ namespace mock4cpp_tests
 			Assert::AreEqual((long) 0, i.l);
 		}
 
-		TEST_METHOD(StubPrimitiveDataMembers){
+		TEST_METHOD(SetGetPrimitiveDataMembers){
 			Mock<AbstractClass> mock;
 			AbstractClass &i = mock.get();
-			i.s = 1;
+			i.c = 1;
 			i.s = 1;
 			i.i = 1;
 			i.f = 1;
@@ -240,6 +240,23 @@ namespace mock4cpp_tests
 			Assert::AreEqual((long) 1, i.l);
 		}
 
+		TEST_METHOD(StubPrimitiveDataMembers){
+			Mock<AbstractClass> mock;
+			AbstractClass &i = mock.get();
+			mock.Stub(&AbstractClass::c, '1');
+			mock.Stub(&AbstractClass::s, (short)2);
+			mock.Stub(&AbstractClass::i, 3);
+			mock.Stub(&AbstractClass::f, (float)4);
+			mock.Stub(&AbstractClass::d, (double)5);
+			mock.Stub(&AbstractClass::l, 6);
+			Assert::AreEqual('1', i.c);
+			Assert::AreEqual((short) 2, i.s);
+			Assert::AreEqual((int) 3, i.i);
+			Assert::AreEqual((float) 4.0, i.f);
+			Assert::AreEqual((double) 5.0, i.d);
+			Assert::AreEqual((long) 6, i.l);
+		}
+
 		TEST_METHOD(StubObjectDataMembers){
 			Mock<AbstractClass> mock;
  			mock.Stub(&AbstractClass::str);
@@ -247,8 +264,12 @@ namespace mock4cpp_tests
 			Assert::AreEqual(std::string(), i.str);
 			i.str = "text";
 			Assert::AreEqual(std::string("text"), i.str);
+			mock.Stub(&AbstractClass::str,"text");
+			mock.Stub(&AbstractClass::str);
 			mock.Stub(&AbstractClass::str);
 			Assert::AreEqual(std::string(), i.str);
+			std::string s{'a','b'};
+			std::string s2{ s };
 		}
 
 		struct ReferenceInterface {

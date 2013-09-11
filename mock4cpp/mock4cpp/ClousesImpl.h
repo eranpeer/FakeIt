@@ -105,4 +105,11 @@ struct StubProcedureClouseImpl : public StubProcedureClouse<arglist...> {
 private:
 	MethodMock<void, arglist...>* methodMock;
 };
+
+template <typename... arglist>
+struct StubDataMemberClouseImpl : public StubDataMemberClouse<arglist...> {
+	virtual void operator()(std::initializer_list<arglist...> list) override {
+	
+	};
+};
 #endif // ClousesImpl_h__

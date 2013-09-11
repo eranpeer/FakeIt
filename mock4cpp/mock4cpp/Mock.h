@@ -1,6 +1,7 @@
 #ifndef Mock_h__
 #define Mock_h__
 
+#include <type_traits>
 #include "../mockutils/DynamicProxy.h"
 #include "../mock4cpp/ClousesImpl.h"
 
@@ -29,11 +30,12 @@ struct Mock
 		return Stub(vMethod, std::function<void(arglist...)>([](arglist... args)->void{return defualtProc<arglist...>(args...); }));
 	}
 
-	template <class C, typename B>
-	void Stub(C B::*member)
+	template <class MEMBER_TYPE, typename... arglist>
+	void Stub(MEMBER_TYPE C::*member, const arglist&... ctorargs)
 	{
-		dynamicProxy.stubDataMember(member);
+		dynamicProxy.stubDataMember(member, ctorargs...);
 	}
+
 private:
 
 	DynamicProxy<C> dynamicProxy;

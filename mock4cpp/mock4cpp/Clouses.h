@@ -108,4 +108,35 @@ struct StubProcedureClouse : public FirstProcedureWhenClouse<arglist...>{
 	virtual FirstProcedureWhenClouse<arglist...>& When(const arglist&...) = 0;
 };
 
+
+template <typename... arglist>
+struct StubDataMemberClouse {
+
+	virtual ~StubDataMemberClouse() = 0 {};
+
+
+	virtual void operator()(std::initializer_list<arglist...> list) = 0;
+};
+
+
+template <typename MEMBER_TYPE>
+struct StubDataMemberClouse2 {
+
+	typename std::enable_if<std::is_default_constructible<MEMBER_TYPE>::value, void>::type 
+		Init() 
+	{
+	}
+
+	typename std::enable_if<std::is_copy_constructible<MEMBER_TYPE>::value, void>::type 
+		Init(const MEMBER_TYPE& other)
+	{
+	}
+
+	template <typename... arglist>
+	typename std::enable_if<std::is_constructible<MEMBER_TYPE>::value, void>::type
+		Init(const arglist&... params)
+	{
+	}
+};
+
 #endif // Clouses_h__
