@@ -1,7 +1,6 @@
 #ifndef Mock_h__
 #define Mock_h__
 
-#include <type_traits>
 #include "../mockutils/DynamicProxy.h"
 #include "../mock4cpp/ClousesImpl.h"
 

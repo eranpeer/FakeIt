@@ -9,6 +9,19 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace mock4cpp_tests
 {
 
+	struct ReferenceInterface {
+		virtual int& func1() = 0;
+		virtual ReferenceInterface& func2() = 0;
+
+		virtual void proc1(int&) = 0;
+		virtual void proc2(ReferenceInterface &) = 0;
+	};
+
+	bool operator==(const ReferenceInterface& a, const ReferenceInterface& b)
+	{
+		return (&a == &b);
+	}
+
 	TEST_CLASS(MockTest)
 	{
 	public:	
@@ -271,6 +284,11 @@ namespace mock4cpp_tests
 			
 			mock.Stub(&AbstractClass::str, 'a','b');
 			Assert::AreEqual(std::string("ab"), i.str);
+		}
+
+		TEST_METHOD(StubArrayDataMembers){
+			Mock<AbstractClass> mock;
+			AbstractClass &i = mock.get();
 
 			mock.Stub(&AbstractClass::iArr);
 			Assert::AreEqual(0, i.iArr[0]);
@@ -282,34 +300,35 @@ namespace mock4cpp_tests
 			Assert::AreEqual(0, i.iArr[1]);
 			Assert::AreEqual(0, i.iArr[2]);
 
-			mock.Stub(&AbstractClass::iArr, 1,2);
+			mock.Stub(&AbstractClass::iArr, 1, 2);
 			Assert::AreEqual(1, i.iArr[0]);
 			Assert::AreEqual(2, i.iArr[1]);
 			Assert::AreEqual(0, i.iArr[2]);
 
-			mock.Stub(&AbstractClass::iArr,1,2,3);
+			mock.Stub(&AbstractClass::iArr, 1, 2, 3);
 			Assert::AreEqual(1, i.iArr[0]);
 			Assert::AreEqual(2, i.iArr[1]);
 			Assert::AreEqual(3, i.iArr[2]);
 		}
 
-		struct ReferenceInterface {
-			virtual int& func1() = 0;
-			virtual ReferenceInterface& func2() = 0;
 
-			virtual void proc1(int&) = 0;
-			virtual void proc2(ReferenceInterface &) = 0;
+		// #include "../mockutils/MethodProxy.h"
+		// #include "../mockutils/is_equality_comparable.hpp"
+		// 
+		// template <typename T>
+		// typename std::enable_if <std::is_class<T>::value && !is_equality_comparable<T>::value, bool>::type
+		// 	operator==(const T& a, const T& b)
+		// {
+		// 	return (&a == &b);
+		// }
 
-			//bool operator == (const ReferenceInterface& other){return this == &other;}
-		};
-		
 
 
 		TEST_METHOD(StubProcWithReferenceParams){
 			Mock<ReferenceInterface> mock;
 			mock.Stub(&ReferenceInterface::proc1);
-			//int  a;
-			//mock.Stub(&ReferenceInterface::proc2);
+			int  a;
+			mock.Stub(&ReferenceInterface::proc2);
 		}
 
 		template<typename... arglist>
@@ -326,22 +345,22 @@ namespace mock4cpp_tests
 			std::tuple<arglist...> tuple;
 		};
 
-		void f(const int&& a){
-		}
+// 		void f(const int&& a){
+// 		}
+// 
+// 		void f(const int & a){
+// 		}
 
-		void f(const int & a){
-		}
-
-		TEST_METHOD(TestTuple){
-			int a = 1;
-			int& ar = a;
-			int b = 1;
-			int& br = b;
-
-			f(ar);
- 			ArgsHolder<int, int> ah(ar, a);
- 			Assert::IsTrue(ah.match(1, 1));
-		}
+// 		TEST_METHOD(TestTuple){
+// 			int a = 1;
+// 			int& ar = a;
+// 			int b = 1;
+// 			int& br = b;
+// 
+// 			f(ar);
+//  			ArgsHolder<int, int> ah(ar, a);
+//  			Assert::IsTrue(ah.match(1, 1));
+// 		}
 
 // 		TEST_METHOD(StubWithoutWhenClouse_ShouldStubAllCallsToDefaultBeaviour)
 // 		{
