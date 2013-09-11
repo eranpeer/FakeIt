@@ -207,7 +207,9 @@ namespace mock4cpp_tests
 			float f;
 			double d;
 			long l;
+
 			std::string str;
+			int iArr[3];
 
 			virtual void proc() = 0;
 		};
@@ -259,17 +261,36 @@ namespace mock4cpp_tests
 
 		TEST_METHOD(StubObjectDataMembers){
 			Mock<AbstractClass> mock;
- 			mock.Stub(&AbstractClass::str);
 			AbstractClass &i = mock.get();
+
+			mock.Stub(&AbstractClass::str);
 			Assert::AreEqual(std::string(), i.str);
-			i.str = "text";
-			Assert::AreEqual(std::string("text"), i.str);
+			
 			mock.Stub(&AbstractClass::str,"text");
-			mock.Stub(&AbstractClass::str);
-			mock.Stub(&AbstractClass::str);
-			Assert::AreEqual(std::string(), i.str);
-			std::string s{'a','b'};
-			std::string s2{ s };
+			Assert::AreEqual(std::string("text"), i.str);
+			
+			mock.Stub(&AbstractClass::str, 'a','b');
+			Assert::AreEqual(std::string("ab"), i.str);
+
+			mock.Stub(&AbstractClass::iArr);
+			Assert::AreEqual(0, i.iArr[0]);
+			Assert::AreEqual(0, i.iArr[1]);
+			Assert::AreEqual(0, i.iArr[2]);
+
+			mock.Stub(&AbstractClass::iArr, 1);
+			Assert::AreEqual(1, i.iArr[0]);
+			Assert::AreEqual(0, i.iArr[1]);
+			Assert::AreEqual(0, i.iArr[2]);
+
+			mock.Stub(&AbstractClass::iArr, 1,2);
+			Assert::AreEqual(1, i.iArr[0]);
+			Assert::AreEqual(2, i.iArr[1]);
+			Assert::AreEqual(0, i.iArr[2]);
+
+			mock.Stub(&AbstractClass::iArr,1,2,3);
+			Assert::AreEqual(1, i.iArr[0]);
+			Assert::AreEqual(2, i.iArr[1]);
+			Assert::AreEqual(3, i.iArr[2]);
 		}
 
 		struct ReferenceInterface {
