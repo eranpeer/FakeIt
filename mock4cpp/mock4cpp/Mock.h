@@ -21,7 +21,7 @@ struct Mock
 
 	template <typename R, typename... arglist>
 	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...)){
-		return Stub(vMethod, std::function<R(arglist...)>([](arglist... args)->R{return defualtFunc<R,arglist...>(args...); }));
+		return Stub(vMethod, std::function<R(arglist...)>([](const arglist&... args)->R{return defualtFunc<R,arglist...>(args...); }));
 	}
 
 	template <typename... arglist>
@@ -40,12 +40,14 @@ private:
 	DynamicProxy<C> dynamicProxy;
 
 	template<typename R, typename... arglist>
-	static R defualtFunc(arglist...){
-		return R{};
+	static R defualtFunc(const arglist&...){
+		static std::remove_reference<R>::type a{};
+		return a;
+//		return R{};
 	}
 
 	template<typename... arglist>
-	static void defualtProc(arglist...){
+	static void defualtProc(const arglist&...){
 	}
 
 	template <typename R, typename... arglist>

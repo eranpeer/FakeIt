@@ -7,14 +7,35 @@
 template <typename R, typename... arglist>
 struct NextFunctionWhenClouse {
 	
-	virtual ~NextFunctionWhenClouse() = 0 {};
+	virtual ~NextFunctionWhenClouse() {};
 
-	NextFunctionWhenClouse<R, arglist...>& ThenReturn(R r)  {
-		return ThenDo(std::function<R(arglist...)>([r](...)->R{return r; }));
+	template< class U = R>
+	NextFunctionWhenClouse<R, arglist...>&
+	 ThenReturn(const U r)  {
+		NextFunctionWhenClouse<R, arglist...> &rv = ThenDo(
+			std::function<R(arglist...)>
+			([r](...)->R
+		    {
+				return r; 
+			}));
+		return rv;
 	}
 
+//  	template< class U = const R&&>
+//  	typename std::enable_if<std::is_rvalue_reference<U>::value, NextFunctionWhenClouse<R, arglist...>&>::type
+// //		NextFunctionWhenClouse<R, arglist...> &
+// 		ThenReturn(const U& r)  {
+// 		NextFunctionWhenClouse<R, arglist...> &rv = ThenDo(
+// 			std::function<R(arglist...)>
+// 			([r](...)->R
+// 		{
+// 			return r;
+// 		}));
+// 		return rv;
+// 	}
+
 	template <typename E>
-	NextFunctionWhenClouse<R, arglist...>& ThenThrow(E e) {
+	NextFunctionWhenClouse<R, arglist...>& ThenThrow(const E e) {
 		return ThenDo(std::function<R(arglist...)>([e](...)->R{throw e; }));
 	}
 
@@ -31,12 +52,12 @@ template <typename R, typename... arglist>
 struct FirstFunctionWhenClouse {
 	virtual ~FirstFunctionWhenClouse() = 0 {};
 
-	NextFunctionWhenClouse<R, arglist...>& Return(R r)   {
+	NextFunctionWhenClouse<R, arglist...>& Return(const R r)   {
 		return Do(std::function<R(arglist...)>([r](...)->R{return r; }));
 	}
 
 	template <typename E>
-	NextFunctionWhenClouse<R, arglist...>& Throw(E e)  {
+	NextFunctionWhenClouse<R, arglist...>& Throw(const E e)  {
 		return Do(std::function<R(arglist...)>([e](...)->R{throw e; }));
 	}
 
@@ -66,7 +87,7 @@ struct NextProcedureWhenClouse {
 	}
 
 	template <typename E>
-	NextProcedureWhenClouse<arglist...>& ThenThrow(E e) {
+	NextProcedureWhenClouse<arglist...>& ThenThrow(const E e) {
 		return ThenDo(std::function<void(arglist...)>([e](...)->void{ throw e; }));
 	}
 
@@ -89,7 +110,7 @@ struct FirstProcedureWhenClouse {
 	};
 
 	template <typename E>
-	NextProcedureWhenClouse<arglist...>& Throw(E e) {
+	NextProcedureWhenClouse<arglist...>& Throw(const E e) {
 		return Do(std::function<void(arglist...)>([e](...)->void{ throw e; }));
 	};
 

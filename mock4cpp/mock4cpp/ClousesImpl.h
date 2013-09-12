@@ -2,6 +2,8 @@
 #define ClousesImpl_h__
 
 #include <functional>
+#include <type_traits>
+
 #include "../mock4cpp/MethodMock.h"
 #include "../mock4cpp/Clouses.h"
 
@@ -14,7 +16,9 @@ struct FunctionWhenClouseImpl :
 	FunctionWhenClouseImpl(MethodCallMock<R, arglist...> * invocationMock) :
 		invocationMock(invocationMock)
 	{
-		ThenReturn(R{});
+		static std::remove_reference<R>::type a{};
+		static R r{a};
+		ThenReturn(r);
 	}
 
 	~FunctionWhenClouseImpl(){}

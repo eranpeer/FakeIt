@@ -17,7 +17,7 @@ namespace mock4cpp_tests
 		virtual void proc2(ReferenceInterface &) = 0;
 	};
 
-	bool operator==(const ReferenceInterface& a, const ReferenceInterface& b)
+	static bool operator==(const ReferenceInterface& a, const ReferenceInterface& b)
 	{
 		return (&a == &b);
 	}
@@ -25,7 +25,8 @@ namespace mock4cpp_tests
 	TEST_CLASS(MockTest)
 	{
 	public:	
-		
+
+
 		struct SomeInterface
 		{
 			virtual int func(int) = 0;
@@ -327,8 +328,9 @@ namespace mock4cpp_tests
 		TEST_METHOD(StubProcWithReferenceParams){
 			Mock<ReferenceInterface> mock;
 			mock.Stub(&ReferenceInterface::proc1);
-			int  a;
 			mock.Stub(&ReferenceInterface::proc2);
+			//mock.Stub(&ReferenceInterface::func1);
+			//mock.Stub(&ReferenceInterface::func2);
 		}
 
 		template<typename... arglist>
