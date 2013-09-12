@@ -21,7 +21,7 @@ struct Mock
 
 	template <typename R, typename... arglist>
 	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...)){
-		return Stub(vMethod, std::function<R(arglist...)>([](const arglist&... args)->R{return defualtFunc<R,arglist...>(args...); }));
+		return Stub(vMethod, std::function<R(arglist...)>([](const arglist&... args)->R{return DefaultValue<R>::value(); }));
 	}
 
 	template <typename... arglist>
@@ -54,7 +54,7 @@ private:
 	MethodMock<R, arglist...>* stubMethodIfNotStubbed(R(C::*vMethod)(arglist...), std::function<R(arglist...)> initialMethodBehavior){
 		if (!dynamicProxy.isStubbed(vMethod)){
 			auto methodMock = new MethodMock<R, arglist...>();
-			methodMock->addMethodCall(new DefaultMethodCallMockMock<R, arglist...>(initialMethodBehavior));
+			methodMock->addMethodCall(new DefaultMethodCallMock<R, arglist...>(initialMethodBehavior));
 			dynamicProxy.stubMethod(vMethod, methodMock);
 		}
 		MethodMock<R, arglist...> * methodMock = dynamicProxy.getMethodMock<MethodMock<R, arglist...> *>(vMethod);

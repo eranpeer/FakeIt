@@ -329,7 +329,7 @@ namespace mock4cpp_tests
 			Mock<ReferenceInterface> mock;
 			mock.Stub(&ReferenceInterface::proc1);
 			mock.Stub(&ReferenceInterface::proc2);
-			//mock.Stub(&ReferenceInterface::func1);
+			mock.Stub(&ReferenceInterface::func1);
 			//mock.Stub(&ReferenceInterface::func2);
 		}
 

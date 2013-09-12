@@ -16,9 +16,9 @@ struct FunctionWhenClouseImpl :
 	FunctionWhenClouseImpl(MethodCallMock<R, arglist...> * invocationMock) :
 		invocationMock(invocationMock)
 	{
-		static std::remove_reference<R>::type a{};
-		static R r{a};
-		ThenReturn(r);
+		ThenDo([](...)->R{
+			return DefaultValue<R>::value(); 
+		});
 	}
 
 	~FunctionWhenClouseImpl(){}

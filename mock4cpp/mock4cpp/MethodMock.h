@@ -85,9 +85,9 @@ private:
 };
 
 template <typename R, typename... arglist>
-struct DefaultMethodCallMockMock : public MethodCallMock<R, arglist...>
+struct DefaultMethodCallMock : public MethodCallMock<R, arglist...>
 {
-	DefaultMethodCallMockMock(std::function<R(arglist...)> methodBehavior) {
+	DefaultMethodCallMock(std::function<R(arglist...)> methodBehavior) {
 		appendDo(methodBehavior);
 	}
 

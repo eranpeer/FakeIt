@@ -1,8 +1,10 @@
 #ifndef Clouses_h__
 #define Clouses_h__
 
-#include <type_traits>
 #include <functional>
+#include <type_traits>
+#include "DefaultValue.hpp"
+
 
 template <typename R, typename... arglist>
 struct NextFunctionWhenClouse {
@@ -10,29 +12,15 @@ struct NextFunctionWhenClouse {
 	virtual ~NextFunctionWhenClouse() {};
 
 	template< class U = R>
-	NextFunctionWhenClouse<R, arglist...>&
-	 ThenReturn(const U r)  {
+	NextFunctionWhenClouse<R, arglist...>& ThenReturn(const U r) {
 		NextFunctionWhenClouse<R, arglist...> &rv = ThenDo(
 			std::function<R(arglist...)>
 			([r](...)->R
 		    {
-				return r; 
+				return r;
 			}));
 		return rv;
 	}
-
-//  	template< class U = const R&&>
-//  	typename std::enable_if<std::is_rvalue_reference<U>::value, NextFunctionWhenClouse<R, arglist...>&>::type
-// //		NextFunctionWhenClouse<R, arglist...> &
-// 		ThenReturn(const U& r)  {
-// 		NextFunctionWhenClouse<R, arglist...> &rv = ThenDo(
-// 			std::function<R(arglist...)>
-// 			([r](...)->R
-// 		{
-// 			return r;
-// 		}));
-// 		return rv;
-// 	}
 
 	template <typename E>
 	NextFunctionWhenClouse<R, arglist...>& ThenThrow(const E e) {
