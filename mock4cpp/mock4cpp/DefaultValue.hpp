@@ -30,8 +30,8 @@ struct DefaultValue {
 		throw 1;
 	}
 
-	template<typename RT, class T = std::remove_reference<RT>::type>
-	static typename std::enable_if<std::is_reference<RT>::value, RT>::type value()
+	template<typename REF, class T = std::remove_reference<REF>::type>
+	static typename std::enable_if<std::is_reference<REF>::value, REF>::type value()
 	{
 		return DefaultValue::value<T>();
 	}
