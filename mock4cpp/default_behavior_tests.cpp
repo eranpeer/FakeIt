@@ -5,8 +5,7 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-
-namespace mock4cpp_tests
+namespace stubbing_tests
 {
 
 	struct ReferenceInterface {
@@ -29,28 +28,28 @@ namespace mock4cpp_tests
 		virtual void proc2(PointerInterface *) = 0;
 	};
 
-	TEST_CLASS(MockTest)
+	TEST_CLASS(DefaultBehaviorTests)
 	{
-	public:	
+	public:
 
 
 		struct SomeInterface
 		{
-			virtual int func(int) = 0;
+			virtual int intFunc(int) = 0;
 			virtual void proc(int) = 0;
 		};
 
 		TEST_METHOD(StubAllCallsToDefaultBeavior)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func);
+			mock.Stub(&SomeInterface::intFunc);
 			mock.Stub(&SomeInterface::proc);
 
 			SomeInterface &i = mock.get();
 
 			//Default behavior of a function is to return 0/false/null/default ctor
-			Assert::AreEqual(0, i.func(1));
-			Assert::AreEqual(0, i.func(2));
+			Assert::AreEqual(0, i.intFunc(1));
+			Assert::AreEqual(0, i.intFunc(2));
 
 			// Default behavior of a procedure is to do nothing
 			i.proc(1);
@@ -60,13 +59,13 @@ namespace mock4cpp_tests
 		TEST_METHOD(StubAllCallsToAlternateBeavior)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func).Return(1);
+			mock.Stub(&SomeInterface::intFunc).Return(1);
 			mock.Stub(&SomeInterface::proc).Throw(std::string("error"));
 
 			SomeInterface &i = mock.get();
 
-			Assert::AreEqual(1, i.func(1), L"should return 1");
-			Assert::AreEqual(1, i.func(2), L"should return 1");
+			Assert::AreEqual(1, i.intFunc(1), L"should return 1");
+			Assert::AreEqual(1, i.intFunc(2), L"should return 1");
 
 			Assert::ExpectException<std::string>([&i]{ i.proc(1); });
 			Assert::ExpectException<std::string>([&i]{ i.proc(2); });
@@ -83,12 +82,12 @@ namespace mock4cpp_tests
 		TEST_METHOD(StubDefaultBehaviorWithStaticMethod)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func).Do(&defaultFuncBehavior);
+			mock.Stub(&SomeInterface::intFunc).Do(&defaultFuncBehavior);
 			mock.Stub(&SomeInterface::proc).Do(&defaultProcBehavior);
-			
+
 			SomeInterface &i = mock.get();
-			
-			Assert::AreEqual(1, i.func(1));
+
+			Assert::AreEqual(1, i.intFunc(1));
 			Assert::ExpectException<int>([&i]{ i.proc(1); });
 		}
 
@@ -98,26 +97,26 @@ namespace mock4cpp_tests
 			std::function<void(int) > procStub = [](int a){throw a; };
 
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func).Do(funcStub);
+			mock.Stub(&SomeInterface::intFunc).Do(funcStub);
 			mock.Stub(&SomeInterface::proc).Do(procStub);
-			
+
 			SomeInterface &i = mock.get();
-			
-			Assert::AreEqual(1, i.func(1));
+
+			Assert::AreEqual(1, i.intFunc(1));
 			Assert::ExpectException<int>([&i]{ i.proc(1); });
 		}
 
 		TEST_METHOD(StubOnlySpecifiedCallsToAlternateBehavior)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func).When(1).Return(1);
+			mock.Stub(&SomeInterface::intFunc).When(1).Return(1);
 			mock.Stub(&SomeInterface::proc).When(1).Throw(std::string("error"));
 
 			SomeInterface &i = mock.get();
 
-			Assert::AreEqual(1,i.func(1));
-			Assert::AreEqual(1, i.func(1));
-			Assert::AreEqual(0, i.func(2),L"default behavior");
+			Assert::AreEqual(1, i.intFunc(1));
+			Assert::AreEqual(1, i.intFunc(1));
+			Assert::AreEqual(0, i.intFunc(2), L"default behavior");
 
 			Assert::ExpectException<std::string>([&i]{ i.proc(1); });
 			Assert::ExpectException<std::string>([&i]{ i.proc(1); });
@@ -130,17 +129,17 @@ namespace mock4cpp_tests
 			std::function<void(int) > procStub = [](int a){ throw a; };
 
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func).Do(funcStub);
+			mock.Stub(&SomeInterface::intFunc).Do(funcStub);
 			mock.Stub(&SomeInterface::proc).Do(procStub);
 
-			mock.Stub(&SomeInterface::func).When(1).Return(2);
+			mock.Stub(&SomeInterface::intFunc).When(1).Return(2);
 			mock.Stub(&SomeInterface::proc).When(1).Return();
 
 			SomeInterface &i = mock.get();
 
-			Assert::AreEqual(2, i.func(1));
-			Assert::AreEqual(2, i.func(1));
-			Assert::AreEqual(1, i.func(2), L"default behavior");
+			Assert::AreEqual(2, i.intFunc(1));
+			Assert::AreEqual(2, i.intFunc(1));
+			Assert::AreEqual(1, i.intFunc(2), L"default behavior");
 
 			i.proc(1);
 			i.proc(1);
@@ -151,14 +150,14 @@ namespace mock4cpp_tests
 		TEST_METHOD(StubIteratorStyle)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func).Return(1).ThenReturn(2).ThenReturn(3);
+			mock.Stub(&SomeInterface::intFunc).Return(1).ThenReturn(2).ThenReturn(3);
 			mock.Stub(&SomeInterface::proc).Return().ThenThrow(std::string("error")).ThenReturn();
 
 			SomeInterface &i = mock.get();
 
-			Assert::IsTrue(1 == i.func(0));
-			Assert::IsTrue(2 == i.func(0));
-			Assert::IsTrue(3 == i.func(0));
+			Assert::IsTrue(1 == i.intFunc(0));
+			Assert::IsTrue(2 == i.intFunc(0));
+			Assert::IsTrue(3 == i.intFunc(0));
 
 			i.proc(0);
 			Assert::ExpectException<std::string>([&i]{ i.proc(0); });
@@ -168,13 +167,13 @@ namespace mock4cpp_tests
 		TEST_METHOD(RestubDefaultReturnValue)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func).Return(1);
-			mock.Stub(&SomeInterface::func).Return(2);
+			mock.Stub(&SomeInterface::intFunc).Return(1);
+			mock.Stub(&SomeInterface::intFunc).Return(2);
 
 			SomeInterface &i = mock.get();
 
-			Assert::AreEqual(2, i.func(10));
-			Assert::AreEqual(2, i.func(11));
+			Assert::AreEqual(2, i.intFunc(10));
+			Assert::AreEqual(2, i.intFunc(11));
 		}
 
 		TEST_METHOD(RestubDefaultProcBehavior)
@@ -191,28 +190,28 @@ namespace mock4cpp_tests
 		TEST_METHOD(RestubReturnValue)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func).When(1).Return(1);
-			mock.Stub(&SomeInterface::func).When(1).Return(2);
+			mock.Stub(&SomeInterface::intFunc).When(1).Return(1);
+			mock.Stub(&SomeInterface::intFunc).When(1).Return(2);
 
 			SomeInterface &i = mock.get();
 
-			Assert::AreEqual(2, i.func(1));
+			Assert::AreEqual(2, i.intFunc(1));
 		}
 
 
 		TEST_METHOD(StubAllButOne)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func).Return(1);
-			mock.Stub(&SomeInterface::func).When(1).Return(2);
+			mock.Stub(&SomeInterface::intFunc).Return(1);
+			mock.Stub(&SomeInterface::intFunc).When(1).Return(2);
 
 			mock.Stub(&SomeInterface::proc).Throw(0);
 			mock.Stub(&SomeInterface::proc).When(1).Return();
 
 			SomeInterface &i = mock.get();
 
-			Assert::AreEqual(1, i.func(0));
-			Assert::AreEqual(2, i.func(1));
+			Assert::AreEqual(1, i.intFunc(0));
+			Assert::AreEqual(2, i.intFunc(1));
 
 			Assert::ExpectException<int>([&i]{ i.proc(0); });
 			i.proc(1);
@@ -221,7 +220,7 @@ namespace mock4cpp_tests
 		struct AbstractClass
 		{
 			AbstractClass() : c(1), s(1), i(1), f(1), d(1), l(1){}
- 			
+
 			char c;
 			short s;
 			int i;
@@ -239,7 +238,7 @@ namespace mock4cpp_tests
 			Mock<AbstractClass> mock;
 			AbstractClass &i = mock.get();
 			Assert::AreEqual((char) 0, i.c);
-			Assert::AreEqual((short)0, i.s);
+			Assert::AreEqual((short) 0, i.s);
 			Assert::AreEqual((int) 0, i.i);
 			Assert::AreEqual((float) 0, i.f);
 			Assert::AreEqual((double) 0, i.d);
@@ -267,10 +266,10 @@ namespace mock4cpp_tests
 			Mock<AbstractClass> mock;
 			AbstractClass &i = mock.get();
 			mock.Stub(&AbstractClass::c, '1');
-			mock.Stub(&AbstractClass::s, (short)2);
+			mock.Stub(&AbstractClass::s, (short) 2);
 			mock.Stub(&AbstractClass::i, 3);
-			mock.Stub(&AbstractClass::f, (float)4);
-			mock.Stub(&AbstractClass::d, (double)5);
+			mock.Stub(&AbstractClass::f, (float) 4);
+			mock.Stub(&AbstractClass::d, (double) 5);
 			mock.Stub(&AbstractClass::l, 6);
 			Assert::AreEqual('1', i.c);
 			Assert::AreEqual((short) 2, i.s);
@@ -286,11 +285,11 @@ namespace mock4cpp_tests
 
 			mock.Stub(&AbstractClass::str);
 			Assert::AreEqual(std::string(), i.str);
-			
-			mock.Stub(&AbstractClass::str,"text");
+
+			mock.Stub(&AbstractClass::str, "text");
 			Assert::AreEqual(std::string("text"), i.str);
-			
-			mock.Stub(&AbstractClass::str, 'a','b');
+
+			mock.Stub(&AbstractClass::str, 'a', 'b');
 			Assert::AreEqual(std::string("ab"), i.str);
 		}
 
@@ -342,12 +341,12 @@ namespace mock4cpp_tests
 			ReferenceInterface & i = mock.get();
 			ReferenceInterface* pReferenceInterface { nullptr };
 			ReferenceInterface& ref = *pReferenceInterface;
-			int a{0};
+			int a{ 0 };
 			i.proc1(a);
 			i.proc2(ref);
 			int& rInt = i.func1();
 			ReferenceInterface& r = i.func2();
-			Assert::AreEqual(0,rInt,L"fundamental types are initiated to 0");
+			Assert::AreEqual(0, rInt, L"fundamental types are initiated to 0");
 			Assert::IsNull(&r, L"reference to abstract types are initiated with *nullptr");
 		}
 
@@ -370,7 +369,7 @@ namespace mock4cpp_tests
 
 			ArgsHolder(const arglist&... args) : tuple(args...){
 			}
- 			
+
 			bool match(const arglist& ... args){
 				return tuple == std::tuple<arglist...>(args...);
 			}
@@ -379,47 +378,47 @@ namespace mock4cpp_tests
 			std::tuple<arglist...> tuple;
 		};
 
-// 		void f(const int&& a){
-// 		}
-// 
-// 		void f(const int & a){
-// 		}
+		// 		void f(const int&& a){
+		// 		}
+		// 
+		// 		void f(const int & a){
+		// 		}
 
-// 		TEST_METHOD(TestTuple){
-// 			int a = 1;
-// 			int& ar = a;
-// 			int b = 1;
-// 			int& br = b;
-// 
-// 			f(ar);
-//  			ArgsHolder<int, int> ah(ar, a);
-//  			Assert::IsTrue(ah.match(1, 1));
-// 		}
+		// 		TEST_METHOD(TestTuple){
+		// 			int a = 1;
+		// 			int& ar = a;
+		// 			int b = 1;
+		// 			int& br = b;
+		// 
+		// 			f(ar);
+		//  			ArgsHolder<int, int> ah(ar, a);
+		//  			Assert::IsTrue(ah.match(1, 1));
+		// 		}
 
-// 		TEST_METHOD(StubWithoutWhenClouse_ShouldStubAllCallsToDefaultBeaviour)
-// 		{
-// 			Mock<PrimitiveFunctions> mock;
-// 			mock.Stub(&PrimitiveFunctions::fBool);
-// 			mock.Stub(&PrimitiveFunctions::fShort);
-// 			mock.Stub(&PrimitiveFunctions::fUnsignedShort);
-// 			mock.Stub(&PrimitiveFunctions::fInt);
-// 			mock.Stub(&PrimitiveFunctions::fUnsignedInt);
-// 			mock.Stub(&PrimitiveFunctions::fLong);
-// 			mock.Stub(&PrimitiveFunctions::fUnsignedLong);
-// 			mock.Stub(&PrimitiveFunctions::fFloat);
-// 			mock.Stub(&PrimitiveFunctions::fDouble);
-// 
-// 			PrimitiveFunctions &i = mock.get();
-// 			Assert::IsTrue(false == i.fBool());
-// 			Assert::IsTrue(0 == i.fShort());
-// 			Assert::IsTrue(0 == i.fUnsignedShort());
-// 			Assert::IsTrue(0 == i.fInt());
-// 			Assert::IsTrue(0 == i.fUnsignedInt());
-// 			Assert::IsTrue(0 == i.fLong());
-// 			Assert::IsTrue(0 == i.fUnsignedLong());
-// 			Assert::IsTrue(0 == i.fFloat());
-// 			Assert::IsTrue(0 == i.fDouble());
-// 		}
-		
+		// 		TEST_METHOD(StubWithoutWhenClouse_ShouldStubAllCallsToDefaultBeaviour)
+		// 		{
+		// 			Mock<PrimitiveFunctions> mock;
+		// 			mock.Stub(&PrimitiveFunctions::fBool);
+		// 			mock.Stub(&PrimitiveFunctions::fShort);
+		// 			mock.Stub(&PrimitiveFunctions::fUnsignedShort);
+		// 			mock.Stub(&PrimitiveFunctions::fInt);
+		// 			mock.Stub(&PrimitiveFunctions::fUnsignedInt);
+		// 			mock.Stub(&PrimitiveFunctions::fLong);
+		// 			mock.Stub(&PrimitiveFunctions::fUnsignedLong);
+		// 			mock.Stub(&PrimitiveFunctions::fFloat);
+		// 			mock.Stub(&PrimitiveFunctions::fDouble);
+		// 
+		// 			PrimitiveFunctions &i = mock.get();
+		// 			Assert::IsTrue(false == i.fBool());
+		// 			Assert::IsTrue(0 == i.fShort());
+		// 			Assert::IsTrue(0 == i.fUnsignedShort());
+		// 			Assert::IsTrue(0 == i.fInt());
+		// 			Assert::IsTrue(0 == i.fUnsignedInt());
+		// 			Assert::IsTrue(0 == i.fLong());
+		// 			Assert::IsTrue(0 == i.fUnsignedLong());
+		// 			Assert::IsTrue(0 == i.fFloat());
+		// 			Assert::IsTrue(0 == i.fDouble());
+		// 		}
+
 	};
 }
