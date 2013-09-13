@@ -25,6 +25,15 @@ struct VirtualOffsetSelector {
 	virtual void * offset18(){ return new OFFSET_CONSUMER<18>(); }
 	virtual void * offset19(){ return new OFFSET_CONSUMER<19>(); }
 	virtual void * offset20(){ return new OFFSET_CONSUMER<20>(); }
+	virtual void * offset21(){ return new OFFSET_CONSUMER<21>(); }
+	virtual void * offset22(){ return new OFFSET_CONSUMER<22>(); }
+	virtual void * offset23(){ return new OFFSET_CONSUMER<23>(); }
+	virtual void * offset24(){ return new OFFSET_CONSUMER<24>(); }
+	virtual void * offset25(){ return new OFFSET_CONSUMER<25>(); }
+	virtual void * offset26(){ return new OFFSET_CONSUMER<26>(); }
+	virtual void * offset27(){ return new OFFSET_CONSUMER<27>(); }
+	virtual void * offset28(){ return new OFFSET_CONSUMER<28>(); }
+	virtual void * offset29(){ return new OFFSET_CONSUMER<29>(); }
 
 	template <typename M>
 	void * create(const M vMethod){

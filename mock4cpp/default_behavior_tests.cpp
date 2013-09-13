@@ -58,6 +58,7 @@ namespace stubbing_tests
 			Assert::AreEqual((float) 0, i.floatFunc());
 			Assert::AreEqual((double) 0, i.doubleFunc());
 			Assert::AreEqual((double) 0, (double)i.longDoubleFunc());
+
 		}
 
 // 		TEST_METHOD(StubAllCallsToAlternateBeavior)
