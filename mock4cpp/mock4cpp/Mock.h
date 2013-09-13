@@ -21,7 +21,7 @@ struct Mock
 
 	template <typename R, typename... arglist>
 	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...)){
-		return Stub(vMethod, std::function<R(arglist...)>([](const arglist&... args)->R{return DefaultValue<R>::value(); }));
+		return Stub(vMethod, std::function<R(arglist...)>([](const arglist&... args)->R{return DefaultValue::value<R>(); }));
 	}
 
 	template <typename... arglist>

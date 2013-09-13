@@ -17,6 +17,16 @@ namespace mock4cpp_tests
 		virtual void proc2(ReferenceInterface &) = 0;
 	};
 
+
+	struct PointerInterface {
+		virtual int* func1() = 0;
+		virtual PointerInterface* func2() = 0;
+
+		virtual void proc1(int*) = 0;
+		virtual void proc2(PointerInterface *) = 0;
+	};
+
+
 	static bool operator==(const ReferenceInterface& a, const ReferenceInterface& b)
 	{
 		return (&a == &b);
@@ -330,8 +340,22 @@ namespace mock4cpp_tests
 			mock.Stub(&ReferenceInterface::proc1);
 			mock.Stub(&ReferenceInterface::proc2);
 			mock.Stub(&ReferenceInterface::func1);
-			//mock.Stub(&ReferenceInterface::func2);
+			mock.Stub(&ReferenceInterface::func2);
 		}
+
+		TEST_METHOD(StubProcWithPointerParams){
+			Mock<PointerInterface> mock;
+			mock.Stub(&PointerInterface::proc1);
+			mock.Stub(&PointerInterface::proc2);
+			mock.Stub(&PointerInterface::func1);
+			mock.Stub(&PointerInterface::func2);
+			PointerInterface & i = mock.get();
+			i.proc1(nullptr);
+			i.proc2(nullptr);
+			Assert::IsNull(i.func1());
+			Assert::IsNull(i.func2());
+		}
+
 
 		template<typename... arglist>
 		struct ArgsHolder {

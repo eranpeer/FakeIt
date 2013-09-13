@@ -17,7 +17,7 @@ struct FunctionWhenClouseImpl :
 		invocationMock(invocationMock)
 	{
 		ThenDo([](...)->R{
-			return DefaultValue<R>::value(); 
+			return DefaultValue::value<R>(); 
 		});
 	}
 
