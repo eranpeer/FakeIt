@@ -27,7 +27,8 @@ struct DefaultValue {
 	template<typename AC, class REF = std::add_reference<AC>::type>
 	static typename std::enable_if<std::is_class<AC>::value && std::is_abstract<AC>::value && !std::is_reference<AC>::value, REF>::type value()
 	{
-		throw 1;
+		AC* ptrToNull{ nullptr };
+		return *ptrToNull;
 	}
 
 	template<typename REF, class T = std::remove_reference<REF>::type>
