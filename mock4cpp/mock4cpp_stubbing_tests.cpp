@@ -341,6 +341,17 @@ namespace mock4cpp_tests
 			mock.Stub(&ReferenceInterface::proc2);
 			mock.Stub(&ReferenceInterface::func1);
 			mock.Stub(&ReferenceInterface::func2);
+
+			ReferenceInterface & i = mock.get();
+			ReferenceInterface* pReferenceInterface { nullptr };
+			ReferenceInterface& ref = *pReferenceInterface;
+			int a{0};
+			i.proc1(a);
+			i.proc2(ref);
+			int& rInt = i.func1();
+			ReferenceInterface& r = i.func2();
+			Assert::AreEqual(0,rInt,L"fundamental types are initiated to 0");
+			Assert::IsNull(&r, L"reference to abstract types are initiated with *nullptr");
 		}
 
 		TEST_METHOD(StubProcWithPointerParams){
