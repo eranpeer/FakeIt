@@ -55,6 +55,7 @@ namespace stubbing_tests
 		virtual int& scalarFunc() = 0;
 		virtual std::string& stringFunc() = 0;
 		virtual NotDefaultConstructible& notDefaultConstructibleFunc() = 0;
+		virtual ReferenceFunctions& abstractTypeFunc() = 0;
 	};
 
 	TEST_CLASS(DefaultBehaviorTests)
@@ -130,14 +131,6 @@ namespace stubbing_tests
 			Assert::AreEqual(std::string(), i.stringfunc());
 		}
 
-		TEST_METHOD(ReturnByValue_ThrowExceptionIfNotDefaultConstructible)
-		{
-			Mock<NonDefaultConstructibleFunctions> mock;
-			mock.Stub(&NonDefaultConstructibleFunctions::notDefaultConstructibleFunc);
-			NonDefaultConstructibleFunctions& i = mock.get();
-			Assert::ExpectException<std::string>([&i]{ i.notDefaultConstructibleFunc(); });
-		}
-
 		TEST_METHOD(ReturnByReference_ReturnReferenceToDefaultConstructedObject)
 		{
 			Mock<ReferenceFunctions> mock;
@@ -148,12 +141,29 @@ namespace stubbing_tests
 			Assert::AreEqual(std::string(), i.stringFunc());
 		}
 
+		TEST_METHOD(ReturnByValue_ThrowExceptionIfNotDefaultConstructible)
+		{
+			Mock<NonDefaultConstructibleFunctions> mock;
+			mock.Stub(&NonDefaultConstructibleFunctions::notDefaultConstructibleFunc);
+			NonDefaultConstructibleFunctions& i = mock.get();
+			Assert::ExpectException<std::string>([&i]{ i.notDefaultConstructibleFunc(); });
+		}
+
 		TEST_METHOD(ReturnByReference_ThrowExceptionIfNotDefaultConstructible)
 		{
 			Mock<ReferenceFunctions> mock;
 			mock.Stub(&ReferenceFunctions::notDefaultConstructibleFunc);
 			ReferenceFunctions& i = mock.get();
 			Assert::ExpectException<std::string>([&i]{ i.notDefaultConstructibleFunc(); }, 
+				L"should fail to create default value");
+		}
+
+		TEST_METHOD(ReturnByReference_ThrowExceptionIfAbstract)
+		{
+			Mock<ReferenceFunctions> mock;
+			mock.Stub(&ReferenceFunctions::abstractTypeFunc);
+			ReferenceFunctions& i = mock.get();
+			Assert::ExpectException<std::string>([&i]{ i.abstractTypeFunc(); },
 				L"should fail to create default value");
 		}
 
