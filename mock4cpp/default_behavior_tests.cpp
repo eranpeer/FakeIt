@@ -10,33 +10,56 @@ namespace stubbing_tests
 
 	enum Color {RED = 1, GREEN = 2, BLUE = 3};
 
+	struct ScalarFuctions {
+		virtual bool boolFunc() = 0;
+		virtual char charFunc() = 0;
+		virtual char16_t char16Func() = 0;
+		virtual char32_t char32Func() = 0;
+		virtual wchar_t wcharFunc() = 0;
+		virtual short shortFunc() = 0;
+		virtual int intFunc() = 0;
+		virtual long longFunc() = 0;
+		virtual long long longLongFunc() = 0;
+		virtual float floatFunc() = 0;
+		virtual double doubleFunc() = 0;
+		virtual long double longDoubleFunc() = 0;
+
+		virtual Color enumFunc() = 0;
+
+		virtual int * pIntFunc() = 0;
+		virtual ScalarFuctions * pScalarFuctionsfunc() = 0;
+		virtual std::nullptr_t nullptrFunc() = 0;
+
+		typedef bool (ScalarFuctions::*func)();
+		virtual func pMemberFunc() = 0;
+	};
+
+	struct DefaultConstructibleFunctions {
+		virtual std::string stringfunc() = 0;
+	};
+
+	struct NotDefaultConstructible {
+		NotDefaultConstructible(int a) : a(a){};
+		const bool operator==(const NotDefaultConstructible &other) const {
+			return a == other.a;
+		}
+	private:
+		int a;
+	};
+
+	struct NonDefaultConstructibleFunctions {
+		virtual NotDefaultConstructible notDefaultConstructibleFunc() = 0;
+	};
+
+	struct ReferenceFunctions {
+		virtual int& scalarFunc() = 0;
+		virtual std::string& stringFunc() = 0;
+		virtual NotDefaultConstructible& notDefaultConstructibleFunc() = 0;
+	};
+
 	TEST_CLASS(DefaultBehaviorTests)
 	{
 	public:
-
-		struct ScalarFuctions {
-			virtual bool boolFunc() = 0;
-			virtual char charFunc() = 0;
-			virtual char16_t char16Func() = 0;
-			virtual char32_t char32Func() = 0;
-			virtual wchar_t wcharFunc() = 0;
-			virtual short shortFunc() = 0;
-			virtual int intFunc() = 0;
-			virtual long longFunc() = 0;
-			virtual long long longLongFunc() = 0;
-			virtual float floatFunc() = 0;
-			virtual double doubleFunc() = 0;
-			virtual long double longDoubleFunc() = 0;
-
-			virtual Color enumFunc() = 0;
-
-			virtual int * pIntFunc() = 0;
-			virtual ScalarFuctions * pScalarFuctionsfunc() = 0;
-			virtual std::nullptr_t nullptrFunc() = 0;
-
-			typedef bool (ScalarFuctions::*func)();
-			virtual func pMemberFunc() = 0;
-		};
 
 
 		TEST_METHOD(DefaultBeaviorOfScalarFunctionsIsToReturnZero)
@@ -89,7 +112,7 @@ namespace stubbing_tests
 			virtual void proc2(int a) = 0;
 		};
 
-		TEST_METHOD(DefaultBeaviorOfVoidFunctionsIsToReturnVoid)
+		TEST_METHOD(DefaultBeaviorOfVoidFunctionsIsToDoNothing)
 		{
 			Mock<VoidFunctions> mock;
 			mock.Stub(&VoidFunctions::proc1);
@@ -98,6 +121,51 @@ namespace stubbing_tests
 			i.proc1();
 			i.proc2(1);
 		}
+
+		TEST_METHOD(ReturnByValue_ReturnDefaultConstructedObject)
+		{
+			Mock<DefaultConstructibleFunctions> mock;
+			mock.Stub(&DefaultConstructibleFunctions::stringfunc);
+			DefaultConstructibleFunctions& i = mock.get();
+			Assert::AreEqual(std::string(), i.stringfunc());
+		}
+
+		TEST_METHOD(ReturnByValue_ThrowExceptionIfNotDefaultConstructible)
+		{
+			Mock<NonDefaultConstructibleFunctions> mock;
+			mock.Stub(&NonDefaultConstructibleFunctions::notDefaultConstructibleFunc);
+			NonDefaultConstructibleFunctions& i = mock.get();
+			Assert::ExpectException<std::string>([&i]{ i.notDefaultConstructibleFunc(); });
+		}
+
+		TEST_METHOD(ReturnByReference_ReturnReferenceToDefaultConstructedObject)
+		{
+			Mock<ReferenceFunctions> mock;
+			mock.Stub(&ReferenceFunctions::scalarFunc);
+			mock.Stub(&ReferenceFunctions::stringFunc);
+			ReferenceFunctions& i = mock.get();
+			Assert::AreEqual(0, i.scalarFunc());
+			Assert::AreEqual(std::string(), i.stringFunc());
+		}
+
+		TEST_METHOD(ReturnByReference_ThrowExceptionIfNotDefaultConstructible)
+		{
+			Mock<ReferenceFunctions> mock;
+			mock.Stub(&ReferenceFunctions::notDefaultConstructibleFunc);
+			ReferenceFunctions& i = mock.get();
+			Assert::ExpectException<std::string>([&i]{ i.notDefaultConstructibleFunc(); }, 
+				L"should fail to create default value");
+		}
+
+		TEST_METHOD(OverrideDefualtBehavior)
+		{
+			Mock<NonDefaultConstructibleFunctions> mock;
+			mock.Stub(&NonDefaultConstructibleFunctions::notDefaultConstructibleFunc).Return(NotDefaultConstructible(1));
+			NonDefaultConstructibleFunctions& i = mock.get();
+			Assert::IsTrue(NotDefaultConstructible(1) == i.notDefaultConstructibleFunc());
+			Assert::IsFalse(NotDefaultConstructible(2) == i.notDefaultConstructibleFunc());
+		}
+
 
 // 		TEST_METHOD(StubAllCallsToAlternateBeavior)
 // 		{

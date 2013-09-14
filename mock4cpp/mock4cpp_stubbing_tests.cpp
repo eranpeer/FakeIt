@@ -346,9 +346,8 @@ namespace mock4cpp_tests
 			i.proc1(a);
 			i.proc2(ref);
 			int& rInt = i.func1();
-			ReferenceInterface& r = i.func2();
 			Assert::AreEqual(0,rInt,L"fundamental types are initiated to 0");
-			Assert::IsNull(&r, L"reference to abstract types are initiated with *nullptr");
+			Assert::ExpectException<std::string>([&i]{ i.func2(); }, L"should fail to create default value");
 		}
 
 		TEST_METHOD(StubProcWithPointerParams){
