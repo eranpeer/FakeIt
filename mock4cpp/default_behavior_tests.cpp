@@ -10,35 +10,36 @@ namespace stubbing_tests
 
 	enum Color {RED = 1, GREEN = 2, BLUE = 3};
 
-	struct ScalarFuctions {
-		virtual bool boolFunc() = 0;
-		virtual char charFunc() = 0;
-		virtual char16_t char16Func() = 0;
-		virtual char32_t char32Func() = 0;
-		virtual wchar_t wcharFunc() = 0;
-		virtual short shortFunc() = 0;
-		virtual int intFunc() = 0;
-		virtual long longFunc() = 0;
-		virtual long long longLongFunc() = 0;
-		virtual float floatFunc() = 0;
-		virtual double doubleFunc() = 0;
-		virtual long double longDoubleFunc() = 0;
-
-		virtual Color enumFunc() = 0;
-		
-		virtual int * pIntFunc() = 0;
-		virtual ScalarFuctions * pScalarFuctionsfunc() = 0;
-		virtual std::nullptr_t nullptrFunc() = 0;
-
-		typedef bool (ScalarFuctions::*func)();
-		virtual func pMemberFunc() = 0;
-	};
-
 	TEST_CLASS(DefaultBehaviorTests)
 	{
 	public:
 
-		TEST_METHOD(StubAllCallsToDefaultBeavior)
+		struct ScalarFuctions {
+			virtual bool boolFunc() = 0;
+			virtual char charFunc() = 0;
+			virtual char16_t char16Func() = 0;
+			virtual char32_t char32Func() = 0;
+			virtual wchar_t wcharFunc() = 0;
+			virtual short shortFunc() = 0;
+			virtual int intFunc() = 0;
+			virtual long longFunc() = 0;
+			virtual long long longLongFunc() = 0;
+			virtual float floatFunc() = 0;
+			virtual double doubleFunc() = 0;
+			virtual long double longDoubleFunc() = 0;
+
+			virtual Color enumFunc() = 0;
+
+			virtual int * pIntFunc() = 0;
+			virtual ScalarFuctions * pScalarFuctionsfunc() = 0;
+			virtual std::nullptr_t nullptrFunc() = 0;
+
+			typedef bool (ScalarFuctions::*func)();
+			virtual func pMemberFunc() = 0;
+		};
+
+
+		TEST_METHOD(DefaultBeaviorOfScalarFunctionsIsToReturnZero)
 		{
 			Mock<ScalarFuctions> mock;
 			mock.Stub(&ScalarFuctions::boolFunc);
@@ -80,6 +81,22 @@ namespace stubbing_tests
 			Assert::IsNull(i.pScalarFuctionsfunc());
 			Assert::AreEqual((int) nullptr, (int) i.nullptrFunc());
 			Assert::AreEqual(0, union_cast<int>(i.pMemberFunc()));
+		}
+
+		struct VoidFunctions
+		{
+			virtual void proc1() = 0;
+			virtual void proc2(int a) = 0;
+		};
+
+		TEST_METHOD(DefaultBeaviorOfVoidFunctionsIsToReturnVoid)
+		{
+			Mock<VoidFunctions> mock;
+			mock.Stub(&VoidFunctions::proc1);
+			mock.Stub(&VoidFunctions::proc2);
+			VoidFunctions& i = mock.get();
+			i.proc1();
+			i.proc2(1);
 		}
 
 // 		TEST_METHOD(StubAllCallsToAlternateBeavior)
