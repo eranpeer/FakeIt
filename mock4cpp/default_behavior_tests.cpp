@@ -8,6 +8,8 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace stubbing_tests
 {
 
+	enum Color {RED = 1, GREEN = 2, BLUE = 3};
+
 	struct ScalarFuctions {
 		virtual bool boolFunc() = 0;
 		virtual char charFunc() = 0;
@@ -21,6 +23,15 @@ namespace stubbing_tests
 		virtual float floatFunc() = 0;
 		virtual double doubleFunc() = 0;
 		virtual long double longDoubleFunc() = 0;
+
+		virtual Color enumFunc() = 0;
+		
+		virtual int * pIntFunc() = 0;
+		virtual ScalarFuctions * pScalarFuctionsfunc() = 0;
+		virtual std::nullptr_t nullptrFunc() = 0;
+
+		typedef bool (ScalarFuctions::*func)();
+		virtual func pMemberFunc() = 0;
 	};
 
 	TEST_CLASS(DefaultBehaviorTests)
@@ -42,10 +53,16 @@ namespace stubbing_tests
 			mock.Stub(&ScalarFuctions::floatFunc);
 			mock.Stub(&ScalarFuctions::doubleFunc);
 			mock.Stub(&ScalarFuctions::longDoubleFunc);
+			mock.Stub(&ScalarFuctions::enumFunc);
+			mock.Stub(&ScalarFuctions::pIntFunc);
+			mock.Stub(&ScalarFuctions::pScalarFuctionsfunc);
+			mock.Stub(&ScalarFuctions::nullptrFunc);
+			mock.Stub(&ScalarFuctions::pMemberFunc);
 
 			ScalarFuctions &i = mock.get();
 
 			//Default behavior of a scalar function is to return 0/false/null
+
 			Assert::AreEqual(false, i.boolFunc());
 			Assert::AreEqual((char) 0, i.charFunc());
 			Assert::AreEqual((int)(char16_t) 0, (int)i.char16Func());
@@ -57,8 +74,12 @@ namespace stubbing_tests
 			Assert::AreEqual((long)0, (long)i.longLongFunc());
 			Assert::AreEqual((float) 0, i.floatFunc());
 			Assert::AreEqual((double) 0, i.doubleFunc());
-			Assert::AreEqual((double) 0, (double)i.longDoubleFunc());
-
+			Assert::AreEqual((double) 0, (double) i.longDoubleFunc());
+			Assert::AreEqual(0, (int) i.enumFunc());
+			Assert::IsNull(i.pIntFunc());
+			Assert::IsNull(i.pScalarFuctionsfunc());
+			Assert::AreEqual((int) nullptr, (int) i.nullptrFunc());
+			Assert::AreEqual(0, union_cast<int>(i.pMemberFunc()));
 		}
 
 // 		TEST_METHOD(StubAllCallsToAlternateBeavior)
