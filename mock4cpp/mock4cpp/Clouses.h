@@ -12,7 +12,7 @@ struct NextFunctionWhenClouse {
 	virtual ~NextFunctionWhenClouse() {};
 
 	template< class U = R>
-	NextFunctionWhenClouse<R, arglist...>& ThenReturn(const U r) {
+	NextFunctionWhenClouse<R, arglist...>& ThenReturn(const U& r) {
 		NextFunctionWhenClouse<R, arglist...> &rv = ThenDo(
 			std::function<R(arglist...)>
 			([r](...)->R
@@ -23,7 +23,7 @@ struct NextFunctionWhenClouse {
 	}
 
 	template <typename E>
-	NextFunctionWhenClouse<R, arglist...>& ThenThrow(const E e) {
+	NextFunctionWhenClouse<R, arglist...>& ThenThrow(const E& e) {
 		return ThenDo(std::function<R(arglist...)>([e](...)->R{throw e; }));
 	}
 
@@ -39,13 +39,18 @@ struct NextFunctionWhenClouse {
 template <typename R, typename... arglist>
 struct FirstFunctionWhenClouse {
 	virtual ~FirstFunctionWhenClouse() = 0 {};
-
-	NextFunctionWhenClouse<R, arglist...>& Return(const R r)   {
-		return Do(std::function<R(arglist...)>([r](...)->R{return r; }));
-	}
+	
+ 	template<typename NO_REF = std::remove_reference<R>::type>
+	typename std::enable_if<std::true_type::value, NextFunctionWhenClouse<R, arglist...>&>::type
+		Return(const R& r) {
+			//, R, R&>::type rv;
+			return Do(std::function<R(arglist...)>([r](...)->R{
+				return R{ r };
+			}));
+		}
 
 	template <typename E>
-	NextFunctionWhenClouse<R, arglist...>& Throw(const E e)  {
+	NextFunctionWhenClouse<R, arglist...>& Throw(const E& e)  {
 		return Do(std::function<R(arglist...)>([e](...)->R{throw e; }));
 	}
 

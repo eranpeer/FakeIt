@@ -56,6 +56,11 @@ namespace stubbing_tests
 		virtual std::string& stringFunc() = 0;
 		virtual NotDefaultConstructible& notDefaultConstructibleFunc() = 0;
 		virtual ReferenceFunctions& abstractTypeFunc() = 0;
+
+		const bool operator==(const ReferenceFunctions &other) const {
+			return this == &other;
+		}
+
 	};
 
 	TEST_CLASS(DefaultBehaviorTests)
@@ -166,8 +171,8 @@ namespace stubbing_tests
 			Assert::ExpectException<std::string>([&i]{ i.abstractTypeFunc(); },
 				L"should fail to create default value");
 		}
-
-		TEST_METHOD(OverrideDefualtBehavior)
+ 
+		TEST_METHOD(OverrideDefualtBehavior_NotDefaultConstructible)
 		{
 			Mock<NonDefaultConstructibleFunctions> mock;
 			mock.Stub(&NonDefaultConstructibleFunctions::notDefaultConstructibleFunc).Return(NotDefaultConstructible(1));
@@ -175,6 +180,50 @@ namespace stubbing_tests
 			Assert::IsTrue(NotDefaultConstructible(1) == i.notDefaultConstructibleFunc());
 			Assert::IsFalse(NotDefaultConstructible(2) == i.notDefaultConstructibleFunc());
 		}
+
+		TEST_METHOD(OverrideDefualtBehavior_Scalar)
+		{
+			Mock<ScalarFuctions> mock;
+			mock.Stub(&ScalarFuctions::boolFunc).Return(true);
+			mock.Stub(&ScalarFuctions::doubleFunc).Return(1.1);
+			ScalarFuctions& i = mock.get();
+			Assert::IsTrue(i.boolFunc());
+			Assert::AreEqual(1.1, i.doubleFunc());
+		}
+
+		TEST_METHOD(OverrideDefualtBehavior_AbstractType)
+		{
+			auto a = std::is_scalar<int&>::value;
+			auto b = std::is_scalar<int>::value;
+			auto c = std::is_class<ReferenceFunctions>::value;
+			auto d = std::is_class<ReferenceFunctions&>::value;
+			auto e = std::is_class<ReferenceFunctions*>::value;
+			auto f = std::is_abstract<ReferenceFunctions>::value;
+			auto g = std::is_abstract<ReferenceFunctions&>::value;
+			auto h = std::is_copy_constructible<int>::value;
+			//auto i = std::is_copy_constructible<int&>::value;
+			auto j = std::is_copy_constructible<int*>::value;
+			auto k = std::is_copy_constructible<ReferenceFunctions>::value;
+			auto l = std::is_copy_constructible<ReferenceFunctions&>::value;
+			auto m = std::is_trivially_copy_constructible<ReferenceFunctions>::value;
+			auto n = std::is_trivially_copy_constructible<ReferenceFunctions&>::value;
+			auto o = std::is_trivially_copy_constructible<NotDefaultConstructible>::value;
+			auto p = std::is_trivially_copy_constructible<NotDefaultConstructible&>::value;
+			
+			ReferenceFunctions* ptr = nullptr;
+			ReferenceFunctions& r{ *ptr };
+			ReferenceFunctions& r2{ r };
+
+			NotDefaultConstructible ndc( 1 );
+			NotDefaultConstructible& nr{ndc};
+
+// 			Mock<ReferenceFunctions> mock;
+// 			ReferenceFunctions* pAbstractType{ nullptr };
+// 			ReferenceFunctions& refAbstractType{ *pAbstractType };
+// 			mock.Stub(&ReferenceFunctions::abstractTypeFunc).Return(refAbstractType);
+// 			ReferenceFunctions& i = mock.get();
+			//Assert::IsNull(&i.abstractTypeFunc());
+ 		}
 
 
 // 		TEST_METHOD(StubAllCallsToAlternateBeavior)
