@@ -67,7 +67,6 @@ namespace stubbing_tests
 	{
 	public:
 
-
 		TEST_METHOD(DefaultBeaviorOfScalarFunctionsIsToReturnZero)
 		{
 			Mock<ScalarFuctions> mock;
@@ -229,6 +228,40 @@ namespace stubbing_tests
 			Assert::ExpectException<std::string>([&](){i.proc(2); });
 			Assert::AreEqual(1, i.func(1));
 			Assert::AreEqual(1, i.func(2));
+		}
+
+		union MyUnion
+		{
+			int a;
+			double d;
+
+			MyUnion() :a{0}{}
+	
+			const bool operator==(const MyUnion& other) const {
+				return other.a == a;
+			}
+		};
+
+		struct UnionFunctions
+		{
+			virtual MyUnion unionFunc() = 0;
+			virtual MyUnion& unionRefFunc() = 0;
+		};
+
+		TEST_METHOD(ReturnByValue_ReturnDefaultConstructedUnion)
+		{
+			Mock<UnionFunctions> mock;
+			mock.Stub(&UnionFunctions::unionFunc);
+			UnionFunctions& i = mock.get();
+			Assert::IsTrue(MyUnion() == i.unionFunc());
+		}
+
+		TEST_METHOD(ReturnByReference_ReturnReferenceToDefaultConstructedUnion)
+		{
+			Mock<UnionFunctions> mock;
+			mock.Stub(&UnionFunctions::unionRefFunc);
+			UnionFunctions& i = mock.get();
+			Assert::IsTrue(MyUnion() == i.unionRefFunc());
 		}
 
 	};
