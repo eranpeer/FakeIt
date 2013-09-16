@@ -264,5 +264,18 @@ namespace stubbing_tests
 			Assert::IsTrue(MyUnion() == i.unionRefFunc());
 		}
 
+		struct ConstVolatileFunctions{
+			virtual const int func1() = 0;
+			virtual const int func2() volatile = 0;
+		};
+
+		TEST_METHOD(TestConstFunctions)
+		{
+			Mock<ConstVolatileFunctions> mock;
+			mock.Stub(&ConstVolatileFunctions::func1);
+			ConstVolatileFunctions& i = mock.get();
+			//Assert::AreEqual(1, i.func1());
+		}
+
 	};
 }

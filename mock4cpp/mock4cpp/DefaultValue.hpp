@@ -29,9 +29,8 @@ struct DefaultValue {
 		, REF>::type 
 	value()
 	{
-		throw std::string(typeid(C).name()) + std::string(" does not have a default constructor. could not instantiate default value for class");
+		throw std::string(typeid(C).name()) + std::string(" does not have a default constructor. could not instantiate default value for type");
 	}
-
 
 	// Can't create default value of an abstract type
 	template<typename AC, class REF = std::add_reference<AC>::type>
