@@ -11,16 +11,21 @@ struct NextFunctionWhenClouse {
 	
 	virtual ~NextFunctionWhenClouse() {};
 
-	template< class U = R>
-	NextFunctionWhenClouse<R, arglist...>& ThenReturn(const U& r) {
-		NextFunctionWhenClouse<R, arglist...> &rv = ThenDo(
-			std::function<R(arglist...)>
-			([r](...)->R
-		    {
+	template<typename NO_REF = std::remove_reference<R>::type>
+	typename std::enable_if<std::is_trivially_copy_constructible<NO_REF>::value, NextFunctionWhenClouse<R, arglist...>&>::type
+		ThenReturn(const R& r) {
+			return ThenDo(std::function<R(arglist...)>([r](...)->R{
 				return r;
 			}));
-		return rv;
-	}
+		}
+
+	template<typename NO_REF = std::remove_reference<R>::type>
+	typename std::enable_if<!std::is_trivially_copy_constructible<NO_REF>::value, NextFunctionWhenClouse<R, arglist...>&>::type
+		ThenReturn(const R& r) {
+			return ThenDo(std::function<R(arglist...)>([&r](...)->R{
+				return r;
+			}));
+		}
 
 	template <typename E>
 	NextFunctionWhenClouse<R, arglist...>& ThenThrow(const E& e) {

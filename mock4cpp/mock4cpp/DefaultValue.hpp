@@ -53,5 +53,3 @@ struct DefaultValue {
 };
 
 #endif // DefaultValue_h__
-
-
