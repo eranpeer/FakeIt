@@ -18,6 +18,7 @@
 # VS files
 *.log
 *.pch
+*.ipch
 *.idb
 *.pdb
 *.tlog
@@ -26,6 +27,7 @@
 *.filters
 *.opensdf
 Debug/
+ipch/
 
 
 
