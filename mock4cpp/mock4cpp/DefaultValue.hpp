@@ -5,7 +5,6 @@
 
 struct DefaultValue {
 
-
 	template<typename F, class REF = std::add_reference<F>::type>
 	static typename std::enable_if<
 		!std::is_reference<F>::value &&
@@ -20,7 +19,7 @@ struct DefaultValue {
 	static typename
 		std::enable_if <
 		!std::is_reference<C>::value &&
-		std::is_class<C>::value &&
+		!std::is_scalar<C>::value &&
 		!std::is_abstract<C>::value &&
 		std::is_default_constructible<C>::value
 		, REF > ::type
@@ -34,7 +33,7 @@ struct DefaultValue {
 	static typename 
 		std::enable_if<
 		!std::is_reference<C>::value &&
-		std::is_class<C>::value && 
+		!std::is_scalar<C>::value && 
 		!std::is_abstract<C>::value && 	
 		!std::is_default_constructible<C>::value
 		, REF>::type 
