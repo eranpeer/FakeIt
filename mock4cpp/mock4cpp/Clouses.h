@@ -41,11 +41,18 @@ struct FirstFunctionWhenClouse {
 	virtual ~FirstFunctionWhenClouse() = 0 {};
 	
  	template<typename NO_REF = std::remove_reference<R>::type>
-	typename std::enable_if<std::true_type::value, NextFunctionWhenClouse<R, arglist...>&>::type
+	typename std::enable_if<std::is_trivially_copy_constructible<NO_REF>::value, NextFunctionWhenClouse<R, arglist...>&>::type
 		Return(const R& r) {
-			//, R, R&>::type rv;
 			return Do(std::function<R(arglist...)>([r](...)->R{
-				return R{ r };
+				return r;
+			}));
+		}
+
+	template<typename NO_REF = std::remove_reference<R>::type>
+	typename std::enable_if<!std::is_trivially_copy_constructible<NO_REF>::value, NextFunctionWhenClouse<R, arglist...>&>::type
+		Return(const R& r) {
+			return Do(std::function<R(arglist...)>([&r](...)->R{
+				return r;
 			}));
 		}
 

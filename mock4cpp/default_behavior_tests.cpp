@@ -217,12 +217,12 @@ namespace stubbing_tests
 			NotDefaultConstructible ndc( 1 );
 			NotDefaultConstructible& nr{ndc};
 
-// 			Mock<ReferenceFunctions> mock;
-// 			ReferenceFunctions* pAbstractType{ nullptr };
-// 			ReferenceFunctions& refAbstractType{ *pAbstractType };
-// 			mock.Stub(&ReferenceFunctions::abstractTypeFunc).Return(refAbstractType);
-// 			ReferenceFunctions& i = mock.get();
-			//Assert::IsNull(&i.abstractTypeFunc());
+			Mock<ReferenceFunctions> mock;
+			ReferenceFunctions* pAbstractType{ nullptr };
+			ReferenceFunctions& refAbstractType{ *pAbstractType };
+			mock.Stub(&ReferenceFunctions::abstractTypeFunc).Return(refAbstractType);
+			ReferenceFunctions& i = mock.get();
+			Assert::IsNull(&i.abstractTypeFunc());
  		}
 
 
