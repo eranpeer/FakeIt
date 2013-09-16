@@ -5,21 +5,11 @@
 
 struct DefaultValue {
 
-	template<typename F, class REF = std::add_reference<F>::type>
-	static typename std::enable_if<
-		!std::is_reference<F>::value &&
-		std::is_scalar<F>::value
-		, REF>::type value()
-	{
-		static F val{};
-		return val;
-	}
-
+	// Type is default constructible => It can have a default value.
 	template<typename C, class REF = std::add_reference<C>::type>
 	static typename
 		std::enable_if <
 		!std::is_reference<C>::value &&
-		!std::is_scalar<C>::value &&
 		!std::is_abstract<C>::value &&
 		std::is_default_constructible<C>::value
 		, REF > ::type
@@ -29,11 +19,11 @@ struct DefaultValue {
 		return val;
 	}
 
+	// Can't create default value of an a non default constructible type.
 	template<typename C, class REF = std::add_reference<C>::type>
 	static typename 
 		std::enable_if<
 		!std::is_reference<C>::value &&
-		!std::is_scalar<C>::value && 
 		!std::is_abstract<C>::value && 	
 		!std::is_default_constructible<C>::value
 		, REF>::type 
@@ -43,10 +33,10 @@ struct DefaultValue {
 	}
 
 
+	// Can't create default value of an abstract type
 	template<typename AC, class REF = std::add_reference<AC>::type>
 	static typename std::enable_if<
 		!std::is_reference<AC>::value &&
-		std::is_class<AC>::value &&
 		std::is_abstract<AC>::value
 		, REF>::type 
 	value()
