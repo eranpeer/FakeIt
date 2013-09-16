@@ -4,7 +4,7 @@
 #include <functional>
 #include <type_traits>
 #include "DefaultValue.hpp"
-
+#include "traits.h"
 
 template <typename R, typename... arglist>
 struct NextFunctionWhenClouse {
@@ -12,7 +12,7 @@ struct NextFunctionWhenClouse {
 	virtual ~NextFunctionWhenClouse() {};
 
 	template<typename NO_REF = std::remove_reference<R>::type>
-	typename std::enable_if<std::is_trivially_copy_constructible<NO_REF>::value, NextFunctionWhenClouse<R, arglist...>&>::type
+	typename std::enable_if<is_copy_initializable<NO_REF>::value, NextFunctionWhenClouse<R, arglist...>&>::type
 		ThenReturn(const R& r) {
 			return ThenDo(std::function<R(arglist...)>([r](...)->R{
 				return r;
@@ -20,7 +20,7 @@ struct NextFunctionWhenClouse {
 		}
 
 	template<typename NO_REF = std::remove_reference<R>::type>
-	typename std::enable_if<!std::is_trivially_copy_constructible<NO_REF>::value, NextFunctionWhenClouse<R, arglist...>&>::type
+	typename std::enable_if<!is_copy_initializable<NO_REF>::value, NextFunctionWhenClouse<R, arglist...>&>::type
 		ThenReturn(const R& r) {
 			return ThenDo(std::function<R(arglist...)>([&r](...)->R{
 				return r;
