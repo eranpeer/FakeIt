@@ -21,31 +21,51 @@ struct Mock
 		return dynamicProxy.get();
 	}
 
-	template <typename R, typename... arglist>
+	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
 	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...) const){
-		auto methodWithoutConst = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
-		return Stub(methodWithoutConst);
+		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
+		return Stub(methodWithoutConstVolatile);
 	}
 
-	template <typename R, typename... arglist>
+	template < typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
 	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...) volatile){
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return Stub(methodWithoutConstVolatile);
 	}
 
-	template <typename R, typename... arglist>
+	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
 	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...) const volatile){
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return Stub(methodWithoutConstVolatile);
 	}
 
-	template <typename R, typename... arglist>
+	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
 	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...)){
 		return Stub(vMethod, std::function<R(arglist...)>([](const arglist&... args)->R&{return DefaultValue::value<R>(); }));
 	}
 
-	template <typename... arglist>
-	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...)){
+	//		
+
+	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
+	StubProcedureClouse<arglist...>& Stub(R(C::*vMethod)(arglist...) const){
+		auto methodWithoutConstVolatile = reinterpret_cast<void(C::*)(arglist...)>(vMethod);
+		return Stub(methodWithoutConstVolatile);
+	}
+
+	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
+	StubProcedureClouse<arglist...>& Stub(R(C::*vMethod)(arglist...) volatile){
+		auto methodWithoutConstVolatile = reinterpret_cast<void(C::*)(arglist...)>(vMethod);
+		return Stub(methodWithoutConstVolatile);
+	}
+
+	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
+	StubProcedureClouse<arglist...>& Stub(R(C::*vMethod)(arglist...) const volatile){
+		auto methodWithoutConstVolatile = reinterpret_cast<void(C::*)(arglist...)>(vMethod);
+		return Stub(methodWithoutConstVolatile);
+	}
+
+	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
+	StubProcedureClouse<arglist...>& Stub(R(C::*vMethod)(arglist...)){
 		return Stub(vMethod, std::function<void(arglist...)>([](const arglist&... args)->void{}));
 	}
 
@@ -56,31 +76,6 @@ struct Mock
 	}
 
 private:
-
-// 	template< class T >
-// 	struct is_member_function_helper : std::false_type {};
-// 
-// 	template< class R>
-// 	struct is_member_function_helper<R C::*> : std::true_type{};
-// 
-// 	template< class T >
-// 	struct is_member_function : is_member_function_helper<
-// 		typename std::remove_cv<T>::type
-// 	> {};
-// 
-// 
-// 
-// 	template< class T >
-// 	struct is_member_proc_helper : std::false_type {};
-// 
-// 	template< class R>
-// 	struct is_member_proc_helper<R C::*> : std::is_void<R>{};
-// 
-// 	template< class T >
-// 	struct is_member_proc : is_member_proc_helper<
-// 		typename std::remove_cv<T>::type
-// 	> {};
-
 
 	DynamicProxy<C> dynamicProxy;
 
