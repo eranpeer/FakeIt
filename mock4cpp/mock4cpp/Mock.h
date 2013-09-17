@@ -1,8 +1,10 @@
 #ifndef Mock_h__
 #define Mock_h__
 
+#include <type_traits>
 #include "../mockutils/DynamicProxy.h"
 #include "../mock4cpp/ClousesImpl.h"
+
 
 template <typename C>
 struct Mock
@@ -17,6 +19,24 @@ struct Mock
 	C& get()
 	{
 		return dynamicProxy.get();
+	}
+
+	template <typename R, typename... arglist>
+	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...) const){
+		auto methodWithoutConst = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
+		return Stub(methodWithoutConst);
+	}
+
+	template <typename R, typename... arglist>
+	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...) volatile){
+		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
+		return Stub(methodWithoutConstVolatile);
+	}
+
+	template <typename R, typename... arglist>
+	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...) const volatile){
+		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
+		return Stub(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist>
@@ -36,6 +56,31 @@ struct Mock
 	}
 
 private:
+
+// 	template< class T >
+// 	struct is_member_function_helper : std::false_type {};
+// 
+// 	template< class R>
+// 	struct is_member_function_helper<R C::*> : std::true_type{};
+// 
+// 	template< class T >
+// 	struct is_member_function : is_member_function_helper<
+// 		typename std::remove_cv<T>::type
+// 	> {};
+// 
+// 
+// 
+// 	template< class T >
+// 	struct is_member_proc_helper : std::false_type {};
+// 
+// 	template< class R>
+// 	struct is_member_proc_helper<R C::*> : std::is_void<R>{};
+// 
+// 	template< class T >
+// 	struct is_member_proc : is_member_proc_helper<
+// 		typename std::remove_cv<T>::type
+// 	> {};
+
 
 	DynamicProxy<C> dynamicProxy;
 

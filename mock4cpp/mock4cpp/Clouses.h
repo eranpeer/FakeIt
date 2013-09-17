@@ -74,7 +74,6 @@ struct FirstFunctionWhenClouse {
 	
 };
 
-
 template <typename R, typename... arglist>
 struct StubFunctionClouse : public FirstFunctionWhenClouse<R, arglist...>{
 

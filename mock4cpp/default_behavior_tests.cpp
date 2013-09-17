@@ -265,7 +265,7 @@ namespace stubbing_tests
 		}
 
 		struct ConstVolatileFunctions{
-			virtual const int func1() = 0;
+			virtual const int func1() const = 0;
 			virtual const int func2() volatile = 0;
 		};
 
@@ -273,8 +273,10 @@ namespace stubbing_tests
 		{
 			Mock<ConstVolatileFunctions> mock;
 			mock.Stub(&ConstVolatileFunctions::func1);
+			mock.Stub(&ConstVolatileFunctions::func2);
 			ConstVolatileFunctions& i = mock.get();
-			//Assert::AreEqual(1, i.func1());
+			Assert::AreEqual(0, i.func1());
+			Assert::AreEqual(0, i.func2());
 		}
 
 	};
