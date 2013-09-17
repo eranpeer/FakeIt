@@ -21,7 +21,6 @@ namespace stubbing_tests
 			virtual void proc2() volatile = 0;
 			virtual void proc3() const volatile = 0;
 			virtual const void proc4() const volatile = 0;
-
 		};
 
 		TEST_METHOD(TestConstFunctions)
@@ -46,5 +45,16 @@ namespace stubbing_tests
 			i.proc4();
 		}
 
+		struct ConstVolatileParameters{
+			virtual int func1(const int a, const volatile std::string s) = 0;
+		};
+
+		TEST_METHOD(TestConstParameters)
+		{
+			Mock<ConstVolatileParameters> mock;
+			mock.Stub(&ConstVolatileParameters::func1);
+			ConstVolatileParameters& i = mock.get();
+			Assert::AreEqual(0, i.func1(1,std::string()));
+		}
 	};
 }
