@@ -9,26 +9,6 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace mock4cpp_tests
 {
 
-	struct ReferenceInterface {
-		virtual int& func1() = 0;
-		virtual ReferenceInterface& func2() = 0;
-		virtual void proc1(int&) = 0;
-		virtual void proc2(ReferenceInterface &) = 0;
-	};
-
-	static bool operator==(const ReferenceInterface& a, const ReferenceInterface& b)
-	{
-		return (&a == &b);
-	}
-
-	struct PointerInterface {
-		virtual int* func1() = 0;
-		virtual PointerInterface* func2() = 0;
-
-		virtual void proc1(int*) = 0;
-		virtual void proc2(PointerInterface *) = 0;
-	};
-
 	TEST_CLASS(DataMembersTest)
 	{
 	public:
