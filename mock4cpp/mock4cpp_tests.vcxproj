@@ -86,6 +86,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="data_members_tests.cpp" />
     <ClCompile Include="default_behavior_tests.cpp" />
     <ClCompile Include="remove_const_volatile_tests.cpp" />
     <ClCompile Include="stdafx.cpp">
