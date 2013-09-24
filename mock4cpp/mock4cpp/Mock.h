@@ -80,7 +80,8 @@ struct Mock
 	template <typename H, typename... M
 		, class = typename std::enable_if<std::is_member_function_pointer<H>::value>::type
 	>
-	void Stub(const H head, M... tail){
+	void Stub(const H head, M... tail) 
+	{
 		Stub(head);
 		Stub(tail...);
 	}
