@@ -69,10 +69,20 @@ struct Mock
 		return Stub(vMethod, std::function<void(arglist...)>([](const arglist&... args)->void{}));
 	}
 
-	template <class MEMBER_TYPE, typename... arglist>
-	void Stub(MEMBER_TYPE C::*member, const arglist&... ctorargs)
+	template <class DM, typename... arglist
+		, class = typename std::enable_if<std::is_member_object_pointer<DM>::value>::type
+	>
+	void Stub(DM member, const arglist&... ctorargs)
 	{
-		dynamicProxy.stubDataMember(member, ctorargs...);
+		stubDataMember(member, ctorargs...);
+	}
+
+	template <typename H, typename... M
+		, class = typename std::enable_if<std::is_member_function_pointer<H>::value>::type
+	>
+	void Stub(const H head, M... tail){
+		Stub(head);
+		Stub(tail...);
 	}
 
 private:
@@ -113,6 +123,15 @@ private:
 		auto stubClouse = new StubProcedureClouseImpl<arglist...>(methodMock);
 		return *stubClouse;
 	}
+
+	void Stub(){}
+
+	template <class MEMBER_TYPE, typename... arglist>
+	void stubDataMember(MEMBER_TYPE C::*member, const arglist&... ctorargs)
+	{
+		dynamicProxy.stubDataMember(member, ctorargs...);
+	}
+
 };
 
 #endif // Mock_h__

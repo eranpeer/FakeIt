@@ -67,6 +67,12 @@ namespace stubbing_tests
 	{
 	public:
 
+		TEST_METHOD(StabList)
+		{
+			Mock<ScalarFuctions> mock;
+			mock.Stub(&ScalarFuctions::boolFunc, &ScalarFuctions::charFunc, &ScalarFuctions::charFunc);
+		}
+
 		TEST_METHOD(DefaultBeaviorOfScalarFunctionsIsToReturnZero)
 		{
 			Mock<ScalarFuctions> mock;
