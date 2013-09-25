@@ -81,9 +81,8 @@ namespace stub_clouses {
 
 		virtual ~StubFunctionClouse() = 0 {};
 
-		StubFunctionClouse<R, arglist...> & operator=(std::function<R(arglist...)> method){
+		void operator=(std::function<R(arglist...)> method){
 			Do(method);
-			return *this;
 		}
 
 		virtual  FirstFunctionWhenClouse<R, arglist...>& When(const arglist&...) = 0;
@@ -137,9 +136,8 @@ namespace stub_clouses {
 
 		virtual ~StubProcedureClouse() = 0 {};
 
-		StubProcedureClouse<arglist...> & operator=(std::function<void(arglist...)> method){
+		void operator=(std::function<void(arglist...)> method){
 			Do(method);
-			return *this;
 		}
 
 		virtual  FirstProcedureWhenClouse<arglist...>& When(const arglist&...) = 0;
