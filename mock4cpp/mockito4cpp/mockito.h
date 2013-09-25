@@ -3,9 +3,13 @@
 
 #include <type_traits>
 #include "../mockutils/DynamicProxy.h"
-#include "../mock4cpp/ClousesImpl.h"
+#include "../mockito4cpp/ClousesImpl.h"
 
-using namespace stub_clouses;
+template <typename R>
+void When(R e) {
+	return;
+}
+
 
 template <typename C>
 struct Mock
@@ -41,7 +45,7 @@ struct Mock
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...)) {
+	StubFunctionClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...)){
 		return Stub(vMethod, std::function<R(arglist...)>([](const arglist&... args)->R&{return DefaultValue::value<R>(); }));
 	}
 
@@ -85,14 +89,6 @@ struct Mock
 	{
 		Stub(head);
 		Stub(tail...);
-	}
-
-	template <
-		typename MEMBER
-		, class = typename std::enable_if<std::is_member_function_pointer<MEMBER>::value>::type
-	>
-	auto operator [](MEMBER member) -> decltype(Stub(member)) {
-		return Stub(member);
 	}
 
 private:

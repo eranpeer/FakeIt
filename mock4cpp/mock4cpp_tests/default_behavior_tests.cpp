@@ -67,10 +67,16 @@ namespace stubbing_tests
 	{
 	public:
 
-		TEST_METHOD(StabList)
+		TEST_METHOD(StabManyMethodsInOneCall)
 		{
 			Mock<ScalarFuctions> mock;
-			mock.Stub(&ScalarFuctions::boolFunc, &ScalarFuctions::charFunc, &ScalarFuctions::charFunc);
+			mock.Stub(&ScalarFuctions::boolFunc, &ScalarFuctions::charFunc, &ScalarFuctions::intFunc);
+
+			ScalarFuctions &i = mock.get();
+
+			Assert::AreEqual(false, i.boolFunc());
+			Assert::AreEqual((char) 0, i.charFunc());
+			Assert::AreEqual((int) 0, i.intFunc());
 		}
 
 		TEST_METHOD(DefaultBeaviorOfScalarFunctionsIsToReturnZero)

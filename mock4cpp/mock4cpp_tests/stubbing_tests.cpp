@@ -29,7 +29,7 @@ namespace mock4cpp_tests
 		virtual void proc2(PointerInterface *) = 0;
 	};
 
-	TEST_CLASS(MockTest)
+	TEST_CLASS(StubbingTests)
 	{
 	public:	
 
@@ -69,9 +69,22 @@ namespace mock4cpp_tests
 			Mock<SomeInterface> mock;
 			mock.Stub(&SomeInterface::func).Do(&defaultFuncBehavior);
 			mock.Stub(&SomeInterface::proc).Do(&defaultProcBehavior);
-			
+
 			SomeInterface &i = mock.get();
 			
+			Assert::AreEqual(1, i.func(1));
+			Assert::ExpectException<int>([&i]{ i.proc(1); });
+		}
+
+		TEST_METHOD(StubDefaultBehaviorWithStaticMethod_ByAssignment)
+		{
+			Mock<SomeInterface> mock;
+
+			mock[&SomeInterface::func] = &defaultFuncBehavior;
+			mock[&SomeInterface::proc] = &defaultProcBehavior;
+
+			SomeInterface &i = mock.get();
+
 			Assert::AreEqual(1, i.func(1));
 			Assert::ExpectException<int>([&i]{ i.proc(1); });
 		}
@@ -87,6 +100,19 @@ namespace mock4cpp_tests
 			
 			SomeInterface &i = mock.get();
 			
+			Assert::AreEqual(1, i.func(1));
+			Assert::ExpectException<int>([&i]{ i.proc(1); });
+		}
+
+		TEST_METHOD(StubDefaultBehaviorWithLambda_ByAssignment)
+		{
+
+			Mock<SomeInterface> mock;
+			mock[&SomeInterface::func] = [](int a){return a; };
+			mock[&SomeInterface::proc] = [](int a){throw a; };
+
+			SomeInterface &i = mock.get();
+
 			Assert::AreEqual(1, i.func(1));
 			Assert::ExpectException<int>([&i]{ i.proc(1); });
 		}
