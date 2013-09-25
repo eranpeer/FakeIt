@@ -68,10 +68,6 @@ namespace stub_clouses {
 			return Do(std::function<R(arglist...)>([e](...)->R{throw e; }));
 		}
 
-		 NextFunctionWhenClouse<R, arglist...>& Do(R(*method)(arglist...)) {
-			return Do(std::function<R(arglist...)>(method));
-		}
-
 		virtual  NextFunctionWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) = 0;
 
 	};
@@ -101,12 +97,7 @@ namespace stub_clouses {
 			return ThenDo(std::function<void(arglist...)>([e](...)->void{ throw e; }));
 		}
 
-		 NextProcedureWhenClouse<arglist...>& ThenDo(void(*method)(arglist...))  {
-			return ThenDo(std::function<void(arglist...)>(method));
-		}
-
 		virtual  NextProcedureWhenClouse<arglist...>& ThenDo(std::function<void(arglist...)> method) = 0;
-
 	};
 
 
@@ -123,10 +114,6 @@ namespace stub_clouses {
 		 NextProcedureWhenClouse<arglist...>& Throw(const E e) {
 			return Do(std::function<void(arglist...)>([e](...)->void{ throw e; }));
 		};
-
-		 NextProcedureWhenClouse<arglist...>& Do(void(*method)(arglist...)) {
-			return Do(std::function<void(arglist...)>(method));
-		}
 
 		virtual  NextProcedureWhenClouse<arglist...>& Do(std::function<void(arglist...)> method) = 0;
 	};
@@ -148,7 +135,6 @@ namespace stub_clouses {
 	struct StubDataMemberClouse {
 
 		virtual ~StubDataMemberClouse() = 0 {};
-
 
 		virtual void operator()(std::initializer_list<arglist...> list) = 0;
 	};

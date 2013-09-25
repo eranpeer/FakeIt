@@ -91,12 +91,9 @@ namespace mock4cpp_tests
 
 		TEST_METHOD(StubDefaultBehaviorWithLambda)
 		{
-			std::function<int(int) > funcStub = [](int a){return a; };
-			std::function<void(int) > procStub = [](int a){throw a; };
-
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func).Do(funcStub);
-			mock.Stub(&SomeInterface::proc).Do(procStub);
+			mock.Stub(&SomeInterface::func).Do([](int a){return a; });
+			mock.Stub(&SomeInterface::proc).Do([](int a){throw a; });
 			
 			SomeInterface &i = mock.get();
 			
@@ -161,18 +158,29 @@ namespace mock4cpp_tests
 		TEST_METHOD(StubIteratorStyle)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func).Return(1).ThenReturn(2).ThenReturn(3);
-			mock.Stub(&SomeInterface::proc).Return().ThenThrow(std::string("error")).ThenReturn();
+			mock.Stub(&SomeInterface::func)
+				.Return(1)
+				.ThenReturn(2)
+				.ThenDo([](...){return 3; })
+				.ThenDo(&defaultFuncBehavior);
+			mock.Stub(&SomeInterface::proc).Return()
+				.ThenThrow(std::string("error"))
+				.ThenReturn()
+				.ThenDo([](...){})
+				.ThenDo(&defaultProcBehavior);
 
 			SomeInterface &i = mock.get();
 
 			Assert::IsTrue(1 == i.func(0));
 			Assert::IsTrue(2 == i.func(0));
 			Assert::IsTrue(3 == i.func(0));
+			Assert::IsTrue(4 == i.func(4));
 
 			i.proc(0);
 			Assert::ExpectException<std::string>([&i]{ i.proc(0); });
 			i.proc(0);
+			i.proc(0);
+			Assert::ExpectException<int>([&i]{ i.proc(0); });
 		}
 
 		TEST_METHOD(RestubDefaultReturnValue)
