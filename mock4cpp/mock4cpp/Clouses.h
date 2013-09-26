@@ -48,7 +48,7 @@ namespace stub_clouses {
 		virtual ~FirstFunctionWhenClouse() = 0 {};
 
 		template<typename NO_REF = std::remove_reference<R>::type>
-		typename std::enable_if<std::is_trivially_copy_constructible<NO_REF>::value,  NextFunctionWhenClouse<R, arglist...>&>::type
+		typename std::enable_if<std::is_trivially_copy_constructible<NO_REF>::value, NextFunctionWhenClouse<R, arglist...>&>::type
 			Return(const R& r) {
 				return Do(std::function<R(arglist...)>([r](...)->R{
 					return r;
@@ -56,7 +56,7 @@ namespace stub_clouses {
 			}
 
 		template<typename NO_REF = std::remove_reference<R>::type>
-		typename std::enable_if<!std::is_trivially_copy_constructible<NO_REF>::value,  NextFunctionWhenClouse<R, arglist...>&>::type
+		typename std::enable_if<!std::is_trivially_copy_constructible<NO_REF>::value, NextFunctionWhenClouse<R, arglist...>&>::type
 			Return(const R& r) {
 				return Do(std::function<R(arglist...)>([&r](...)->R{
 					return r;
@@ -64,8 +64,12 @@ namespace stub_clouses {
 			}
 
 		template <typename E>
-		 NextFunctionWhenClouse<R, arglist...>& Throw(const E& e)  {
+		NextFunctionWhenClouse<R, arglist...>& Throw(const E& e)  {
 			return Do(std::function<R(arglist...)>([e](...)->R{throw e; }));
+		}
+
+		void operator=(std::function<R(arglist...)> method){
+			Do(method);
 		}
 
 		virtual  NextFunctionWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) = 0;
@@ -106,14 +110,18 @@ namespace stub_clouses {
 
 		virtual ~FirstProcedureWhenClouse() = 0 {};
 
-		 NextProcedureWhenClouse<arglist...>& Return() {
+		NextProcedureWhenClouse<arglist...>& Return() {
 			return Do(std::function<void(arglist...)>([](...)->void{}));
 		};
 
 		template <typename E>
-		 NextProcedureWhenClouse<arglist...>& Throw(const E e) {
+		NextProcedureWhenClouse<arglist...>& Throw(const E e) {
 			return Do(std::function<void(arglist...)>([e](...)->void{ throw e; }));
 		};
+
+		void operator=(std::function<void(arglist...)> method){
+			Do(method);
+		}
 
 		virtual  NextProcedureWhenClouse<arglist...>& Do(std::function<void(arglist...)> method) = 0;
 	};

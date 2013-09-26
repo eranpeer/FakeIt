@@ -5,7 +5,6 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-
 namespace mock4cpp_tests
 {
 
@@ -125,6 +124,24 @@ namespace mock4cpp_tests
 			Assert::AreEqual(1,i.func(1));
 			Assert::AreEqual(1, i.func(1));
 			Assert::AreEqual(0, i.func(2),L"default behavior");
+
+			Assert::ExpectException<std::string>([&i]{ i.proc(1); });
+			Assert::ExpectException<std::string>([&i]{ i.proc(1); });
+			i.proc(2);
+		}
+
+		TEST_METHOD(StubOnlySpecifiedCallsToAlternateBehavior_ByAssignment)
+		{
+			Mock<SomeInterface> mock;
+			mock.Stub(&SomeInterface::func).When(1) = [](...){return 1; };
+			mock.Stub(&SomeInterface::proc).When(1) = [](...){throw std::string("error"); };
+
+
+			SomeInterface &i = mock.get();
+
+			Assert::AreEqual(1, i.func(1));
+			Assert::AreEqual(1, i.func(1));
+			Assert::AreEqual(0, i.func(2), L"default behavior");
 
 			Assert::ExpectException<std::string>([&i]{ i.proc(1); });
 			Assert::ExpectException<std::string>([&i]{ i.proc(1); });
