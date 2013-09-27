@@ -28,10 +28,11 @@ namespace mock4cpp_tests
 		virtual void proc2(PointerInterface *) = 0;
 	};
 
+
+
 	TEST_CLASS(StubbingTests)
 	{
 	public:	
-
 
 		struct SomeInterface
 		{
