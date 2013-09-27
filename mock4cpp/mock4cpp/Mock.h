@@ -5,7 +5,7 @@
 #include "../mockutils/DynamicProxy.h"
 #include "../mock4cpp/ClousesImpl.h"
 
-using namespace stub_clouses;
+using namespace mock4cpp::stub_clouses;
 
 template <typename C>
 struct Mock
