@@ -63,12 +63,12 @@ namespace stub_clouses {
 	};
 
 
-	template <typename... arglist>
+	template <typename R, typename... arglist>
 	struct ProcedureWhenClouseImpl :
-		public FirstProcedureWhenClouse<arglist...>,
-		public NextProcedureWhenClouse<arglist...>{
+		public FirstProcedureWhenClouse<R, arglist...>,
+		public NextProcedureWhenClouse<R, arglist...>{
 
-			ProcedureWhenClouseImpl(MethodCallMock<void, arglist...>* invocationMock) :
+			ProcedureWhenClouseImpl(MethodCallMock<R, arglist...>* invocationMock) :
 				invocationMock(invocationMock)
 			{
 				ThenReturn();
@@ -76,40 +76,40 @@ namespace stub_clouses {
 
 			virtual ~ProcedureWhenClouseImpl() {}
 
-			NextProcedureWhenClouse<arglist...>& ThenDo(std::function<void(arglist...)> method) override {
+			NextProcedureWhenClouse<R ,arglist...>& ThenDo(std::function<R(arglist...)> method) override {
 				invocationMock->appendDo(method);
 				return *this;
 			}
 
-			NextProcedureWhenClouse<arglist...>& Do(std::function<void(arglist...)> method) override {
+			NextProcedureWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 				invocationMock->clear();
 				invocationMock->appendDo(method);
 				return *this;
 			}
 
 	private:
-		MethodCallMock<void, arglist...>* invocationMock;
+		MethodCallMock<R, arglist...>* invocationMock;
 	};
 
-	template <typename... arglist>
-	struct StubProcedureClouseImpl : public StubProcedureClouse<arglist...> {
-		StubProcedureClouseImpl(MethodMock<void, arglist...>* methodMock) : methodMock(methodMock) {
+	template <typename R, typename... arglist>
+	struct StubProcedureClouseImpl : public StubProcedureClouse<R, arglist...> {
+		StubProcedureClouseImpl(MethodMock<R, arglist...>* methodMock) : methodMock(methodMock) {
 		}
 
-		FirstProcedureWhenClouse<arglist...>& When(const arglist&... args) override {
-			MethodCallMock<void, arglist...> * invocationMock = methodMock->stubMethodCall(args...);
-			ProcedureWhenClouseImpl<arglist...> * whenClouse = new ProcedureWhenClouseImpl<arglist...>(invocationMock);
+		FirstProcedureWhenClouse<R, arglist...>& When(const arglist&... args) override {
+			MethodCallMock<R, arglist...> * invocationMock = methodMock->stubMethodCall(args...);
+			ProcedureWhenClouseImpl<R, arglist...> * whenClouse = new ProcedureWhenClouseImpl<R, arglist...>(invocationMock);
 			return *whenClouse;
 		};
 
-		NextProcedureWhenClouse<arglist...>& Do(std::function<void(arglist...)> method) override {
-			ProcedureWhenClouseImpl<arglist...> * whenClouse = new ProcedureWhenClouseImpl<arglist...>(methodMock->last());
+		NextProcedureWhenClouse<R, arglist...>& Do(std::function<void(arglist...)> method) override {
+			ProcedureWhenClouseImpl<R, arglist...> * whenClouse = new ProcedureWhenClouseImpl<R, arglist...>(methodMock->last());
 			whenClouse->Do(method);
 			return *whenClouse;
 		}
 
 	private:
-		MethodMock<void, arglist...>* methodMock;
+		MethodMock<R, arglist...>* methodMock;
 	};
 
 	template <typename... arglist>

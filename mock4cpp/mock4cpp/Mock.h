@@ -48,25 +48,25 @@ struct Mock
 	//		
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	StubProcedureClouse<arglist...>& Stub(R(C::*vMethod)(arglist...) const){
+	StubProcedureClouse<void, arglist...>& Stub(R(C::*vMethod)(arglist...) const){
 		auto methodWithoutConstVolatile = reinterpret_cast<void(C::*)(arglist...)>(vMethod);
 		return Stub(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	StubProcedureClouse<arglist...>& Stub(R(C::*vMethod)(arglist...) volatile){
+	StubProcedureClouse<void, arglist...>& Stub(R(C::*vMethod)(arglist...) volatile){
 		auto methodWithoutConstVolatile = reinterpret_cast<void(C::*)(arglist...)>(vMethod);
 		return Stub(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	StubProcedureClouse<arglist...>& Stub(R(C::*vMethod)(arglist...) const volatile){
+	StubProcedureClouse<void, arglist...>& Stub(R(C::*vMethod)(arglist...) const volatile){
 		auto methodWithoutConstVolatile = reinterpret_cast<void(C::*)(arglist...)>(vMethod);
 		return Stub(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	StubProcedureClouse<arglist...>& Stub(R(C::*vMethod)(arglist...)){
+	StubProcedureClouse<void, arglist...>& Stub(R(C::*vMethod)(arglist...)){
 		return Stub(vMethod, std::function<void(arglist...)>([](const arglist&... args)->void{}));
 	}
 
@@ -123,14 +123,14 @@ private:
 	}
 
 	template <typename... arglist>
-	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...), void(*initialMethodBehavior)(arglist...)){
+	StubProcedureClouse<void,arglist...>& Stub(void(C::*vMethod)(arglist...), void(*initialMethodBehavior)(arglist...)){
 		return Stub(vMethod, std::function <void(arglist...)>(initialMethodBehavior));
 	}
 
 	template <typename... arglist>
-	StubProcedureClouse<arglist...>& Stub(void(C::*vMethod)(arglist...), std::function<void(arglist...)> initialMethodBehavior){
+	StubProcedureClouse<void, arglist...>& Stub(void(C::*vMethod)(arglist...), std::function<void(arglist...)> initialMethodBehavior){
 		auto methodMock = stubMethodIfNotStubbed(vMethod, initialMethodBehavior);
-		auto stubClouse = new StubProcedureClouseImpl<arglist...>(methodMock);
+		auto stubClouse = new StubProcedureClouseImpl<void, arglist...>(methodMock);
 		return *stubClouse;
 	}
 

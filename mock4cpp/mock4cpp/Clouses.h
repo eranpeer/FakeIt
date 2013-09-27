@@ -88,54 +88,54 @@ namespace stub_clouses {
 		virtual  FirstFunctionWhenClouse<R, arglist...>& When(const arglist&...) = 0;
 	};
 
-	template <typename... arglist>
+	template <typename R, typename... arglist>
 	struct NextProcedureWhenClouse {
 		virtual ~NextProcedureWhenClouse() = 0 {};
 
-		 NextProcedureWhenClouse<arglist...>& ThenReturn() {
-			return ThenDo(std::function<void(arglist...)>([](...)->void{}));
+		 NextProcedureWhenClouse<R, arglist...>& ThenReturn() {
+			return ThenDo(std::function<R(arglist...)>([](...)->R{}));
 		}
 
 		template <typename E>
-		 NextProcedureWhenClouse<arglist...>& ThenThrow(const E e) {
-			return ThenDo(std::function<void(arglist...)>([e](...)->void{ throw e; }));
+		 NextProcedureWhenClouse<R, arglist...>& ThenThrow(const E e) {
+			return ThenDo(std::function<R(arglist...)>([e](...)->R{ throw e; }));
 		}
 
-		virtual  NextProcedureWhenClouse<arglist...>& ThenDo(std::function<void(arglist...)> method) = 0;
+		virtual  NextProcedureWhenClouse<R, arglist...>& ThenDo(std::function<R(arglist...)> method) = 0;
 	};
 
 
-	template <typename... arglist>
+	template <typename R, typename... arglist>
 	struct FirstProcedureWhenClouse {
 
 		virtual ~FirstProcedureWhenClouse() = 0 {};
 
-		NextProcedureWhenClouse<arglist...>& Return() {
-			return Do(std::function<void(arglist...)>([](...)->void{}));
+		NextProcedureWhenClouse<R, arglist...>& Return() {
+			return Do(std::function<R(arglist...)>([](...)->R{}));
 		};
 
 		template <typename E>
-		NextProcedureWhenClouse<arglist...>& Throw(const E e) {
-			return Do(std::function<void(arglist...)>([e](...)->void{ throw e; }));
+		NextProcedureWhenClouse<R, arglist...>& Throw(const E e) {
+			return Do(std::function<R(arglist...)>([e](...)->R{ throw e; }));
 		};
 
-		void operator=(std::function<void(arglist...)> method){
+		void operator=(std::function<R(arglist...)> method){
 			Do(method);
 		}
 
-		virtual  NextProcedureWhenClouse<arglist...>& Do(std::function<void(arglist...)> method) = 0;
+		virtual  NextProcedureWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) = 0;
 	};
 
-	template <typename... arglist>
-	struct StubProcedureClouse : public FirstProcedureWhenClouse<arglist...>{
+	template <typename R, typename... arglist>
+	struct StubProcedureClouse : public FirstProcedureWhenClouse<R, arglist...>{
 
 		virtual ~StubProcedureClouse() = 0 {};
 
-		void operator=(std::function<void(arglist...)> method){
+		void operator=(std::function<R(arglist...)> method){
 			Do(method);
 		}
 
-		virtual  FirstProcedureWhenClouse<arglist...>& When(const arglist&...) = 0;
+		virtual  FirstProcedureWhenClouse<R, arglist...>& When(const arglist&...) = 0;
 	};
 
 
