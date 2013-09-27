@@ -19,9 +19,7 @@ namespace mock4cpp {
 			FunctionWhenClouseImpl(MethodCallMock<R, arglist...> * invocationMock) :
 				invocationMock(invocationMock)
 			{
-				ThenDo([](...)->R{
-					return DefaultValue::value<R>();
-				});
+				ThenDo([](...)->R{ return DefaultValue::value<R>();	});
 			}
 
 			~FunctionWhenClouseImpl(){}
@@ -72,7 +70,7 @@ namespace mock4cpp {
 				ProcedureWhenClouseImpl(MethodCallMock<R, arglist...>* invocationMock) :
 					invocationMock(invocationMock)
 				{
-					ThenReturn();
+					ThenDo([](...)->R{ return DefaultValue::value<R>();	});
 				}
 
 				virtual ~ProcedureWhenClouseImpl() {}

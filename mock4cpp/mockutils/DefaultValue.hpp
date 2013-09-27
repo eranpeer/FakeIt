@@ -6,9 +6,20 @@
 struct DefaultValue {
 
 	// Type is default constructible => It can have a default value.
+	template<typename C>
+	static typename
+		std::enable_if <std::is_void<C>::value, C> ::type
+		value()
+	{
+		int a = 0;
+		a++;
+	}
+
+	// Type is default constructible => It can have a default value.
 	template<typename C, class REF = std::add_reference<C>::type>
 	static typename
 		std::enable_if <
+		!std::is_void<C>::value &&
 		!std::is_reference<C>::value &&
 		!std::is_abstract<C>::value &&
 		std::is_default_constructible<C>::value
@@ -23,6 +34,7 @@ struct DefaultValue {
 	template<typename C, class REF = std::add_reference<C>::type>
 	static typename 
 		std::enable_if<
+		!std::is_void<C>::value &&
 		!std::is_reference<C>::value &&
 		!std::is_abstract<C>::value && 	
 		!std::is_default_constructible<C>::value

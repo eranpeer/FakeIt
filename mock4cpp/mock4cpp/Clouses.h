@@ -94,7 +94,7 @@ namespace mock4cpp {
 			virtual ~NextProcedureWhenClouse() = 0 {};
 
 			NextProcedureWhenClouse<R, arglist...>& ThenReturn() {
-				return ThenDo(std::function<R(arglist...)>([](...)->R{}));
+				return ThenDo(std::function<R(arglist...)>([](...)->R{ return DefaultValue::value<R>(); }));
 			}
 
 			template <typename E>
@@ -111,8 +111,8 @@ namespace mock4cpp {
 
 			virtual ~FirstProcedureWhenClouse() = 0 {};
 
-			NextProcedureWhenClouse<R, arglist...>& Return() {
-				return Do(std::function<R(arglist...)>([](...)->R{}));
+			NextProcedureWhenClouse<R, arglist...>& Return() {				
+				return Do(std::function<R(arglist...)>([](...)->R{ return DefaultValue::value<R>(); }));
 			};
 
 			template <typename E>
