@@ -126,12 +126,12 @@ namespace mock4cpp {
 		}
 
 		MethodCallMock<R, arglist...> * stubMethodCall(const arglist&... args){
-			MethodCallMock<R, arglist...> * invocationMock = getMethodCallMockForExpectedArgs(args...);
-			if (invocationMock == nullptr) {
-				invocationMock = new SimpleMethodCallMock<R, arglist...>(args...);
-				addMethodCall(invocationMock);
+			MethodCallMock<R, arglist...> * methodCallMock = getMethodCallMockForExpectedArgs(args...);
+			if (methodCallMock == nullptr) {
+				methodCallMock = new SimpleMethodCallMock<R, arglist...>(args...);
+				addMethodCall(methodCallMock);
 			}
-			return invocationMock;
+			return methodCallMock;
 		}
 
 	private:
