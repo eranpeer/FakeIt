@@ -4,20 +4,18 @@
 #include <vector>
 #include <functional>
 
-// template <typename... arglist>
-// struct ActualInvocation
-// {
-// 	ActualInvocation(arglist... args) : arguments(args...){}
-// 
-// 	std::tuple <arglist...>& getArguments(){
-// 		return arguments;
-// 	}
-// 
-// private:
-// 	std::tuple <arglist...> arguments;
-// };
-
 namespace mock4cpp {
+
+	template <typename... arglist>
+	struct ActualInvocation
+	{
+		ActualInvocation(const arglist&... args) : arguments(args...){}
+		std::tuple <arglist...>& getArguments(){
+			return arguments;
+		}
+	private:
+		std::tuple <arglist...> arguments;
+	};
 
 	template < typename R, typename... arglist>
 	struct BehaviorMock
@@ -122,7 +120,8 @@ namespace mock4cpp {
 		}
 
 		R handleMethodInvocation(const arglist&... args) override {
-			return getMethodCallMockForActualArgs(args...)->handleMethodInvocation(args...);
+			auto * methodCallMock = getMethodCallMockForActualArgs(args...);
+			return methodCallMock->handleMethodInvocation(args...);
 		}
 
 		MethodCallMock<R, arglist...> * stubMethodCall(const arglist&... args){
