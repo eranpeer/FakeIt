@@ -16,7 +16,7 @@ namespace mock4cpp {
 			public NextFunctionWhenClouse<R, arglist...>
 		{
 
-			FunctionWhenClouseImpl(MethodCallMock<R, arglist...> * invocationMock) :
+			FunctionWhenClouseImpl(MethodInvocationMock<R, arglist...> * invocationMock) :
 				invocationMock(invocationMock)
 			{
 				ThenDo([](...)->R{ return DefaultValue::value<R>();	});
@@ -36,7 +36,7 @@ namespace mock4cpp {
 			}
 
 		private:
-			MethodCallMock<R, arglist...>* invocationMock;
+			MethodInvocationMock<R, arglist...>* invocationMock;
 		};
 
 		template <typename R, typename... arglist>
@@ -45,7 +45,7 @@ namespace mock4cpp {
 			}
 
 			FirstFunctionWhenClouse<R, arglist...>& When(const arglist&... args) override {
-				MethodCallMock<R, arglist...> * invocationMock = methodMock->stubMethodCall(args...);
+				MethodInvocationMock<R, arglist...> * invocationMock = methodMock->stubMethodCall(args...);
 				FunctionWhenClouseImpl<R, arglist...> * whenClouse = new FunctionWhenClouseImpl<R, arglist...>
 					(invocationMock);
 				return *whenClouse;
@@ -67,7 +67,7 @@ namespace mock4cpp {
 			public FirstProcedureWhenClouse<R, arglist...>,
 			public NextProcedureWhenClouse<R, arglist...>{
 
-				ProcedureWhenClouseImpl(MethodCallMock<R, arglist...>* invocationMock) :
+				ProcedureWhenClouseImpl(MethodInvocationMock<R, arglist...>* invocationMock) :
 					invocationMock(invocationMock)
 				{
 					ThenDo([](...)->R{ return DefaultValue::value<R>();	});
@@ -87,7 +87,7 @@ namespace mock4cpp {
 				}
 
 		private:
-			MethodCallMock<R, arglist...>* invocationMock;
+			MethodInvocationMock<R, arglist...>* invocationMock;
 		};
 
 		template <typename R, typename... arglist>
@@ -96,7 +96,7 @@ namespace mock4cpp {
 			}
 
 			FirstProcedureWhenClouse<R, arglist...>& When(const arglist&... args) override {
-				MethodCallMock<R, arglist...> * invocationMock = methodMock->stubMethodCall(args...);
+				MethodInvocationMock<R, arglist...> * invocationMock = methodMock->stubMethodCall(args...);
 				ProcedureWhenClouseImpl<R, arglist...> * whenClouse = new ProcedureWhenClouseImpl<R, arglist...>(invocationMock);
 				return *whenClouse;
 			};
