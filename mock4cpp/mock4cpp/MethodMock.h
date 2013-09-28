@@ -122,11 +122,11 @@ namespace mock4cpp {
 		}
 
 		R handleMethodInvocation(const arglist&... args) override {
-			return getMethodCallMock(args...)->handleMethodInvocation(args...);
+			return getMethodCallMockForActualArgs(args...)->handleMethodInvocation(args...);
 		}
 
 		MethodCallMock<R, arglist...> * stubMethodCall(const arglist&... args){
-			MethodCallMock<R, arglist...> * invocationMock = getInvocationMock(args...);
+			MethodCallMock<R, arglist...> * invocationMock = getMethodCallMockForExpectedArgs(args...);
 			if (invocationMock == nullptr) {
 				invocationMock = new SimpleMethodCallMock<R, arglist...>(args...);
 				addMethodCall(invocationMock);
@@ -137,11 +137,7 @@ namespace mock4cpp {
 	private:
 		std::vector<MethodCallMock<R, arglist...>*> methodCallMocks;
 
-		std::vector<MethodCallMock<R, arglist...>*>& getMethodCallMocks(){
-			return methodCallMocks;
-		}
-
-		MethodCallMock<R, arglist...> * getInvocationMock(const arglist&... expectedArgs){
+		MethodCallMock<R, arglist...> * getMethodCallMockForExpectedArgs(const arglist&... expectedArgs){
 			for (auto i = methodCallMocks.rbegin(); i != methodCallMocks.rend(); ++i) {
 				if ((*i)->matchesExpected(expectedArgs...)){
 					return (*i);
@@ -150,7 +146,7 @@ namespace mock4cpp {
 			return nullptr;
 		}
 
-		MethodCallMock<R, arglist...>* getMethodCallMock(const arglist&... args) {
+		MethodCallMock<R, arglist...>* getMethodCallMockForActualArgs(const arglist&... args) {
 			for (auto i = methodCallMocks.rbegin(); i != methodCallMocks.rend(); ++i) {
 				if ((*i)->matchesActual(args...)){
 					return (*i);
