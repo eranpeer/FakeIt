@@ -2,6 +2,7 @@
 #define DynamicProxy_h__
 
 #include <functional>
+#include <type_traits>
 #include <vector>
 #include <new>
 
@@ -17,6 +18,7 @@ struct UnmockedMethodException : public std::exception {
 template <typename C>
 struct DynamicProxy
 {
+	static_assert(std::is_polymorphic<C>::value, "DynamicProxy requires a polymorphic type");
 
 	DynamicProxy() : vtable(), methodMocks(vtable.getSize()){
 		auto mptr = union_cast<void*>(&DynamicProxy::unmocked);

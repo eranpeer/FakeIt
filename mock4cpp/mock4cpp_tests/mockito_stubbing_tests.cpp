@@ -25,10 +25,10 @@ namespace mock4cpp_tests
 // 			When(mock().func(1)).Return(1);
 // 			When(mock().func(2)).Return(1);
 
-			SomeInterface &i = mock.get();
-
-			Assert::AreEqual(1, i.func(1));
-			Assert::AreEqual(2, i.func(2));
+// 			SomeInterface &i = mock.get();
+// 
+// 			Assert::AreEqual(1, i.func(1));
+// 			Assert::AreEqual(2, i.func(2));
 		}
 	};
 

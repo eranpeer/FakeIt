@@ -5,13 +5,15 @@
 #include "../mockutils/DynamicProxy.h"
 #include "../mock4cpp/ClousesImpl.h"
 
+using namespace mock4cpp;
 using namespace mock4cpp::stub_clouses;
 
 template <typename C>
 struct Mock
 {	
+	static_assert(std::is_polymorphic<C>::value, "Can only mock a polymorphic type");
 
-	Mock() : dynamicProxy(){
+	Mock() : instance(){
 	}
 	
 	~Mock(){
@@ -19,7 +21,12 @@ struct Mock
 	
 	C& get()
 	{
-		return dynamicProxy.get();
+		return instance.get();
+	}
+
+	C& operator()()
+	{
+		return instance.get();
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
@@ -97,16 +104,16 @@ struct Mock
 
 private:
 
-	DynamicProxy<C> dynamicProxy;
+	DynamicProxy<C> instance;
 
 	template <typename R, typename... arglist>
 	MethodMock<R, arglist...>* stubMethodIfNotStubbed(R(C::*vMethod)(arglist...), std::function<R(arglist...)> initialMethodBehavior){
-		if (!dynamicProxy.isStubbed(vMethod)){
+		if (!instance.isStubbed(vMethod)){
 			auto methodMock = new MethodMock<R, arglist...>();
 			methodMock->addMethodCall(new DefaultMethodCallMock<R, arglist...>(initialMethodBehavior));
-			dynamicProxy.stubMethod(vMethod, methodMock);
+			instance.stubMethod(vMethod, methodMock);
 		}
-		MethodMock<R, arglist...> * methodMock = dynamicProxy.getMethodMock<MethodMock<R, arglist...> *>(vMethod);
+		MethodMock<R, arglist...> * methodMock = instance.getMethodMock<MethodMock<R, arglist...> *>(vMethod);
 		return methodMock;
 	}
 
@@ -139,7 +146,7 @@ private:
 	template <class MEMBER_TYPE, typename... arglist>
 	void stubDataMember(MEMBER_TYPE C::*member, const arglist&... ctorargs)
 	{
-		dynamicProxy.stubDataMember(member, ctorargs...);
+		instance.stubDataMember(member, ctorargs...);
 	}
 
 };
