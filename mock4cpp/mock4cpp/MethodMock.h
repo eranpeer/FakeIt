@@ -122,12 +122,7 @@ namespace mock4cpp {
 		}
 
 		R handleMethodInvocation(const arglist&... args) override {
-			for (auto i = methodCallMocks.rbegin(); i != methodCallMocks.rend(); ++i) {
-				if ((*i)->matchesActual(args...)){
-					return (*i)->handleMethodInvocation(args...);
-				}
-			}
-			throw "error";
+			return getMethodCallMock(args...)->handleMethodInvocation(args...);
 		}
 
 		MethodCallMock<R, arglist...> * stubMethodCall(const arglist&... args){
@@ -153,6 +148,15 @@ namespace mock4cpp {
 				}
 			}
 			return nullptr;
+		}
+
+		MethodCallMock<R, arglist...>* getMethodCallMock(const arglist&... args) {
+			for (auto i = methodCallMocks.rbegin(); i != methodCallMocks.rend(); ++i) {
+				if ((*i)->matchesActual(args...)){
+					return (*i);
+				}
+			}
+			return nullptr; // should not get here since the default will always match a method call.
 		}
 
 	};
