@@ -152,7 +152,8 @@ namespace mock4cpp {
 					return (*i);
 				}
 			}
-			return nullptr; // should not get here since the default will always match a method call.
+			// should not get here since the default will always match an actual method call.
+			return nullptr;
 		}
 
 	};
