@@ -108,15 +108,15 @@ namespace mock4cpp {
 		virtual ~MethodMock() override {}
 
 		void addMethodCall(MethodInvocationMock<R, arglist...> * mock){
-			methodCallMocks.push_back(mock);
+			methodInvocationMocks.push_back(mock);
 		}
 
 		void clear(){
-			methodCallMocks.clear();
+			methodInvocationMocks.clear();
 		}
 
 		MethodInvocationMock<R, arglist...>* last(){
-			return methodCallMocks.back();
+			return methodInvocationMocks.back();
 		}
 
 		R handleMethodInvocation(const arglist&... args) override {
@@ -125,19 +125,19 @@ namespace mock4cpp {
 		}
 
 		MethodInvocationMock<R, arglist...> * stubMethodCall(const arglist&... args){
-			MethodInvocationMock<R, arglist...> * methodCallMock = getMethodInvocationMockForExpectedArgs(args...);
-			if (methodCallMock == nullptr) {
-				methodCallMock = new SimpleMethodInvocationMock<R, arglist...>(args...);
-				addMethodCall(methodCallMock);
+			MethodInvocationMock<R, arglist...> * methodInvocationMock = getMethodInvocationMockForExpectedArgs(args...);
+			if (methodInvocationMock == nullptr) {
+				methodInvocationMock = new SimpleMethodInvocationMock<R, arglist...>(args...);
+				addMethodCall(methodInvocationMock);
 			}
-			return methodCallMock;
+			return methodInvocationMock;
 		}
 
 	private:
-		std::vector<MethodInvocationMock<R, arglist...>*> methodCallMocks;
+		std::vector<MethodInvocationMock<R, arglist...>*> methodInvocationMocks;
 
 		MethodInvocationMock<R, arglist...> * getMethodInvocationMockForExpectedArgs(const arglist&... expectedArgs){
-			for (auto i = methodCallMocks.rbegin(); i != methodCallMocks.rend(); ++i) {
+			for (auto i = methodInvocationMocks.rbegin(); i != methodInvocationMocks.rend(); ++i) {
 				if ((*i)->matchesExpected(expectedArgs...)){
 					return (*i);
 				}
@@ -146,7 +146,7 @@ namespace mock4cpp {
 		}
 
 		MethodInvocationMock<R, arglist...>* getMethodInvocationMockForActualArgs(const arglist&... args) {
-			for (auto i = methodCallMocks.rbegin(); i != methodCallMocks.rend(); ++i) {
+			for (auto i = methodInvocationMocks.rbegin(); i != methodInvocationMocks.rend(); ++i) {
 				if ((*i)->matchesActual(args...)){
 					return (*i);
 				}
