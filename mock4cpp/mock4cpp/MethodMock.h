@@ -3,19 +3,9 @@
 
 #include <vector>
 #include <functional>
+#include "ActualInvocationSchenario.h"
 
 namespace mock4cpp {
-
-	template <typename... arglist>
-	struct ActualInvocation
-	{
-		ActualInvocation(const arglist&... args) : arguments(args...){}
-		std::tuple <arglist...>& getArguments(){
-			return arguments;
-		}
-	private:
-		std::tuple <arglist...> arguments;
-	};
 
 	template < typename R, typename... arglist>
 	struct BehaviorMock
@@ -35,7 +25,7 @@ namespace mock4cpp {
 	};
 
 	template <typename R, typename... arglist>
-	struct MethodInvocationMock
+	struct MethodInvocationMock : public ActualInvocation
 	{
 		void append(BehaviorMock<R, arglist...>* mock){
 			behaviorMocks.push_back(mock);
@@ -104,7 +94,10 @@ namespace mock4cpp {
 	template <typename R, typename... arglist>
 	struct MethodMock : public MethodInvocationHandler <R, arglist...>
 	{
-
+		MethodMock(ActualInvocationSchenario & actualInvocationSchenario) 
+			:actualInvocationSchenario{actualInvocationSchenario}
+		{}
+		
 		virtual ~MethodMock() override {}
 
 		void addMethodCall(MethodInvocationMock<R, arglist...> * mock){
@@ -121,6 +114,7 @@ namespace mock4cpp {
 
 		R handleMethodInvocation(const arglist&... args) override {
 			auto * methodInvocationMock = getMethodInvocationMockForActualArgs(args...);
+			actualInvocationSchenario.add(methodInvocationMock);
 			return methodInvocationMock->handleMethodInvocation(args...);
 		}
 
@@ -135,6 +129,7 @@ namespace mock4cpp {
 
 	private:
 		std::vector<MethodInvocationMock<R, arglist...>*> methodInvocationMocks;
+		ActualInvocationSchenario & actualInvocationSchenario;
 
 		MethodInvocationMock<R, arglist...> * getMethodInvocationMockForExpectedArgs(const arglist&... expectedArgs){
 			for (auto i = methodInvocationMocks.rbegin(); i != methodInvocationMocks.rend(); ++i) {

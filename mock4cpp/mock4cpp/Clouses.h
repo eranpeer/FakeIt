@@ -245,18 +245,7 @@ namespace mock4cpp {
 		};
 
 	}
-}
 
-template <typename R>
-typename std::enable_if<!std::is_void<R>::value, mock4cpp::when_clouses::FirstFunctionWhenClouse<R>&>::type
-When(const R& r) {
-	throw 1;
-}
-
-template <typename R>
-typename std::enable_if<std::is_void<R>::value, mock4cpp::when_clouses::FirstProcedureWhenClouse<R>&>::type
-When(R) {
-	throw 1;
 }
 
 #endif // Clouses_h__

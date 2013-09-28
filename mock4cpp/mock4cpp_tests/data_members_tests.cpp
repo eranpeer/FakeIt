@@ -5,7 +5,6 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-
 namespace mock4cpp_tests
 {
 
