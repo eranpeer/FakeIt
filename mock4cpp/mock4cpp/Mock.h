@@ -166,4 +166,24 @@ private:
 
 };
 
+namespace mockito {
+	
+	template <typename C, typename R, typename... arglist>
+	struct MethodMock : public MethodInvocationHandler<R, arglist...>
+	{
+		MethodMock(Mock<C>& mock) :mock{ mock }
+		{}
+
+		virtual ~MethodMock() override {}
+
+		R handleMethodInvocation(const arglist&... args) override {
+			//mock.Stub()
+			return DefaultValue::value<R>();
+		}
+
+	private:
+		Mock<C>& mock;
+	};
+
+}
 #endif // Mock_h__
