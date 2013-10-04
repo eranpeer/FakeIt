@@ -1,35 +1,17 @@
 #ifndef MockRepository_h__
 #define MockRepository_h__
 
+#include <vector>
 #include "ActualInvocationSchenario.h"
 
 namespace mock4cpp {
 
-	struct MockBase;
-
-	struct MockRepository {
-
-		static MockRepository & getDefaultRepository(){
-			static MockRepository defaultRepository;
-			return defaultRepository;
-		}
-
-		ActualInvocationSchenario & getInvovationSchenario(){
-			return invovationSchenario;
-		}
-
-	private: 
-		ActualInvocationSchenario invovationSchenario;
-	};
-
 	struct MockBase {
-		MockBase(MockRepository & repository) :_repository{ repository }{}
-		
-		MockRepository & repository(){
-			return _repository;
+		void addActualInvocation(ActualInvocation * invocation){
+			invocations.push_back(invocation);
 		}
 	private:
-		MockRepository & _repository;
+		std::vector<ActualInvocation*> invocations;
 	};
 }
 

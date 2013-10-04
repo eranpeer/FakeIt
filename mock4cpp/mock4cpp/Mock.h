@@ -4,20 +4,21 @@
 #include <type_traits>
 #include "../mockutils/DynamicProxy.h"
 #include "../mock4cpp/ClousesImpl.h"
-#include "MockRepository.h"
+#include "../mock4cpp/mockito_clouses.h"
+#include "../mock4cpp/MockRepository.h"
 
 using namespace mock4cpp;
-using namespace mock4cpp::stub_clouses;
+using namespace mock4cpp::clouses;
 
 
 template <typename R>
-typename std::enable_if<!std::is_void<R>::value, mock4cpp::when_clouses::FirstFunctionWhenClouse<R>&>::type
+typename std::enable_if<!std::is_void<R>::value, mock4cpp::mockito_clouses::FirstFunctionWhenClouse<R>&>::type
 When(const R& r) {
 	throw 1;
 }
 
 template <typename R>
-typename std::enable_if<std::is_void<R>::value, mock4cpp::when_clouses::FirstProcedureWhenClouse<R>&>::type
+typename std::enable_if<std::is_void<R>::value, mock4cpp::mockito_clouses::FirstProcedureWhenClouse<R>&>::type
 When(R) {
 	throw 1;
 }
@@ -27,7 +28,7 @@ struct Mock : private MockBase
 {	
 	static_assert(std::is_polymorphic<C>::value, "Can only mock a polymorphic type");
 
-	Mock() : MockBase{ MockRepository::getDefaultRepository() }, instance{}{
+	Mock() : MockBase{}, instance{}{
 	}
 	
 	~Mock(){
@@ -119,11 +120,11 @@ struct Mock : private MockBase
 private:
 
 	DynamicProxy<C> instance;
-	
+
 	template <typename R, typename... arglist>
 	MethodMock<R, arglist...>* stubMethodIfNotStubbed(R(C::*vMethod)(arglist...), std::function<R(arglist...)> initialMethodBehavior){
 		if (!instance.isStubbed(vMethod)){
-			auto methodMock = new MethodMock<R, arglist...>(repository().getInvovationSchenario());
+			auto methodMock = new MethodMock<R, arglist...>(*this);
 			methodMock->addMethodCall(new DefaultMethodInvocationMock<R, arglist...>(initialMethodBehavior));
 			instance.stubMethod(vMethod, methodMock);
 		}

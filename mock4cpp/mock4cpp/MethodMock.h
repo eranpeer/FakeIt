@@ -4,6 +4,7 @@
 #include <vector>
 #include <functional>
 #include "ActualInvocationSchenario.h"
+#include "MockRepository.h"
 
 namespace mock4cpp {
 
@@ -94,8 +95,7 @@ namespace mock4cpp {
 	template <typename R, typename... arglist>
 	struct MethodMock : public MethodInvocationHandler <R, arglist...>
 	{
-		MethodMock(ActualInvocationSchenario & actualInvocationSchenario) 
-			:actualInvocationSchenario{actualInvocationSchenario}
+		MethodMock(MockBase& mock):mock{mock}
 		{}
 		
 		virtual ~MethodMock() override {}
@@ -114,7 +114,7 @@ namespace mock4cpp {
 
 		R handleMethodInvocation(const arglist&... args) override {
 			auto * methodInvocationMock = getMethodInvocationMockForActualArgs(args...);
-			actualInvocationSchenario.add(methodInvocationMock);
+			mock.addActualInvocation(methodInvocationMock);
 			return methodInvocationMock->handleMethodInvocation(args...);
 		}
 
@@ -128,8 +128,9 @@ namespace mock4cpp {
 		}
 
 	private:
+
+		MockBase& mock;
 		std::vector<MethodInvocationMock<R, arglist...>*> methodInvocationMocks;
-		ActualInvocationSchenario & actualInvocationSchenario;
 
 		MethodInvocationMock<R, arglist...> * getMethodInvocationMockForExpectedArgs(const arglist&... expectedArgs){
 			for (auto i = methodInvocationMocks.rbegin(); i != methodInvocationMocks.rend(); ++i) {

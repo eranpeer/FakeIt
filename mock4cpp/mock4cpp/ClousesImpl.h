@@ -8,7 +8,7 @@
 #include "../mock4cpp/Clouses.h"
 
 namespace mock4cpp {
-	namespace stub_clouses {
+	namespace clouses {
 
 		template <typename R, typename... arglist>
 		struct FunctionWhenClouseImpl :

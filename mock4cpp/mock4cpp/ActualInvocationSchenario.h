@@ -7,13 +7,13 @@ namespace mock4cpp {
 		virtual ~ActualInvocation() = 0 {}
 	};
 
-	struct ActualInvocationSchenario {
-		void add(ActualInvocation * invocation){
-			invocations.push_back(invocation);
-		}
-	private:
-		std::vector<ActualInvocation*> invocations;
-	};
+// 	struct ActualInvocationSchenario {
+// 		void add(ActualInvocation * invocation){
+// 			invocations.push_back(invocation);
+// 		}
+// 	private:
+// 		std::vector<ActualInvocation*> invocations;
+// 	};
 }
 #endif // ActualInvocationSchenario_h__
 
