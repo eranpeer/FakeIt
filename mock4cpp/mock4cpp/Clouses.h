@@ -150,5 +150,4 @@ namespace mock4cpp {
 	}
 }
 
-
 #endif // Clouses_h__
