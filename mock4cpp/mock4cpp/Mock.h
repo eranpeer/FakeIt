@@ -3,9 +3,9 @@
 
 #include <type_traits>
 #include "../mockutils/DynamicProxy.h"
-#include "../mock4cpp/ClousesImpl.h"
-#include "../mock4cpp/mockito_clouses.h"
-#include "../mock4cpp/MockRepository.h"
+#include "ClousesImpl.h"
+#include "mockito_clouses.h"
+#include "MockRepository.h"
 
 using namespace mock4cpp;
 using namespace mock4cpp::clouses;
@@ -176,8 +176,19 @@ namespace mockito {
 
 		virtual ~MethodMock() override {}
 
-		R handleMethodInvocation(const arglist&... args) override {
-			//mock.Stub()
+		typename std::enable_if <std::is_void<R>::value, R> ::type
+		handleMethodInvocation(const arglist&... args) override {
+ 			R(C::*vMethod)(arglist...);
+ 			StubProcedureClouse<R, arglist...>& clouse = mock.Stub(vMethod);
+			// add clouse to list ...
+			return DefaultValue::value<R>();
+		}
+
+		typename std::enable_if <!std::is_void<R>::value, R> ::type
+		handleMethodInvocation(const arglist&... args) override {
+			R(C::*vMethod)(arglist...);
+			StubFunctionClouse<R, arglist...>& clouse = mock.Stub(vMethod);
+			// add clouse to list ...
 			return DefaultValue::value<R>();
 		}
 
