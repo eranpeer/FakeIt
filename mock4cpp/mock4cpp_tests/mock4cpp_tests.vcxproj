@@ -82,7 +82,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\mock4cpp\Clouses.h" />
+    <ClInclude Include="..\mock4cpp\clousesimpl.h" />
+    <ClInclude Include="..\mock4cpp\methodmock.h" />
     <ClInclude Include="..\mock4cpp\mock.h" />
+    <ClInclude Include="..\mockutils\DefaultValue.hpp" />
+    <ClInclude Include="..\mockutils\DynamicProxy.h" />
+    <ClInclude Include="..\mockutils\MethodInvocationHandler.h" />
+    <ClInclude Include="..\mockutils\MethodProxy.h" />
+    <ClInclude Include="..\mockutils\utils.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -96,6 +104,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="stubbing_tests.cpp" />
+    <ClCompile Include="verify_tests.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

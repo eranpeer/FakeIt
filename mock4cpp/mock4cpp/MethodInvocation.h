@@ -1,5 +1,5 @@
-#ifndef MethodInvocation_h__
-#define MethodInvocation_h__
+#ifndef MethodInvocationSchenario_h__
+#define MethodInvocationSchenario_h__
 namespace mock4cpp {
 
 	template <typename... arglist>
@@ -12,6 +12,6 @@ namespace mock4cpp {
 		virtual bool matchesExpected(const arglist&... args) = 0;
 	};
 }
-#endif // MethodInvocation_h__
+#endif // MethodInvocationSchenario_h__
 
 

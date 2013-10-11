@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <functional>
-#include "ActualInvocationSchenario.h"
+#include "MethodInvocation.h"
 #include "MockRepository.h"
 
 namespace mock4cpp {
@@ -26,7 +26,7 @@ namespace mock4cpp {
 	};
 
 	template <typename R, typename... arglist>
-	struct MethodInvocationMock : public ActualInvocation
+	struct MethodInvocationMock : public MethodInvocation<arglist...>
 	{
 		void append(BehaviorMock<R, arglist...>* mock){
 			behaviorMocks.push_back(mock);
@@ -41,9 +41,9 @@ namespace mock4cpp {
 			behaviorMocks.clear();
 		}
 
-		virtual bool matchesActual(const arglist&... args) = 0;
+		virtual bool matchesActual(const arglist&... args) override = 0;
 
-		virtual bool matchesExpected(const arglist&... args) = 0;
+		virtual bool matchesExpected(const arglist&... args) override = 0;
 
 		R handleMethodInvocation(const arglist&... args){
 			BehaviorMock<R, arglist...>* behavior = behaviorMocks.front();
@@ -100,8 +100,8 @@ namespace mock4cpp {
 		
 		virtual ~MethodMock() override {}
 
-		void addMethodCall(MethodInvocationMock<R, arglist...> * mock){
-			methodInvocationMocks.push_back(mock);
+		void addMethodCall(MethodInvocationMock<R, arglist...> * methodInvocationMock){
+			methodInvocationMocks.push_back(methodInvocationMock);
 		}
 
 		void clear(){
@@ -114,7 +114,6 @@ namespace mock4cpp {
 
 		R handleMethodInvocation(const arglist&... args) override {
 			auto * methodInvocationMock = getMethodInvocationMockForActualArgs(args...);
-			mock.addActualInvocation(methodInvocationMock);
 			return methodInvocationMock->handleMethodInvocation(args...);
 		}
 

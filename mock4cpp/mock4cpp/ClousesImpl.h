@@ -10,6 +10,13 @@
 namespace mock4cpp {
 	namespace clouses {
 
+		struct  VerifyClouseImpl : public VerifyClouse
+		{
+			virtual void Never() override {};
+			virtual void Once() override {};
+			virtual void Times(const int times) override {};
+		};
+
 		template <typename R, typename... arglist>
 		struct FunctionWhenClouseImpl :
 			public FirstFunctionWhenClouse<R, arglist...>,
@@ -49,6 +56,11 @@ namespace mock4cpp {
 				FunctionWhenClouseImpl<R, arglist...> * whenClouse = new FunctionWhenClouseImpl<R, arglist...>
 					(invocationMock);
 				return *whenClouse;
+			}
+
+			VerifyClouse& Verify(const arglist&...) override {
+				auto verifyClouse = new VerifyClouseImpl();
+				return *verifyClouse;
 			}
 
 			NextFunctionWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) override {
@@ -100,6 +112,11 @@ namespace mock4cpp {
 				ProcedureWhenClouseImpl<R, arglist...> * whenClouse = new ProcedureWhenClouseImpl<R, arglist...>(invocationMock);
 				return *whenClouse;
 			};
+
+			VerifyClouse & Verify(const arglist&...) override {
+				auto verifyClouse = new VerifyClouseImpl();
+				return *verifyClouse;
+			}
 
 			NextProcedureWhenClouse<R, arglist...>& Do(std::function<void(arglist...)> method) override {
 				ProcedureWhenClouseImpl<R, arglist...> * whenClouse = new ProcedureWhenClouseImpl<R, arglist...>(methodMock->last());

@@ -9,6 +9,13 @@
 namespace mock4cpp {
 	namespace clouses {
 
+
+		struct VerifyClouse {
+			virtual void Never() = 0;
+			virtual void Once() = 0;
+			virtual void Times(const int times) = 0;
+		};
+		
 		template <typename R, typename... arglist>
 		struct NextFunctionWhenClouse {
 
@@ -87,6 +94,8 @@ namespace mock4cpp {
 			}
 
 			virtual  FirstFunctionWhenClouse<R, arglist...>& When(const arglist&...) = 0;
+
+			virtual VerifyClouse& Verify(const arglist&...) = 0;
 		};
 
 		template <typename R, typename... arglist>
@@ -137,6 +146,9 @@ namespace mock4cpp {
 			}
 
 			virtual  FirstProcedureWhenClouse<R, arglist...>& When(const arglist&...) = 0;
+
+			virtual  VerifyClouse& Verify(const arglist&...) = 0;
+
 		};
 
 

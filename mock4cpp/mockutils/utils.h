@@ -13,6 +13,12 @@ TARGET union_cast(SOURCE source)
 	u.source = source;
 	return u.target;
 }
+
+class Destructable {
+public:
+	virtual ~Destructable() {}
+};
+
 #endif // utils_h__
 
 

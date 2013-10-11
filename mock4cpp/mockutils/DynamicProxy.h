@@ -11,6 +11,7 @@
 #include "../mockutils/Table.h"
 #include "../mockutils/VirtualOffestSelector.h"
 #include "../mockutils/utils.h"
+#include "MethodInvocationHandler.h"
 
 struct UnmockedMethodException : public std::exception {
 };
@@ -94,11 +95,6 @@ private:
 				return methodMock->handleMethodInvocation(args...);
 			}
 		};
-	};
-
-	class Destructable {
-	public:
-		virtual ~Destructable() {}
 	};
 
 	template <typename MEMBER_TYPE, typename... arglist>

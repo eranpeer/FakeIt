@@ -169,12 +169,12 @@ private:
 namespace mockito {
 	
 	template <typename C, typename R, typename... arglist>
-	struct MethodMock : public MethodInvocationHandler<R, arglist...>
+	struct MethodStubbingMock : public MethodInvocationHandler<R, arglist...>
 	{
-		MethodMock(Mock<C>& mock) :mock{ mock }
+		MethodStubbingMock(Mock<C>& mock) :mock{ mock }
 		{}
 
-		virtual ~MethodMock() override {}
+		virtual ~MethodStubbingMock() override {}
 
 		typename std::enable_if <std::is_void<R>::value, R> ::type
 		handleMethodInvocation(const arglist&... args) override {

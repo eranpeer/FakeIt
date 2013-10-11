@@ -32,7 +32,7 @@ namespace mock4cpp_tests
 
 	TEST_CLASS(StubbingTests)
 	{
-	public:	
+	public:
 
 		struct SomeInterface
 		{
@@ -71,7 +71,7 @@ namespace mock4cpp_tests
 			mock.Stub(&SomeInterface::proc).Do(&defaultProcBehavior);
 
 			SomeInterface &i = mock.get();
-			
+
 			Assert::AreEqual(1, i.func(1));
 			Assert::ExpectException<int>([&i]{ i.proc(1); });
 		}
@@ -94,9 +94,9 @@ namespace mock4cpp_tests
 			Mock<SomeInterface> mock;
 			mock.Stub(&SomeInterface::func).Do([](int a){return a; });
 			mock.Stub(&SomeInterface::proc).Do([](int a){throw a; });
-			
+
 			SomeInterface &i = mock.get();
-			
+
 			Assert::AreEqual(1, i.func(1));
 			Assert::ExpectException<int>([&i]{ i.proc(1); });
 		}
@@ -122,9 +122,9 @@ namespace mock4cpp_tests
 
 			SomeInterface &i = mock.get();
 
-			Assert::AreEqual(1,i.func(1));
 			Assert::AreEqual(1, i.func(1));
-			Assert::AreEqual(0, i.func(2),L"default behavior");
+			Assert::AreEqual(1, i.func(1));
+			Assert::AreEqual(0, i.func(2), L"default behavior");
 
 			Assert::ExpectException<std::string>([&i]{ i.proc(1); });
 			Assert::ExpectException<std::string>([&i]{ i.proc(1); });
@@ -286,3 +286,5 @@ namespace mock4cpp_tests
 		}
 	};
 }
+
+

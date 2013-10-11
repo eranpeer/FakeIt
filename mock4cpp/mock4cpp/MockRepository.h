@@ -2,16 +2,16 @@
 #define MockRepository_h__
 
 #include <vector>
-#include "ActualInvocationSchenario.h"
+#include "MethodInvocation.h"
 
 namespace mock4cpp {
 
 	struct MockBase {
-		void addActualInvocation(ActualInvocation * invocation){
-			invocations.push_back(invocation);
-		}
+// 		void addMethodInvocation(MethodInvocation * invocation){
+// 			invocations.push_back(invocation);
+// 		}
 	private:
-		std::vector<ActualInvocation*> invocations;
+//		std::vector<MethodInvocation*> invocations;
 	};
 }
 
