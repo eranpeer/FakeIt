@@ -82,6 +82,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\mock4cpp\ActualInvocation.h" />
     <ClInclude Include="..\mock4cpp\Clouses.h" />
     <ClInclude Include="..\mock4cpp\clousesimpl.h" />
     <ClInclude Include="..\mock4cpp\methodmock.h" />

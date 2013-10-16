@@ -11,7 +11,7 @@
 #include "../mockutils/Table.h"
 #include "../mockutils/VirtualOffestSelector.h"
 #include "../mockutils/utils.h"
-#include "MethodInvocationHandler.h"
+#include "../mockutils/MethodInvocationHandler.h"
 
 struct UnmockedMethodException : public std::exception {
 };

@@ -12,9 +12,21 @@ namespace mock4cpp {
 
 		struct  VerifyClouseImpl : public VerifyClouse
 		{
-			virtual void Never() override {};
-			virtual void Once() override {};
-			virtual void Times(const int times) override {};
+			VerifyClouseImpl(int times) :times(times){}
+			virtual void Never() override {
+				if (times != 0)
+					throw (std::string("expected Never but was ") + std::to_string(times));
+			}
+			virtual void Once() override {
+				if (times != 1)
+					throw (std::string("expected Once but was ") + std::to_string(times));
+			}
+			virtual void Times(const int times) override {
+				if (times != 2)
+					throw (std::string("expected Twice but was ") + std::to_string(times));
+			}
+		private:
+			int times;
 		};
 
 		template <typename R, typename... arglist>
@@ -48,29 +60,29 @@ namespace mock4cpp {
 
 		template <typename R, typename... arglist>
 		struct StubFunctionClouseImpl : public StubFunctionClouse<R, arglist...> {
-			StubFunctionClouseImpl(MethodMock<R, arglist...>* methodMock) : methodMock(methodMock) {
+			StubFunctionClouseImpl(MethodMock<R, arglist...>& methodMock) : methodMock(methodMock) {
 			}
 
 			FirstFunctionWhenClouse<R, arglist...>& When(const arglist&... args) override {
-				MethodInvocationMock<R, arglist...> * invocationMock = methodMock->stubMethodCall(args...);
+				MethodInvocationMock<R, arglist...> * invocationMock = methodMock.stubMethodCall(args...);
 				FunctionWhenClouseImpl<R, arglist...> * whenClouse = new FunctionWhenClouseImpl<R, arglist...>
 					(invocationMock);
 				return *whenClouse;
 			}
 
-			VerifyClouse& Verify(const arglist&...) override {
-				auto verifyClouse = new VerifyClouseImpl();
+			VerifyClouse& Verify(const arglist&... args) override {
+				auto verifyClouse = new VerifyClouseImpl(methodMock.getActualInvocations(args...).size());
 				return *verifyClouse;
 			}
 
 			NextFunctionWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-				FunctionWhenClouseImpl<R, arglist...> * whenClouse = new FunctionWhenClouseImpl<R, arglist...>(methodMock->last());
+				FunctionWhenClouseImpl<R, arglist...> * whenClouse = new FunctionWhenClouseImpl<R, arglist...>(methodMock.last());
 				whenClouse->Do(method);
 				return *whenClouse;
 			}
 
 		private:
-			MethodMock<R, arglist...>* methodMock;
+			MethodMock<R, arglist...>& methodMock;
 		};
 
 
@@ -113,8 +125,8 @@ namespace mock4cpp {
 				return *whenClouse;
 			};
 
-			VerifyClouse & Verify(const arglist&...) override {
-				auto verifyClouse = new VerifyClouseImpl();
+			VerifyClouse & Verify(const arglist&... args) override {
+				auto verifyClouse = new VerifyClouseImpl(methodMock->getActualInvocations(args...).size());
 				return *verifyClouse;
 			}
 

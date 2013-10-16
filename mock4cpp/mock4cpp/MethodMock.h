@@ -5,6 +5,7 @@
 #include <functional>
 #include "MethodInvocation.h"
 #include "MockRepository.h"
+#include "ActualInvocation.h"
 
 namespace mock4cpp {
 
@@ -113,11 +114,13 @@ namespace mock4cpp {
 		}
 
 		R handleMethodInvocation(const arglist&... args) override {
+			auto * actualInvoaction = new ActualInvocation<arglist...>(args...);
+			actualInvocations.push_back(actualInvoaction);
 			auto * methodInvocationMock = getMethodInvocationMockForActualArgs(args...);
 			return methodInvocationMock->handleMethodInvocation(args...);
 		}
 
-		MethodInvocationMock<R, arglist...> * stubMethodCall(const arglist&... args){
+		MethodInvocationMock<R, arglist...> * stubMethodCall(const arglist&... args) {
 			MethodInvocationMock<R, arglist...> * methodInvocationMock = getMethodInvocationMockForExpectedArgs(args...);
 			if (methodInvocationMock == nullptr) {
 				methodInvocationMock = new SimpleMethodInvocationMock<R, arglist...>(args...);
@@ -126,10 +129,23 @@ namespace mock4cpp {
 			return methodInvocationMock;
 		}
 
+
+		std::vector<ActualInvocation<arglist...> *> getActualInvocations(const arglist&... expectedArgs) {
+			std::vector<ActualInvocation<arglist...> *> result;
+			for each (auto* actualInvocation in actualInvocations)
+			{
+				if (actualInvocation->matches(expectedArgs...)){
+					result.push_back(actualInvocation);
+				}
+			}
+			return result;
+		}
+
 	private:
 
 		MockBase& mock;
 		std::vector<MethodInvocationMock<R, arglist...>*> methodInvocationMocks;
+		std::vector<ActualInvocation<arglist...>*> actualInvocations;
 
 		MethodInvocationMock<R, arglist...> * getMethodInvocationMockForExpectedArgs(const arglist&... expectedArgs){
 			for (auto i = methodInvocationMocks.rbegin(); i != methodInvocationMocks.rend(); ++i) {
@@ -146,6 +162,7 @@ namespace mock4cpp {
 					return (*i);
 				}
 			}
+
 			// should not get here since the default will always match an actual method call.
 			return nullptr;
 		}
