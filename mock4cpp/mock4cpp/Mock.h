@@ -70,26 +70,26 @@ struct Mock : private MockBase
 	//		
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	StubProcedureClouse<void, arglist...>& Stub(R(C::*vMethod)(arglist...) const){
-		auto methodWithoutConstVolatile = reinterpret_cast<void(C::*)(arglist...)>(vMethod);
+	StubProcedureClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...) const){
+		auto methodWithoutConstVolatile = reinterpret_cast<std::remove_cv<R>::type(C::*)(arglist...)>(vMethod);
 		return Stub(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	StubProcedureClouse<void, arglist...>& Stub(R(C::*vMethod)(arglist...) volatile){
-		auto methodWithoutConstVolatile = reinterpret_cast<void(C::*)(arglist...)>(vMethod);
+	StubProcedureClouse<typename std::remove_cv<R>::type, arglist...>& Stub(R(C::*vMethod)(arglist...) volatile){
+		auto methodWithoutConstVolatile = reinterpret_cast<std::remove_cv<R>::type(C::*)(arglist...)>(vMethod);
 		return Stub(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	StubProcedureClouse<void, arglist...>& Stub(R(C::*vMethod)(arglist...) const volatile){
-		auto methodWithoutConstVolatile = reinterpret_cast<void(C::*)(arglist...)>(vMethod);
+	StubProcedureClouse<typename std::remove_cv<R>::type, arglist...>& Stub(R(C::*vMethod)(arglist...) const volatile){
+		auto methodWithoutConstVolatile = reinterpret_cast<std::remove_cv<R>::type(C::*)(arglist...)>(vMethod);
 		return Stub(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	StubProcedureClouse<void, arglist...>& Stub(R(C::*vMethod)(arglist...)){
-		return Stub(vMethod, std::function<void(arglist...)>([](const arglist&... args)->void{}));
+	StubProcedureClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...)){
+		return Stub(vMethod, std::function<R(arglist...)>([](const arglist&... args)->R{}));
 	}
 
 	template <class DM, typename... arglist

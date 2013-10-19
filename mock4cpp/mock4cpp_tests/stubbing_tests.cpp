@@ -87,6 +87,10 @@ namespace mock4cpp_tests
 
 			Assert::AreEqual(1, i.func(1));
 			Assert::ExpectException<int>([&i]{ i.proc(1); });
+			foo();
+		}
+
+		std::remove_cv<const void>::type foo(){
 		}
 
 		TEST_METHOD(StubDefaultBehaviorWithLambda)
