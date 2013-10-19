@@ -15,7 +15,9 @@ namespace stubbing_tests
 			virtual int func1() const = 0;
 			virtual int func2() volatile = 0;
 			virtual int func3() const volatile = 0;
-			virtual const int func4() const volatile = 0;
+			virtual const int func4() = 0;
+			virtual const int func6() const = 0;
+			virtual const int func7() const volatile = 0;
 
 			virtual void proc1() const = 0;
 			virtual void proc2() volatile = 0;
@@ -33,10 +35,12 @@ namespace stubbing_tests
 			mock.Stub(&ConstVolatileFunctions::func2);
 			mock.Stub(&ConstVolatileFunctions::func3);
 			mock.Stub(&ConstVolatileFunctions::func4);
+			mock.Stub(&ConstVolatileFunctions::func6);
+			mock.Stub(&ConstVolatileFunctions::func7);
+
 			mock.Stub(&ConstVolatileFunctions::proc1);
 			mock.Stub(&ConstVolatileFunctions::proc2);
 			mock.Stub(&ConstVolatileFunctions::proc3);
-
 			mock.Stub(&ConstVolatileFunctions::proc4);
 			mock.Stub(&ConstVolatileFunctions::proc5);
 			mock.Stub(&ConstVolatileFunctions::proc6);
@@ -47,6 +51,8 @@ namespace stubbing_tests
 			Assert::AreEqual(0, i.func2());
 			Assert::AreEqual(0, i.func3());
 			Assert::AreEqual(0, i.func4());
+			Assert::AreEqual(0, i.func6());
+			Assert::AreEqual(0, i.func7());
 			i.proc1();
 			i.proc2();
 			i.proc3();
