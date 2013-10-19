@@ -70,7 +70,7 @@ struct Mock : private MockBase
 	//		
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	StubProcedureClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...) const){
+	StubProcedureClouse<typename std::remove_cv<R>::type, arglist...>& Stub(R(C::*vMethod)(arglist...) const){
 		auto methodWithoutConstVolatile = reinterpret_cast<std::remove_cv<R>::type(C::*)(arglist...)>(vMethod);
 		return Stub(methodWithoutConstVolatile);
 	}
@@ -88,8 +88,9 @@ struct Mock : private MockBase
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	StubProcedureClouse<R, arglist...>& Stub(R(C::*vMethod)(arglist...)){
-		return Stub(vMethod, std::function<R(arglist...)>([](const arglist&... args)->R{}));
+	StubProcedureClouse<typename std::remove_cv<R>::type, arglist...>& Stub(R(C::*vMethod)(arglist...)){
+		auto methodWithoutConstVolatile = reinterpret_cast<std::remove_cv<R>::type(C::*)(arglist...)>(vMethod);
+		return Stub(methodWithoutConstVolatile, std::function<std::remove_cv<R>::type(arglist...)>([](const arglist&... args)->std::remove_cv<R>::type{}));
 	}
 
 	template <class DM, typename... arglist
