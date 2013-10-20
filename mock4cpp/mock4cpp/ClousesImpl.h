@@ -63,6 +63,10 @@ namespace mock4cpp {
 			StubFunctionClouseImpl(MethodMock<R, arglist...>& methodMock) : methodMock(methodMock) {
 			}
 
+			virtual void operator=(std::function<R(arglist...)> method) override {
+				Do(method);
+			}
+
 			FirstFunctionWhenClouse<R, arglist...>& When(const arglist&... args) override {
 				MethodInvocationMock<R, arglist...> * invocationMock = methodMock.stubMethodCall(args...);
 				FunctionWhenClouseImpl<R, arglist...> * whenClouse = new FunctionWhenClouseImpl<R, arglist...>
@@ -117,6 +121,10 @@ namespace mock4cpp {
 		template <typename R, typename... arglist>
 		struct StubProcedureClouseImpl : public StubProcedureClouse<R, arglist...> {
 			StubProcedureClouseImpl(MethodMock<R, arglist...>* methodMock) : methodMock(methodMock) {
+			}
+
+			virtual void operator=(std::function<R(arglist...)> method) override {
+				Do(method);
 			}
 
 			FirstProcedureWhenClouse<R, arglist...>& When(const arglist&... args) override {

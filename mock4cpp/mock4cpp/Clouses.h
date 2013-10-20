@@ -89,7 +89,7 @@ namespace mock4cpp {
 
 			virtual ~StubFunctionClouse() = 0 {};
 
-			void operator=(std::function<R(arglist...)> method){
+			virtual void operator=(std::function<R(arglist...)> method){
 				Do(method);
 			}
 
@@ -141,7 +141,7 @@ namespace mock4cpp {
 
 			virtual ~StubProcedureClouse() = 0 {};
 
-			void operator=(std::function<R(arglist...)> method){
+			virtual void operator=(std::function<R(arglist...)> method){
 				Do(method);
 			}
 
