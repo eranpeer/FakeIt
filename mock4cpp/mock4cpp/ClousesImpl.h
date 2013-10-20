@@ -87,6 +87,7 @@ namespace mock4cpp {
 
 		private:
 			MethodMock<R, arglist...>& methodMock;
+			StubFunctionClouseImpl & operator= (const StubFunctionClouseImpl & other) = delete;
 		};
 
 
@@ -146,6 +147,7 @@ namespace mock4cpp {
 
 		private:
 			MethodMock<R, arglist...>* methodMock;
+			StubProcedureClouseImpl & operator= (const StubProcedureClouseImpl & other) = delete;
 		};
 
 		template <typename... arglist>
