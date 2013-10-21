@@ -85,20 +85,6 @@ namespace mock4cpp {
 		};
 
 		template <typename R, typename... arglist>
-		struct StubFunctionClouse : public FirstFunctionWhenClouse<R, arglist...>{
-
-			virtual ~StubFunctionClouse() = 0 {};
-
-			virtual void operator=(std::function<R(arglist...)> method){
-				Do(method);
-			}
-
-			virtual  FirstFunctionWhenClouse<R, arglist...>& When(const arglist&...) = 0;
-
-			virtual VerifyClouse& Verify(const arglist&...) = 0;
-		};
-
-		template <typename R, typename... arglist>
 		struct NextProcedureWhenClouse {
 			virtual ~NextProcedureWhenClouse() = 0 {};
 
@@ -135,22 +121,6 @@ namespace mock4cpp {
 
 			virtual  NextProcedureWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) = 0;
 		};
-
-		template <typename R, typename... arglist>
-		struct StubProcedureClouse : public FirstProcedureWhenClouse<R, arglist...>{
-
-			virtual ~StubProcedureClouse() = 0 {};
-
-			virtual void operator=(std::function<R(arglist...)> method){
-				Do(method);
-			}
-
-			virtual  FirstProcedureWhenClouse<R, arglist...>& When(const arglist&...) = 0;
-
-			virtual  VerifyClouse& Verify(const arglist&...) = 0;
-
-		};
-
 
 		template <typename... arglist>
 		struct StubDataMemberClouse {
