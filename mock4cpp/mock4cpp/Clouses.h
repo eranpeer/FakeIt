@@ -14,6 +14,8 @@ namespace mock4cpp {
 			virtual void Never() = 0;
 			virtual void Once() = 0;
 			virtual void Times(const int times) = 0;
+		private:
+			VerifyClouse & operator= (const VerifyClouse & other) = delete;
 		};
 		
 		template <typename R, typename... arglist>
@@ -48,6 +50,8 @@ namespace mock4cpp {
 
 			virtual  NextFunctionWhenClouse<R, arglist...>& ThenDo(std::function<R(arglist...)> method) = 0;
 
+		private:
+			NextFunctionWhenClouse & operator= (const NextFunctionWhenClouse & other) = delete;
 		};
 
 
@@ -81,7 +85,8 @@ namespace mock4cpp {
 			}
 
 			virtual  NextFunctionWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) = 0;
-
+		private:
+			FirstFunctionWhenClouse & operator= (const FirstFunctionWhenClouse & other) = delete;
 		};
 
 		template <typename R, typename... arglist>
@@ -98,6 +103,8 @@ namespace mock4cpp {
 			}
 
 			virtual  NextProcedureWhenClouse<R, arglist...>& ThenDo(std::function<R(arglist...)> method) = 0;
+		private:
+			NextProcedureWhenClouse & operator= (const NextProcedureWhenClouse & other) = delete;
 		};
 
 
@@ -120,6 +127,8 @@ namespace mock4cpp {
 			}
 
 			virtual  NextProcedureWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) = 0;
+		private:
+			FirstProcedureWhenClouse & operator= (const FirstProcedureWhenClouse & other) = delete;
 		};
 
 		template <typename... arglist>
@@ -128,6 +137,9 @@ namespace mock4cpp {
 			virtual ~StubDataMemberClouse() = 0 {};
 
 			virtual void operator()(std::initializer_list<arglist...> list) = 0;
+
+		private:
+			StubDataMemberClouse & operator= (const StubDataMemberClouse & other) = delete;
 		};
 	}
 }
