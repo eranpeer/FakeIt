@@ -31,6 +31,7 @@ namespace stubbing_tests
 		TEST_METHOD(TestConstFunctions)
 		{
 			Mock<ConstVolatileFunctions> mock;
+			//mock.getA().foo();
 			mock.Stub(&ConstVolatileFunctions::func1);
 			mock.Stub(&ConstVolatileFunctions::func2);
 			mock.Stub(&ConstVolatileFunctions::func3);
@@ -44,6 +45,7 @@ namespace stubbing_tests
 			mock.Stub(&ConstVolatileFunctions::proc4);
 			mock.Stub(&ConstVolatileFunctions::proc5);
 			mock.Stub(&ConstVolatileFunctions::proc6);
+			StubProcedureClouse<void> a = mock.Stub(&ConstVolatileFunctions::proc7);
 			mock.Stub(&ConstVolatileFunctions::proc7);
 
 			ConstVolatileFunctions& i = mock.get();

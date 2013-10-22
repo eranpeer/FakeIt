@@ -10,24 +10,24 @@
 namespace mock4cpp {
 	namespace clouses {
 
-		struct  VerifyClouseImpl : public VerifyClouse
+		struct  VerifyClouse
 		{
-			VerifyClouseImpl(int times) :times(times){}
-			virtual void Never() override {
+			VerifyClouse(int times) :times(times){}
+			virtual void Never() {
 				if (times != 0)
 					throw (std::string("expected Never but was ") + std::to_string(times));
 			}
-			virtual void Once() override {
+			virtual void Once() {
 				if (times != 1)
 					throw (std::string("expected Once but was ") + std::to_string(times));
 			}
-			virtual void Times(const int times) override {
+			virtual void Times(const int times) {
 				if (times != 2)
 					throw (std::string("expected Twice but was ") + std::to_string(times));
 			}
 		private:
 			int times;
-			VerifyClouseImpl & operator= (const VerifyClouseImpl & other) = delete;
+			VerifyClouse & operator= (const VerifyClouse & other) = delete;
 		};
 
 		template <typename R, typename... arglist>
@@ -76,9 +76,8 @@ namespace mock4cpp {
 				return *whenClouse;
 			}
 
-			VerifyClouse& Verify(const arglist&... args)  {
-				auto verifyClouse = new VerifyClouseImpl(methodMock.getActualInvocations(args...).size());
-				return *verifyClouse;
+			VerifyClouse Verify(const arglist&... args)  {
+				return VerifyClouse(methodMock.getActualInvocations(args...).size());
 			}
 
 			NextFunctionWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method)  {
@@ -131,6 +130,11 @@ namespace mock4cpp {
 				other.isLast = false;
 			}
 
+			StubProcedureClouse(StubProcedureClouse&& other) = delete;
+// 				:methodMock(other.methodMock), isLast(other.isLast){
+// 				other.isLast = false;
+// 			}
+
 			~StubProcedureClouse() {
 				if (isLast){
 					//int a = isLast;
@@ -147,9 +151,8 @@ namespace mock4cpp {
 				return *whenClouse;
 			};
 
-			VerifyClouse & Verify(const arglist&... args)  {
-				auto verifyClouse = new VerifyClouseImpl(methodMock->getActualInvocations(args...).size());
-				return *verifyClouse;
+			VerifyClouse Verify(const arglist&... args)  {
+				return new VerifyClouse(methodMock->getActualInvocations(args...).size());
 			}
 
 			NextProcedureWhenClouse<R, arglist...>& Do(std::function<void(arglist...)> method) override {
@@ -161,14 +164,8 @@ namespace mock4cpp {
 		private:
 			MethodMock<R, arglist...>* methodMock;
 			bool isLast;
-			StubProcedureClouse & operator= (const StubProcedureClouse & other) = delete;
-		};
-
-		template <typename... arglist>
-		struct StubDataMemberClouseImpl : public StubDataMemberClouse<arglist...> {
-			virtual void operator()(std::initializer_list<arglist...> list) override {
-
-			};
+			StubProcedureClouse<R, arglist...> & operator = (const StubProcedureClouse<R, arglist...> & other) = delete;
+			StubProcedureClouse<R, arglist...> & operator = (const StubProcedureClouse<R, arglist...> && other) = delete;
 		};
 	}
 }

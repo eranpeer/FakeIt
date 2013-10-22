@@ -26,6 +26,7 @@ When(R) {
 template <typename C>
 struct Mock : private MockBase
 {	
+
 	static_assert(std::is_polymorphic<C>::value, "Can only mock a polymorphic type");
 
 	Mock() : MockBase{}, instance{}{
@@ -72,8 +73,7 @@ struct Mock : private MockBase
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
 	StubProcedureClouse<typename std::remove_cv<R>::type, arglist...> Stub(R(C::*vMethod)(arglist...) const){
 		auto methodWithoutConstVolatile = reinterpret_cast<std::remove_cv<R>::type(C::*)(arglist...)>(vMethod);
-		auto& rv = Stub(methodWithoutConstVolatile);
-		return rv;
+		return Stub(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>

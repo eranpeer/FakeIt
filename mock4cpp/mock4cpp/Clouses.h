@@ -7,16 +7,8 @@
 #include "../mockutils/DefaultValue.hpp"
 
 namespace mock4cpp {
+
 	namespace clouses {
-
-
-		struct VerifyClouse {
-			virtual void Never() = 0;
-			virtual void Once() = 0;
-			virtual void Times(const int times) = 0;
-		private:
-			VerifyClouse & operator= (const VerifyClouse & other) = delete;
-		};
 		
 		template <typename R, typename... arglist>
 		struct NextFunctionWhenClouse {
@@ -129,17 +121,6 @@ namespace mock4cpp {
 			virtual  NextProcedureWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) = 0;
 		private:
 			FirstProcedureWhenClouse & operator= (const FirstProcedureWhenClouse & other) = delete;
-		};
-
-		template <typename... arglist>
-		struct StubDataMemberClouse {
-
-			virtual ~StubDataMemberClouse() = 0 {};
-
-			virtual void operator()(std::initializer_list<arglist...> list) = 0;
-
-		private:
-			StubDataMemberClouse & operator= (const StubDataMemberClouse & other) = delete;
 		};
 	}
 }
