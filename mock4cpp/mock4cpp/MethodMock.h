@@ -58,9 +58,9 @@ namespace mock4cpp {
 	};
 
 	template <typename R, typename... arglist>
-	struct SimpleMethodInvocationMock : public MethodInvocationMock<R, arglist...>
+	struct ExpectedInvocationMock : public MethodInvocationMock<R, arglist...>
 	{
-		SimpleMethodInvocationMock(const arglist&... args) : expectedArguments(args...)
+		ExpectedInvocationMock(const arglist&... args) : expectedArguments(args...)
 		{
 		}
 
@@ -77,9 +77,9 @@ namespace mock4cpp {
 	};
 
 	template <typename R, typename... arglist>
-	struct DefaultMethodInvocationMock : public MethodInvocationMock<R, arglist...>
+	struct DefaultInvocationMock : public MethodInvocationMock<R, arglist...>
 	{
-		DefaultMethodInvocationMock(std::function<R(arglist...)> methodBehavior) {
+		DefaultInvocationMock(std::function<R(arglist...)> methodBehavior) {
 			appendDo(methodBehavior);
 		}
 
@@ -123,7 +123,7 @@ namespace mock4cpp {
 		MethodInvocationMock<R, arglist...> * stubMethodCall(const arglist&... args) {
 			MethodInvocationMock<R, arglist...> * methodInvocationMock = getMethodInvocationMockForExpectedArgs(args...);
 			if (methodInvocationMock == nullptr) {
-				methodInvocationMock = new SimpleMethodInvocationMock<R, arglist...>(args...);
+				methodInvocationMock = new ExpectedInvocationMock<R, arglist...>(args...);
 				addMethodCall(methodInvocationMock);
 			}
 			return methodInvocationMock;

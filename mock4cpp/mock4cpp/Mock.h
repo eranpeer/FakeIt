@@ -126,7 +126,7 @@ private:
 	MethodMock<R, arglist...>* stubMethodIfNotStubbed(R(C::*vMethod)(arglist...), std::function<R(arglist...)> initialMethodBehavior){
 		if (!instance.isStubbed(vMethod)){
 			auto methodMock = new MethodMock<R, arglist...>(*this);
-			methodMock->addMethodCall(new DefaultMethodInvocationMock<R, arglist...>(initialMethodBehavior));
+			methodMock->addMethodCall(new DefaultInvocationMock<R, arglist...>(initialMethodBehavior));
 			instance.stubMethod(vMethod, methodMock);
 		}
 		MethodMock<R, arglist...> * methodMock = instance.getMethodMock<MethodMock<R, arglist...> *>(vMethod);
