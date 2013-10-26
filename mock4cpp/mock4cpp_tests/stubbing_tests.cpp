@@ -131,6 +131,18 @@ namespace mock4cpp_tests
 			i.proc(2);
 		}
 
+		TEST_METHOD(LastMatchingStubUsed)
+		{
+			Mock<SomeInterface> mock;
+			mock.Stub(&SomeInterface::func).When(1).Return(1);
+			mock.Stub(&SomeInterface::func).Return(2);
+
+			SomeInterface &i = mock.get();
+
+			Assert::AreEqual(2, i.func(1));
+			Assert::AreEqual(2, i.func(2));
+		}
+
 		TEST_METHOD(StubOnlySpecifiedCallsToAlternateBehavior_ByAssignment)
 		{
 			Mock<SomeInterface> mock;

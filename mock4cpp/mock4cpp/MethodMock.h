@@ -96,8 +96,7 @@ namespace mock4cpp {
 	template <typename R, typename... arglist>
 	struct MethodMock : public MethodInvocationHandler <R, arglist...>
 	{
-		MethodMock(MockBase& mock):mock{mock}
-		{}
+		MethodMock(MockBase& mock):mock{mock} {}
 		
 		virtual ~MethodMock() override {}
 
