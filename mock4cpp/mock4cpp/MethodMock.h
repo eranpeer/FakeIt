@@ -109,8 +109,8 @@ namespace mock4cpp {
 			methodInvocationMocks.clear();
 		}
 
-		MethodInvocationMock<R, arglist...>* last(){
-			return methodInvocationMocks.back();
+		MethodInvocationMock<R, arglist...>& last(){
+			return *methodInvocationMocks.back();
 		}
 
 		R handleMethodInvocation(const arglist&... args) override {
@@ -120,13 +120,13 @@ namespace mock4cpp {
 			return methodInvocationMock->handleMethodInvocation(args...);
 		}
 
-		MethodInvocationMock<R, arglist...> * stubMethodCall(const arglist&... args) {
+		MethodInvocationMock<R, arglist...>& stubMethodCall(const arglist&... args) {
 			MethodInvocationMock<R, arglist...> * methodInvocationMock = getMethodInvocationMockForExpectedArgs(args...);
 			if (methodInvocationMock == nullptr) {
 				methodInvocationMock = new ExpectedInvocationMock<R, arglist...>(args...);
 				addMethodCall(methodInvocationMock);
 			}
-			return methodInvocationMock;
+			return *methodInvocationMock;
 		}
 
 
