@@ -11,12 +11,12 @@ namespace mock4cpp {
 	namespace clouses {
 		
 		template <typename R, typename... arglist>
-		struct NextFunctionWhenClouse {
+		struct AbstractNextFunctionWhenClouse {
 
-			virtual ~NextFunctionWhenClouse() {};
+			virtual ~AbstractNextFunctionWhenClouse() {};
 
 			template<typename NO_REF = std::remove_reference<R>::type>
-			typename std::enable_if<is_copy_initializable<NO_REF>::value, NextFunctionWhenClouse<R, arglist...>&>::type
+			typename std::enable_if<is_copy_initializable<NO_REF>::value, AbstractNextFunctionWhenClouse<R, arglist...>&>::type
 				ThenReturn(const R& r) {
 					return ThenDo(std::function<R(arglist...)>([r](...)->R{
 						return r;
@@ -24,7 +24,7 @@ namespace mock4cpp {
 				}
 
 			template<typename NO_REF = std::remove_reference<R>::type>
-			typename std::enable_if<!is_copy_initializable<NO_REF>::value, NextFunctionWhenClouse<R, arglist...>&>::type
+			typename std::enable_if<!is_copy_initializable<NO_REF>::value, AbstractNextFunctionWhenClouse<R, arglist...>&>::type
 				ThenReturn(const R& r) {
 					return ThenDo(std::function<R(arglist...)>([&r](...)->R{
 						return r;
@@ -32,27 +32,28 @@ namespace mock4cpp {
 				}
 
 			template <typename E>
-			NextFunctionWhenClouse<R, arglist...>& ThenThrow(const E& e) {
+			AbstractNextFunctionWhenClouse<R, arglist...>& ThenThrow(const E& e) {
 				return ThenDo(std::function<R(arglist...)>([e](...)->R{throw e; }));
 			}
 
-			NextFunctionWhenClouse<R, arglist...>& ThenDo(R(*method)(arglist...)) {
+			AbstractNextFunctionWhenClouse<R, arglist...>& ThenDo(R(*method)(arglist...)) {
 				return ThenDo(std::function<R(arglist...)>(method));
 			}
 
-			virtual  NextFunctionWhenClouse<R, arglist...>& ThenDo(std::function<R(arglist...)> method) = 0;
+			virtual  AbstractNextFunctionWhenClouse<R, arglist...>& ThenDo(std::function<R(arglist...)> method) = 0;
 
 		private:
-			NextFunctionWhenClouse & operator= (const NextFunctionWhenClouse & other) = delete;
+			AbstractNextFunctionWhenClouse & operator= (const AbstractNextFunctionWhenClouse & other) = delete;
 		};
 
 
 		template <typename R, typename... arglist>
-		struct FirstFunctionWhenClouse {
-			virtual ~FirstFunctionWhenClouse() = 0 {};
+		struct AbstractFirstFunctionWhenClouse {
+
+			virtual ~AbstractFirstFunctionWhenClouse() {};
 
 			template<typename NO_REF = std::remove_reference<R>::type>
-			typename std::enable_if<std::is_trivially_copy_constructible<NO_REF>::value, NextFunctionWhenClouse<R, arglist...>&>::type
+			typename std::enable_if<std::is_trivially_copy_constructible<NO_REF>::value, AbstractNextFunctionWhenClouse<R, arglist...>&>::type
 				Return(const R& r) {
 					return Do(std::function<R(arglist...)>([r](...)->R{
 						return r;
@@ -60,7 +61,7 @@ namespace mock4cpp {
 				}
 
 			template<typename NO_REF = std::remove_reference<R>::type>
-			typename std::enable_if<!std::is_trivially_copy_constructible<NO_REF>::value, NextFunctionWhenClouse<R, arglist...>&>::type
+			typename std::enable_if<!std::is_trivially_copy_constructible<NO_REF>::value, AbstractNextFunctionWhenClouse<R, arglist...>&>::type
 				Return(const R& r) {
 					return Do(std::function<R(arglist...)>([&r](...)->R{
 						return r;
@@ -68,22 +69,22 @@ namespace mock4cpp {
 				}
 
 			template <typename E>
-			NextFunctionWhenClouse<R, arglist...>& Throw(const E& e)  {
+			AbstractNextFunctionWhenClouse<R, arglist...>& Throw(const E& e)  {
 				return Do(std::function<R(arglist...)>([e](...)->R{throw e; }));
 			}
 
-			void operator=(std::function<R(arglist...)> method){
+			virtual void operator=(std::function<R(arglist...)> method) {
 				Do(method);
 			}
 
-			virtual  NextFunctionWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) = 0;
+			virtual  AbstractNextFunctionWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) = 0;
 		private:
-			FirstFunctionWhenClouse & operator= (const FirstFunctionWhenClouse & other) = delete;
+			AbstractFirstFunctionWhenClouse & operator= (const AbstractFirstFunctionWhenClouse & other) = delete;
 		};
 
 		template <typename R, typename... arglist>
 		struct NextProcedureWhenClouse {
-			virtual ~NextProcedureWhenClouse() = 0 {};
+			virtual ~NextProcedureWhenClouse() {};
 
 			NextProcedureWhenClouse<R, arglist...>& ThenReturn() {
 				return ThenDo(std::function<R(arglist...)>([](...)->R{ return DefaultValue::value<R>(); }));
@@ -103,7 +104,7 @@ namespace mock4cpp {
 		template <typename R, typename... arglist>
 		struct FirstProcedureWhenClouse {
 
-			virtual ~FirstProcedureWhenClouse() = 0 {};
+			virtual ~FirstProcedureWhenClouse() {};
 
 			NextProcedureWhenClouse<R, arglist...>& Return() {
 				return Do(std::function<R(arglist...)>([](...)->R{ return DefaultValue::value<R>(); }));

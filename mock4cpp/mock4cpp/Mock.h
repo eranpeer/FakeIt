@@ -10,18 +10,17 @@
 using namespace mock4cpp;
 using namespace mock4cpp::clouses;
 
-
-template <typename R>
-typename std::enable_if<!std::is_void<R>::value, mock4cpp::mockito::clouses::FirstFunctionWhenClouse<R>&>::type
-When(const R& r) {
-	throw 1;
-}
-
-template <typename R>
-typename std::enable_if<std::is_void<R>::value, mock4cpp::mockito::clouses::FirstProcedureWhenClouse<R>&>::type
-When(R) {
-	throw 1;
-}
+// template <typename R>
+// typename std::enable_if<!std::is_void<R>::value, mock4cpp::mockito::clouses::FirstFunctionWhenClouse<R>&>::type
+// When(const R& r) {
+// 	throw 1;
+// }
+// 
+// template <typename R>
+// typename std::enable_if<std::is_void<R>::value, mock4cpp::mockito::clouses::FirstProcedureWhenClouse<R>&>::type
+// When(R) {
+// 	throw 1;
+// }
 
 template <typename C>
 struct Mock : private MockBase
