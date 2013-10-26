@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <functional>
-#include "MethodInvocation.h"
+#include "InvocationMatcher.h"
 #include "MockRepository.h"
 #include "ActualInvocation.h"
 

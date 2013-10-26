@@ -85,6 +85,7 @@
     <ClInclude Include="..\mock4cpp\ActualInvocation.h" />
     <ClInclude Include="..\mock4cpp\Clouses.h" />
     <ClInclude Include="..\mock4cpp\clousesimpl.h" />
+    <ClInclude Include="..\mock4cpp\InvocationMatcher.h" />
     <ClInclude Include="..\mock4cpp\methodmock.h" />
     <ClInclude Include="..\mock4cpp\mock.h" />
     <ClInclude Include="..\mockutils\DefaultValue.hpp" />
