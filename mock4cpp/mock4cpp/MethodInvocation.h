@@ -1,17 +1,15 @@
-#ifndef MethodInvocationSchenario_h__
-#define MethodInvocationSchenario_h__
+#ifndef InvocationMatcher_h__
+#define InvocationMatcher_h__
 namespace mock4cpp {
 
 	template <typename... arglist>
-	struct MethodInvocation:public Destructable
+	struct InvocationMatcher:public Destructable
 	{
-		virtual ~MethodInvocation() = 0 {}
-
 		virtual bool matchesActual(const arglist&... args) = 0;
 
 		virtual bool matchesExpected(const arglist&... args) = 0;
 	};
 }
-#endif // MethodInvocationSchenario_h__
+#endif // InvocationMatcher_h__
 
 

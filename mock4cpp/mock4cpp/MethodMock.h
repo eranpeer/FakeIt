@@ -27,7 +27,7 @@ namespace mock4cpp {
 	};
 
 	template <typename R, typename... arglist>
-	struct MethodInvocationMock : public MethodInvocation<arglist...>
+	struct MethodInvocationMock : public InvocationMatcher <arglist...>
 	{
 		void append(BehaviorMock<R, arglist...>* mock){
 			behaviorMocks.push_back(mock);
