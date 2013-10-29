@@ -83,45 +83,45 @@ namespace mock4cpp {
 		};
 
 		template <typename R, typename... arglist>
-		struct NextProcedureWhenClouse {
-			virtual ~NextProcedureWhenClouse() {};
+		struct AbstractNextProcedureWhenClouse {
+			virtual ~AbstractNextProcedureWhenClouse() {};
 
-			NextProcedureWhenClouse<R, arglist...>& ThenReturn() {
+			AbstractNextProcedureWhenClouse<R, arglist...>& ThenReturn() {
 				return ThenDo(std::function<R(arglist...)>([](...)->R{ return DefaultValue::value<R>(); }));
 			}
 
 			template <typename E>
-			NextProcedureWhenClouse<R, arglist...>& ThenThrow(const E e) {
+			AbstractNextProcedureWhenClouse<R, arglist...>& ThenThrow(const E e) {
 				return ThenDo(std::function<R(arglist...)>([e](...)->R{ throw e; }));
 			}
 
-			virtual  NextProcedureWhenClouse<R, arglist...>& ThenDo(std::function<R(arglist...)> method) = 0;
+			virtual  AbstractNextProcedureWhenClouse<R, arglist...>& ThenDo(std::function<R(arglist...)> method) = 0;
 		private:
-			NextProcedureWhenClouse & operator= (const NextProcedureWhenClouse & other) = delete;
+			AbstractNextProcedureWhenClouse & operator= (const AbstractNextProcedureWhenClouse & other) = delete;
 		};
 
 
 		template <typename R, typename... arglist>
-		struct FirstProcedureWhenClouse {
+		struct AbstractFirstProcedureWhenClouse {
 
-			virtual ~FirstProcedureWhenClouse() {};
+			virtual ~AbstractFirstProcedureWhenClouse() {};
 
-			NextProcedureWhenClouse<R, arglist...>& Return() {
+			AbstractNextProcedureWhenClouse<R, arglist...>& Return() {
 				return Do(std::function<R(arglist...)>([](...)->R{ return DefaultValue::value<R>(); }));
 			}
 
 			template <typename E>
-			NextProcedureWhenClouse<R, arglist...>& Throw(const E e) {
+			AbstractNextProcedureWhenClouse<R, arglist...>& Throw(const E e) {
 				return Do(std::function<R(arglist...)>([e](...)->R{ throw e; }));
 			}
 
-			void operator=(std::function<R(arglist...)> method){
+			virtual void operator=(std::function<R(arglist...)> method){
 				Do(method);
 			}
 
-			virtual  NextProcedureWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) = 0;
+			virtual  AbstractNextProcedureWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) = 0;
 		private:
-			FirstProcedureWhenClouse & operator= (const FirstProcedureWhenClouse & other) = delete;
+			AbstractFirstProcedureWhenClouse & operator= (const AbstractFirstProcedureWhenClouse & other) = delete;
 		};
 	}
 }

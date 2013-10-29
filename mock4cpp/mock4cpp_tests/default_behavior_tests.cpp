@@ -236,8 +236,8 @@ namespace stubbing_tests
 			mock.Stub(&SomeInterface::func).Return(1);
 			SomeInterface& i = mock.get();
 			
-			Assert::ExpectException<std::string>([&](){i.proc(1); });
-			Assert::ExpectException<std::string>([&](){i.proc(2); });
+ 			Assert::ExpectException<std::string>([&](){i.proc(1); });
+ 			Assert::ExpectException<std::string>([&](){i.proc(2); });
 			Assert::AreEqual(1, i.func(1));
 			Assert::AreEqual(1, i.func(2));
 		}

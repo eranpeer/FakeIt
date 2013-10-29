@@ -30,19 +30,15 @@ namespace mock4cpp {
 			VerifyClouse & operator= (const VerifyClouse & other) = delete;
 		};
 
+
 		template <typename R, typename... arglist>
 		struct FunctionWhenClouse :
 			public virtual AbstractFirstFunctionWhenClouse<R, arglist...>,
 			public virtual AbstractNextFunctionWhenClouse<R, arglist...>
 		{
 
-			FunctionWhenClouse(MethodInvocationMock<R, arglist...> & invocationMock) :
-				invocationMock(invocationMock)
-			{
-				InvocationMock().appendDo([](...)->R{ return DefaultValue::value<R>();	});
-			}
-
-			~FunctionWhenClouse() override {}
+			FunctionWhenClouse() = default;
+			~FunctionWhenClouse() override = default;
 
 			AbstractNextFunctionWhenClouse<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
 				InvocationMock().appendDo(method);
@@ -60,81 +56,44 @@ namespace mock4cpp {
 			}
 
 		protected:
-			virtual MethodInvocationMock<R, arglist...>& InvocationMock() const { return invocationMock; }
+			virtual MethodInvocationMock<R, arglist...>& InvocationMock() = 0;
 		private:
-			MethodInvocationMock<R, arglist...>& invocationMock;
 			FunctionWhenClouse & operator= (const FunctionWhenClouse & other) = delete;
 		};
 
 
+
 		template <typename R, typename... arglist>
-		struct NextFunctionWhenClouse :
-			public AbstractNextFunctionWhenClouse<R, arglist...>
-		{
-
-			NextFunctionWhenClouse(MethodInvocationMock<R, arglist...> * invocationMock) :AbstractNextFunctionWhenClouse(),
-				invocationMock(invocationMock)
-			{
-			}
-
-			~NextFunctionWhenClouse(){}
-
-			AbstractNextFunctionWhenClouse<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
-				invocationMock->appendDo(method);
-				return *this;
-			}
-
+		class StubFunctionClouse : public virtual AbstractFirstFunctionWhenClouse<R, arglist...>,
+			private virtual FunctionWhenClouse<R, arglist...>{
 		private:
+			MethodMock<R, arglist...>& methodMock;
+			StubFunctionClouse & operator= (const StubFunctionClouse & other) = delete;
 			MethodInvocationMock<R, arglist...>* invocationMock;
-			NextFunctionWhenClouse & operator= (const NextFunctionWhenClouse & other) = delete;
-		};
-
-		template <typename R, typename... arglist>
-		struct FirstFunctionWhenClouse :
-			public AbstractFirstFunctionWhenClouse<R, arglist...>
-		{
-
-			FirstFunctionWhenClouse(MethodInvocationMock<R, arglist...> * invocationMock) :AbstractFirstFunctionWhenClouse(),
-				invocationMock(invocationMock)
-			{
-				invocationMock->appendDo([](...)->R{ return DefaultValue::value<R>();	});
+		protected:
+			virtual MethodInvocationMock<R, arglist...>& InvocationMock() override  {
+				return *invocationMock;
 			}
 
-			~FirstFunctionWhenClouse(){}
-
-			AbstractNextFunctionWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-				invocationMock->clear();
-				invocationMock->appendDo(method);
-				return *(new NextFunctionWhenClouse<R, arglist...>(invocationMock));
+		public:
+			StubFunctionClouse(MethodMock<R, arglist...>& methodMock) : FunctionWhenClouse(), AbstractFirstFunctionWhenClouse(), methodMock(methodMock) {
+				auto initialMethodBehavior = [](const arglist&... args)->R&{return DefaultValue::value<R>(); };
+				invocationMock = new DefaultInvocationMock<R, arglist...>(initialMethodBehavior);
 			}
 
-			void operator=(std::function<R(arglist...)> method) override {
-				Do(method);
-			}
+			StubFunctionClouse(const StubFunctionClouse& other) = default;
 
-		private:
-			MethodInvocationMock<R, arglist...>* invocationMock;
-		};
-
-
-
-		template <typename R, typename... arglist>
-		struct StubFunctionClouse : public AbstractFirstFunctionWhenClouse<R, arglist...> {
-			StubFunctionClouse(MethodMock<R, arglist...>& methodMock) : methodMock(methodMock) {
-			}
-
-			virtual ~StubFunctionClouse() override {};
+			virtual ~StubFunctionClouse() override {
+				methodMock.addMethodCall(invocationMock);
+			};
 
 			virtual void operator=(std::function<R(arglist...)> method) override {
 				Do(method);
 			}
 
-			FirstFunctionWhenClouse<R, arglist...> When(const arglist&... args) {
-				MethodInvocationMock<R, arglist...>& invocationMock = methodMock.stubMethodCall(args...);
-				return FirstFunctionWhenClouse<R, arglist...> (&invocationMock);
-// 				FunctionWhenClouse<R, arglist...> * whenClouse = new FunctionWhenClouse<R, arglist...>
-// 					(invocationMock);
-				//return *whenClouse;
+			AbstractFirstFunctionWhenClouse<R, arglist...>& When(const arglist&... args) {
+				this->invocationMock = &methodMock.stubMethodCall(args...);
+				return *this;
 			}
 
 			VerifyClouse Verify(const arglist&... args)  {
@@ -142,91 +101,87 @@ namespace mock4cpp {
 			}
 
 			AbstractNextFunctionWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) {
-				FunctionWhenClouse<R, arglist...> * whenClouse = new FunctionWhenClouse<R, arglist...>(methodMock.last());
-				whenClouse->Do(method);
-				return *whenClouse;
+				InvocationMock().clear();
+				InvocationMock().appendDo(method);
+				return *this;
 			}
-
-		private:
-			MethodMock<R, arglist...>& methodMock;
-			StubFunctionClouse & operator= (const StubFunctionClouse & other) = delete;
 		};
 
 		template <typename R, typename... arglist>
 		struct ProcedureWhenClouse :
-			public FirstProcedureWhenClouse<R, arglist...>,
-			public NextProcedureWhenClouse<R, arglist...>{
+			public virtual AbstractFirstProcedureWhenClouse<R, arglist...>,
+			public virtual AbstractNextProcedureWhenClouse<R, arglist...>
+		{
 
-				ProcedureWhenClouse(MethodInvocationMock<R, arglist...>& invocationMock) :FirstProcedureWhenClouse(), NextProcedureWhenClouse(),
-					invocationMock(invocationMock)
-				{
-					ThenDo([](...)->R{ return DefaultValue::value<R>();	});
-				}
+			ProcedureWhenClouse() = default;
+			~ProcedureWhenClouse() override = default;
 
-				virtual ~ProcedureWhenClouse() {}
+			AbstractNextProcedureWhenClouse<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
+				InvocationMock().appendDo(method);
+				return *this;
+			}
 
-				NextProcedureWhenClouse<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
-					invocationMock.appendDo(method);
-					return *this;
-				}
+			AbstractNextProcedureWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) override {
+				InvocationMock().clear();
+				InvocationMock().appendDo(method);
+				return *this;
+			}
 
-				NextProcedureWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-					invocationMock.clear();
-					invocationMock.appendDo(method);
-					return *this;
-				}
+			void operator=(std::function<R(arglist...)> method) override {
+				Do(method);
+			}
 
+		protected:
+			virtual MethodInvocationMock<R, arglist...>& InvocationMock() = 0;
 		private:
-			MethodInvocationMock<R, arglist...>& invocationMock;
 			ProcedureWhenClouse & operator= (const ProcedureWhenClouse & other) = delete;
 		};
 
 		template <typename R, typename... arglist>
-		struct StubProcedureClouse : public FirstProcedureWhenClouse<R, arglist...> {
-			StubProcedureClouse(MethodMock<R, arglist...>* methodMock) : methodMock(methodMock),isLast(true) {
+		class StubProcedureClouse : public virtual AbstractFirstProcedureWhenClouse<R, arglist...>,
+			private virtual ProcedureWhenClouse<R, arglist...>{
+		private:
+			MethodMock<R, arglist...>& methodMock;
+			StubProcedureClouse & operator= (const StubProcedureClouse & other) = delete;
+			MethodInvocationMock<R, arglist...>* invocationMock;
+		protected:
+			virtual MethodInvocationMock<R, arglist...>& InvocationMock() override  {
+				return *invocationMock;
 			}
 
-			StubProcedureClouse(StubProcedureClouse& other) :methodMock(other.methodMock), isLast(other.isLast){
-				other.isLast = false;
+		public:
+			StubProcedureClouse(MethodMock<R, arglist...>& methodMock) : ProcedureWhenClouse(), AbstractFirstProcedureWhenClouse(), methodMock(methodMock) {
+				auto initialMethodBehavior = [](const arglist&... args)->R{return DefaultValue::value<R>(); };
+				invocationMock = new DefaultInvocationMock<R, arglist...>(initialMethodBehavior);
 			}
 
-			StubProcedureClouse(StubProcedureClouse&& other) = delete;
-// 				:methodMock(other.methodMock), isLast(other.isLast){
-// 				other.isLast = false;
-// 			}
+			StubProcedureClouse(const StubProcedureClouse& other) = default;
 
-			~StubProcedureClouse() {
-				if (isLast){
-					//int a = isLast;
-				}
-			}
+			virtual ~StubProcedureClouse() override {
+				methodMock.addMethodCall(invocationMock);
+			};
 
-			virtual void operator=(std::function<R(arglist...)> method)  {
+			virtual void operator=(std::function<R(arglist...)> method) override {
 				Do(method);
 			}
 
-			FirstProcedureWhenClouse<R, arglist...>& When(const arglist&... args)  {
-				MethodInvocationMock<R, arglist...>& invocationMock = methodMock->stubMethodCall(args...);
-				ProcedureWhenClouse<R, arglist...> * whenClouse = new ProcedureWhenClouse<R, arglist...>(invocationMock);
-				return *whenClouse;
-			};
+			AbstractFirstProcedureWhenClouse<R, arglist...>& When(const arglist&... args) {
+				this->invocationMock = &methodMock.stubMethodCall(args...);
+				//invocationMock->appendDo([](...)->R{ return DefaultValue::value<R>();	});
+				return *this;
+			}
 
 			VerifyClouse Verify(const arglist&... args)  {
-				return new VerifyClouse(methodMock->getActualInvocations(args...).size());
+				return VerifyClouse(methodMock.getActualInvocations(args...).size());
 			}
 
-			NextProcedureWhenClouse<R, arglist...>& Do(std::function<void(arglist...)> method) override {
-				ProcedureWhenClouse<R, arglist...> * whenClouse = new ProcedureWhenClouse<R, arglist...>(methodMock->last());
-				whenClouse->Do(method);
-				return *whenClouse;
+			AbstractNextProcedureWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) {
+				InvocationMock().clear();
+				InvocationMock().appendDo(method);
+				return *this;
 			}
-
-		private:
-			MethodMock<R, arglist...>* methodMock;
-			bool isLast;
-			StubProcedureClouse<R, arglist...> & operator = (const StubProcedureClouse<R, arglist...> & other) = delete;
-			StubProcedureClouse<R, arglist...> & operator = (const StubProcedureClouse<R, arglist...> && other) = delete;
 		};
+
 	}
 }
 #endif // ClousesImpl_h__

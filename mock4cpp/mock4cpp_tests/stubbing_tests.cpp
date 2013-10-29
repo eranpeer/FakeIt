@@ -117,6 +117,9 @@ namespace mock4cpp_tests
 		TEST_METHOD(StubOnlySpecifiedCallsToAlternateBehavior)
 		{
 			Mock<SomeInterface> mock;
+			mock.Stub(&SomeInterface::func);
+			mock.Stub(&SomeInterface::proc);
+
 			mock.Stub(&SomeInterface::func).When(1).Return(1);
 			mock.Stub(&SomeInterface::proc).When(1).Throw(std::string("error"));
 
@@ -146,6 +149,10 @@ namespace mock4cpp_tests
 		TEST_METHOD(StubOnlySpecifiedCallsToAlternateBehavior_ByAssignment)
 		{
 			Mock<SomeInterface> mock;
+
+			mock.Stub(&SomeInterface::func);
+			mock.Stub(&SomeInterface::proc);
+
 			mock[&SomeInterface::func].When(1) = [](...){return 1; };
 			mock[&SomeInterface::proc].When(1) = [](...){throw std::string("error"); };
 
