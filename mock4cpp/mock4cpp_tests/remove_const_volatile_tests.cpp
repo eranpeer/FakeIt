@@ -23,9 +23,9 @@ namespace stubbing_tests
 			virtual void proc2() volatile = 0;
 			virtual void proc3() const volatile = 0;
 			virtual const void proc4() = 0;
-			virtual const void proc5() const = 0;
-			virtual const void proc6() volatile = 0;
-			virtual const void proc7() const volatile = 0;
+// 			virtual const void proc5() const = 0;
+// 			virtual const void proc6() volatile = 0;
+// 			virtual const void proc7() const volatile = 0;
 		};
 
 		TEST_METHOD(TestConstFunctions)
@@ -43,10 +43,9 @@ namespace stubbing_tests
 			mock.Stub(&ConstVolatileFunctions::proc2);
 			mock.Stub(&ConstVolatileFunctions::proc3);
 			mock.Stub(&ConstVolatileFunctions::proc4);
-			mock.Stub(&ConstVolatileFunctions::proc5);
-			mock.Stub(&ConstVolatileFunctions::proc6);
-			StubProcedureClouse<void> a = mock.Stub(&ConstVolatileFunctions::proc7);
-			mock.Stub(&ConstVolatileFunctions::proc7);
+// 			mock.Stub(&ConstVolatileFunctions::proc5);
+// 			mock.Stub(&ConstVolatileFunctions::proc6);
+// 			mock.Stub(&ConstVolatileFunctions::proc7);
 
 			ConstVolatileFunctions& i = mock.get();
 			Assert::AreEqual(0, i.func1());
@@ -59,9 +58,9 @@ namespace stubbing_tests
 			i.proc2();
 			i.proc3();
 			i.proc4();
-			i.proc5();
-			i.proc6();
-			i.proc7();
+// 			i.proc5();
+// 			i.proc6();
+// 			i.proc7();
 		}
 
 		struct ConstVolatileParameters{

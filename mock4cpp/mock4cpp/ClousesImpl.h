@@ -91,7 +91,7 @@ namespace mock4cpp {
 				Do(method);
 			}
 
-			AbstractFirstFunctionWhenClouse<R, arglist...>& When(const arglist&... args) {
+			AbstractFirstFunctionWhenClouse<R, arglist...>& Using(const arglist&... args) {
 				this->invocationMock = &methodMock.stubMethodCall(args...);
 				return *this;
 			}
@@ -165,7 +165,7 @@ namespace mock4cpp {
 				Do(method);
 			}
 
-			AbstractFirstProcedureWhenClouse<R, arglist...>& When(const arglist&... args) {
+			AbstractFirstProcedureWhenClouse<R, arglist...>& Using(const arglist&... args) {
 				this->invocationMock = &methodMock.stubMethodCall(args...);
 				//invocationMock->appendDo([](...)->R{ return DefaultValue::value<R>();	});
 				return *this;

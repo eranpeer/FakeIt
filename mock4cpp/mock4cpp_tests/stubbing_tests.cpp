@@ -44,8 +44,8 @@ namespace mock4cpp_tests
 		TEST_METHOD(StubAllCallsToAlternateBeavior)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func).Return(1);
-			mock.Stub(&SomeInterface::proc).Throw(std::string("error"));
+			mock.When(&SomeInterface::func).Return(1);
+			mock.When(&SomeInterface::proc).Throw(std::string("error"));
 
 			SomeInterface &i = mock.get();
 
@@ -67,8 +67,8 @@ namespace mock4cpp_tests
 		TEST_METHOD(StubDefaultBehaviorWithStaticMethod)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func).Do(&defaultFuncBehavior);
-			mock.Stub(&SomeInterface::proc).Do(&defaultProcBehavior);
+			mock.When(&SomeInterface::func).Do(&defaultFuncBehavior);
+			mock.When(&SomeInterface::proc).Do(&defaultProcBehavior);
 
 			SomeInterface &i = mock.get();
 
@@ -92,8 +92,8 @@ namespace mock4cpp_tests
 		TEST_METHOD(StubDefaultBehaviorWithLambda)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func).Do([](int a){return a; });
-			mock.Stub(&SomeInterface::proc).Do([](int a){throw a; });
+			mock.When(&SomeInterface::func).Do([](int a){return a; });
+			mock.When(&SomeInterface::proc).Do([](int a){throw a; });
 
 			SomeInterface &i = mock.get();
 
@@ -120,8 +120,8 @@ namespace mock4cpp_tests
 			mock.Stub(&SomeInterface::func);
 			mock.Stub(&SomeInterface::proc);
 
-			mock.Stub(&SomeInterface::func).When(1).Return(1);
-			mock.Stub(&SomeInterface::proc).When(1).Throw(std::string("error"));
+			mock.When(&SomeInterface::func).Using(1).Return(1);
+			mock.When(&SomeInterface::proc).Using(1).Throw(std::string("error"));
 
 			SomeInterface &i = mock.get();
 
@@ -137,12 +137,25 @@ namespace mock4cpp_tests
 		TEST_METHOD(LastMatchingStubUsed)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func).When(1).Return(1);
-			mock.Stub(&SomeInterface::func).Return(2);
+			mock.When(&SomeInterface::func).Using(1).Return(1);
+			mock.When(&SomeInterface::func).Return(2);
 
 			SomeInterface &i = mock.get();
 
 			Assert::AreEqual(2, i.func(1));
+			Assert::AreEqual(2, i.func(2));
+		}
+
+		TEST_METHOD(LastMatchingStubUsed2)
+		{
+			Mock<SomeInterface> mock;
+			mock.When(&SomeInterface::func).Using(1).Return(1);
+			mock.When(&SomeInterface::func).Return(2);
+			mock.When(&SomeInterface::func).Using(1).Return(3);
+
+			SomeInterface &i = mock.get();
+
+			Assert::AreEqual(3, i.func(1));
 			Assert::AreEqual(2, i.func(2));
 		}
 
@@ -153,9 +166,8 @@ namespace mock4cpp_tests
 			mock.Stub(&SomeInterface::func);
 			mock.Stub(&SomeInterface::proc);
 
-			mock[&SomeInterface::func].When(1) = [](...){return 1; };
-			mock[&SomeInterface::proc].When(1) = [](...){throw std::string("error"); };
-
+			mock[&SomeInterface::func].Using(1) = [](...){return 1; };
+			mock[&SomeInterface::proc].Using(1) = [](...){throw std::string("error"); };
 
 			SomeInterface &i = mock.get();
 
@@ -174,11 +186,11 @@ namespace mock4cpp_tests
 			std::function<void(int) > procStub = [](...){ throw 1; };
 
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func).Do(funcStub);
-			mock.Stub(&SomeInterface::proc).Do(procStub);
+			mock.When(&SomeInterface::func).Do(funcStub);
+			mock.When(&SomeInterface::proc).Do(procStub);
 
-			mock.Stub(&SomeInterface::func).When(1).Return(2);
-			mock.Stub(&SomeInterface::proc).When(1).Return();
+			mock.When(&SomeInterface::func).Using(1).Return(2);
+			mock.When(&SomeInterface::proc).Using(1).Return();
 
 			SomeInterface &i = mock.get();
 
@@ -195,12 +207,12 @@ namespace mock4cpp_tests
 		TEST_METHOD(StubIteratorStyle)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func)
+			mock.When(&SomeInterface::func)
 				.Return(1)
 				.ThenReturn(2)
 				.ThenDo([](...){return 3; })
 				.ThenDo(&defaultFuncBehavior);
-			mock.Stub(&SomeInterface::proc).Return()
+			mock.When(&SomeInterface::proc).Return()
 				.ThenThrow(std::string("error"))
 				.ThenReturn()
 				.ThenDo([](...){})
@@ -223,8 +235,8 @@ namespace mock4cpp_tests
 		TEST_METHOD(RestubDefaultReturnValue)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func).Return(1);
-			mock.Stub(&SomeInterface::func).Return(2);
+			mock.When(&SomeInterface::func).Return(1);
+			mock.When(&SomeInterface::func).Return(2);
 
 			SomeInterface &i = mock.get();
 
@@ -235,8 +247,8 @@ namespace mock4cpp_tests
 		TEST_METHOD(RestubDefaultProcBehavior)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::proc).Throw(0);
-			mock.Stub(&SomeInterface::proc).Return();
+			mock.When(&SomeInterface::proc).Throw(0);
+			mock.When(&SomeInterface::proc).Return();
 
 			SomeInterface &i = mock.get();
 
@@ -246,8 +258,8 @@ namespace mock4cpp_tests
 		TEST_METHOD(RestubReturnValue)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func).When(1).Return(1);
-			mock.Stub(&SomeInterface::func).When(1).Return(2);
+			mock.When(&SomeInterface::func).Using(1).Return(1);
+			mock.When(&SomeInterface::func).Using(1).Return(2);
 
 			SomeInterface &i = mock.get();
 
@@ -258,11 +270,11 @@ namespace mock4cpp_tests
 		TEST_METHOD(StubAllButOne)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func).Return(1);
-			mock.Stub(&SomeInterface::func).When(1).Return(2);
+			mock.When(&SomeInterface::func).Return(1);
+			mock.When(&SomeInterface::func).Using(1).Return(2);
 
-			mock.Stub(&SomeInterface::proc).Throw(0);
-			mock.Stub(&SomeInterface::proc).When(1).Return();
+			mock.When(&SomeInterface::proc).Throw(0);
+			mock.When(&SomeInterface::proc).Using(1).Return();
 
 			SomeInterface &i = mock.get();
 
@@ -305,5 +317,3 @@ namespace mock4cpp_tests
 		}
 	};
 }
-
-

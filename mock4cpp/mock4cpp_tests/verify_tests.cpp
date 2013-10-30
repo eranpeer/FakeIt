@@ -25,8 +25,8 @@ namespace mock4cpp_tests
 		TEST_METHOD(VerifyZeroInvoaction)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func);
-			mock.Stub(&SomeInterface::proc);
+			mock.When(&SomeInterface::func);
+			mock.When(&SomeInterface::proc);
 
 			
 			A();
@@ -43,8 +43,8 @@ namespace mock4cpp_tests
 		TEST_METHOD(VerifyAtLeastOnceIsTheDefaultBehavior)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func);
-			mock.Stub(&SomeInterface::proc);
+			mock.When(&SomeInterface::func);
+			mock.When(&SomeInterface::proc);
 
 			SomeInterface &i = mock.get();
 

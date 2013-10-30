@@ -45,52 +45,52 @@ struct Mock : private MockBase
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	StubFunctionClouse<R, arglist...> Stub(R(C::*vMethod)(arglist...) const){
-		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
-		return Stub(methodWithoutConstVolatile);
+	StubFunctionClouse<typename std::remove_cv<R>::type, arglist...> When(R(C::*vMethod)(arglist...) const){
+		auto methodWithoutConstVolatile = reinterpret_cast<typename std::remove_cv<R>::type(C::*)(arglist...)>(vMethod);
+		return When(methodWithoutConstVolatile);
 	}
 
 	template < typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	StubFunctionClouse<R, arglist...> Stub(R(C::*vMethod)(arglist...) volatile){
-		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
-		return Stub(methodWithoutConstVolatile);
+	StubFunctionClouse<typename std::remove_cv<R>::type, arglist...> When(R(C::*vMethod)(arglist...) volatile){
+		auto methodWithoutConstVolatile = reinterpret_cast<typename std::remove_cv<R>::type(C::*)(arglist...)>(vMethod);
+		return When(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	StubFunctionClouse<R, arglist...> Stub(R(C::*vMethod)(arglist...) const volatile){
-		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
-		return Stub(methodWithoutConstVolatile);
+	StubFunctionClouse<typename std::remove_cv<R>::type, arglist...> When(R(C::*vMethod)(arglist...) const volatile){
+		auto methodWithoutConstVolatile = reinterpret_cast<typename std::remove_cv<R>::type(C::*)(arglist...)>(vMethod);
+		return When(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	StubFunctionClouse<R, arglist...> Stub(R(C::*vMethod)(arglist...)) {
-		return Stub(vMethod, std::function<R(arglist...)>([](const arglist&... args)->R&{return DefaultValue::value<R>(); }));
+	StubFunctionClouse<typename R, arglist...> When(R(C::*vMethod)(arglist...)) {
+		return When(vMethod, std::function<R(arglist...)>([](const arglist&... args)->R&{return DefaultValue::value<R>(); }));
 	}
 
 	//		
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	StubProcedureClouse<typename std::remove_cv<R>::type, arglist...> Stub(R(C::*vMethod)(arglist...) const){
+	StubProcedureClouse<typename std::remove_cv<R>::type, arglist...> When(R(C::*vMethod)(arglist...) const){
 		auto methodWithoutConstVolatile = reinterpret_cast<std::remove_cv<R>::type(C::*)(arglist...)>(vMethod);
-		return Stub(methodWithoutConstVolatile);
+		return When(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	StubProcedureClouse<typename std::remove_cv<R>::type, arglist...> Stub(R(C::*vMethod)(arglist...) volatile){
+	StubProcedureClouse<typename std::remove_cv<R>::type, arglist...> When(R(C::*vMethod)(arglist...) volatile){
 		auto methodWithoutConstVolatile = reinterpret_cast<std::remove_cv<R>::type(C::*)(arglist...)>(vMethod);
-		return Stub(methodWithoutConstVolatile);
+		return When(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	StubProcedureClouse<typename std::remove_cv<R>::type, arglist...> Stub(R(C::*vMethod)(arglist...) const volatile){
+	StubProcedureClouse<typename std::remove_cv<R>::type, arglist...> When(R(C::*vMethod)(arglist...) const volatile){
 		auto methodWithoutConstVolatile = reinterpret_cast<std::remove_cv<R>::type(C::*)(arglist...)>(vMethod);
-		return Stub(methodWithoutConstVolatile);
+		return When(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	StubProcedureClouse<typename std::remove_cv<R>::type, arglist...> Stub(R(C::*vMethod)(arglist...)){
+	StubProcedureClouse<typename std::remove_cv<R>::type, arglist...> When(R(C::*vMethod)(arglist...)){
 		auto methodWithoutConstVolatile = reinterpret_cast<std::remove_cv<R>::type(C::*)(arglist...)>(vMethod);
-		return Stub(methodWithoutConstVolatile, std::function<std::remove_cv<R>::type(arglist...)>([](const arglist&... args)->std::remove_cv<R>::type{}));
+		return When(methodWithoutConstVolatile, std::function<std::remove_cv<R>::type(arglist...)>([](const arglist&... args)->std::remove_cv<R>::type{}));
 	}
 
 	template <class DM, typename... arglist
@@ -104,9 +104,10 @@ struct Mock : private MockBase
 	template <typename H, typename... M
 		, class = typename std::enable_if<std::is_member_function_pointer<H>::value>::type
 	>
-	void Stub(const H head, M... tail) 
+	void Stub(H head, M... tail) 
 	{
-		Stub(head);
+		//auto headWithoutConstVolatile = reinterpret_cast<std::remove_cv<H>::type>(head);
+		When(head);
 		Stub(tail...);
 	}
 
@@ -114,8 +115,8 @@ struct Mock : private MockBase
 		typename MEMBER
 		, class = typename std::enable_if<std::is_member_function_pointer<MEMBER>::value>::type
 	>
-	auto operator [](MEMBER member) -> decltype(Stub(member)) {
-		return Stub(member);
+	auto operator [](MEMBER member) -> decltype(When(member)) {
+		return When(member);
 	}
 
 private:
@@ -133,13 +134,13 @@ private:
 	}
 
 	template <typename R, typename... arglist>
-	StubFunctionClouse<R, arglist...> Stub(R(C::*vMethod)(arglist...), std::function<R(arglist...)> initialMethodBehavior){
+	StubFunctionClouse<R, arglist...> When(R(C::*vMethod)(arglist...), std::function<R(arglist...)> initialMethodBehavior){
 		auto methodMock = stubMethodIfNotStubbed(vMethod, initialMethodBehavior);
 		return StubFunctionClouse<R, arglist...>(*methodMock);
 	}
 	
 	template <typename... arglist>
-	StubProcedureClouse<void, arglist...> Stub(void(C::*vMethod)(arglist...), std::function<void(arglist...)> initialMethodBehavior){
+	StubProcedureClouse<void, arglist...> When(void(C::*vMethod)(arglist...), std::function<void(arglist...)> initialMethodBehavior){
 		auto methodMock = stubMethodIfNotStubbed(vMethod, initialMethodBehavior);
 		return StubProcedureClouse<void, arglist...>(*methodMock);
 	}
@@ -154,35 +155,35 @@ private:
 
 };
 
-namespace mockito {
-	
-	template <typename C, typename R, typename... arglist>
-	struct MethodStubbingMock : public MethodInvocationHandler<R, arglist...>
-	{
-		MethodStubbingMock(Mock<C>& mock) :mock{ mock }
-		{}
-
-		virtual ~MethodStubbingMock() override {}
-
-		typename std::enable_if <std::is_void<R>::value, R> ::type
-		handleMethodInvocation(const arglist&... args) override {
- 			R(C::*vMethod)(arglist...);
- 			StubProcedureClouse<R, arglist...>& clouse = mock.Stub(vMethod);
-			// add clouse to list ...
-			return DefaultValue::value<R>();
-		}
-
-		typename std::enable_if <!std::is_void<R>::value, R> ::type
-		handleMethodInvocation(const arglist&... args) override {
-			R(C::*vMethod)(arglist...);
-			StubFunctionClouse<R, arglist...>& clouse = mock.Stub(vMethod);
-			// add clouse to list ...
-			return DefaultValue::value<R>();
-		}
-
-	private:
-		Mock<C>& mock;
-	};
-
-}
+// namespace mockito {
+// 	
+// 	template <typename C, typename R, typename... arglist>
+// 	struct MethodStubbingMock : public MethodInvocationHandler<R, arglist...>
+// 	{
+// 		MethodStubbingMock(Mock<C>& mock) :mock{ mock }
+// 		{}
+// 
+// 		virtual ~MethodStubbingMock() override {}
+// 
+// 		typename std::enable_if <std::is_void<R>::value, R> ::type
+// 		handleMethodInvocation(const arglist&... args) override {
+//  			R(C::*vMethod)(arglist...);
+//  			StubProcedureClouse<R, arglist...>& clouse = mock.When(vMethod);
+// 			// add clouse to list ...
+// 			return DefaultValue::value<R>();
+// 		}
+// 
+// 		typename std::enable_if <!std::is_void<R>::value, R> ::type
+// 		handleMethodInvocation(const arglist&... args) override {
+// 			R(C::*vMethod)(arglist...);
+// 			StubFunctionClouse<R, arglist...>& clouse = mock.When(vMethod);
+// 			// add clouse to list ...
+// 			return DefaultValue::value<R>();
+// 		}
+// 
+// 	private:
+// 		Mock<C>& mock;
+// 	};
+// 
+// }
 #endif // Mock_h__

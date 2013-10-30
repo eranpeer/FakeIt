@@ -186,8 +186,8 @@ namespace stubbing_tests
 		TEST_METHOD(OverrideDefualtBehavior_Scalar)
 		{
 			Mock<ScalarFuctions> mock;
-			mock.Stub(&ScalarFuctions::boolFunc).Return(true);
-			mock.Stub(&ScalarFuctions::doubleFunc).Return(1.1);
+			mock.When(&ScalarFuctions::boolFunc).Return(true);
+			mock.When(&ScalarFuctions::doubleFunc).Return(1.1);
 			ScalarFuctions& i = mock.get();
 			Assert::IsTrue(i.boolFunc());
 			Assert::AreEqual(1.1, i.doubleFunc());
@@ -196,7 +196,7 @@ namespace stubbing_tests
 		TEST_METHOD(OverrideDefualtBehavior_NotDefaultConstructible)
 		{
 			Mock<NonDefaultConstructibleFunctions> mock;
-			mock.Stub(&NonDefaultConstructibleFunctions::notDefaultConstructibleFunc).Return(NotDefaultConstructible(1));
+			mock.When(&NonDefaultConstructibleFunctions::notDefaultConstructibleFunc).Return(NotDefaultConstructible(1));
 			NonDefaultConstructibleFunctions& i = mock.get();
 			Assert::IsTrue(NotDefaultConstructible(1) == i.notDefaultConstructibleFunc());
 			Assert::IsFalse(NotDefaultConstructible(2) == i.notDefaultConstructibleFunc());
@@ -207,7 +207,7 @@ namespace stubbing_tests
 			Mock<ReferenceFunctions> mock;
 			ReferenceFunctions* pAbstractType{ nullptr };
 			ReferenceFunctions& refAbstractType{ *pAbstractType };
-			mock.Stub(&ReferenceFunctions::abstractTypeFunc).Return(refAbstractType);
+			mock.When(&ReferenceFunctions::abstractTypeFunc).Return(refAbstractType);
 			ReferenceFunctions& i = mock.get();
 			Assert::IsNull(&i.abstractTypeFunc());
  		}
@@ -232,12 +232,25 @@ namespace stubbing_tests
 		TEST_METHOD(OverideDefualtBehaviorMatchAllInvocations)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::proc).Throw(std::string());
-			mock.Stub(&SomeInterface::func).Return(1);
+			mock.When(&SomeInterface::proc).Throw(std::string());
+			mock.When(&SomeInterface::func).Return(1);
 			SomeInterface& i = mock.get();
 			
  			Assert::ExpectException<std::string>([&](){i.proc(1); });
  			Assert::ExpectException<std::string>([&](){i.proc(2); });
+			Assert::AreEqual(1, i.func(1));
+			Assert::AreEqual(1, i.func(2));
+		}
+
+		TEST_METHOD(OverideDefualtBehaviorMatchAllInvocations_WithDo)
+		{
+			Mock<SomeInterface> mock;
+			mock.When(&SomeInterface::proc).Do([](...){throw std::string(); });
+			mock.When(&SomeInterface::func).Do([](...){return 1; });
+			SomeInterface& i = mock.get();
+
+			Assert::ExpectException<std::string>([&](){i.proc(1); });
+			Assert::ExpectException<std::string>([&](){i.proc(2); });
 			Assert::AreEqual(1, i.func(1));
 			Assert::AreEqual(1, i.func(2));
 		}
