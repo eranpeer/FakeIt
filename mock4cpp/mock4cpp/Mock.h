@@ -47,19 +47,20 @@ struct Mock : private MockBase
 	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
 	StubFunctionClouse<R, arglist...> When(R(C::*vMethod)(arglist...) const){
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
-		return When(methodWithoutConstVolatile);
+		return StubImpl(methodWithoutConstVolatile);
 	}
 
 	template < typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
 	StubFunctionClouse<R, arglist...> When(R(C::*vMethod)(arglist...) volatile){
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
-		return When(methodWithoutConstVolatile);
+		return StubImpl(methodWithoutConstVolatile);
+
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
 	StubFunctionClouse<R, arglist...> When(R(C::*vMethod)(arglist...) const volatile){
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
-		return When(methodWithoutConstVolatile);
+		return StubImpl(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
@@ -72,25 +73,24 @@ struct Mock : private MockBase
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
 	StubProcedureClouse<R, arglist...> When(R(C::*vMethod)(arglist...) const){
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
-		return When(methodWithoutConstVolatile);
+		return StubImpl(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
 	StubProcedureClouse<R, arglist...> When(R(C::*vMethod)(arglist...) volatile){
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
-		return When(methodWithoutConstVolatile);
+		return StubImpl(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
 	StubProcedureClouse<R, arglist...> When(R(C::*vMethod)(arglist...) const volatile){
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
-		return When(methodWithoutConstVolatile);
+		return StubImpl(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
 	StubProcedureClouse<R, arglist...> When(R(C::*vMethod)(arglist...)){
-		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
-		return StubImpl(methodWithoutConstVolatile);
+		return StubImpl(vMethod);
 	}
 
 	template <class DM, typename... arglist
