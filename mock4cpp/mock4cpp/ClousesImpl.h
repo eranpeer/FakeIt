@@ -45,7 +45,11 @@ namespace mock4cpp {
 				return *this;
 			}
 
-			NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override = 0;
+			NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
+				InvocationMock().clear();
+				InvocationMock().appendDo(method);
+				return *this;
+			}
 
 		protected:
 			virtual MethodInvocationMock<R, arglist...>& InvocationMock() = 0;
@@ -93,9 +97,7 @@ namespace mock4cpp {
 			}
 
 			NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-				InvocationMock().clear();
-				InvocationMock().appendDo(method);
-				return *this;
+				return FunctionWhenClouse::Do(method);
 			}
 		};
 
@@ -113,7 +115,11 @@ namespace mock4cpp {
 				return *this;
 			}
 
-			NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override = 0;
+			NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
+				InvocationMock().clear();
+				InvocationMock().appendDo(method);
+				return *this;
+			}
 
 		protected:
 			virtual MethodInvocationMock<R, arglist...>& InvocationMock() = 0;
@@ -159,9 +165,7 @@ namespace mock4cpp {
 			}
 
 			NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-				InvocationMock().clear();
-				InvocationMock().appendDo(method);
-				return *this;
+				return ProcedureWhenClouse::Do(method);
 			}
 		};
 
