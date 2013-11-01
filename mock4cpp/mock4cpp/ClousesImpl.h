@@ -33,19 +33,19 @@ namespace mock4cpp {
 
 		template <typename R, typename... arglist>
 		struct FunctionWhenClouse :
-			public virtual AbstractFirstFunctionWhenClouse<R, arglist...>,
-			public virtual AbstractNextFunctionWhenClouse<R, arglist...>
+			public virtual FirstFunctionWhenClouse<R, arglist...>,
+			public virtual NextFunctionWhenClouse<R, arglist...>
 		{
 
 			FunctionWhenClouse() = default;
 			~FunctionWhenClouse() override = default;
 
-			AbstractNextFunctionWhenClouse<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
+			NextFunctionWhenClouse<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
 				InvocationMock().appendDo(method);
 				return *this;
 			}
 
-			AbstractNextFunctionWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) override {
+			NextFunctionWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 				InvocationMock().clear();
 				InvocationMock().appendDo(method);
 				return *this;
@@ -64,7 +64,7 @@ namespace mock4cpp {
 
 
 		template <typename R, typename... arglist>
-		class StubFunctionClouse : public virtual AbstractFirstFunctionWhenClouse<R, arglist...>,
+		class StubFunctionClouse : public virtual FirstFunctionWhenClouse<R, arglist...>,
 			private virtual FunctionWhenClouse<R, arglist...>{
 		private:
 			MethodMock<R, arglist...>& methodMock;
@@ -76,7 +76,7 @@ namespace mock4cpp {
 			}
 
 		public:
-			StubFunctionClouse(MethodMock<R, arglist...>& methodMock) : FunctionWhenClouse(), AbstractFirstFunctionWhenClouse(), methodMock(methodMock) {
+			StubFunctionClouse(MethodMock<R, arglist...>& methodMock) : FunctionWhenClouse(), FirstFunctionWhenClouse(), methodMock(methodMock) {
 				auto initialMethodBehavior = [](const arglist&... args)->R&{return DefaultValue::value<R>(); };
 				invocationMock = new DefaultInvocationMock<R, arglist...>(initialMethodBehavior);
 			}
@@ -91,7 +91,7 @@ namespace mock4cpp {
 				Do(method);
 			}
 
-			AbstractFirstFunctionWhenClouse<R, arglist...>& Using(const arglist&... args) {
+			FirstFunctionWhenClouse<R, arglist...>& Using(const arglist&... args) {
 				this->invocationMock = &methodMock.stubMethodCall(args...);
 				return *this;
 			}
@@ -100,7 +100,7 @@ namespace mock4cpp {
 				return VerifyClouse(methodMock.getActualInvocations(args...).size());
 			}
 
-			AbstractNextFunctionWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) {
+			NextFunctionWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) {
 				InvocationMock().clear();
 				InvocationMock().appendDo(method);
 				return *this;
