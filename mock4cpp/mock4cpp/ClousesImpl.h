@@ -84,7 +84,8 @@ namespace mock4cpp {
 			};
 
 			virtual void operator=(std::function<R(arglist...)> method) override {
-				Do(method);
+				// Must override since the implementation in base class is privately inherited
+				FirstFunctionStubbingProgress::operator = (method);
 			}
 
 			FirstFunctionStubbingProgress<R, arglist...>& Using(const arglist&... args) {
@@ -153,7 +154,8 @@ namespace mock4cpp {
 			};
 
 			virtual void operator=(std::function<R(arglist...)> method) override {
-				Do(method);
+				// Must override since the implementation in base class is privately inherited
+				FirstProcedureStubbingProgress::operator = (method);
 			}
 
 			FirstProcedureStubbingProgress<R, arglist...>& Using(const arglist&... args) {
