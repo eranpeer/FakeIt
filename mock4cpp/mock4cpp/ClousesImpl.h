@@ -33,27 +33,19 @@ namespace mock4cpp {
 
 		template <typename R, typename... arglist>
 		struct FunctionWhenClouse :
-			public virtual FirstFunctionWhenClouse<R, arglist...>,
-			public virtual NextFunctionWhenClouse<R, arglist...>
+			public virtual FirstFunctionStubbingProgress<R, arglist...>,
+			public virtual NextFunctionStubbingProgress<R, arglist...>
 		{
 
 			FunctionWhenClouse() = default;
 			~FunctionWhenClouse() override = default;
 
-			NextFunctionWhenClouse<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
+			NextFunctionStubbingProgress<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
 				InvocationMock().appendDo(method);
 				return *this;
 			}
 
-			NextFunctionWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-				InvocationMock().clear();
-				InvocationMock().appendDo(method);
-				return *this;
-			}
-
-			void operator=(std::function<R(arglist...)> method) override {
-				Do(method);
-			}
+			NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override = 0;
 
 		protected:
 			virtual MethodInvocationMock<R, arglist...>& InvocationMock() = 0;
@@ -64,7 +56,7 @@ namespace mock4cpp {
 
 
 		template <typename R, typename... arglist>
-		class FunctionStubbingProgress : public virtual FirstFunctionWhenClouse<R, arglist...>,
+		class FunctionStubbingProgress : public virtual FirstFunctionStubbingProgress<R, arglist...>,
 			private virtual FunctionWhenClouse<R, arglist...>{
 		private:
 			MethodMock<R, arglist...>& methodMock;
@@ -76,7 +68,7 @@ namespace mock4cpp {
 			}
 
 		public:
-			FunctionStubbingProgress(MethodMock<R, arglist...>& methodMock) : FunctionWhenClouse(), FirstFunctionWhenClouse(), methodMock(methodMock) {
+			FunctionStubbingProgress(MethodMock<R, arglist...>& methodMock) : FunctionWhenClouse(), FirstFunctionStubbingProgress(), methodMock(methodMock) {
 				auto initialMethodBehavior = [](const arglist&... args)->R&{return DefaultValue::value<R>(); };
 				invocationMock = new DefaultInvocationMock<R, arglist...>(initialMethodBehavior);
 			}
@@ -91,7 +83,7 @@ namespace mock4cpp {
 				Do(method);
 			}
 
-			FirstFunctionWhenClouse<R, arglist...>& Using(const arglist&... args) {
+			FirstFunctionStubbingProgress<R, arglist...>& Using(const arglist&... args) {
 				this->invocationMock = &methodMock.stubMethodCall(args...);
 				return *this;
 			}
@@ -100,7 +92,7 @@ namespace mock4cpp {
 				return VerifyClouse(methodMock.getActualInvocations(args...).size());
 			}
 
-			NextFunctionWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) {
+			NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 				InvocationMock().clear();
 				InvocationMock().appendDo(method);
 				return *this;
@@ -109,27 +101,19 @@ namespace mock4cpp {
 
 		template <typename R, typename... arglist>
 		struct ProcedureWhenClouse :
-			public virtual FirstProcedureWhenClouse<R, arglist...>,
-			public virtual NextProcedureWhenClouse<R, arglist...>
+			public virtual FirstProcedureStubbingProgress<R, arglist...>,
+			public virtual NextProcedureStubbingProgress<R, arglist...>
 		{
 
 			ProcedureWhenClouse() = default;
 			~ProcedureWhenClouse() override = default;
 
-			NextProcedureWhenClouse<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
+			NextProcedureStubbingProgress<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
 				InvocationMock().appendDo(method);
 				return *this;
 			}
 
-			NextProcedureWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-				InvocationMock().clear();
-				InvocationMock().appendDo(method);
-				return *this;
-			}
-
-			void operator=(std::function<R(arglist...)> method) override {
-				Do(method);
-			}
+			NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override = 0;
 
 		protected:
 			virtual MethodInvocationMock<R, arglist...>& InvocationMock() = 0;
@@ -138,7 +122,7 @@ namespace mock4cpp {
 		};
 
 		template <typename R, typename... arglist>
-		class ProcedureStubbingProgress : public virtual FirstProcedureWhenClouse<R, arglist...>,
+		class ProcedureStubbingProgress : public virtual FirstProcedureStubbingProgress<R, arglist...>,
 			private virtual ProcedureWhenClouse<R, arglist...>{
 		private:
 			MethodMock<R, arglist...>& methodMock;
@@ -150,7 +134,7 @@ namespace mock4cpp {
 			}
 
 		public:
-			ProcedureStubbingProgress(MethodMock<R, arglist...>& methodMock) : ProcedureWhenClouse(), FirstProcedureWhenClouse(), methodMock(methodMock) {
+			ProcedureStubbingProgress(MethodMock<R, arglist...>& methodMock) : ProcedureWhenClouse(), FirstProcedureStubbingProgress(), methodMock(methodMock) {
 				auto initialMethodBehavior = [](const arglist&... args)->R{return DefaultValue::value<R>(); };
 				invocationMock = new DefaultInvocationMock<R, arglist...>(initialMethodBehavior);
 			}
@@ -165,7 +149,7 @@ namespace mock4cpp {
 				Do(method);
 			}
 
-			FirstProcedureWhenClouse<R, arglist...>& Using(const arglist&... args) {
+			FirstProcedureStubbingProgress<R, arglist...>& Using(const arglist&... args) {
 				invocationMock = &methodMock.stubMethodCall(args...);
 				return *this;
 			}
@@ -174,7 +158,7 @@ namespace mock4cpp {
 				return VerifyClouse(methodMock.getActualInvocations(args...).size());
 			}
 
-			NextProcedureWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) {
+			NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 				InvocationMock().clear();
 				InvocationMock().appendDo(method);
 				return *this;
