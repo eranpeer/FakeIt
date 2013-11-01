@@ -287,10 +287,8 @@ namespace mock4cpp_tests
 
 		TEST_METHOD(StubProcWithReferenceParams){
 			Mock<ReferenceInterface> mock;
-			mock.Stub(&ReferenceInterface::proc1);
-			mock.Stub(&ReferenceInterface::proc2);
-			mock.Stub(&ReferenceInterface::func1);
-			mock.Stub(&ReferenceInterface::func2);
+			mock.Stub(&ReferenceInterface::proc1, &ReferenceInterface::proc2);
+			mock.Stub(&ReferenceInterface::func1, &ReferenceInterface::func2);
 
 			ReferenceInterface & i = mock.get();
 			ReferenceInterface* pReferenceInterface{ nullptr };

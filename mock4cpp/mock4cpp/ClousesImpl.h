@@ -109,19 +109,19 @@ namespace mock4cpp {
 
 		template <typename R, typename... arglist>
 		struct ProcedureWhenClouse :
-			public virtual AbstractFirstProcedureWhenClouse<R, arglist...>,
-			public virtual AbstractNextProcedureWhenClouse<R, arglist...>
+			public virtual FirstProcedureWhenClouse<R, arglist...>,
+			public virtual NextProcedureWhenClouse<R, arglist...>
 		{
 
 			ProcedureWhenClouse() = default;
 			~ProcedureWhenClouse() override = default;
 
-			AbstractNextProcedureWhenClouse<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
+			NextProcedureWhenClouse<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
 				InvocationMock().appendDo(method);
 				return *this;
 			}
 
-			AbstractNextProcedureWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) override {
+			NextProcedureWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 				InvocationMock().clear();
 				InvocationMock().appendDo(method);
 				return *this;
@@ -138,7 +138,7 @@ namespace mock4cpp {
 		};
 
 		template <typename R, typename... arglist>
-		class StubProcedureClouse : public virtual AbstractFirstProcedureWhenClouse<R, arglist...>,
+		class StubProcedureClouse : public virtual FirstProcedureWhenClouse<R, arglist...>,
 			private virtual ProcedureWhenClouse<R, arglist...>{
 		private:
 			MethodMock<R, arglist...>& methodMock;
@@ -150,7 +150,7 @@ namespace mock4cpp {
 			}
 
 		public:
-			StubProcedureClouse(MethodMock<R, arglist...>& methodMock) : ProcedureWhenClouse(), AbstractFirstProcedureWhenClouse(), methodMock(methodMock) {
+			StubProcedureClouse(MethodMock<R, arglist...>& methodMock) : ProcedureWhenClouse(), FirstProcedureWhenClouse(), methodMock(methodMock) {
 				auto initialMethodBehavior = [](const arglist&... args)->R{return DefaultValue::value<R>(); };
 				invocationMock = new DefaultInvocationMock<R, arglist...>(initialMethodBehavior);
 			}
@@ -165,9 +165,8 @@ namespace mock4cpp {
 				Do(method);
 			}
 
-			AbstractFirstProcedureWhenClouse<R, arglist...>& Using(const arglist&... args) {
-				this->invocationMock = &methodMock.stubMethodCall(args...);
-				//invocationMock->appendDo([](...)->R{ return DefaultValue::value<R>();	});
+			FirstProcedureWhenClouse<R, arglist...>& Using(const arglist&... args) {
+				invocationMock = &methodMock.stubMethodCall(args...);
 				return *this;
 			}
 
@@ -175,7 +174,7 @@ namespace mock4cpp {
 				return VerifyClouse(methodMock.getActualInvocations(args...).size());
 			}
 
-			AbstractNextProcedureWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) {
+			NextProcedureWhenClouse<R, arglist...>& Do(std::function<R(arglist...)> method) {
 				InvocationMock().clear();
 				InvocationMock().appendDo(method);
 				return *this;
