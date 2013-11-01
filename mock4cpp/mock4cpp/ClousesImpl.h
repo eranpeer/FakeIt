@@ -97,6 +97,7 @@ namespace mock4cpp {
 			}
 
 			NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
+				// Must override since the implementation in base class is privately inherited
 				return FunctionWhenClouse::Do(method);
 			}
 		};
@@ -165,6 +166,7 @@ namespace mock4cpp {
 			}
 
 			NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
+				// Must override since the implementation in base class is privately inherited
 				return ProcedureWhenClouse::Do(method);
 			}
 		};
