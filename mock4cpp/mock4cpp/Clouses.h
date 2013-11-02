@@ -18,22 +18,18 @@ namespace mock4cpp {
 			template<typename NO_REF = std::remove_reference<R>::type>
 			typename std::enable_if<is_copy_initializable<NO_REF>::value, NextFunctionStubbingProgress<R, arglist...>&>::type
 				ThenReturn(const R& r) {
-					return ThenDo(std::function<R(arglist...)>([r](...)->R{
-						return r;
-					}));
+					return ThenDo([r](...)->R{ return r; });
 				}
 
 			template<typename NO_REF = std::remove_reference<R>::type>
 			typename std::enable_if<!is_copy_initializable<NO_REF>::value, NextFunctionStubbingProgress<R, arglist...>&>::type
 				ThenReturn(const R& r) {
-					return ThenDo(std::function<R(arglist...)>([&r](...)->R{
-						return r;
-					}));
+					return ThenDo([&r](...)->R{ return r; });
 				}
 
 			template <typename E>
 			NextFunctionStubbingProgress<R, arglist...>& ThenThrow(const E& e) {
-				return ThenDo(std::function<R(arglist...)>([e](...)->R{throw e; }));
+				return ThenDo([e](...)->R{throw e; });
 			}
 
 			NextFunctionStubbingProgress<R, arglist...>& ThenDo(R(*method)(arglist...)) {
@@ -55,22 +51,18 @@ namespace mock4cpp {
 			template<typename NO_REF = std::remove_reference<R>::type>
 			typename std::enable_if<std::is_trivially_copy_constructible<NO_REF>::value, NextFunctionStubbingProgress<R, arglist...>&>::type
 				Return(const R& r) {
-					return Do(std::function<R(arglist...)>([r](...)->R{
-						return r;
-					}));
+					return Do([r](...)->R{ return r; });
 				}
 
 			template<typename NO_REF = std::remove_reference<R>::type>
 			typename std::enable_if<!std::is_trivially_copy_constructible<NO_REF>::value, NextFunctionStubbingProgress<R, arglist...>&>::type
-				Return(const R& r) {
-					return Do(std::function<R(arglist...)>([&r](...)->R{
-						return r;
-					}));
+				Return(const R& r) { 
+					return Do([&r](...)->R{ return r; });
 				}
 
 			template <typename E>
 			NextFunctionStubbingProgress<R, arglist...>& Throw(const E& e)  {
-				return Do(std::function<R(arglist...)>([e](...)->R{throw e; }));
+				return Do([e](...)->R{throw e; });
 			}
 
 			virtual void operator=(std::function<R(arglist...)> method) {
@@ -87,12 +79,12 @@ namespace mock4cpp {
 			virtual ~NextProcedureStubbingProgress() {};
 
 			NextProcedureStubbingProgress<R, arglist...>& ThenReturn() {
-				return ThenDo(std::function<R(arglist...)>([](...)->R{ return DefaultValue::value<R>(); }));
+				return ThenDo([](...)->R{ return DefaultValue::value<R>(); });
 			}
 
 			template <typename E>
 			NextProcedureStubbingProgress<R, arglist...>& ThenThrow(const E e) {
-				return ThenDo(std::function<R(arglist...)>([e](...)->R{ throw e; }));
+				return ThenDo([e](...)->R{ throw e; });
 			}
 
 			virtual  NextProcedureStubbingProgress<R, arglist...>& ThenDo(std::function<R(arglist...)> method) = 0;
@@ -107,12 +99,12 @@ namespace mock4cpp {
 			virtual ~FirstProcedureStubbingProgress() {};
 
 			NextProcedureStubbingProgress<R, arglist...>& Return() {
-				return Do(std::function<R(arglist...)>([](...)->R{ return DefaultValue::value<R>(); }));
+				return Do([](...)->R{ return DefaultValue::value<R>(); });
 			}
 
 			template <typename E>
 			NextProcedureStubbingProgress<R, arglist...>& Throw(const E e) {
-				return Do(std::function<R(arglist...)>([e](...)->R{ throw e; }));
+				return Do([e](...)->R{ throw e; });
 			}
 
 			virtual void operator=(std::function<R(arglist...)> method){
