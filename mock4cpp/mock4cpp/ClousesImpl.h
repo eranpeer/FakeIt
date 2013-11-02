@@ -72,7 +72,12 @@ namespace mock4cpp {
 			}
 
 		public:
-			FunctionStubbingRoot(MethodMock<R, arglist...>& methodMock) : FunctionStubbingProgress(), FirstFunctionStubbingProgress(), methodMock(methodMock) {
+			FunctionStubbingRoot(MethodMock<R, arglist...>& methodMock) : 
+				FunctionStubbingProgress(), 
+				FirstFunctionStubbingProgress(), 
+				methodMock(methodMock),
+				invocationMock(nullptr)
+			{
 				auto initialMethodBehavior = [](const arglist&... args)->R&{return DefaultValue::value<R>(); };
 				invocationMock = new DefaultInvocationMock<R, arglist...>(initialMethodBehavior);
 			}
@@ -80,7 +85,8 @@ namespace mock4cpp {
 			FunctionStubbingRoot(const FunctionStubbingRoot& other) = default;
 
 			virtual ~FunctionStubbingRoot() override {
-				methodMock.stubMethodInvocation(invocationMock);
+				if (invocationMock)
+					methodMock.stubMethodInvocation(invocationMock);
 			};
 
 			virtual void operator=(std::function<R(arglist...)> method) override {
@@ -142,7 +148,12 @@ namespace mock4cpp {
 			}
 
 		public:
-			ProcedureStubbingRoot(MethodMock<R, arglist...>& methodMock) : ProcedureStubbingProgress(), FirstProcedureStubbingProgress(), methodMock(methodMock) {
+			ProcedureStubbingRoot(MethodMock<R, arglist...>& methodMock) : 
+				ProcedureStubbingProgress(), 
+				FirstProcedureStubbingProgress(), 
+				methodMock(methodMock), 
+				invocationMock(nullptr)
+			{
 				auto initialMethodBehavior = [](const arglist&... args)->R{return DefaultValue::value<R>(); };
 				invocationMock = new DefaultInvocationMock<R, arglist...>(initialMethodBehavior);
 			}
@@ -150,7 +161,8 @@ namespace mock4cpp {
 			ProcedureStubbingRoot(const ProcedureStubbingRoot& other) = default;
 
 			virtual ~ProcedureStubbingRoot() override {
-				methodMock.stubMethodInvocation(invocationMock);
+				if (invocationMock)
+					methodMock.stubMethodInvocation(invocationMock);
 			};
 
 			virtual void operator=(std::function<R(arglist...)> method) override {
