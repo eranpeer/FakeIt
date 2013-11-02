@@ -43,8 +43,8 @@ namespace mock4cpp_tests
 		TEST_METHOD(VerifyAtLeastOnceIsTheDefaultBehavior)
 		{
 			Mock<SomeInterface> mock;
-			mock.When(&SomeInterface::func);
-			mock.When(&SomeInterface::proc);
+			mock.Stub(&SomeInterface::func);
+			mock.Stub(&SomeInterface::proc);
 
 			SomeInterface &i = mock.get();
 

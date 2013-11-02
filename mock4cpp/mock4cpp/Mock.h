@@ -107,7 +107,7 @@ struct Mock : private MockBase
 	void Stub(H head, M... tail) 
 	{
 		//auto headWithoutConstVolatile = reinterpret_cast<std::remove_cv<H>::type>(head);
-		When(head);
+		When(head).apply();
 		Stub(tail...);
 	}
 

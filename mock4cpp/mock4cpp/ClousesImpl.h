@@ -66,6 +66,7 @@ namespace mock4cpp {
 			MethodMock<R, arglist...>& methodMock;
 			FunctionStubbingRoot & operator= (const FunctionStubbingRoot & other) = delete;
 			MethodInvocationMockBase<R, arglist...>* invocationMock;
+			bool shouldApply;
 		protected:
 			virtual MethodInvocationMockBase<R, arglist...>& InvocationMock() override  {
 				return *invocationMock;
@@ -76,7 +77,8 @@ namespace mock4cpp {
 				FunctionStubbingProgress(), 
 				FirstFunctionStubbingProgress(), 
 				methodMock(methodMock),
-				invocationMock(nullptr)
+				invocationMock(nullptr),
+				shouldApply(false)
 			{
 				auto initialMethodBehavior = [](const arglist&... args)->R&{return DefaultValue::value<R>(); };
 				invocationMock = new DefaultInvocationMock<R, arglist...>(initialMethodBehavior);
@@ -85,9 +87,9 @@ namespace mock4cpp {
 			FunctionStubbingRoot(const FunctionStubbingRoot& other) = default;
 
 			virtual ~FunctionStubbingRoot() override {
-				if (invocationMock)
+				if (shouldApply)
 					methodMock.stubMethodInvocation(invocationMock);
-			};
+			}
 
 			virtual void operator=(std::function<R(arglist...)> method) override {
 				// Must override since the implementation in base class is privately inherited
@@ -105,7 +107,12 @@ namespace mock4cpp {
 
 			NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 				// Must override since the implementation in base class is privately inherited
+				shouldApply = true;
 				return FunctionStubbingProgress::Do(method);
+			}
+
+			void apply() {
+				shouldApply = true;
 			}
 		};
 
@@ -142,6 +149,7 @@ namespace mock4cpp {
 			MethodMock<R, arglist...>& methodMock;
 			ProcedureStubbingRoot & operator= (const ProcedureStubbingRoot & other) = delete;
 			MethodInvocationMockBase<R, arglist...>* invocationMock;
+			bool shouldApply;
 		protected:
 			virtual MethodInvocationMockBase<R, arglist...>& InvocationMock() override  {
 				return *invocationMock;
@@ -152,7 +160,8 @@ namespace mock4cpp {
 				ProcedureStubbingProgress(), 
 				FirstProcedureStubbingProgress(), 
 				methodMock(methodMock), 
-				invocationMock(nullptr)
+				invocationMock(nullptr),
+				shouldApply(false)
 			{
 				auto initialMethodBehavior = [](const arglist&... args)->R{return DefaultValue::value<R>(); };
 				invocationMock = new DefaultInvocationMock<R, arglist...>(initialMethodBehavior);
@@ -161,9 +170,9 @@ namespace mock4cpp {
 			ProcedureStubbingRoot(const ProcedureStubbingRoot& other) = default;
 
 			virtual ~ProcedureStubbingRoot() override {
-				if (invocationMock)
+				if (shouldApply)
 					methodMock.stubMethodInvocation(invocationMock);
-			};
+			}
 
 			virtual void operator=(std::function<R(arglist...)> method) override {
 				// Must override since the implementation in base class is privately inherited
@@ -181,8 +190,14 @@ namespace mock4cpp {
 
 			NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 				// Must override since the implementation in base class is privately inherited
+				shouldApply = true;
 				return ProcedureStubbingProgress::Do(method);
 			}
+
+			void apply(){
+				shouldApply = true;
+			}
+
 		};
 
 	}
