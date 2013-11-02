@@ -89,7 +89,7 @@ namespace mock4cpp {
 			}
 
 			FirstFunctionStubbingProgress<R, arglist...>& Using(const arglist&... args) {
-				this->invocationMock = &methodMock.stubMethodCall(args...);
+				invocationMock = new ExpectedInvocationMock<R, arglist...>(args...);
 				return *this;
 			}
 
@@ -159,7 +159,7 @@ namespace mock4cpp {
 			}
 
 			FirstProcedureStubbingProgress<R, arglist...>& Using(const arglist&... args) {
-				invocationMock = &methodMock.stubMethodCall(args...);
+				invocationMock = new ExpectedInvocationMock<R, arglist...>(args...);
 				return *this;
 			}
 

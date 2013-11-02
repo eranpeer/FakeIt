@@ -119,16 +119,6 @@ namespace mock4cpp {
 			return methodInvocationMock->handleMethodInvocation(args...);
 		}
 
-		MethodInvocationMock<R, arglist...>& stubMethodCall(const arglist&... args) {
-			MethodInvocationMock<R, arglist...> * methodInvocationMock = getMethodInvocationMockForExpectedArgs(args...);
-			if (methodInvocationMock == nullptr) {
-				methodInvocationMock = new ExpectedInvocationMock<R, arglist...>(args...);
-				addMethodCall(methodInvocationMock);
-			}
-			return *methodInvocationMock;
-		}
-
-
 		std::vector<ActualInvocation<arglist...> *> getActualInvocations(const arglist&... expectedArgs) {
 			std::vector<ActualInvocation<arglist...> *> result;
 			for each (auto* actualInvocation in actualInvocations)
