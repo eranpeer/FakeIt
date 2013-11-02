@@ -114,6 +114,19 @@ namespace mock4cpp_tests
 			Assert::ExpectException<int>([&i]{ i.proc(1); });
 		}
 
+		TEST_METHOD(StubDefaultBehavior_MockitoStyle)
+		{
+
+			Mock<SomeInterface> mock;
+			When(mock[&SomeInterface::func]).Do([](int a){return a; });
+			When(mock[&SomeInterface::proc]).Do([](int a){throw a; });
+
+			SomeInterface &i = mock.get();
+
+			Assert::AreEqual(1, i.func(1));
+			Assert::ExpectException<int>([&i]{ i.proc(1); });
+		}
+
 		TEST_METHOD(StubOnlySpecifiedCallsToAlternateBehavior)
 		{
 			Mock<SomeInterface> mock;
@@ -122,6 +135,26 @@ namespace mock4cpp_tests
 
 			mock.When(&SomeInterface::func).Using(1).Return(1);
 			mock.When(&SomeInterface::proc).Using(1).Throw(std::string("error"));
+
+			SomeInterface &i = mock.get();
+
+			Assert::AreEqual(1, i.func(1));
+			Assert::AreEqual(1, i.func(1));
+			Assert::AreEqual(0, i.func(2), L"default behavior");
+
+			Assert::ExpectException<std::string>([&i]{ i.proc(1); });
+			Assert::ExpectException<std::string>([&i]{ i.proc(1); });
+			i.proc(2);
+		}
+
+		TEST_METHOD(StubOnlySpecifiedCallsToAlternateBehavior_MockitoStyle)
+		{
+			Mock<SomeInterface> mock;
+			mock.Stub(&SomeInterface::func);
+			mock.Stub(&SomeInterface::proc);
+
+			When(mock[&SomeInterface::func].Using(1)).Return(1);
+			When(mock[&SomeInterface::proc].Using(1)).Throw(std::string("error"));
 
 			SomeInterface &i = mock.get();
 
