@@ -45,45 +45,45 @@ struct Mock : private MockBase
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionStubbingProgress<R, arglist...> When(R(C::*vMethod)(arglist...) const){
+	FunctionStubbingRoot<R, arglist...> When(R(C::*vMethod)(arglist...) const){
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return StubImpl(methodWithoutConstVolatile);
 	}
 
 	template < typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionStubbingProgress<R, arglist...> When(R(C::*vMethod)(arglist...) volatile){
+	FunctionStubbingRoot<R, arglist...> When(R(C::*vMethod)(arglist...) volatile){
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return StubImpl(methodWithoutConstVolatile);
 
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionStubbingProgress<R, arglist...> When(R(C::*vMethod)(arglist...) const volatile){
+	FunctionStubbingRoot<R, arglist...> When(R(C::*vMethod)(arglist...) const volatile){
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return StubImpl(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionStubbingProgress<typename R, arglist...> When(R(C::*vMethod)(arglist...)) {
+	FunctionStubbingRoot<typename R, arglist...> When(R(C::*vMethod)(arglist...)) {
 		return StubImpl(vMethod);
 	}
 
 	//		
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureStubbingProgress<R, arglist...> When(R(C::*vMethod)(arglist...) const){
+	ProcedureStubbingRoot<R, arglist...> When(R(C::*vMethod)(arglist...) const){
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return StubImpl(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureStubbingProgress<R, arglist...> When(R(C::*vMethod)(arglist...) volatile){
+	ProcedureStubbingRoot<R, arglist...> When(R(C::*vMethod)(arglist...) volatile){
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return StubImpl(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureStubbingProgress<R, arglist...> When(R(C::*vMethod)(arglist...) const volatile){
+	ProcedureStubbingRoot<R, arglist...> When(R(C::*vMethod)(arglist...) const volatile){
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return StubImpl(methodWithoutConstVolatile);
 	}
@@ -134,15 +134,15 @@ private:
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionStubbingProgress<R, arglist...> StubImpl(R(C::*vMethod)(arglist...)){
+	FunctionStubbingRoot<R, arglist...> StubImpl(R(C::*vMethod)(arglist...)){
 		auto methodMock = stubMethodIfNotStubbed(vMethod);
-		return FunctionStubbingProgress<R, arglist...>(*methodMock);
+		return FunctionStubbingRoot<R, arglist...>(*methodMock);
 	}
 	
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureStubbingProgress<R, arglist...> StubImpl(R(C::*vMethod)(arglist...)){
+	ProcedureStubbingRoot<R, arglist...> StubImpl(R(C::*vMethod)(arglist...)){
 		auto methodMock = stubMethodIfNotStubbed(vMethod);
-		return ProcedureStubbingProgress<R, arglist...>(*methodMock);
+		return ProcedureStubbingRoot<R, arglist...>(*methodMock);
 	}
 
 	void Stub(){}
