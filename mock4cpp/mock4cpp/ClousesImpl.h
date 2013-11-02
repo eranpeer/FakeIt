@@ -52,7 +52,7 @@ namespace mock4cpp {
 			}
 
 		protected:
-			virtual MethodInvocationMock<R, arglist...>& InvocationMock() = 0;
+			virtual MethodInvocationMockBase<R, arglist...>& InvocationMock() = 0;
 		private:
 			FunctionWhenClouse & operator= (const FunctionWhenClouse & other) = delete;
 		};
@@ -65,9 +65,9 @@ namespace mock4cpp {
 		private:
 			MethodMock<R, arglist...>& methodMock;
 			FunctionStubbingProgress & operator= (const FunctionStubbingProgress & other) = delete;
-			MethodInvocationMock<R, arglist...>* invocationMock;
+			MethodInvocationMockBase<R, arglist...>* invocationMock;
 		protected:
-			virtual MethodInvocationMock<R, arglist...>& InvocationMock() override  {
+			virtual MethodInvocationMockBase<R, arglist...>& InvocationMock() override  {
 				return *invocationMock;
 			}
 
@@ -80,7 +80,7 @@ namespace mock4cpp {
 			FunctionStubbingProgress(const FunctionStubbingProgress& other) = default;
 
 			virtual ~FunctionStubbingProgress() override {
-				methodMock.addMethodCall(invocationMock);
+				methodMock.stubMethodInvocation(invocationMock);
 			};
 
 			virtual void operator=(std::function<R(arglist...)> method) override {
@@ -124,7 +124,7 @@ namespace mock4cpp {
 			}
 
 		protected:
-			virtual MethodInvocationMock<R, arglist...>& InvocationMock() = 0;
+			virtual MethodInvocationMockBase<R, arglist...>& InvocationMock() = 0;
 		private:
 			ProcedureWhenClouse & operator= (const ProcedureWhenClouse & other) = delete;
 		};
@@ -135,9 +135,9 @@ namespace mock4cpp {
 		private:
 			MethodMock<R, arglist...>& methodMock;
 			ProcedureStubbingProgress & operator= (const ProcedureStubbingProgress & other) = delete;
-			MethodInvocationMock<R, arglist...>* invocationMock;
+			MethodInvocationMockBase<R, arglist...>* invocationMock;
 		protected:
-			virtual MethodInvocationMock<R, arglist...>& InvocationMock() override  {
+			virtual MethodInvocationMockBase<R, arglist...>& InvocationMock() override  {
 				return *invocationMock;
 			}
 
@@ -150,7 +150,7 @@ namespace mock4cpp {
 			ProcedureStubbingProgress(const ProcedureStubbingProgress& other) = default;
 
 			virtual ~ProcedureStubbingProgress() override {
-				methodMock.addMethodCall(invocationMock);
+				methodMock.stubMethodInvocation(invocationMock);
 			};
 
 			virtual void operator=(std::function<R(arglist...)> method) override {

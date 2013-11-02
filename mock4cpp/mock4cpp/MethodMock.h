@@ -27,7 +27,13 @@ namespace mock4cpp {
 	};
 
 	template <typename R, typename... arglist>
-	struct MethodInvocationMock : public InvocationMatcher <arglist...>
+	struct MethodInvocationMock : public InvocationMatcher <arglist...>, public MethodInvocationHandler <R, arglist...>
+	{
+
+	};
+
+	template <typename R, typename... arglist>
+	struct MethodInvocationMockBase : public MethodInvocationMock <R, arglist...>
 	{
 		void append(BehaviorMock<R, arglist...>* mock){
 			behaviorMocks.push_back(mock);
@@ -46,7 +52,7 @@ namespace mock4cpp {
 
 		virtual bool matchesExpected(const arglist&... args) override = 0;
 
-		R handleMethodInvocation(const arglist&... args){
+		R handleMethodInvocation(const arglist&... args) override {
 			BehaviorMock<R, arglist...>* behavior = behaviorMocks.front();
 			if (behaviorMocks.size() > 1)
 				behaviorMocks.erase(behaviorMocks.begin());
@@ -58,7 +64,7 @@ namespace mock4cpp {
 	};
 
 	template <typename R, typename... arglist>
-	struct ExpectedInvocationMock : public MethodInvocationMock<R, arglist...>
+	struct ExpectedInvocationMock : public MethodInvocationMockBase<R, arglist...>
 	{
 		ExpectedInvocationMock(const arglist&... args) : expectedArguments(args...)
 		{
@@ -77,7 +83,7 @@ namespace mock4cpp {
 	};
 
 	template <typename R, typename... arglist>
-	struct DefaultInvocationMock : public MethodInvocationMock<R, arglist...>
+	struct DefaultInvocationMock : public MethodInvocationMockBase<R, arglist...>
 	{
 		DefaultInvocationMock(std::function<R(arglist...)> methodBehavior) {
 			appendDo(methodBehavior);
@@ -100,16 +106,12 @@ namespace mock4cpp {
 		
 		virtual ~MethodMock() override {}
 
-		void addMethodCall(MethodInvocationMock<R, arglist...> * methodInvocationMock){
+		void stubMethodInvocation(MethodInvocationMock<R, arglist...> * methodInvocationMock){
 			methodInvocationMocks.push_back(methodInvocationMock);
 		}
 
 		void clear(){
 			methodInvocationMocks.clear();
-		}
-
-		MethodInvocationMock<R, arglist...>& last(){
-			return *methodInvocationMocks.back();
 		}
 
 		R handleMethodInvocation(const arglist&... args) override {
@@ -151,8 +153,6 @@ namespace mock4cpp {
 					return (*i);
 				}
 			}
-
-			// should not get here since the default will always match an actual method call.
 			return nullptr;
 		}
 
