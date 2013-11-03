@@ -20,6 +20,16 @@ FirstProcedureStubbingProgress<R, arglist...>& When(FirstProcedureStubbingProgre
 	return  stubbingProgress;
 }
 
+template <typename R, typename... arglist>
+FirstFunctionStubbingProgress<R, arglist...>& Verify(FirstFunctionStubbingProgress<R, arglist...>& stubbingProgress) {
+	return  stubbingProgress;
+}
+
+template <typename R, typename... arglist>
+FirstProcedureStubbingProgress<R, arglist...>& Verify(FirstProcedureStubbingProgress<R, arglist...>& stubbingProgress) {
+	return  stubbingProgress;
+}
+
 template <typename C>
 struct Mock : private MockBase
 {	
