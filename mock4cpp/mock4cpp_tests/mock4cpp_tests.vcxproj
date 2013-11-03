@@ -83,8 +83,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\mock4cpp\ActualInvocation.h" />
-    <ClInclude Include="..\mock4cpp\Clouses.h" />
-    <ClInclude Include="..\mock4cpp\clousesimpl.h" />
+    <ClInclude Include="..\mock4cpp\Stubbing.h" />
+    <ClInclude Include="..\mock4cpp\StubbingImpl.h" />
     <ClInclude Include="..\mock4cpp\InvocationMatcher.h" />
     <ClInclude Include="..\mock4cpp\methodmock.h" />
     <ClInclude Include="..\mock4cpp\mock.h" />

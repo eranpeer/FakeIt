@@ -3,7 +3,7 @@
 
 #include <type_traits>
 #include "../mockutils/DynamicProxy.h"
-#include "ClousesImpl.h"
+#include "StubbingImpl.h"
 #include "mockito_clouses.h"
 #include "MockRepository.h"
 

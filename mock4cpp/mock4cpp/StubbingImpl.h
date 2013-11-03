@@ -5,7 +5,7 @@
 #include <type_traits>
 
 #include "../mock4cpp/MethodMock.h"
-#include "../mock4cpp/Clouses.h"
+#include "../mock4cpp/Stubbing.h"
 
 namespace mock4cpp {
 	namespace clouses {
