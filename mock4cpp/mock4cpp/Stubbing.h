@@ -8,7 +8,7 @@
 
 namespace mock4cpp {
 
-	namespace clouses {
+	namespace stubbing {
 		
 		template <typename R, typename... arglist>
 		struct NextFunctionStubbingProgress {

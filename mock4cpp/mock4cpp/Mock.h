@@ -8,7 +8,7 @@
 #include "MockRepository.h"
 
 using namespace mock4cpp;
-using namespace mock4cpp::clouses;
+using namespace mock4cpp::stubbing;
 
 template <typename R, typename... arglist>
 FirstFunctionStubbingProgress<R, arglist...>& When(FirstFunctionStubbingProgress<R, arglist...>& stubbingProgress) {

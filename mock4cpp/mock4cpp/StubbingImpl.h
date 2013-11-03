@@ -8,7 +8,7 @@
 #include "../mock4cpp/Stubbing.h"
 
 namespace mock4cpp {
-	namespace clouses {
+	namespace stubbing {
 
 // 		struct  VerifyClouse
 // 		{
