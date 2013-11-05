@@ -69,8 +69,13 @@ namespace mock4cpp {
 		}
 
 		virtual bool matches(const arglist&... actualArgs) override {
-			return expectedArguments == std::tuple<arglist...>(actualArgs...);
+			return matches(std::tuple<arglist...>(actualArgs...));
 		}
+
+		virtual bool matches(const std::tuple<arglist...>& actualArgs) override {
+			return expectedArguments == actualArgs;
+		}
+
 
 	private:
 		const std::tuple <arglist...> expectedArguments;
@@ -84,6 +89,10 @@ namespace mock4cpp {
 		}
 
 		virtual bool matches(const arglist&... actualArgs) override {
+			return matches(std::tuple<arglist...>(actualArgs...));
+		}
+
+		virtual bool matches(const std::tuple<arglist...>& actualArgs) override {
 			return true;
 		}
 
@@ -116,6 +125,17 @@ namespace mock4cpp {
 			for each (auto* actualInvocation in actualInvocations)
 			{
 				if (actualInvocation->matches(expectedArgs...)){
+					result.push_back(actualInvocation);
+				}
+			}
+			return result;
+		}
+
+		std::vector<ActualInvocation<arglist...> *> getActualInvocations(const InvocationMatcher<arglist...>& matcher) {
+			std::vector<ActualInvocation<arglist...> *> result;
+			for each (auto* actualInvocation in actualInvocations)
+			{
+				if (matcher->matches(actualInvocation->getActualArguments())){
 					result.push_back(actualInvocation);
 				}
 			}
