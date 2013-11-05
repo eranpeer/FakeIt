@@ -22,6 +22,10 @@ namespace mock4cpp {
 				Times(1);
 			}
 
+			virtual void Twice() {
+				Times(2);
+			}
+
 			virtual void Times(const int times) {
 				if (Times() != times)
 					throw (std::string("expected ") + std::to_string(times) + " but was " + std::to_string(Times()));

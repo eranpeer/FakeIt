@@ -9,6 +9,16 @@
 
 using namespace mock4cpp;
 using namespace mock4cpp::stubbing;
+using namespace mock4cpp::verification;
+
+class VerifyFunctor
+{
+public:
+	VerifyFunctor() {}
+	FunctionVerificationProgress& operator() (FunctionVerificationProgress& verificationProgress) {
+		return  verificationProgress;
+	}
+} static Verify;
 
 template <typename R, typename... arglist>
 FirstFunctionStubbingProgress<R, arglist...>& When(FirstFunctionStubbingProgress<R, arglist...>& stubbingProgress) {
@@ -17,16 +27,6 @@ FirstFunctionStubbingProgress<R, arglist...>& When(FirstFunctionStubbingProgress
 
 template <typename R, typename... arglist>
 FirstProcedureStubbingProgress<R, arglist...>& When(FirstProcedureStubbingProgress<R, arglist...>& stubbingProgress) {
-	return  stubbingProgress;
-}
-
-template <typename R, typename... arglist>
-FirstFunctionStubbingProgress<R, arglist...>& Verify(FirstFunctionStubbingProgress<R, arglist...>& stubbingProgress) {
-	return  stubbingProgress;
-}
-
-template <typename R, typename... arglist>
-FirstProcedureStubbingProgress<R, arglist...>& Verify(FirstProcedureStubbingProgress<R, arglist...>& stubbingProgress) {
 	return  stubbingProgress;
 }
 
@@ -184,7 +184,7 @@ private:
 // 		handleMethodInvocation(const arglist&... args) override {
 // 			R(C::*vMethod)(arglist...);
 // 			StubFunctionClouse<R, arglist...>& clouse = mock.When(vMethod);
-// 			// add clouse to list ...
+// 			// add clause to list ...
 // 			return DefaultValue::value<R>();
 // 		}
 // 
@@ -193,4 +193,6 @@ private:
 // 	};
 // 
 // }
+
+
 #endif // Mock_h__

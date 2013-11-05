@@ -24,13 +24,13 @@ namespace mock4cpp_tests
 
 		TEST_METHOD(VerifyZeroInvoaction)
 		{
-			Mock<SomeInterface> mock;
-			mock.When(&SomeInterface::func);
-			mock.When(&SomeInterface::proc);
+//			Mock<SomeInterface> mock;
+//			mock.Stub(&SomeInterface::func);
+//			mock.Stub(&SomeInterface::proc);
 
 			
-			A();
-			SomeInterface &i = mock.get();
+//			A();
+//			SomeInterface &i = mock.get();
 // 			Verify.Never(mock().func(1));
 // 			Verify.Never(mock().func(2));
 // 			Verify.Never(&SomeInterface::func);
@@ -50,11 +50,11 @@ namespace mock4cpp_tests
 
 			i.func(1);
 			i.func(2);
-
-//  			Verify(mock[&SomeInterface::func]).Twice();
+			
+  			Verify(mock[&SomeInterface::func]).Twice();
 // 			Verify(mock[&SomeInterface::func].Using(1)).Once();
-// 			Verify(mock[&SomeInterface::func].Using(2)).Once();
-// 			Verify(mock[&SomeInterface::func].Using(3)).Never();
+//  			Verify(mock[&SomeInterface::func].Using(2)).Once();
+//  			Verify(mock[&SomeInterface::func].Using(3)).Never();
 		}
 	};
 }
