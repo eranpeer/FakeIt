@@ -48,7 +48,7 @@ namespace mock4cpp {
 			behaviorMocks.clear();
 		}
 
-		virtual bool matches(const arglist&... actualArgs) override = 0;
+		virtual bool matches(ActualInvocation<arglist...>& actualArgs) override = 0;
 
 		R handleMethodInvocation(const arglist&... args) override {
 			BehaviorMock<R, arglist...>* behavior = behaviorMocks.front();
@@ -68,16 +68,17 @@ namespace mock4cpp {
 		{
 		}
 
-		virtual bool matches(const arglist&... actualArgs) override {
+		virtual bool matches(ActualInvocation<arglist...>& invocation) override {
+			return matches(invocation.getActualArguments());
+		}
+	private:
+		virtual bool matches(const arglist&... actualArgs)  {
 			return matches(std::tuple<arglist...>(actualArgs...));
 		}
 
-		virtual bool matches(const std::tuple<arglist...>& actualArgs) override {
+		virtual bool matches(const std::tuple<arglist...>& actualArgs)  {
 			return expectedArguments == actualArgs;
 		}
-
-
-	private:
 		const std::tuple <arglist...> expectedArguments;
 	};
 
@@ -88,14 +89,18 @@ namespace mock4cpp {
 			appendDo(methodBehavior);
 		}
 
-		virtual bool matches(const arglist&... actualArgs) override {
+		virtual bool matches(ActualInvocation<arglist...>& invocation) override {
+			return matches(invocation.getActualArguments());
+		}
+
+	private:
+		virtual bool matches(const arglist&... actualArgs) {
 			return matches(std::tuple<arglist...>(actualArgs...));
 		}
 
-		virtual bool matches(const std::tuple<arglist...>& actualArgs) override {
+		virtual bool matches(const std::tuple<arglist...>& actualArgs)  {
 			return true;
 		}
-
 	};
 
 	template <typename R, typename... arglist>
@@ -116,7 +121,7 @@ namespace mock4cpp {
 		R handleMethodInvocation(const arglist&... args) override {
 			auto * actualInvoaction = new ActualInvocation<arglist...>(args...);
 			actualInvocations.push_back(actualInvoaction);
-			auto * methodInvocationMock = getMethodInvocationMockForActualArgs(args...);
+			auto * methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
 			return methodInvocationMock->handleMethodInvocation(args...);
 		}
 
@@ -157,9 +162,9 @@ namespace mock4cpp {
 // 			return nullptr;
 // 		}
 
-		MethodInvocationMock<R, arglist...>* getMethodInvocationMockForActualArgs(const arglist&... args) {
+		MethodInvocationMock<R, arglist...>* getMethodInvocationMockForActualArgs(ActualInvocation<arglist...>& invocation) {
 			for (auto i = methodInvocationMocks.rbegin(); i != methodInvocationMocks.rend(); ++i) {
-				if ((*i)->matches(args...)){
+				if ((*i)->matches(invocation)){
 					return (*i);
 				}
 			}

@@ -10,10 +10,6 @@ struct ActualInvocation
 	{
 	}
 
-	virtual bool matches(const arglist&... actualArgs) {
-		return actualArguments == std::tuple<arglist...>{actualArgs...};
-	}
-
 	const std::tuple <arglist...>& getActualArguments(){
 		return actualArguments;
 	}
