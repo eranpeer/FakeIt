@@ -48,9 +48,7 @@ namespace mock4cpp {
 			behaviorMocks.clear();
 		}
 
-		virtual bool matchesActual(const arglist&... args) override = 0;
-
-		virtual bool matchesExpected(const arglist&... args) override = 0;
+		virtual bool matches(const arglist&... actualArgs) override = 0;
 
 		R handleMethodInvocation(const arglist&... args) override {
 			BehaviorMock<R, arglist...>* behavior = behaviorMocks.front();
@@ -70,12 +68,8 @@ namespace mock4cpp {
 		{
 		}
 
-		virtual bool matchesActual(const arglist&... args) override {
-			return expectedArguments == std::tuple<arglist...>(args...);
-		}
-
-		virtual bool matchesExpected(const arglist&... args) override {
-			return expectedArguments == std::tuple<arglist...>(args...);
+		virtual bool matches(const arglist&... actualArgs) override {
+			return expectedArguments == std::tuple<arglist...>(actualArgs...);
 		}
 
 	private:
@@ -89,12 +83,8 @@ namespace mock4cpp {
 			appendDo(methodBehavior);
 		}
 
-		virtual bool matchesActual(const arglist&... args) override {
+		virtual bool matches(const arglist&... actualArgs) override {
 			return true;
-		}
-
-		virtual bool matchesExpected(const arglist&... args) override {
-			return false;
 		}
 
 	};
@@ -138,18 +128,18 @@ namespace mock4cpp {
 		std::vector<MethodInvocationMock<R, arglist...>*> methodInvocationMocks;
 		std::vector<ActualInvocation<arglist...>*> actualInvocations;
 
-		MethodInvocationMock<R, arglist...> * getMethodInvocationMockForExpectedArgs(const arglist&... expectedArgs){
-			for (auto i = methodInvocationMocks.rbegin(); i != methodInvocationMocks.rend(); ++i) {
-				if ((*i)->matchesExpected(expectedArgs...)){
-					return (*i);
-				}
-			}
-			return nullptr;
-		}
+// 		MethodInvocationMock<R, arglist...> * getMethodInvocationMockForExpectedArgs(const arglist&... expectedArgs){
+// 			for (auto i = methodInvocationMocks.rbegin(); i != methodInvocationMocks.rend(); ++i) {
+// 				if ((*i)->matchesExpected(expectedArgs...)){
+// 					return (*i);
+// 				}
+// 			}
+// 			return nullptr;
+// 		}
 
 		MethodInvocationMock<R, arglist...>* getMethodInvocationMockForActualArgs(const arglist&... args) {
 			for (auto i = methodInvocationMocks.rbegin(); i != methodInvocationMocks.rend(); ++i) {
-				if ((*i)->matchesActual(args...)){
+				if ((*i)->matches(args...)){
 					return (*i);
 				}
 			}

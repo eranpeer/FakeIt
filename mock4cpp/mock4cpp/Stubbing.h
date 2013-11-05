@@ -8,6 +8,34 @@
 
 namespace mock4cpp {
 
+	namespace verification{
+
+		struct FunctionVerificationProgress
+		{
+			FunctionVerificationProgress() {}
+
+			void Never() {
+				Times(0);
+			}
+
+			virtual void Once() {
+				Times(1);
+			}
+
+			virtual void Times(const int times) {
+				if (Times() != times)
+					throw (std::string("expected ") + std::to_string(times) + " but was " + std::to_string(Times()));
+			}
+
+		protected:
+			virtual int Times() = 0;
+
+		private:
+			FunctionVerificationProgress & operator= (const FunctionVerificationProgress & other) = delete;
+		};
+
+	}
+
 	namespace stubbing {
 		
 		template <typename R, typename... arglist>

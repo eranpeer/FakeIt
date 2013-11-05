@@ -62,7 +62,6 @@ struct Mock : private MockBase
 	FunctionStubbingRoot<R, arglist...> When(R(C::*vMethod)(arglist...) volatile){
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return StubImpl(methodWithoutConstVolatile);
-
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>

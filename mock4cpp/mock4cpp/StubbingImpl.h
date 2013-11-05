@@ -8,28 +8,9 @@
 #include "../mock4cpp/Stubbing.h"
 
 namespace mock4cpp {
+	
+
 	namespace stubbing {
-
-// 		struct  VerifyClouse
-// 		{
-// 			VerifyClouse(int times) :times(times){}
-// 			virtual void Never() {
-// 				if (times != 0)
-// 					throw (std::string("expected Never but was ") + std::to_string(times));
-// 			}
-// 			virtual void Once() {
-// 				if (times != 1)
-// 					throw (std::string("expected Once but was ") + std::to_string(times));
-// 			}
-// 			virtual void Times(const int times) {
-// 				if (times != 2)
-// 					throw (std::string("expected Twice but was ") + std::to_string(times));
-// 			}
-// 		private:
-// 			int times;
-// 			VerifyClouse & operator= (const VerifyClouse & other) = delete;
-// 		};
-
 
 		template <typename R, typename... arglist>
 		struct FunctionStubbingProgress :
@@ -127,11 +108,12 @@ namespace mock4cpp {
 				return FunctionStubbingProgress::Do(method);
 			}
 
-			void apply() {
+			MethodInvocationMockBase<R, arglist...>& apply() {
 				if (!invocationMock){
 					auto initialMethodBehavior = [](const arglist&... args)->R&{return DefaultValue::value<R>(); };
 					invocationMock = new DefaultInvocationMock<R, arglist...>(initialMethodBehavior);
 				}
+				return *invocationMock;
 			}
 		};
 

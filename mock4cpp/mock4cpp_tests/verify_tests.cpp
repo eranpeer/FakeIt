@@ -51,14 +51,10 @@ namespace mock4cpp_tests
 			i.func(1);
 			i.func(2);
 
-			i.proc(1);
-			i.proc(2);
-
-// 			mock[&SomeInterface::func].Verify(1);
-// 			mock[&SomeInterface::func].Verify(2);
-// 			
-// 			mock[&SomeInterface::proc].Verify(1);
-// 			mock[&SomeInterface::proc].Verify(2);
+//  			Verify(mock[&SomeInterface::func]).Twice();
+// 			Verify(mock[&SomeInterface::func].Using(1)).Once();
+// 			Verify(mock[&SomeInterface::func].Using(2)).Once();
+// 			Verify(mock[&SomeInterface::func].Using(3)).Never();
 		}
 	};
 }
