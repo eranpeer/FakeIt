@@ -82,10 +82,6 @@ namespace mock4cpp {
 			return *invocationMock;
 		}
 
-		virtual int Times() override {
-			return 0;
-		}
-
 	public:
 		FunctionStubbingRoot(MethodMock<R, arglist...>& methodMock) :
 			FunctionStubbingProgress(),
@@ -100,6 +96,14 @@ namespace mock4cpp {
 		virtual ~FunctionStubbingRoot() override {
 			if (invocationMock)
 				methodMock.stubMethodInvocation(invocationMock);
+		}
+
+		virtual int Times() override {
+			apply();
+			int times = methodMock.getActualInvocations(*invocationMock).size();
+			delete invocationMock;
+			invocationMock = nullptr;
+			return times;
 		}
 
 		virtual void operator=(std::function<R(arglist...)> method) override {

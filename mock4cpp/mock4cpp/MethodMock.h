@@ -136,11 +136,11 @@ namespace mock4cpp {
 			return result;
 		}
 
-		std::vector<ActualInvocation<arglist...> *> getActualInvocations(const InvocationMatcher<arglist...>& matcher) {
+		std::vector<ActualInvocation<arglist...> *> getActualInvocations(InvocationMatcher<arglist...>& matcher) {
 			std::vector<ActualInvocation<arglist...> *> result;
 			for each (auto* actualInvocation in actualInvocations)
 			{
-				if (matcher->matches(actualInvocation->getActualArguments())){
+				if (matcher.matches(*actualInvocation)){
 					result.push_back(actualInvocation);
 				}
 			}

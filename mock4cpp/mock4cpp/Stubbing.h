@@ -81,7 +81,7 @@ namespace mock4cpp {
 
 
 		template <typename R, typename... arglist>
-		struct FirstFunctionStubbingProgress {
+		struct FirstFunctionStubbingProgress: public FunctionVerificationProgress {
 
 			virtual ~FirstFunctionStubbingProgress() {};
 
@@ -107,6 +107,9 @@ namespace mock4cpp {
 			}
 
 			virtual  NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) = 0;
+
+			virtual  int Times() override = 0;
+
 		private:
 			FirstFunctionStubbingProgress & operator= (const FirstFunctionStubbingProgress & other) = delete;
 		};
