@@ -98,14 +98,6 @@ namespace mock4cpp {
 				methodMock.stubMethodInvocation(invocationMock);
 		}
 
-		virtual int Times() override {
-			apply();
-			int times = methodMock.getActualInvocations(*invocationMock).size();
-			delete invocationMock;
-			invocationMock = nullptr;
-			return times;
-		}
-
 		virtual void operator=(std::function<R(arglist...)> method) override {
 			// Must override since the implementation in base class is privately inherited
 			FirstFunctionStubbingProgress::operator = (method);
@@ -122,6 +114,14 @@ namespace mock4cpp {
 			return FunctionStubbingProgress::Do(method);
 		}
 
+		virtual int CountInvocations() override {
+			apply();
+			int times = methodMock.getActualInvocations(*invocationMock).size();
+			delete invocationMock;
+			invocationMock = nullptr;
+			return times;
+		}
+
 		MethodInvocationMockBase<R, arglist...>& apply() {
 			if (!invocationMock){
 				auto initialMethodBehavior = [](const arglist&... args)->R&{return DefaultValue::value<R>(); };
@@ -133,7 +133,8 @@ namespace mock4cpp {
 
 	template <typename R, typename... arglist>
 	class ProcedureStubbingRoot : public virtual FirstProcedureStubbingProgress<R, arglist...>,
-		private virtual ProcedureStubbingProgress<R, arglist...>{
+		private virtual ProcedureStubbingProgress<R, arglist...>,
+		public virtual verification::FunctionVerificationProgress {
 	private:
 		MethodMock<R, arglist...>& methodMock;
 		ProcedureStubbingRoot & operator= (const ProcedureStubbingRoot & other) = delete;
@@ -173,6 +174,14 @@ namespace mock4cpp {
 			// Must override since the implementation in base class is privately inherited
 			apply();
 			return ProcedureStubbingProgress::Do(method);
+		}
+
+		virtual int CountInvocations() override {
+			apply();
+			int times = methodMock.getActualInvocations(*invocationMock).size();
+			delete invocationMock;
+			invocationMock = nullptr;
+			return times;
 		}
 
 		void apply(){

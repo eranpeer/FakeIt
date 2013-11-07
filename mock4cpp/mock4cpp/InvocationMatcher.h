@@ -10,10 +10,6 @@ namespace mock4cpp {
 	struct InvocationMatcher:public Destructable
 	{
 		virtual bool matches(ActualInvocation<arglist...>& actualArgs) = 0;
-
-// 		virtual bool matches(const std::tuple<arglist...>& actualArgs) = 0;
-// 
-// 		virtual bool matches(const arglist&... actualArgs) = 0;
 	};
 }
 #endif // InvocationMatcher_h__

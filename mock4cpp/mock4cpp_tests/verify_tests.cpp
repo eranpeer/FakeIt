@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include "Mock.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
 namespace mock4cpp_tests
 {
 
@@ -10,8 +13,12 @@ namespace mock4cpp_tests
 
 		struct SomeInterface
 		{
-			virtual int func(int) = 0;
-			virtual void proc(int) = 0;
+			virtual int func1(int) = 0;
+			virtual int func2(int) = 0;
+			virtual int func3(int) = 0;
+			virtual void proc1(int) = 0;
+			virtual void proc2(int) = 0;
+			virtual void proc3(int) = 0;
 		};
 
 		class A {
@@ -24,38 +31,69 @@ namespace mock4cpp_tests
 
 		TEST_METHOD(VerifyZeroInvoaction)
 		{
-//			Mock<SomeInterface> mock;
-//			mock.Stub(&SomeInterface::func);
-//			mock.Stub(&SomeInterface::proc);
+			Mock<SomeInterface> mock;
 
-			
-//			A();
-//			SomeInterface &i = mock.get();
-// 			Verify.Never(mock().func(1));
-// 			Verify.Never(mock().func(2));
-// 			Verify.Never(&SomeInterface::func);
-// 
-// 			Verify.Never(mock().proc(1));
-// 			Verify.Never(mock().proc(2));
-// 			Verify.Never(&SomeInterface::proc);
+			Verify(mock[&SomeInterface::func1]).Never();
+			Verify(mock[&SomeInterface::func1].Using(1)).Never();
+			Verify(mock[&SomeInterface::func1]).Times(0);
+			Verify(mock[&SomeInterface::func1].Using(1)).Times(0);
+
+			Verify(mock[&SomeInterface::proc1]).Never();
+			Verify(mock[&SomeInterface::proc1].Using(1)).Never();
+			Verify(mock[&SomeInterface::proc1]).Times(0);
+			Verify(mock[&SomeInterface::proc1].Using(1)).Times(0);
 		}
 
 		TEST_METHOD(VerifyAtLeastOnceIsTheDefaultBehavior)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func);
-			mock.Stub(&SomeInterface::proc);
+			mock.Stub(&SomeInterface::func1);
+			mock.Stub(&SomeInterface::func2);
+			mock.Stub(&SomeInterface::func3);
+			mock.Stub(&SomeInterface::proc1);
+			mock.Stub(&SomeInterface::proc2);
+			mock.Stub(&SomeInterface::proc3);
 
 			SomeInterface &i = mock.get();
 
-			i.func(1);
-			i.func(2);
-			
-  			Verify(mock[&SomeInterface::func]).Twice();
- 			Verify(mock[&SomeInterface::func].Using(1)).Once();
-  			Verify(mock[&SomeInterface::func].Using(2)).Once();
-  			Verify(mock[&SomeInterface::func].Using(3)).Never();
+			i.func1(1);
+			i.func2(1);
+			i.func2(2);
+
+			i.proc1(1);
+			i.proc2(1);
+			i.proc2(2);
+
+			Verify(mock[&SomeInterface::func1]);
+			Verify(mock[&SomeInterface::func2]);
+			Assert::ExpectException<std::string>([&mock]{ Verify(mock[&SomeInterface::func3]); });
+
+
+			Verify(mock[&SomeInterface::proc1]);
+			Verify(mock[&SomeInterface::proc2]);
+			Assert::ExpectException<std::string>([&mock]{ Verify(mock[&SomeInterface::proc3]); });
 		}
+
+		TEST_METHOD(VerifyMethodInvocationCount)
+		{
+			Mock<SomeInterface> mock;
+			mock.Stub(&SomeInterface::func1);
+			mock.Stub(&SomeInterface::proc1);
+
+			SomeInterface &i = mock.get();
+
+			i.func1(1);
+			i.func1(2);
+
+			Verify(mock[&SomeInterface::func1]).Twice();
+			Verify(mock[&SomeInterface::func1].Using(1)).Once();
+			Verify(mock[&SomeInterface::func1].Using(2)).Once();
+			Verify(mock[&SomeInterface::func1].Using(3)).Never();
+
+			Assert::ExpectException<std::string>([&mock]{ Verify(mock[&SomeInterface::func1]).Never(); });
+			Assert::ExpectException<std::string>([&mock]{ Verify(mock[&SomeInterface::func1].Using(1)).Never(); });
+		}
+
 	};
 }
 

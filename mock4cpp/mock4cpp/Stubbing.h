@@ -27,12 +27,12 @@ namespace mock4cpp {
 			}
 
 			virtual void Times(const int times) {
-				if (Times() != times)
-					throw (std::string("expected ") + std::to_string(times) + " but was " + std::to_string(Times()));
+				if (CountInvocations() != times)
+					throw (std::string("expected ") + std::to_string(times) + " but was " + std::to_string(CountInvocations()));
 			}
 
 		protected:
-			virtual int Times() = 0;
+			virtual int CountInvocations() = 0;
 
 		private:
 			FunctionVerificationProgress & operator= (const FunctionVerificationProgress & other) = delete;
@@ -108,7 +108,7 @@ namespace mock4cpp {
 
 			virtual  NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) = 0;
 
-			virtual  int Times() override = 0;
+			virtual  int CountInvocations() override = 0;
 
 		private:
 			FirstFunctionStubbingProgress & operator= (const FirstFunctionStubbingProgress & other) = delete;
@@ -134,7 +134,7 @@ namespace mock4cpp {
 
 
 		template <typename R, typename... arglist>
-		struct FirstProcedureStubbingProgress {
+		struct FirstProcedureStubbingProgress : public virtual verification::FunctionVerificationProgress {
 
 			virtual ~FirstProcedureStubbingProgress() {};
 
@@ -150,6 +150,8 @@ namespace mock4cpp {
 			virtual void operator=(std::function<R(arglist...)> method){
 				Do(method);
 			}
+
+			virtual  int CountInvocations() override = 0;
 
 			virtual  NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) = 0;
 		private:
