@@ -94,6 +94,14 @@ namespace mock4cpp_tests
 			Assert::ExpectException<std::string>([&mock]{ Verify(mock[&SomeInterface::func1].Using(1)).Never(); });
 		}
 
+		TEST_METHOD(BadInputValueForVerification)
+		{
+			Mock<SomeInterface> mock;
+			SomeInterface &i = mock.get();
+			Assert::ExpectException<std::string>([&mock]{ Verify(mock[&SomeInterface::func1]).Times(-1); });
+			Assert::ExpectException<std::string>([&mock]{ Verify(mock[&SomeInterface::proc1]).Times(-1); });
+		}
+
 	};
 }
 

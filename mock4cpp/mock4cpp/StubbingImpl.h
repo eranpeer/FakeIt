@@ -11,6 +11,11 @@ namespace mock4cpp {
 
 	namespace stubbing {
 
+		static enum ProgressType
+		{
+			NONE, STUBBING, VERIFYING
+		};
+
 		template <typename R, typename... arglist>
 		struct FunctionStubbingProgress :
 			public virtual FirstFunctionStubbingProgress<R, arglist...>,
@@ -76,6 +81,21 @@ namespace mock4cpp {
 		MethodMock<R, arglist...>& methodMock;
 		FunctionStubbingRoot & operator= (const FunctionStubbingRoot & other) = delete;
 		MethodInvocationMockBase<R, arglist...>* invocationMock;
+		ProgressType progressType;
+		int expectedInvocationCount;
+
+		int CountInvocations(MethodInvocationMockBase<R, arglist...> &invocationMock) {
+			int times = methodMock.getActualInvocations(invocationMock).size();
+			return times;
+		}
+
+		void initInvocationMockIfNeeded(){
+			if (!invocationMock){
+				auto initialMethodBehavior = [](const arglist&... args)->R{return DefaultValue::value<R>(); };
+				invocationMock = new DefaultInvocationMock<R, arglist...>(initialMethodBehavior);
+			}
+		}
+
 	protected:
 
 		virtual MethodInvocationMockBase<R, arglist...>& InvocationMock() override  {
@@ -87,15 +107,39 @@ namespace mock4cpp {
 			FunctionStubbingProgress(),
 			FirstFunctionStubbingProgress(),
 			methodMock(methodMock),
-			invocationMock(nullptr)
+			invocationMock(nullptr),
+			progressType(ProgressType::NONE),
+			expectedInvocationCount(-1)
 		{
 		}
 
 		FunctionStubbingRoot(const FunctionStubbingRoot& other) = default;
 
 		virtual ~FunctionStubbingRoot() override {
-			if (invocationMock)
+			if (progressType == ProgressType::NONE){
+				return;
+			}
+
+			initInvocationMockIfNeeded();
+
+			if (progressType == ProgressType::STUBBING){
 				methodMock.stubMethodInvocation(invocationMock);
+				return;
+			}
+
+			if (progressType == ProgressType::VERIFYING){
+				auto actualInvocations = CountInvocations(*invocationMock);
+				delete invocationMock;
+				invocationMock = nullptr;
+				if (expectedInvocationCount == -1) {
+					if (actualInvocations == 0)
+						throw (std::string("no matching invocations"));
+					return;
+				}
+				if (actualInvocations != expectedInvocationCount) {
+					throw (std::string("expected ") + std::to_string(expectedInvocationCount) + " but was " + std::to_string(actualInvocations));
+				}
+			}
 		}
 
 		virtual void operator=(std::function<R(arglist...)> method) override {
@@ -110,24 +154,30 @@ namespace mock4cpp {
 
 		NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 			// Must override since the implementation in base class is privately inherited
-			apply();
+			progressType = ProgressType::STUBBING;
+			initInvocationMockIfNeeded();
 			return FunctionStubbingProgress::Do(method);
 		}
 
-		virtual int CountInvocations() override {
-			apply();
-			int times = methodMock.getActualInvocations(*invocationMock).size();
-			delete invocationMock;
-			invocationMock = nullptr;
-			return times;
+		virtual void VerifyInvocations(const int times) override {
+			progressType = ProgressType::VERIFYING;
+			expectedInvocationCount = times;
 		}
 
-		MethodInvocationMockBase<R, arglist...>& apply() {
-			if (!invocationMock){
-				auto initialMethodBehavior = [](const arglist&... args)->R&{return DefaultValue::value<R>(); };
-				invocationMock = new DefaultInvocationMock<R, arglist...>(initialMethodBehavior);
+		void startStubbing() {
+			progressType = ProgressType::STUBBING;
+		}
+
+		virtual void startVerification() {
+			progressType = ProgressType::VERIFYING;
+		}
+
+		virtual void clearProgress() {
+			progressType = ProgressType::NONE;
+			if (invocationMock) {
+				delete invocationMock;
+				invocationMock = nullptr;
 			}
-			return *invocationMock;
 		}
 	};
 
@@ -139,6 +189,20 @@ namespace mock4cpp {
 		MethodMock<R, arglist...>& methodMock;
 		ProcedureStubbingRoot & operator= (const ProcedureStubbingRoot & other) = delete;
 		MethodInvocationMockBase<R, arglist...>* invocationMock;
+		ProgressType progressType;
+		int expectedInvocationCount;
+
+		int CountInvocations(MethodInvocationMockBase<R, arglist...> &invocationMock) {
+			int times = methodMock.getActualInvocations(invocationMock).size();
+			return times;
+		}
+
+		void initInvocationMockIfNeeded(){
+			if (!invocationMock){
+				auto initialMethodBehavior = [](const arglist&... args)->R{return DefaultValue::value<R>(); };
+				invocationMock = new DefaultInvocationMock<R, arglist...>(initialMethodBehavior);
+			}
+		}
 	protected:
 		virtual MethodInvocationMockBase<R, arglist...>& InvocationMock() override  {
 			return *invocationMock;
@@ -149,15 +213,40 @@ namespace mock4cpp {
 			ProcedureStubbingProgress(),
 			FirstProcedureStubbingProgress(),
 			methodMock(methodMock),
-			invocationMock(nullptr)
+			invocationMock(nullptr),
+			progressType(ProgressType::NONE),
+			expectedInvocationCount(-1)
 		{
 		}
 
 		ProcedureStubbingRoot(const ProcedureStubbingRoot& other) = default;
 
 		virtual ~ProcedureStubbingRoot() override {
-			if (invocationMock)
+			if (progressType == ProgressType::NONE) {
+				return;
+			}
+
+			initInvocationMockIfNeeded();
+
+			if (progressType == ProgressType::STUBBING){
 				methodMock.stubMethodInvocation(invocationMock);
+				return;
+			}
+
+			if (progressType == ProgressType::VERIFYING){
+				auto actualInvocations = CountInvocations(*invocationMock);
+				delete invocationMock;
+				invocationMock = nullptr;
+
+				if (expectedInvocationCount == -1) {
+					if (actualInvocations == 0)
+						throw (std::string("no matching invocations"));
+					return;
+				}
+				if (actualInvocations != expectedInvocationCount) {
+					throw (std::string("expected ") + std::to_string(expectedInvocationCount) + " but was " + std::to_string(actualInvocations));
+				}
+			}
 		}
 
 		virtual void operator=(std::function<R(arglist...)> method) override {
@@ -172,22 +261,29 @@ namespace mock4cpp {
 
 		NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 			// Must override since the implementation in base class is privately inherited
-			apply();
+			progressType = ProgressType::STUBBING;
+			initInvocationMockIfNeeded();
 			return ProcedureStubbingProgress::Do(method);
 		}
 
-		virtual int CountInvocations() override {
-			apply();
-			int times = methodMock.getActualInvocations(*invocationMock).size();
-			delete invocationMock;
-			invocationMock = nullptr;
-			return times;
+		virtual void VerifyInvocations(const int times) override {
+			progressType = ProgressType::VERIFYING;
+			expectedInvocationCount = times;
 		}
 
-		void apply(){
-			if (!invocationMock){
-				auto initialMethodBehavior = [](const arglist&... args)->R{return DefaultValue::value<R>(); };
-				invocationMock = new DefaultInvocationMock<R, arglist...>(initialMethodBehavior);
+		void startStubbing(){
+			progressType = ProgressType::STUBBING;
+		}
+
+		virtual void startVerification() {
+			progressType = ProgressType::VERIFYING;
+		}
+
+		virtual void clearProgress() {
+			progressType = ProgressType::NONE;
+			if (invocationMock) {
+				delete invocationMock;
+				invocationMock = nullptr;
 			}
 		}
 	};

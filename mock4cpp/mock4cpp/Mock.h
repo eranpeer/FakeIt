@@ -16,6 +16,7 @@ class VerifyFunctor
 public:
 	VerifyFunctor() {}
 	FunctionVerificationProgress& operator() (FunctionVerificationProgress& verificationProgress) {
+		verificationProgress.startVerification();
 		return  verificationProgress;
 	}
 } static Verify;
@@ -114,7 +115,7 @@ struct Mock : private MockBase
 	void Stub(H head, M... tail) 
 	{
 		//auto headWithoutConstVolatile = reinterpret_cast<std::remove_cv<H>::type>(head);
-		When(head).apply();
+		When(head).startStubbing();
 		Stub(tail...);
 	}
 

@@ -26,13 +26,22 @@ namespace mock4cpp {
 				Times(2);
 			}
 
-			virtual void Times(const int times) {
-				if (CountInvocations() != times)
-					throw (std::string("expected ") + std::to_string(times) + " but was " + std::to_string(CountInvocations()));
+			virtual void AtLeastOnce() {
+				VerifyInvocations(-1);
 			}
 
+			virtual void Times(const int times) {
+				if (times < 0) {
+					clearProgress();
+					throw std::string("bad argument times:").append(std::to_string(times));
+				}
+				VerifyInvocations(times);
+			}
+
+			virtual void startVerification() = 0;
 		protected:
-			virtual int CountInvocations() = 0;
+			virtual void VerifyInvocations(const int times) = 0;
+			virtual void clearProgress() = 0;
 
 		private:
 			FunctionVerificationProgress & operator= (const FunctionVerificationProgress & other) = delete;
@@ -108,7 +117,7 @@ namespace mock4cpp {
 
 			virtual  NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) = 0;
 
-			virtual  int CountInvocations() override = 0;
+			virtual  void VerifyInvocations(const int times) override = 0;
 
 		private:
 			FirstFunctionStubbingProgress & operator= (const FirstFunctionStubbingProgress & other) = delete;
@@ -151,7 +160,7 @@ namespace mock4cpp {
 				Do(method);
 			}
 
-			virtual  int CountInvocations() override = 0;
+			virtual  void VerifyInvocations(const int times) override = 0;
 
 			virtual  NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) = 0;
 		private:
