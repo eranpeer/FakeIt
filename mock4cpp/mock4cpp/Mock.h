@@ -147,7 +147,6 @@ public:
 	>
 	void Stub(H head, M... tail) 
 	{
-		//auto headWithoutConstVolatile = reinterpret_cast<std::remove_cv<H>::type>(head);
 		When(head).startStubbing();
 		Stub(tail...);
 	}
@@ -172,16 +171,22 @@ public:
 	}
 } static Verify;
 
-template <typename R, typename... arglist>
-FirstProcedureStubbingProgress<R, arglist...>& When(FirstProcedureStubbingProgress<R, arglist...>& stubbingProgress) {
-	return  stubbingProgress;
-}
+class WhenFunctor
+{
+public:
+	WhenFunctor() {}
 
-template <typename R, typename... arglist>
-FirstFunctionStubbingProgress<R, arglist...>& When(FirstFunctionStubbingProgress<R, arglist...>& stubbingProgress) {
-	return  stubbingProgress;
-}
+	template <typename R, typename... arglist>
+	FirstProcedureStubbingProgress<R, arglist...>& operator()(FirstProcedureStubbingProgress<R, arglist...>& stubbingProgress) {
+		return  stubbingProgress;
+	}
 
+	template <typename R, typename... arglist>
+	FirstFunctionStubbingProgress<R, arglist...>& operator()(FirstFunctionStubbingProgress<R, arglist...>& stubbingProgress) {
+		return  stubbingProgress;
+	}
+
+} static When;
 
 class StubFunctor
 {
