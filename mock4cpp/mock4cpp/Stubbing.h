@@ -90,7 +90,7 @@ namespace mock4cpp {
 
 
 		template <typename R, typename... arglist>
-		struct FirstFunctionStubbingProgress: public MethodVerificationProgress {
+		struct FirstFunctionStubbingProgress: public virtual MethodVerificationProgress {
 
 			virtual ~FirstFunctionStubbingProgress() {};
 
@@ -143,7 +143,7 @@ namespace mock4cpp {
 
 
 		template <typename R, typename... arglist>
-		struct FirstProcedureStubbingProgress : public virtual verification::MethodVerificationProgress {
+		struct FirstProcedureStubbingProgress : public virtual MethodVerificationProgress {
 
 			virtual ~FirstProcedureStubbingProgress() {};
 

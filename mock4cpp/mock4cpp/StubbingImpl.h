@@ -80,8 +80,8 @@ namespace mock4cpp {
 	};
 
 	template <typename R, typename... arglist>
-	class MethodStubbingBase 
-		//: public virtual verification::MethodVerificationProgress 
+	class MethodStubbingBase
+		: public virtual verification::MethodVerificationProgress
 	{
 	protected:
 		std::shared_ptr<StubbingContext <R, arglist... >> stubbingContext;
@@ -147,6 +147,19 @@ namespace mock4cpp {
 			}
 		}
 
+		void startStubbing() {
+			progressType = ProgressType::STUBBING;
+		}
+
+		virtual void startVerification() override {
+			progressType = ProgressType::VERIFYING;
+		}
+
+		virtual void VerifyInvocations(const int times) override {
+			startVerification();
+			expectedInvocationCount = times;
+		}
+
 	};
 
 	template <typename R, typename... arglist>
@@ -189,16 +202,11 @@ namespace mock4cpp {
 		}
 
 		virtual void VerifyInvocations(const int times) override {
-			startVerification();
-			expectedInvocationCount = times;
-		}
-
-		void startStubbing() {
-			progressType = ProgressType::STUBBING;
+			MethodStubbingBase::VerifyInvocations(times);
 		}
 
 		virtual void startVerification() override {
-			progressType = ProgressType::VERIFYING;
+			MethodStubbingBase::startVerification();
 		}
 
 		virtual void clearProgress() override {
@@ -213,9 +221,7 @@ namespace mock4cpp {
 		private virtual ProcedureStubbingProgress<R, arglist...>
 	{
 	private:
-
 		ProcedureStubbingRoot & operator= (const ProcedureStubbingRoot & other) = delete;
-
 	protected:
 		virtual MethodInvocationMockBase<R, arglist...>& InvocationMock() override  {
 			return *invocationMock;
@@ -249,16 +255,11 @@ namespace mock4cpp {
 		}
 
 		virtual void VerifyInvocations(const int times) override {
-			startVerification();
-			expectedInvocationCount = times;
+			MethodStubbingBase::VerifyInvocations(times);
 		}
 
-		virtual void startStubbing() {
-			progressType = ProgressType::STUBBING;
-		}
-
-		virtual void startVerification() override {
-			progressType = ProgressType::VERIFYING;
+ 		virtual void startVerification() override {
+			MethodStubbingBase::startVerification();
 		}
 
 		virtual void clearProgress() override {
