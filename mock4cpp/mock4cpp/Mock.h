@@ -165,7 +165,7 @@ class VerifyFunctor
 {
 public:
 	VerifyFunctor() {}
-	FunctionVerificationProgress& operator() (FunctionVerificationProgress& verificationProgress) {
+	MethodVerificationProgress& operator() (MethodVerificationProgress& verificationProgress) {
 		verificationProgress.startVerification();
 		return  verificationProgress;
 	}

@@ -10,9 +10,9 @@ namespace mock4cpp {
 
 	namespace verification{
 
-		struct FunctionVerificationProgress
+		struct MethodVerificationProgress
 		{
-			FunctionVerificationProgress() {}
+			MethodVerificationProgress() {}
 
 			void Never() {
 				Times(0);
@@ -44,7 +44,7 @@ namespace mock4cpp {
 			virtual void clearProgress() = 0;
 
 		private:
-			FunctionVerificationProgress & operator= (const FunctionVerificationProgress & other) = delete;
+			MethodVerificationProgress & operator= (const MethodVerificationProgress & other) = delete;
 		};
 
 	}
@@ -90,7 +90,7 @@ namespace mock4cpp {
 
 
 		template <typename R, typename... arglist>
-		struct FirstFunctionStubbingProgress: public FunctionVerificationProgress {
+		struct FirstFunctionStubbingProgress: public MethodVerificationProgress {
 
 			virtual ~FirstFunctionStubbingProgress() {};
 
@@ -143,7 +143,7 @@ namespace mock4cpp {
 
 
 		template <typename R, typename... arglist>
-		struct FirstProcedureStubbingProgress : public virtual verification::FunctionVerificationProgress {
+		struct FirstProcedureStubbingProgress : public virtual verification::MethodVerificationProgress {
 
 			virtual ~FirstProcedureStubbingProgress() {};
 
