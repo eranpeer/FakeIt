@@ -182,4 +182,27 @@ FirstFunctionStubbingProgress<R, arglist...>& When(FirstFunctionStubbingProgress
 	return  stubbingProgress;
 }
 
+
+class StubFunctor
+{
+private:
+	void operator() (){}
+public:
+	StubFunctor() {}
+
+	template <typename H>
+	H& operator() (H& head) {
+		head.startStubbing();
+		return head;
+	}
+
+	template <typename H, typename... M>
+	void operator() (H& head, M&... tail) {
+		head.startStubbing();
+		this->operator()(tail...);
+	}
+} static Stub;
+
+
+
 #endif // Mock_h__

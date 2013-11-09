@@ -40,7 +40,6 @@ namespace mock4cpp_tests
 			virtual void proc(int) = 0;
 		};
 
-
 		TEST_METHOD(StubAllCallsToAlternateBeavior)
 		{
 			Mock<SomeInterface> mock;

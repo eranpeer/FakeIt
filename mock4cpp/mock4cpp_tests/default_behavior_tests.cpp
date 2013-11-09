@@ -139,6 +139,23 @@ namespace stubbing_tests
 			i.proc2(1);
 		}
 
+		TEST_METHOD(MultipleStubbingInOneLine)
+		{
+			Mock<ScalarFuctions> sMock;
+			Mock<VoidFunctions> vMock;
+			Stub(sMock[&ScalarFuctions::boolFunc]);
+			Stub(vMock[&VoidFunctions::proc1]);
+			Stub(sMock[&ScalarFuctions::charFunc], vMock[&VoidFunctions::proc2]);
+
+			VoidFunctions& vi = vMock.get();
+			vi.proc1();
+			vi.proc2(1);
+
+			ScalarFuctions& si = sMock.get();
+			Assert::AreEqual(false, si.boolFunc());
+			Assert::AreEqual((char) 0, si.charFunc());
+		}
+
 		TEST_METHOD(ReturnByValue_ReturnDefaultConstructedObject)
 		{
 			Mock<DefaultConstructibleFunctions> mock;
