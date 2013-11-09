@@ -150,10 +150,11 @@ namespace mock4cpp {
 	};
 
 	template <typename R, typename... arglist>
-	class FunctionStubbingRoot : public virtual MethodStubbingBase<R,arglist...>, 
+	class FunctionStubbingRoot : 
+		public virtual MethodStubbingBase<R,arglist...>, 
 		public virtual FirstFunctionStubbingProgress<R, arglist...>,
-		private virtual FunctionStubbingProgress<R, arglist...>,
-		public virtual verification::MethodVerificationProgress {
+		private virtual FunctionStubbingProgress<R, arglist...>
+	{
 	private:
 		FunctionStubbingRoot & operator= (const FunctionStubbingRoot & other) = delete;
 	protected:
@@ -209,8 +210,8 @@ namespace mock4cpp {
 	class ProcedureStubbingRoot : 
 		public virtual MethodStubbingBase<R, arglist...>,
 		public virtual FirstProcedureStubbingProgress<R, arglist...>,
-		private virtual ProcedureStubbingProgress<R, arglist...>,
-		public virtual verification::MethodVerificationProgress {
+		private virtual ProcedureStubbingProgress<R, arglist...>
+	{
 	private:
 
 		ProcedureStubbingRoot & operator= (const ProcedureStubbingRoot & other) = delete;
