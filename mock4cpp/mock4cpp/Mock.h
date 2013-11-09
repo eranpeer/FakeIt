@@ -2,6 +2,8 @@
 #define Mock_h__
 
 #include <type_traits>
+#include <memory>
+
 #include "../mockutils/DynamicProxy.h"
 #include "StubbingImpl.h"
 #include "mockito_clouses.h"
@@ -11,30 +13,61 @@ using namespace mock4cpp;
 using namespace mock4cpp::stubbing;
 using namespace mock4cpp::verification;
 
-class VerifyFunctor
-{
-public:
-	VerifyFunctor() {}
-	FunctionVerificationProgress& operator() (FunctionVerificationProgress& verificationProgress) {
-		verificationProgress.startVerification();
-		return  verificationProgress;
-	}
-} static Verify;
-
-template <typename R, typename... arglist>
-FirstFunctionStubbingProgress<R, arglist...>& When(FirstFunctionStubbingProgress<R, arglist...>& stubbingProgress) {
-	return  stubbingProgress;
-}
-
-template <typename R, typename... arglist>
-FirstProcedureStubbingProgress<R, arglist...>& When(FirstProcedureStubbingProgress<R, arglist...>& stubbingProgress) {
-	return  stubbingProgress;
-}
-
 template <typename C>
-struct Mock : private MockBase
+class Mock : private MockBase
 {	
+private:
+	DynamicProxy<C> instance;
 
+	template <typename R, typename... arglist>
+	MethodMock<R, arglist...>& stubMethodIfNotStubbed(DynamicProxy<C> &instance, R(C::*vMethod)(arglist...)){
+		if (!instance.isStubbed(vMethod)){
+			auto methodMock = new MethodMock<R, arglist...>(*this);
+			instance.stubMethod(vMethod, methodMock);
+		}
+		MethodMock<R, arglist...> * methodMock = instance.getMethodMock<MethodMock<R, arglist...> *>(vMethod);
+		return *methodMock;
+	}
+
+	template <typename R, typename... arglist>
+	class StubbingContextImpl : public StubbingContext<R,arglist...> {
+		R(C::*vMethod)(arglist...);
+		Mock<C>& mock;
+	public:
+		StubbingContextImpl(Mock<C>& mock, R(C::*vMethod)(arglist...)) :mock{mock},vMethod{ vMethod }{
+		}
+		virtual MethodMock<R, arglist...>& getMethodMock() override {
+			return mock.stubMethodIfNotStubbed(mock.instance,vMethod);
+		};
+	};
+
+	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
+	FunctionStubbingRoot< R, arglist...> StubImpl(R(C::*vMethod)(arglist...)){
+		return FunctionStubbingRoot<R, arglist...>(
+			std::shared_ptr<StubbingContext <R, arglist...>>(new StubbingContextImpl< R, arglist...>(*this, vMethod)));
+	}
+
+	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
+	ProcedureStubbingRoot<R, arglist...> StubImpl(R(C::*vMethod)(arglist...)){
+		return ProcedureStubbingRoot<R, arglist...>(
+			std::shared_ptr <StubbingContext<R, arglist...>>(new StubbingContextImpl< R, arglist...>(*this, vMethod)));
+	}
+
+	void Stub(){}
+
+	template <class MEMBER_TYPE, typename... arglist>
+	void stubDataMember(MEMBER_TYPE C::*member, const arglist&... ctorargs)
+	{
+		instance.stubDataMember(member, ctorargs...);
+	}
+
+	template <typename R, typename... arglist>
+	void stubMethodInvocation(MethodInvocationMock<R, arglist...> * methodInvocationMock){
+		//stubMethodIfNotStubbed()
+		//methodInvocationMocks.push_back(methodInvocationMock);
+	}
+
+public:
 	static_assert(std::is_polymorphic<C>::value, "Can only mock a polymorphic type");
 
 	Mock() : MockBase{}, instance{}{
@@ -127,73 +160,26 @@ struct Mock : private MockBase
 		return When(member);
 	}
 
-private:
-
-	DynamicProxy<C> instance;
-
-	template <typename R, typename... arglist>
-	MethodMock<R, arglist...>* stubMethodIfNotStubbed(R(C::*vMethod)(arglist...)){
-		if (!instance.isStubbed(vMethod)){
-			auto methodMock = new MethodMock<R, arglist...>(*this);
-			instance.stubMethod(vMethod, methodMock);
-		}
-		MethodMock<R, arglist...> * methodMock = instance.getMethodMock<MethodMock<R, arglist...> *>(vMethod);
-		return methodMock;
-	}
-
-	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionStubbingRoot<R, arglist...> StubImpl(R(C::*vMethod)(arglist...)){
-		auto methodMock = stubMethodIfNotStubbed(vMethod);
-		return FunctionStubbingRoot<R, arglist...>(*methodMock);
-	}
-	
-	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureStubbingRoot<R, arglist...> StubImpl(R(C::*vMethod)(arglist...)){
-		auto methodMock = stubMethodIfNotStubbed(vMethod);
-		return ProcedureStubbingRoot<R, arglist...>(*methodMock);
-	}
-
-	void Stub(){}
-
-	template <class MEMBER_TYPE, typename... arglist>
-	void stubDataMember(MEMBER_TYPE C::*member, const arglist&... ctorargs)
-	{
-		instance.stubDataMember(member, ctorargs...);
-	}
-
 };
 
-// namespace mockito {
-// 	
-// 	template <typename C, typename R, typename... arglist>
-// 	struct MethodStubbingMock : public MethodInvocationHandler<R, arglist...>
-// 	{
-// 		MethodStubbingMock(Mock<C>& mock) :mock{ mock }
-// 		{}
-// 
-// 		virtual ~MethodStubbingMock() override {}
-// 
-// 		typename std::enable_if <std::is_void<R>::value, R> ::type
-// 		handleMethodInvocation(const arglist&... args) override {
-//  			R(C::*vMethod)(arglist...);
-//  			StubProcedureClouse<R, arglist...>& clouse = mock.When(vMethod);
-// 			// add clouse to list ...
-// 			return DefaultValue::value<R>();
-// 		}
-// 
-// 		typename std::enable_if <!std::is_void<R>::value, R> ::type
-// 		handleMethodInvocation(const arglist&... args) override {
-// 			R(C::*vMethod)(arglist...);
-// 			StubFunctionClouse<R, arglist...>& clouse = mock.When(vMethod);
-// 			// add clause to list ...
-// 			return DefaultValue::value<R>();
-// 		}
-// 
-// 	private:
-// 		Mock<C>& mock;
-// 	};
-// 
-// }
+class VerifyFunctor
+{
+public:
+	VerifyFunctor() {}
+	FunctionVerificationProgress& operator() (FunctionVerificationProgress& verificationProgress) {
+		verificationProgress.startVerification();
+		return  verificationProgress;
+	}
+} static Verify;
 
+template <typename R, typename... arglist>
+FirstProcedureStubbingProgress<R, arglist...>& When(FirstProcedureStubbingProgress<R, arglist...>& stubbingProgress) {
+	return  stubbingProgress;
+}
+
+template <typename R, typename... arglist>
+FirstFunctionStubbingProgress<R, arglist...>& When(FirstFunctionStubbingProgress<R, arglist...>& stubbingProgress) {
+	return  stubbingProgress;
+}
 
 #endif // Mock_h__

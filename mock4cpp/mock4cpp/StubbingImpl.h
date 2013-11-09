@@ -3,17 +3,17 @@
 
 #include <functional>
 #include <type_traits>
+#include <memory>
 
 #include "../mock4cpp/MethodMock.h"
 #include "../mock4cpp/Stubbing.h"
-
 namespace mock4cpp {
 
 	namespace stubbing {
 
-		static enum ProgressType
-		{
-			NONE, STUBBING, VERIFYING
+		template <typename R, typename... arglist>
+		struct StubbingContext {
+			virtual MethodMock<R, arglist...>& getMethodMock() = 0;
 		};
 
 		template <typename R, typename... arglist>
@@ -73,19 +73,25 @@ namespace mock4cpp {
 	using namespace mock4cpp;
 	using namespace mock4cpp::stubbing;
 
+
+	static enum ProgressType
+	{
+		NONE, STUBBING, VERIFYING
+	};
+
 	template <typename R, typename... arglist>
 	class FunctionStubbingRoot : public virtual FirstFunctionStubbingProgress<R, arglist...>,
 		private virtual FunctionStubbingProgress<R, arglist...>,
 		public virtual verification::FunctionVerificationProgress {
 	private:
-		MethodMock<R, arglist...>& methodMock;
+		std::shared_ptr<StubbingContext <R, arglist... >> stubbingContext;
 		FunctionStubbingRoot & operator= (const FunctionStubbingRoot & other) = delete;
 		MethodInvocationMockBase<R, arglist...>* invocationMock;
 		ProgressType progressType;
 		int expectedInvocationCount;
 
 		int CountInvocations(MethodInvocationMockBase<R, arglist...> &invocationMock) {
-			int times = methodMock.getActualInvocations(invocationMock).size();
+			int times = stubbingContext->getMethodMock().getActualInvocations(invocationMock).size();
 			return times;
 		}
 
@@ -103,10 +109,10 @@ namespace mock4cpp {
 		}
 
 	public:
-		FunctionStubbingRoot(MethodMock<R, arglist...>& methodMock) :
+		FunctionStubbingRoot(std::shared_ptr<StubbingContext <R, arglist... >> stubbingContext) :
 			FunctionStubbingProgress(),
 			FirstFunctionStubbingProgress(),
-			methodMock(methodMock),
+			stubbingContext(stubbingContext),
 			invocationMock(nullptr),
 			progressType(ProgressType::NONE),
 			expectedInvocationCount(-1)
@@ -123,7 +129,7 @@ namespace mock4cpp {
 			initInvocationMockIfNeeded();
 
 			if (progressType == ProgressType::STUBBING){
-				methodMock.stubMethodInvocation(invocationMock);
+				stubbingContext->getMethodMock().stubMethodInvocation(invocationMock);
 				return;
 			}
 
@@ -186,14 +192,14 @@ namespace mock4cpp {
 		private virtual ProcedureStubbingProgress<R, arglist...>,
 		public virtual verification::FunctionVerificationProgress {
 	private:
-		MethodMock<R, arglist...>& methodMock;
+		std::shared_ptr<StubbingContext <R, arglist... >> stubbingContext;
 		ProcedureStubbingRoot & operator= (const ProcedureStubbingRoot & other) = delete;
 		MethodInvocationMockBase<R, arglist...>* invocationMock;
 		ProgressType progressType;
 		int expectedInvocationCount;
 
 		int CountInvocations(MethodInvocationMockBase<R, arglist...> &invocationMock) {
-			int times = methodMock.getActualInvocations(invocationMock).size();
+			int times = stubbingContext->getMethodMock().getActualInvocations(invocationMock).size();
 			return times;
 		}
 
@@ -209,10 +215,10 @@ namespace mock4cpp {
 		}
 
 	public:
-		ProcedureStubbingRoot(MethodMock<R, arglist...>& methodMock) :
+		ProcedureStubbingRoot(std::shared_ptr < StubbingContext < R, arglist... >> stubbingContext) :
 			ProcedureStubbingProgress(),
 			FirstProcedureStubbingProgress(),
-			methodMock(methodMock),
+			stubbingContext(stubbingContext),
 			invocationMock(nullptr),
 			progressType(ProgressType::NONE),
 			expectedInvocationCount(-1)
@@ -229,7 +235,7 @@ namespace mock4cpp {
 			initInvocationMockIfNeeded();
 
 			if (progressType == ProgressType::STUBBING){
-				methodMock.stubMethodInvocation(invocationMock);
+				stubbingContext->getMethodMock().stubMethodInvocation(invocationMock);
 				return;
 			}
 
