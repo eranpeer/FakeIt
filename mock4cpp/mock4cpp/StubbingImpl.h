@@ -155,15 +155,11 @@ namespace mock4cpp {
 		private virtual FunctionStubbingProgress<R, arglist...>,
 		public virtual verification::MethodVerificationProgress {
 	private:
-
 		FunctionStubbingRoot & operator= (const FunctionStubbingRoot & other) = delete;
-
 	protected:
-
 		virtual MethodInvocationMockBase<R, arglist...>& InvocationMock() override  {
 			return *invocationMock;
 		}
-
 	public:
 		FunctionStubbingRoot(std::shared_ptr<StubbingContext <R, arglist... >> stubbingContext) :
 			MethodStubbingBase(stubbingContext),
@@ -186,13 +182,13 @@ namespace mock4cpp {
 
 		NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 			// Must override since the implementation in base class is privately inherited
-			progressType = ProgressType::STUBBING;
+			startStubbing();
 			initInvocationMockIfNeeded();
 			return FunctionStubbingProgress::Do(method);
 		}
 
 		virtual void VerifyInvocations(const int times) override {
-			progressType = ProgressType::VERIFYING;
+			startVerification();
 			expectedInvocationCount = times;
 		}
 
@@ -205,11 +201,7 @@ namespace mock4cpp {
 		}
 
 		virtual void clearProgress() override {
-			progressType = ProgressType::NONE;
-			if (invocationMock) {
-				delete invocationMock;
-				invocationMock = nullptr;
-			}
+			MethodStubbingBase::clearProgress();
 		}
 	};
 
@@ -250,13 +242,13 @@ namespace mock4cpp {
 
 		NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 			// Must override since the implementation in base class is privately inherited
-			progressType = ProgressType::STUBBING;
+			startStubbing();
 			initInvocationMockIfNeeded();
 			return ProcedureStubbingProgress::Do(method);
 		}
 
 		virtual void VerifyInvocations(const int times) override {
-			progressType = ProgressType::VERIFYING;
+			startVerification();
 			expectedInvocationCount = times;
 		}
 
@@ -269,13 +261,8 @@ namespace mock4cpp {
 		}
 
 		virtual void clearProgress() override {
-			progressType = ProgressType::NONE;
-			if (invocationMock) {
-				delete invocationMock;
-				invocationMock = nullptr;
-			}
+			MethodStubbingBase::clearProgress();
 		}
 	};
-
 }
 #endif // ClousesImpl_h__
