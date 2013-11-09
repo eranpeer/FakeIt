@@ -77,8 +77,7 @@ namespace mock4cpp_tests
 		TEST_METHOD(VerifyMethodInvocationCount)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func1);
-			mock.Stub(&SomeInterface::proc1);
+			mock.Stub(&SomeInterface::func1, &SomeInterface::proc1);
 
 			SomeInterface &i = mock.get();
 
@@ -94,7 +93,7 @@ namespace mock4cpp_tests
 			Assert::ExpectException<std::string>([&mock]{ Verify(mock[&SomeInterface::func1].Using(1)).Never(); });
 		}
 
-		TEST_METHOD(BadInputValueForVerification)
+		TEST_METHOD(ExceptionOnNegativeVerifiedTimes)
 		{
 			Mock<SomeInterface> mock;
 			SomeInterface &i = mock.get();

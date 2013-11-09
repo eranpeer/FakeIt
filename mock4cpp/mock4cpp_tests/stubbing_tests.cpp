@@ -40,6 +40,15 @@ namespace mock4cpp_tests
 			virtual void proc(int) = 0;
 		};
 
+		TEST_METHOD(ExceptionWhenCallingANonStubbedMethod)
+		{
+			Mock<SomeInterface> mock;
+			SomeInterface &i = mock.get();
+
+			Assert::ExpectException<UnmockedMethodException>([&i]{ i.func(1); });
+			Assert::ExpectException<UnmockedMethodException>([&i]{ i.proc(2); });
+		}
+
 		TEST_METHOD(StubAllCallsToAlternateBeavior)
 		{
 			Mock<SomeInterface> mock;

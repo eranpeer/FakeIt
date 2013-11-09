@@ -130,7 +130,7 @@ namespace mock4cpp {
 
 				if (expectedInvocationCount == -1) {
 					if (actualInvocations == 0)
-						throw (std::string("no matching invocations"));
+						throw (std::string("no matching invocation"));
 					return;
 				}
 				if (actualInvocations != expectedInvocationCount) {
