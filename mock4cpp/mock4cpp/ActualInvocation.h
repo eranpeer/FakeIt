@@ -1,11 +1,12 @@
 #ifndef ActualInvocation_h__
 #define ActualInvocation_h__
 
-#include <functional>
+#include <typeinfo>
 
 template <typename... arglist>
 struct ActualInvocation
 {
+
 	ActualInvocation(const arglist&... args) : actualArguments{ args... }
 	{
 	}
@@ -15,6 +16,6 @@ struct ActualInvocation
 	}
 
 private:
-	const std::tuple <arglist...> actualArguments;
+	std::tuple<arglist...> actualArguments;
 };
 #endif // ActualInvocation_h__

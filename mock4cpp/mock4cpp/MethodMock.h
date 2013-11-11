@@ -6,6 +6,7 @@
 #include "InvocationMatcher.h"
 #include "MockRepository.h"
 #include "ActualInvocation.h"
+#include "TupleDispatcher.h"
 
 namespace mock4cpp {
 
@@ -80,6 +81,23 @@ namespace mock4cpp {
 			return expectedArguments == actualArgs;
 		}
 		const std::tuple <arglist...> expectedArguments;
+	};
+
+	template <typename R, typename... arglist>
+	struct MatchingInvocationMock : public MethodInvocationMockBase<R, arglist...>
+	{
+		MatchingInvocationMock(std::function<bool(arglist...)> matcher) : matcher{ matcher }
+		{
+		}
+
+		virtual bool matches(ActualInvocation<arglist...>& invocation) override {
+			return matches(invocation.getActualArguments());
+		}
+	private:
+		virtual bool matches(const std::tuple<arglist...>& actualArgs)  {
+			return filter<arglist...>(matcher, std::tuple<arglist...>{actualArgs});
+		}
+		std::function<bool(arglist...)> matcher;
 	};
 
 	template <typename R, typename... arglist>

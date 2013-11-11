@@ -194,6 +194,11 @@ namespace mock4cpp {
 			return *this;
 		}
 
+		FirstFunctionStubbingProgress<R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
+			invocationMock = new MatchingInvocationMock<R, arglist...>(matcher);
+			return *this;
+		}
+
 		NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 			// Must override since the implementation in base class is privately inherited
 			startStubbing();
@@ -244,6 +249,11 @@ namespace mock4cpp {
 
 		FirstProcedureStubbingProgress<R, arglist...>& Using(const arglist&... args) {
 			invocationMock = new ExpectedInvocationMock<R, arglist...>(args...);
+			return *this;
+		}
+
+		FirstProcedureStubbingProgress<R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
+			invocationMock = new MatchingInvocationMock<R, arglist...>(matcher);
 			return *this;
 		}
 
