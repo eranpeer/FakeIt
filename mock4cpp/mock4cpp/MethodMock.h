@@ -73,10 +73,23 @@ namespace mock4cpp {
 			return matches(invocation.getActualArguments());
 		}
 	private:
-		virtual bool matches(const arglist&... actualArgs)  {
-			return matches(std::tuple<arglist...>(actualArgs...));
+		virtual bool matches(const std::tuple<arglist...>& actualArgs)  {
+			return expectedArguments == actualArgs;
+		}
+		const std::tuple <arglist...> expectedArguments;
+	};
+
+	template <typename R, typename... arglist>
+	struct ExpectedInvocationMock2 : public MethodInvocationMockBase<R, arglist...>
+	{
+		ExpectedInvocationMock2(const arglist&... args) : expectedArguments(args...)
+		{
 		}
 
+		virtual bool matches(ActualInvocation<arglist...>& invocation) override {
+			return matches(invocation.getActualArguments());
+		}
+	private:
 		virtual bool matches(const std::tuple<arglist...>& actualArgs)  {
 			return expectedArguments == actualArgs;
 		}
@@ -112,10 +125,6 @@ namespace mock4cpp {
 		}
 
 	private:
-		virtual bool matches(const arglist&... actualArgs) {
-			return matches(std::tuple<arglist...>(actualArgs...));
-		}
-
 		virtual bool matches(const std::tuple<arglist...>& actualArgs)  {
 			return true;
 		}

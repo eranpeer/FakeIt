@@ -8,7 +8,7 @@ struct apply_func
 	template < typename... ArgsF, typename... ArgsT, typename... Args >
 	static bool applyTuple(std::function<bool((ArgsF...))> f,
 		const std::tuple<ArgsT...>& t,
-		Args... args)
+		Args&... args)
 	{
 		return apply_func<N - 1>::applyTuple(f, t, std::get<N - 1>(t), args...);
 	}
@@ -20,7 +20,7 @@ struct apply_func<0>
 	template < typename... ArgsF, typename... ArgsT, typename... Args >
 	static bool applyTuple(std::function<bool((ArgsF...))> f,
 		const std::tuple<ArgsT...>& /* t */,
-		Args... args)
+		Args&... args)
 	{
 		return f(args...);
 	}
