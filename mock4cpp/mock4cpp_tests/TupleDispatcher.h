@@ -34,8 +34,8 @@ bool applyTuple(std::function<bool((ArgsF...))> f,
 }
 
 template <typename ...arglist>
-bool filter(std::function<bool(arglist...)> func, const std::tuple<arglist...>& params ){
-	return applyTuple(func, params);
+bool invoke(std::function<bool(arglist...)> func, const std::tuple<arglist...>& arguments){
+	return applyTuple(func, arguments);
 }
 
 #endif // TupleDispatcher_h__

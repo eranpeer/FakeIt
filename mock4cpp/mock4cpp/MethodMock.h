@@ -95,7 +95,7 @@ namespace mock4cpp {
 		}
 	private:
 		virtual bool matches(const std::tuple<arglist...>& actualArgs)  {
-			return filter<arglist...>(matcher, std::tuple<arglist...>{actualArgs});
+			return invoke<arglist...>(matcher, std::tuple<arglist...>{actualArgs});
 		}
 		std::function<bool(arglist...)> matcher;
 	};
