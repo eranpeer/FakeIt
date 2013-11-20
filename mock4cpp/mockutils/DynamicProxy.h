@@ -43,20 +43,20 @@ struct DynamicProxy
 
 	template <typename R, typename... arglist>
 	void stubMethod(R(C::*vMethod)(arglist...), MethodInvocationHandler<R, arglist...> * methodMock){
-		MethodProxy<R,arglist...> * methodProxy = MethodProxyCreator<R, arglist...>::createMethodProxy(vMethod);
+		std::shared_ptr < MethodProxy<R, arglist...>> methodProxy = MethodProxyCreator<R, arglist...>::createMethodProxy(vMethod);
 		MethodInvocationHandler<R, arglist...>* methodInvocationHandler = methodMock;
 		bind(methodProxy, methodInvocationHandler);
 	}
 
 	template <typename C, typename R, typename... arglist>
 	bool isStubbed(R(C::*vMethod)(arglist...)){
-		MethodProxy<R, arglist...> * methodProxy = MethodProxyCreator<R, arglist...>::createMethodProxy(vMethod);
+		std::shared_ptr < MethodProxy<R, arglist...>> methodProxy = MethodProxyCreator<R, arglist...>::createMethodProxy(vMethod);
 		return methodMocks.get<void *>(methodProxy->getOffset()) != nullptr;
 	}
 
 	template <typename MOCK, typename C, typename R, typename... arglist>
 	MOCK getMethodMock(R(C::*vMethod)(arglist...)){
-		MethodProxy<R, arglist...> * methodProxy = MethodProxyCreator<R, arglist...>::createMethodProxy(vMethod);
+		std::shared_ptr < MethodProxy<R, arglist...>> methodProxy = MethodProxyCreator<R, arglist...>::createMethodProxy(vMethod);
 		return methodMocks.get<MOCK>(methodProxy->getOffset());
 	}
 
@@ -74,10 +74,12 @@ private:
 	template <typename R, typename... arglist>
 	struct MethodProxyCreator
 	{
-		static MethodProxy<R, arglist...> * createMethodProxy(R(C::*vMethod)(arglist...)){
+		static std::shared_ptr < MethodProxy<R, arglist...>> createMethodProxy(R(C::*vMethod)(arglist...)){
 			VirtualOffsetSelector<VirtualMethodProxy> offsetSelctor;
 			void * obj = offsetSelctor.create(vMethod);
-			return reinterpret_cast<MethodProxy<R, arglist...>*>(obj);
+			auto rv = reinterpret_cast<MethodProxy<R, arglist...>*>(obj);
+			std::shared_ptr<MethodProxy<R, arglist...>> p{rv};
+			return p;
 		}
 
 	private:
@@ -91,10 +93,11 @@ private:
 				return union_cast<void *>(&VirtualMethodProxy::methodProxy);
 			}
 
+			virtual MethodProxy <R, arglist...> * clone() { return new VirtualMethodProxy<OFFSET>(); }
 		private:
 			R methodProxy(arglist... args){
-				DynamicProxy<C> * mo = union_cast<DynamicProxy<C> *>(this);
-				MethodInvocationHandler<R, arglist...> * methodMock = mo->getMethodMock<MethodInvocationHandler<R, arglist...> *>(OFFSET);
+				DynamicProxy<C> * dynamicProxy = union_cast<DynamicProxy<C> *>(this);
+				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(OFFSET);
 				return methodMock->handleMethodInvocation(args...);
 			}
 		};
@@ -141,7 +144,7 @@ private:
 	}
 
 	template <typename R, typename... arglist>
-	void bind(MethodProxy<R, arglist...> * methodProxy, MethodInvocationHandler<R, arglist...> * invocationHandler)
+	void bind(std::shared_ptr < MethodProxy < R, arglist... >> methodProxy, MethodInvocationHandler<R, arglist...> * invocationHandler)
 	{
 		auto offset = methodProxy->getOffset();
 		vtable.setMethod(offset, methodProxy->getProxy());

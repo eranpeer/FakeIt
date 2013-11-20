@@ -5,6 +5,7 @@ template <typename R, typename... arglist>
 struct MethodProxy {
 	virtual unsigned int getOffset() = 0;
 	virtual void * getProxy() = 0;
+	virtual MethodProxy <R, arglist...> * clone() = 0;
 };
 
 #endif // MethodProxy_h__

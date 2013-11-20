@@ -147,14 +147,14 @@ namespace mock4cpp {
 
 		R handleMethodInvocation(const arglist&... args) override {
 			auto * actualInvoaction = new ActualInvocation<arglist...>(args...);
-			actualInvocations.push_back(actualInvoaction);
+			actualInvocations.push_back(std::shared_ptr < ActualInvocation < arglist... >> {actualInvoaction});
 			auto * methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
 			return methodInvocationMock->handleMethodInvocation(args...);
 		}
 
-		std::vector<ActualInvocation<arglist...> *> getActualInvocations(const arglist&... expectedArgs) {
-			std::vector<ActualInvocation<arglist...> *> result;
-			for each (auto* actualInvocation in actualInvocations)
+		std::vector < std::shared_ptr < ActualInvocation<arglist... >> > getActualInvocations(const arglist&... expectedArgs) {
+			std::vector < std::shared_ptr < ActualInvocation<arglist... >> > result;
+			for each (auto actualInvocation in actualInvocations)
 			{
 				if (actualInvocation->matches(expectedArgs...)){
 					result.push_back(actualInvocation);
@@ -163,9 +163,9 @@ namespace mock4cpp {
 			return result;
 		}
 
-		std::vector<ActualInvocation<arglist...> *> getActualInvocations(InvocationMatcher<arglist...>& matcher) {
-			std::vector<ActualInvocation<arglist...> *> result;
-			for each (auto* actualInvocation in actualInvocations)
+		std::vector < std::shared_ptr < ActualInvocation<arglist... >> > getActualInvocations(InvocationMatcher<arglist...>& matcher) {
+			std::vector < std::shared_ptr < ActualInvocation<arglist... >> > result;
+			for each (auto actualInvocation in actualInvocations)
 			{
 				if (matcher.matches(*actualInvocation)){
 					result.push_back(actualInvocation);
@@ -178,16 +178,7 @@ namespace mock4cpp {
 
 		MockBase& mock;
 		std::vector<MethodInvocationMock<R, arglist...>*> methodInvocationMocks;
-		std::vector<ActualInvocation<arglist...>*> actualInvocations;
-
-// 		MethodInvocationMock<R, arglist...> * getMethodInvocationMockForExpectedArgs(const arglist&... expectedArgs){
-// 			for (auto i = methodInvocationMocks.rbegin(); i != methodInvocationMocks.rend(); ++i) {
-// 				if ((*i)->matchesExpected(expectedArgs...)){
-// 					return (*i);
-// 				}
-// 			}
-// 			return nullptr;
-// 		}
+		std::vector<std::shared_ptr<ActualInvocation<arglist...>>> actualInvocations;
 
 		MethodInvocationMock<R, arglist...>* getMethodInvocationMockForActualArgs(ActualInvocation<arglist...>& invocation) {
 			for (auto i = methodInvocationMocks.rbegin(); i != methodInvocationMocks.rend(); ++i) {
