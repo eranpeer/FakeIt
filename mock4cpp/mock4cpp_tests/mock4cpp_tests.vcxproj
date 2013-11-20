@@ -88,6 +88,7 @@
     <ClInclude Include="..\mock4cpp\InvocationMatcher.h" />
     <ClInclude Include="..\mock4cpp\methodmock.h" />
     <ClInclude Include="..\mock4cpp\mock.h" />
+    <ClInclude Include="..\mockutils\are_equality_comparable.h" />
     <ClInclude Include="..\mockutils\DefaultValue.hpp" />
     <ClInclude Include="..\mockutils\DynamicProxy.h" />
     <ClInclude Include="..\mockutils\MethodInvocationHandler.h" />

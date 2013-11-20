@@ -75,10 +75,11 @@ private:
 	struct MethodProxyCreator
 	{
 		static MethodProxy<R, arglist...> * createMethodProxy(R(C::*vMethod)(arglist...)){
-			VirtualOffsetSelector<VirtualMethodProxy> c;
-			void * obj = c.create(vMethod);
+			VirtualOffsetSelector<VirtualMethodProxy> offsetSelctor;
+			void * obj = offsetSelctor.create(vMethod);
 			return reinterpret_cast<MethodProxy<R, arglist...>*>(obj);
 		}
+
 	private:
 
 		template <unsigned int OFFSET>
@@ -86,7 +87,9 @@ private:
 
 			unsigned int getOffset() override { return OFFSET; }
 
-			void * getProxy() override { return union_cast<void *>(&VirtualMethodProxy::methodProxy); }
+			void * getProxy() override {
+				return union_cast<void *>(&VirtualMethodProxy::methodProxy);
+			}
 
 		private:
 			R methodProxy(arglist... args){

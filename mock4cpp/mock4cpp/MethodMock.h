@@ -82,7 +82,7 @@ namespace mock4cpp {
 	template <typename R, typename... arglist>
 	struct ExpectedInvocationMock2 : public MethodInvocationMockBase<R, arglist...>
 	{
-		ExpectedInvocationMock2(const arglist&... args) : expectedArguments(args...)
+		ExpectedInvocationMock2(const arglist&... matchers) : argumentsMatchers(args...)
 		{
 		}
 
@@ -91,9 +91,9 @@ namespace mock4cpp {
 		}
 	private:
 		virtual bool matches(const std::tuple<arglist...>& actualArgs)  {
-			return expectedArguments == actualArgs;
+			return argumentsMatchers == actualArgs;
 		}
-		const std::tuple <arglist...> expectedArguments;
+		const std::tuple <arglist...> argumentsMatchers;
 	};
 
 	template <typename R, typename... arglist>
