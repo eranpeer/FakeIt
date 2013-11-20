@@ -4,6 +4,7 @@
 #include <functional>
 #include <type_traits>
 #include <vector>
+#include <array>
 #include <new>
 
 #include "../mockutils/MethodProxy.h"
@@ -21,7 +22,7 @@ struct DynamicProxy
 {
 	static_assert(std::is_polymorphic<C>::value, "DynamicProxy requires a polymorphic type");
 
-	DynamicProxy() : vtable(), methodMocks(vtable.getSize()){
+	DynamicProxy() : vtable(), methodMocks(){
 		auto mptr = union_cast<void*>(&DynamicProxy::unmocked);
 		for (unsigned int i = 0; i < vtable.getSize(); i++) {
 			vtable.setMethod(i, mptr);
@@ -29,11 +30,7 @@ struct DynamicProxy
 		initializeDataMembersArea();
 	}
 
-	~DynamicProxy(){
-		for (std::vector<Destructable *>::iterator i = members.begin(); i != members.end(); ++i)
-		{
-			delete *i;
-		}
+	~DynamicProxy() {
 	}
 
 	C& get()
@@ -42,9 +39,8 @@ struct DynamicProxy
 	}
 
 	template <typename R, typename... arglist>
-	void stubMethod(R(C::*vMethod)(arglist...), MethodInvocationHandler<R, arglist...> * methodMock){
+	void stubMethod(R(C::*vMethod)(arglist...), std::shared_ptr<MethodInvocationHandler<R, arglist...>> methodInvocationHandler){
 		std::shared_ptr < MethodProxy<R, arglist...>> methodProxy = MethodProxyCreator<R, arglist...>::createMethodProxy(vMethod);
-		MethodInvocationHandler<R, arglist...>* methodInvocationHandler = methodMock;
 		bind(methodProxy, methodInvocationHandler);
 	}
 
@@ -66,7 +62,7 @@ struct DynamicProxy
 		MEMBER_TYPE C::*realMember = (MEMBER_TYPE C::*)member;
 		C& mock = get();
 		MEMBER_TYPE *realRealMember = &(mock.*realMember);
-		members.push_back(new DataMemeberWrapper<MEMBER_TYPE, arglist...>(realRealMember, initargs...));
+		members.push_back(std::shared_ptr<Destructable>{new DataMemeberWrapper<MEMBER_TYPE, arglist...>(realRealMember, initargs...)});
 	}
 
 private:
@@ -78,8 +74,7 @@ private:
 			VirtualOffsetSelector<VirtualMethodProxy> offsetSelctor;
 			void * obj = offsetSelctor.create(vMethod);
 			auto rv = reinterpret_cast<MethodProxy<R, arglist...>*>(obj);
-			std::shared_ptr<MethodProxy<R, arglist...>> p{rv};
-			return p;
+			return std::shared_ptr<MethodProxy<R, arglist...>>{rv};
 		}
 
 	private:
@@ -92,8 +87,6 @@ private:
 			void * getProxy() override {
 				return union_cast<void *>(&VirtualMethodProxy::methodProxy);
 			}
-
-			virtual MethodProxy <R, arglist...> * clone() { return new VirtualMethodProxy<OFFSET>(); }
 		private:
 			R methodProxy(arglist... args){
 				DynamicProxy<C> * dynamicProxy = union_cast<DynamicProxy<C> *>(this);
@@ -126,8 +119,8 @@ private:
 	// No harm is done if we alloc more space for data but don't use it.
 	char instanceMembersArea[sizeof(C)];
 	
-	Table methodMocks;
-	std::vector<Destructable *> members;
+	Table<30> methodMocks;
+	std::vector<std::shared_ptr<Destructable>> members;
 
 	void unmocked(){
 		DynamicProxy * m = this; // this should work
@@ -144,7 +137,7 @@ private:
 	}
 
 	template <typename R, typename... arglist>
-	void bind(std::shared_ptr < MethodProxy < R, arglist... >> methodProxy, MethodInvocationHandler<R, arglist...> * invocationHandler)
+	void bind(std::shared_ptr<MethodProxy<R, arglist...>> methodProxy, std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler)
 	{
 		auto offset = methodProxy->getOffset();
 		vtable.setMethod(offset, methodProxy->getProxy());

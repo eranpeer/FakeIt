@@ -36,12 +36,12 @@ namespace mock4cpp {
 	template <typename R, typename... arglist>
 	struct MethodInvocationMockBase : public MethodInvocationMock <R, arglist...>
 	{
-		void append(BehaviorMock<R, arglist...>* mock){
+		void append(std::shared_ptr < BehaviorMock < R, arglist... >>  mock){
 			behaviorMocks.push_back(mock);
 		}
 
 		void appendDo(std::function<R(arglist...)> method) {
-			auto doMock = new DoMock<R, arglist...>(method);
+			auto doMock = std::shared_ptr<BehaviorMock<R, arglist...>>{new DoMock<R, arglist...>(method)};
 			append(doMock);
 		}
 
@@ -52,14 +52,14 @@ namespace mock4cpp {
 		virtual bool matches(ActualInvocation<arglist...>& actualArgs) override = 0;
 
 		R handleMethodInvocation(const arglist&... args) override {
-			BehaviorMock<R, arglist...>* behavior = behaviorMocks.front();
+			std::shared_ptr<BehaviorMock<R, arglist...>> behavior = behaviorMocks.front();
 			if (behaviorMocks.size() > 1)
 				behaviorMocks.erase(behaviorMocks.begin());
 			return behavior->invoke(args...);
 		}
 
 	private:
-		std::vector<BehaviorMock<R, arglist...>*> behaviorMocks;
+		std::vector<std::shared_ptr<BehaviorMock<R, arglist...>>> behaviorMocks;
 	};
 
 	template <typename R, typename... arglist>
@@ -146,8 +146,8 @@ namespace mock4cpp {
 		}
 
 		R handleMethodInvocation(const arglist&... args) override {
-			auto * actualInvoaction = new ActualInvocation<arglist...>(args...);
-			actualInvocations.push_back(std::shared_ptr < ActualInvocation < arglist... >> {actualInvoaction});
+			auto actualInvoaction = std::shared_ptr < ActualInvocation < arglist... >> {new ActualInvocation<arglist...>(args...)};
+			actualInvocations.push_back(actualInvoaction);
 			auto methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
 			return methodInvocationMock->handleMethodInvocation(args...);
 		}

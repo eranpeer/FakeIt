@@ -1,50 +1,39 @@
 #ifndef Table_h__
 #define Table_h__
 
+#include <array>
+#include "utils.h"
+
+template <int N>
 struct Table {
 
-	Table(unsigned int size){
-		_values = new void*[size];
-		this->_size = size;
-		for (unsigned int i = 0; i < size; i++){
-			_values[i] = 0;
-		}
+	Table(){
 	}
 
 	~Table() {
-		delete [] _values;
 	}
 
-	void set(unsigned int index, void *value)
+	void set(unsigned int index, std::shared_ptr<Destructable> value)
 	{
-		if (index >= _size){
-			throw "error";
-		}
 		_values[index] = value;
 	}
 
 	template <typename T>
 	T get(unsigned int offset)
 	{
-		T value = reinterpret_cast<T>(get(offset));
+		T value = reinterpret_cast<T>(get(offset).get());
 		return value;
 	}
 
 	unsigned int size(){
-		return _size;
+		return _values.size();
 	}
 
 private:
-	void** _values;
-	unsigned int _size;
+	std::array<std::shared_ptr<Destructable>, N> _values;
 
-	void* get(unsigned int index){
-		if (index >= _size){
-			throw "error";
-		}
+	std::shared_ptr<Destructable> get(unsigned int index){
 		return _values[index];
 	}
 };
 #endif // Table_h__
-
-

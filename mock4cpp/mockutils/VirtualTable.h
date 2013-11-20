@@ -35,5 +35,3 @@ private:
 	void** methods;
 };
 #endif // VirtualTable_h__
-
-

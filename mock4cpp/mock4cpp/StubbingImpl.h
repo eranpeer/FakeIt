@@ -126,7 +126,6 @@ namespace mock4cpp {
 
 			if (progressType == ProgressType::VERIFYING){
 				auto actualInvocations = CountInvocations(*invocationMock);
-				//delete invocationMock;
 				invocationMock = nullptr;
 
 				if (expectedInvocationCount == -1) {
@@ -143,7 +142,6 @@ namespace mock4cpp {
 		virtual void clearProgress() {
 			progressType = ProgressType::NONE;
 			if (invocationMock) {
-				//delete invocationMock;
 				invocationMock = nullptr;
 			}
 		}

@@ -93,7 +93,9 @@
     <ClInclude Include="..\mockutils\DynamicProxy.h" />
     <ClInclude Include="..\mockutils\MethodInvocationHandler.h" />
     <ClInclude Include="..\mockutils\MethodProxy.h" />
+    <ClInclude Include="..\mockutils\Table.h" />
     <ClInclude Include="..\mockutils\utils.h" />
+    <ClInclude Include="..\mockutils\VirtualTable.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TupleDispatcher.h" />

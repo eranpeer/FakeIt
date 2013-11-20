@@ -22,7 +22,7 @@ private:
 	template <typename R, typename... arglist>
 	MethodMock<R, arglist...>& stubMethodIfNotStubbed(DynamicProxy<C> &instance, R(C::*vMethod)(arglist...)){
 		if (!instance.isStubbed(vMethod)){
-			auto methodMock = new MethodMock<R, arglist...>(*this);
+			auto methodMock = std::shared_ptr<MethodInvocationHandler<R, arglist...>>{new MethodMock<R, arglist...>(*this)};
 			instance.stubMethod(vMethod, methodMock);
 		}
 		MethodMock<R, arglist...> * methodMock = instance.getMethodMock<MethodMock<R, arglist...> *>(vMethod);
