@@ -137,7 +137,7 @@ namespace mock4cpp {
 		
 		virtual ~MethodMock() override {}
 
-		void stubMethodInvocation(MethodInvocationMock<R, arglist...> * methodInvocationMock){
+		void stubMethodInvocation(std::shared_ptr < MethodInvocationMock < R, arglist... >> methodInvocationMock){
 			methodInvocationMocks.push_back(methodInvocationMock);
 		}
 
@@ -148,7 +148,7 @@ namespace mock4cpp {
 		R handleMethodInvocation(const arglist&... args) override {
 			auto * actualInvoaction = new ActualInvocation<arglist...>(args...);
 			actualInvocations.push_back(std::shared_ptr < ActualInvocation < arglist... >> {actualInvoaction});
-			auto * methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
+			auto methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
 			return methodInvocationMock->handleMethodInvocation(args...);
 		}
 
@@ -177,10 +177,10 @@ namespace mock4cpp {
 	private:
 
 		MockBase& mock;
-		std::vector<MethodInvocationMock<R, arglist...>*> methodInvocationMocks;
+		std::vector < std::shared_ptr < MethodInvocationMock<R, arglist... >>> methodInvocationMocks;
 		std::vector<std::shared_ptr<ActualInvocation<arglist...>>> actualInvocations;
 
-		MethodInvocationMock<R, arglist...>* getMethodInvocationMockForActualArgs(ActualInvocation<arglist...>& invocation) {
+		std::shared_ptr<MethodInvocationMock<R, arglist...>> getMethodInvocationMockForActualArgs(ActualInvocation<arglist...>& invocation) {
 			for (auto i = methodInvocationMocks.rbegin(); i != methodInvocationMocks.rend(); ++i) {
 				if ((*i)->matches(invocation)){
 					return (*i);

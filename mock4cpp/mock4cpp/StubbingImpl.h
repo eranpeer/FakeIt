@@ -85,7 +85,7 @@ namespace mock4cpp {
 	{
 	protected:
 		std::shared_ptr<StubbingContext <R, arglist... >> stubbingContext;
-		MethodInvocationMockBase<R, arglist...>* invocationMock;
+		std::shared_ptr<MethodInvocationMockBase<R, arglist...>> invocationMock;
 		ProgressType progressType;
 		int expectedInvocationCount;
 
@@ -105,7 +105,8 @@ namespace mock4cpp {
 		void initInvocationMockIfNeeded(){
 			if (!invocationMock){
 				auto initialMethodBehavior = [](const arglist&... args)->R{return DefaultValue::value<R>(); };
-				invocationMock = new DefaultInvocationMock<R, arglist...>(initialMethodBehavior);
+				invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {
+					new DefaultInvocationMock<R, arglist...>(initialMethodBehavior)};
 			}
 		}
 
@@ -125,7 +126,7 @@ namespace mock4cpp {
 
 			if (progressType == ProgressType::VERIFYING){
 				auto actualInvocations = CountInvocations(*invocationMock);
-				delete invocationMock;
+				//delete invocationMock;
 				invocationMock = nullptr;
 
 				if (expectedInvocationCount == -1) {
@@ -142,7 +143,7 @@ namespace mock4cpp {
 		virtual void clearProgress() {
 			progressType = ProgressType::NONE;
 			if (invocationMock) {
-				delete invocationMock;
+				//delete invocationMock;
 				invocationMock = nullptr;
 			}
 		}
@@ -190,12 +191,12 @@ namespace mock4cpp {
 		}
 
 		FirstFunctionStubbingProgress<R, arglist...>& Using(const arglist&... args) {
-			invocationMock = new ExpectedInvocationMock<R, arglist...>(args...);
+			invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>>{new ExpectedInvocationMock<R, arglist...>(args...)};
 			return *this;
 		}
 
 		FirstFunctionStubbingProgress<R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
-			invocationMock = new MatchingInvocationMock<R, arglist...>(matcher);
+			invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {new MatchingInvocationMock<R, arglist...>(matcher)};
 			return *this;
 		}
 
@@ -248,12 +249,12 @@ namespace mock4cpp {
 		}
 
 		FirstProcedureStubbingProgress<R, arglist...>& Using(const arglist&... args) {
-			invocationMock = new ExpectedInvocationMock<R, arglist...>(args...);
+			invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>>{new ExpectedInvocationMock<R, arglist...>(args...)};
 			return *this;
 		}
 
 		FirstProcedureStubbingProgress<R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
-			invocationMock = new MatchingInvocationMock<R, arglist...>(matcher);
+			invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>>{new MatchingInvocationMock<R, arglist...>(matcher)};
 			return *this;
 		}
 
