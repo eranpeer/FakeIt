@@ -68,20 +68,12 @@ struct DynamicProxy
 private:
 
 	template <typename R, typename... arglist>
-	struct MethodProxyCreator
+	class MethodProxyCreator
 	{
-		static std::shared_ptr < MethodProxy<R, arglist...>> createMethodProxy(R(C::*vMethod)(arglist...)){
-			VirtualOffsetSelector<VirtualMethodProxy> offsetSelctor;
-			void * obj = offsetSelctor.create(vMethod);
-			auto rv = reinterpret_cast<MethodProxy<R, arglist...>*>(obj);
-			return std::shared_ptr<MethodProxy<R, arglist...>>{rv};
-		}
-
 	private:
 
 		template <unsigned int OFFSET>
 		struct VirtualMethodProxy : public MethodProxy<R, arglist...> {
-
 			unsigned int getOffset() override { return OFFSET; }
 
 			void * getProxy() override {
@@ -94,6 +86,15 @@ private:
 				return methodMock->handleMethodInvocation(args...);
 			}
 		};
+	public:
+
+		static std::shared_ptr < MethodProxy<R, arglist...>> createMethodProxy(R(C::*vMethod)(arglist...)){
+			static VirtualOffsetSelector<VirtualMethodProxy> offsetSelctor;
+			auto* obj = offsetSelctor.create(vMethod);
+			auto rv = reinterpret_cast<MethodProxy<R, arglist...>*>(obj);
+			return std::shared_ptr<MethodProxy<R, arglist...>>{rv};
+		}
+
 	};
 
 	template <typename MEMBER_TYPE, typename... arglist>
