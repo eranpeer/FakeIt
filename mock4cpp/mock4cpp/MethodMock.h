@@ -6,7 +6,7 @@
 #include "InvocationMatcher.h"
 #include "MockRepository.h"
 #include "ActualInvocation.h"
-#include "TupleDispatcher.h"
+#include "../mockutils/TupleDispatcher.h"
 
 namespace mock4cpp {
 

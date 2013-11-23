@@ -73,7 +73,7 @@ namespace mock4cpp_tests
 			Assert::AreEqual((double) 5.0, i.d);
 			Assert::AreEqual((long) 6, i.l);
 
-//			mock.Stub(&AbstractClass::i, 6) = 6;
+			mock.Stub(&AbstractClass::i, 6) = 6;
 		}
 
 		TEST_METHOD(StubObjectDataMembers){

@@ -62,7 +62,7 @@ struct DynamicProxy
 		DATA_TYPE C::*realMember = (DATA_TYPE C::*)member;
 		C& mock = get();
 		DATA_TYPE *realRealMember = &(mock.*realMember);
-		members.push_back(std::shared_ptr<Destructable>{new DataMemeberWrapper<DATA_TYPE, arglist...>(realRealMember, initargs...)});
+		members.push_back(std::shared_ptr <DataMemeberWrapper<DATA_TYPE, arglist... >> {new DataMemeberWrapper<DATA_TYPE, arglist...>(realRealMember, initargs...)});
 	}
 
 private:

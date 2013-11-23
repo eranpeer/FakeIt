@@ -7,7 +7,7 @@
 
 #include "../mock4cpp/MethodMock.h"
 #include "../mock4cpp/Stubbing.h"
-#include "ExtractMemberType.h"
+#include "../mockutils/ExtractMemberType.h"
 
 namespace mock4cpp {
 
@@ -288,8 +288,14 @@ namespace mock4cpp {
 		DataMemberStubbingRoot(const DataMemberStubbingRoot& other) = default;
 		DataMemberStubbingRoot() = default;
 
-// 		void operator=(typename ExtractMemberType<T>::Type val) {
+		void operator=(const DATA_TYPE& val) {
+ 		}
+
+// 		void Construct(const arglist&... ctorargs)
+// 		{
+// 			
 // 		}
+
 	};
 }
 #endif // ClousesImpl_h__
