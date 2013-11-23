@@ -55,16 +55,11 @@ private:
 
 	void Stub(){}
 
-	template <class MEMBER_TYPE, typename... arglist>
-	void stubDataMember(MEMBER_TYPE C::*member, const arglist&... ctorargs)
+	template <class DATA_TYPE, typename... arglist>
+	DataMemberStubbingRoot<C, DATA_TYPE> stubDataMember(DATA_TYPE C::*member, const arglist&... ctorargs)
 	{
 		instance.stubDataMember(member, ctorargs...);
-	}
-
-	template <typename R, typename... arglist>
-	void stubMethodInvocation(MethodInvocationMock<R, arglist...> * methodInvocationMock){
-		//stubMethodIfNotStubbed()
-		//methodInvocationMocks.push_back(methodInvocationMock);
+		return DataMemberStubbingRoot<C, DATA_TYPE>();
 	}
 
 public:
@@ -134,12 +129,12 @@ public:
 		return StubImpl(vMethod);
 	}
 
-	template <class DM, typename... arglist
-		, class = typename std::enable_if<std::is_member_object_pointer<DM>::value>::type
+	template <class DATA_TYPE, typename... arglist
+		, class = typename std::enable_if<std::is_member_object_pointer<DATA_TYPE C::*>::value>::type
 	>
-	void Stub(DM member, const arglist&... ctorargs)
+	DataMemberStubbingRoot<C, DATA_TYPE> Stub(DATA_TYPE C::* member, const arglist&... ctorargs)
 	{
-		stubDataMember(member, ctorargs...);
+		return stubDataMember(member, ctorargs...);
 	}
 
 	template <typename H, typename... M

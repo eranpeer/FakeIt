@@ -56,13 +56,13 @@ struct DynamicProxy
 		return methodMocks.get<MOCK>(methodProxy->getOffset());
 	}
 
-	template <typename MEMBER_TYPE, typename... arglist>
-	void stubDataMember(MEMBER_TYPE C::*member, const arglist&... initargs)
+	template <typename DATA_TYPE, typename... arglist>
+	void stubDataMember(DATA_TYPE C::*member, const arglist&... initargs)
 	{
-		MEMBER_TYPE C::*realMember = (MEMBER_TYPE C::*)member;
+		DATA_TYPE C::*realMember = (DATA_TYPE C::*)member;
 		C& mock = get();
-		MEMBER_TYPE *realRealMember = &(mock.*realMember);
-		members.push_back(std::shared_ptr<Destructable>{new DataMemeberWrapper<MEMBER_TYPE, arglist...>(realRealMember, initargs...)});
+		DATA_TYPE *realRealMember = &(mock.*realMember);
+		members.push_back(std::shared_ptr<Destructable>{new DataMemeberWrapper<DATA_TYPE, arglist...>(realRealMember, initargs...)});
 	}
 
 private:
@@ -97,19 +97,19 @@ private:
 
 	};
 
-	template <typename MEMBER_TYPE, typename... arglist>
+	template <typename DATA_TYPE, typename... arglist>
 	class DataMemeberWrapper : public Destructable {
 	private:
-		MEMBER_TYPE *dataMember;
+		DATA_TYPE *dataMember;
 	public:
-		DataMemeberWrapper(MEMBER_TYPE *dataMember, const arglist&... initargs)
+		DataMemeberWrapper(DATA_TYPE *dataMember, const arglist&... initargs)
 			: dataMember(dataMember)
 		{
-			new (dataMember) MEMBER_TYPE{ initargs ...};
+			new (dataMember) DATA_TYPE{ initargs ...};
 		}
 		~DataMemeberWrapper()
 		{
-			dataMember->~MEMBER_TYPE();
+			dataMember->~DATA_TYPE();
 		}
 	};
 
@@ -151,9 +151,9 @@ private:
 			instanceMembersArea[i] = (char) 0;
 	}
 
-	template <typename MEMBER_TYPE>
-	MEMBER_TYPE getMethodMock(unsigned int offset){
-		return methodMocks.get<MEMBER_TYPE>(offset);
+	template <typename DATA_TYPE>
+	DATA_TYPE getMethodMock(unsigned int offset){
+		return methodMocks.get<DATA_TYPE>(offset);
 	}
 
 };

@@ -7,6 +7,8 @@
 
 #include "../mock4cpp/MethodMock.h"
 #include "../mock4cpp/Stubbing.h"
+#include "ExtractMemberType.h"
+
 namespace mock4cpp {
 
 	namespace stubbing {
@@ -274,6 +276,20 @@ namespace mock4cpp {
 		virtual void clearProgress() override {
 			MethodStubbingBase::clearProgress();
 		}
+	};
+
+
+	template <typename C, typename DATA_TYPE>
+	class DataMemberStubbingRoot
+	{
+	private:
+		//DataMemberStubbingRoot & operator= (const DataMemberStubbingRoot & other) = delete;
+	public:
+		DataMemberStubbingRoot(const DataMemberStubbingRoot& other) = default;
+		DataMemberStubbingRoot() = default;
+
+// 		void operator=(typename ExtractMemberType<T>::Type val) {
+// 		}
 	};
 }
 #endif // ClousesImpl_h__
