@@ -9,7 +9,6 @@
 
 #include "mockutils/MethodProxy.h"
 #include "mockutils/VirtualTable.h"
-#include "mockutils/Table.h"
 #include "mockutils/VirtualOffestSelector.h"
 #include "mockutils/union_cast.h"
 #include "mockutils/MethodInvocationHandler.h"
@@ -44,13 +43,15 @@ struct DynamicProxy
 	template <typename C, typename R, typename... arglist>
 	bool isStubbed(R(C::*vMethod)(arglist...)){
 		std::shared_ptr < MethodProxy<R, arglist...>> methodProxy = MethodProxyCreator<R, arglist...>::createMethodProxy(vMethod);
-		return methodMocks.get<void *>(methodProxy->getOffset()) != nullptr;
+		std::shared_ptr<Destructable> ptr = methodMocks[methodProxy->getOffset()];
+		return ptr.get() != nullptr;
 	}
 
 	template <typename MOCK, typename C, typename R, typename... arglist>
 	MOCK getMethodMock(R(C::*vMethod)(arglist...)){
 		std::shared_ptr < MethodProxy<R, arglist...>> methodProxy = MethodProxyCreator<R, arglist...>::createMethodProxy(vMethod);
-		return methodMocks.get<MOCK>(methodProxy->getOffset());
+		std::shared_ptr<Destructable> ptr = methodMocks[methodProxy->getOffset()];
+		return reinterpret_cast<MOCK>(ptr.get());
 	}
 
 	template <typename DATA_TYPE, typename... arglist>
@@ -117,7 +118,7 @@ private:
 	// No harm is done if we alloc more space for data but don't use it.
 	char instanceMembersArea[sizeof(C)];
 	
-	Table<30> methodMocks;
+	std::array<std::shared_ptr<Destructable>, 30> methodMocks;
 	std::vector<std::shared_ptr<Destructable>> members;
 	std::function<void()> unmockedMethodCallHandler;
 
@@ -140,7 +141,7 @@ private:
 	{
 		auto offset = methodProxy->getOffset();
 		vtable.setMethod(offset, methodProxy->getProxy());
-		methodMocks.set(offset, invocationHandler);
+		methodMocks[offset] = invocationHandler;
 	}
 
 	void initializeDataMembersArea()
@@ -151,7 +152,8 @@ private:
 
 	template <typename DATA_TYPE>
 	DATA_TYPE getMethodMock(unsigned int offset){
-		return methodMocks.get<DATA_TYPE>(offset);
+		std::shared_ptr<Destructable> ptr = methodMocks[offset];
+		return reinterpret_cast<DATA_TYPE>(ptr.get());
 	}
 
 };
