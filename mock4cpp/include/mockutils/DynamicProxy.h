@@ -40,14 +40,14 @@ struct DynamicProxy
 		bind(methodProxy, methodInvocationHandler);
 	}
 
-	template <typename C, typename R, typename... arglist>
+	template <typename R, typename... arglist>
 	bool isStubbed(R(C::*vMethod)(arglist...)){
 		std::shared_ptr < MethodProxy<R, arglist...>> methodProxy = MethodProxyCreator<R, arglist...>::createMethodProxy(vMethod);
 		std::shared_ptr<Destructable> ptr = methodMocks[methodProxy->getOffset()];
 		return ptr.get() != nullptr;
 	}
 
-	template <typename MOCK, typename C, typename R, typename... arglist>
+	template <typename MOCK, typename R, typename... arglist>
 	MOCK getMethodMock(R(C::*vMethod)(arglist...)){
 		std::shared_ptr < MethodProxy<R, arglist...>> methodProxy = MethodProxyCreator<R, arglist...>::createMethodProxy(vMethod);
 		std::shared_ptr<Destructable> ptr = methodMocks[methodProxy->getOffset()];

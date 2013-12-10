@@ -99,7 +99,7 @@ public:
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionStubbingRoot<typename R, arglist...> When(R(C::*vMethod)(arglist...)) {
+	FunctionStubbingRoot<R, arglist...> When(R(C::*vMethod)(arglist...)) {
 		return StubImpl(vMethod);
 	}
 

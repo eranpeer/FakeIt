@@ -73,7 +73,7 @@ template <typename... ArgsT, typename... Args>
 bool checkTypes(std::tuple<ArgsT...> const& t, Args... args)
 {
 	static_assert(sizeof...(ArgsT) == sizeof...(Args), "argument lists are not the same size");
-	return verifyTypes<sizeof...(ArgsT)>::applyTuple(t, args);
+	return verifyTypes<sizeof...(ArgsT)>::applyTuple(t, args...);
 }
 
 

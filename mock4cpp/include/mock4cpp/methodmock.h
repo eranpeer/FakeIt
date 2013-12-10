@@ -137,20 +137,20 @@ namespace mock4cpp {
 			return methodInvocationMock->handleMethodInvocation(args...);
 		}
 
-		std::vector < std::shared_ptr < ActualInvocation<arglist... >> > getActualInvocations(const arglist&... expectedArgs) {
-			std::vector < std::shared_ptr < ActualInvocation<arglist... >> > result;
-			for each (auto actualInvocation in actualInvocations)
-			{
-				if (actualInvocation->matches(expectedArgs...)){
-					result.push_back(actualInvocation);
-				}
-			}
-			return result;
-		}
+// 		std::vector < std::shared_ptr < ActualInvocation<arglist... >> > getActualInvocations(const arglist&... expectedArgs) {
+// 			std::vector < std::shared_ptr < ActualInvocation<arglist... >> > result;
+// 			for (auto actualInvocation : actualInvocations)
+// 			{
+// 				if (actualInvocation->matches(expectedArgs...)){
+// 					result.push_back(actualInvocation);
+// 				}
+// 			}
+// 			return result;
+// 		}
 
 		std::vector < std::shared_ptr < ActualInvocation<arglist... >> > getActualInvocations(InvocationMatcher<arglist...>& matcher) {
 			std::vector < std::shared_ptr < ActualInvocation<arglist... >> > result;
-			for each (auto actualInvocation in actualInvocations)
+			for (auto actualInvocation : actualInvocations)
 			{
 				if (matcher.matches(*actualInvocation)){
 					result.push_back(actualInvocation);
