@@ -6,7 +6,6 @@
 
 #include "mockutils/DynamicProxy.h"
 #include "mock4cpp/StubbingImpl.h"
-#include "mock4cpp/mockito_clouses.h"
 #include "mock4cpp/MockRepository.h"
 
 using namespace mock4cpp;
