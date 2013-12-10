@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
-#include "Mock.h"
 #include <iostream>
 #include <functional>
 #include <tuple>
+
+#include "mock4cpp.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -30,17 +31,15 @@ namespace mock4cpp_tests
 		virtual void proc2(PointerInterface *) = 0;
 	};
 
-
+	struct SomeInterface
+	{
+		virtual int func(int) = 0;
+		virtual void proc(int) = 0;
+	};
 
 	TEST_CLASS(StubbingTests)
 	{
 	public:
-
-		struct SomeInterface
-		{
-			virtual int func(int) = 0;
-			virtual void proc(int) = 0;
-		};
 
 		TEST_METHOD(ExceptionWhenCallingANonStubbedMethod)
 		{
