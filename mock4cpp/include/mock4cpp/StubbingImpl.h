@@ -187,7 +187,7 @@ namespace mock4cpp {
 
 		virtual void operator=(std::function<R(arglist...)> method) override {
 			// Must override since the implementation in base class is privately inherited
-			FirstFunctionStubbingProgress::operator = (method);
+			FirstFunctionStubbingProgress<R, arglist...>::operator = (method);
 		}
 
 		FirstFunctionStubbingProgress<R, arglist...>& Using(const arglist&... args) {
@@ -204,19 +204,19 @@ namespace mock4cpp {
 			// Must override since the implementation in base class is privately inherited
 			startStubbing();
 			initInvocationMockIfNeeded();
-			return FunctionStubbingProgress::Do(method);
+			return FunctionStubbingProgress<R, arglist...>::Do(method);
 		}
 
 		virtual void VerifyInvocations(const int times) override {
-			MethodStubbingBase::VerifyInvocations(times);
+			MethodStubbingBase<R, arglist...>::VerifyInvocations(times);
 		}
 
 		virtual void startVerification() override {
-			MethodStubbingBase::startVerification();
+			MethodStubbingBase<R, arglist...>::startVerification();
 		}
 
 		virtual void clearProgress() override {
-			MethodStubbingBase::clearProgress();
+			MethodStubbingBase<R, arglist...>::clearProgress();
 		}
 	};
 
@@ -245,7 +245,7 @@ namespace mock4cpp {
 
 		virtual void operator=(std::function<R(arglist...)> method) override {
 			// Must override since the implementation in base class is privately inherited
-			FirstProcedureStubbingProgress::operator = (method);
+			FirstProcedureStubbingProgress<R, arglist...>::operator = (method);
 		}
 
 		FirstProcedureStubbingProgress<R, arglist...>& Using(const arglist&... args) {
@@ -262,19 +262,19 @@ namespace mock4cpp {
 			// Must override since the implementation in base class is privately inherited
 			startStubbing();
 			initInvocationMockIfNeeded();
-			return ProcedureStubbingProgress::Do(method);
+			return ProcedureStubbingProgress<R, arglist...>::Do(method);
 		}
 
 		virtual void VerifyInvocations(const int times) override {
-			MethodStubbingBase::VerifyInvocations(times);
+			MethodStubbingBase<R, arglist...>::VerifyInvocations(times);
 		}
 
  		virtual void startVerification() override {
-			MethodStubbingBase::startVerification();
+			MethodStubbingBase<R, arglist...>::startVerification();
 		}
 
 		virtual void clearProgress() override {
-			MethodStubbingBase::clearProgress();
+			MethodStubbingBase<R, arglist...>::clearProgress();
 		}
 	};
 

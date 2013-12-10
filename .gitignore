@@ -30,6 +30,9 @@ Debug/
 ipch/
 TestResults/
 
+# Eclipse
+.settings/
+.metadata/
 
 
 
