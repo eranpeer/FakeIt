@@ -5,8 +5,6 @@ VisualStudioVersion = 12.0.20827.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mock4cpp_tests", "mock4cpp_tests\mock4cpp_tests.vcxproj", "{DEFDF6D2-8990-4B9D-98A4-871A561A59AE}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mockito4cpp_tests", "mockito4cpp_tests\mockito4cpp_tests.vcxproj", "{BC5DFFAA-C6FB-4308-8AEA-83C6B2ED1F5C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -17,10 +15,6 @@ Global
 		{DEFDF6D2-8990-4B9D-98A4-871A561A59AE}.Debug|Win32.Build.0 = Debug|Win32
 		{DEFDF6D2-8990-4B9D-98A4-871A561A59AE}.Release|Win32.ActiveCfg = Release|Win32
 		{DEFDF6D2-8990-4B9D-98A4-871A561A59AE}.Release|Win32.Build.0 = Release|Win32
-		{BC5DFFAA-C6FB-4308-8AEA-83C6B2ED1F5C}.Debug|Win32.ActiveCfg = Debug|Win32
-		{BC5DFFAA-C6FB-4308-8AEA-83C6B2ED1F5C}.Debug|Win32.Build.0 = Debug|Win32
-		{BC5DFFAA-C6FB-4308-8AEA-83C6B2ED1F5C}.Release|Win32.ActiveCfg = Release|Win32
-		{BC5DFFAA-C6FB-4308-8AEA-83C6B2ED1F5C}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
