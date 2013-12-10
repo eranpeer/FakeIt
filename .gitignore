@@ -28,6 +28,7 @@
 *.opensdf
 Debug/
 ipch/
+TestResults/
 
 
 
