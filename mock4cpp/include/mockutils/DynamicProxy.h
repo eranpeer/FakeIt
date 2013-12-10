@@ -7,12 +7,12 @@
 #include <array>
 #include <new>
 
-#include "../mockutils/MethodProxy.h"
-#include "../mockutils/VirtualTable.h"
-#include "../mockutils/Table.h"
-#include "../mockutils/VirtualOffestSelector.h"
-#include "../mockutils/utils.h"
-#include "../mockutils/MethodInvocationHandler.h"
+#include "mockutils/MethodProxy.h"
+#include "mockutils/VirtualTable.h"
+#include "mockutils/Table.h"
+#include "mockutils/VirtualOffestSelector.h"
+#include "mockutils/utils.h"
+#include "mockutils/MethodInvocationHandler.h"
 
 template <typename C>
 struct DynamicProxy

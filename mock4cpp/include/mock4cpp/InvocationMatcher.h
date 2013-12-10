@@ -2,7 +2,8 @@
 #define InvocationMatcher_h__
 
 #include <functional>
-#include "ActualInvocation.h"
+
+#include "mock4cpp/ActualInvocation.h"
 
 namespace mock4cpp {
 

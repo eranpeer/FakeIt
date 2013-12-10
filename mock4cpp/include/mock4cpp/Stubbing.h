@@ -3,8 +3,8 @@
 
 #include <functional>
 #include <type_traits>
-#include "../mockutils/traits.h"
-#include "../mockutils/DefaultValue.hpp"
+#include "mockutils/traits.h"
+#include "mockutils/DefaultValue.hpp"
 
 namespace mock4cpp {
 

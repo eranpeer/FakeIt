@@ -5,9 +5,9 @@
 #include <type_traits>
 #include <memory>
 
-#include "../mock4cpp/MethodMock.h"
-#include "../mock4cpp/Stubbing.h"
-#include "../mockutils/ExtractMemberType.h"
+#include "mock4cpp/MethodMock.h"
+#include "mock4cpp/Stubbing.h"
+#include "mockutils/ExtractMemberType.h"
 
 namespace mock4cpp {
 

@@ -4,10 +4,10 @@
 #include <type_traits>
 #include <memory>
 
-#include "../mockutils/DynamicProxy.h"
-#include "StubbingImpl.h"
-#include "mockito_clouses.h"
-#include "MockRepository.h"
+#include "mockutils/DynamicProxy.h"
+#include "mock4cpp/StubbingImpl.h"
+#include "mock4cpp/mockito_clouses.h"
+#include "mock4cpp/MockRepository.h"
 
 using namespace mock4cpp;
 using namespace mock4cpp::stubbing;

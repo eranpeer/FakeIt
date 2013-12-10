@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
-#include "mock4cpp.h"
 #include <iostream>
+#include "mock4cpp.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
