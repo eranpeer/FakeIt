@@ -11,7 +11,8 @@
 #include "mockutils/VirtualTable.h"
 #include "mockutils/Table.h"
 #include "mockutils/VirtualOffestSelector.h"
-#include "mockutils/utils.h"
+#include "mockutils/union_cast.h"
+//#include "mockutils/Destructable.h"
 #include "mockutils/MethodInvocationHandler.h"
 
 template <typename C>

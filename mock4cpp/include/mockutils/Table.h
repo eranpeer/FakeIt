@@ -2,7 +2,7 @@
 #define Table_h__
 
 #include <array>
-#include "utils.h"
+#include "mockutils/Destructable.h"
 
 template <int N>
 struct Table {

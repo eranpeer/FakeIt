@@ -1,5 +1,5 @@
-#ifndef utils_h__
-#define utils_h__
+#ifndef union_cast_h__
+#define union_cast_h__
 
 template <typename TARGET, typename SOURCE>
 TARGET union_cast(SOURCE source)
@@ -13,12 +13,5 @@ TARGET union_cast(SOURCE source)
 	u.source = source;
 	return u.target;
 }
-
-class Destructable {
-public:
-	virtual ~Destructable() {}
-};
-
-#endif // utils_h__
-
+#endif // union_cast_h__
 
