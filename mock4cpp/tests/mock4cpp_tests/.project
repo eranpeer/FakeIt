@@ -24,4 +24,11 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>mock4cpp_include</name>
+			<type>2</type>
+			<location>C:/Users/eran/projects/mock4cpp/include</location>
+		</link>
+	</linkedResources>
 </projectDescription>

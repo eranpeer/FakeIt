@@ -13,8 +13,14 @@ namespace mock4cpp {
 
 	namespace stubbing {
 
+		enum class ProgressType
+		{
+			NONE, STUBBING, VERIFYING
+		};
+
 		template <typename R, typename... arglist>
 		struct StubbingContext {
+			virtual ~StubbingContext(){}
 			virtual MethodMock<R, arglist...>& getMethodMock() = 0;
 		};
 
@@ -75,11 +81,6 @@ namespace mock4cpp {
 	using namespace mock4cpp;
 	using namespace mock4cpp::stubbing;
 
-
-	static enum ProgressType
-	{
-		NONE, STUBBING, VERIFYING
-	};
 
 	template <typename R, typename... arglist>
 	class MethodStubbingBase
