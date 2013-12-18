@@ -192,12 +192,14 @@ public:
 
 	template <typename H>
 	H& operator() (H& head) {
+		//When(head).startStubbing();
 		head.startStubbing();
 		return head;
 	}
 
 	template <typename H, typename... M>
 	void operator() (H& head, M&... tail) {
+		//When(head).startStubbing();
 		head.startStubbing();
 		this->operator()(tail...);
 	}

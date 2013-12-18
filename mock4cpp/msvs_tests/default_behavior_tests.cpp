@@ -302,6 +302,7 @@ namespace stubbing_tests
 		{
 			Mock<UnionFunctions> mock;
 			mock.Stub(&UnionFunctions::unionRefFunc);
+			Stub(mock[&UnionFunctions::unionRefFunc]);
 			UnionFunctions& i = mock.get();
 			Assert::IsTrue(MyUnion() == i.unionRefFunc());
 		}
