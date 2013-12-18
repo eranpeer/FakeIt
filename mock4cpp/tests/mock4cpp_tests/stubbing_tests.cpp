@@ -1,28 +1,34 @@
 #include "tpunit++.hpp"
 #include "mock4cpp.h"
 
-struct test_any: tpunit::TestFixture {
-	test_any() :
+struct BasicStubbing: tpunit::TestFixture {
+	BasicStubbing() :
 			tpunit::TestFixture( //
-					TEST(test_any::ExceptionWhenCallingANonStubbedMethod),//
-					TEST(test_any::test_b)  //
-					)  //
+					TEST(BasicStubbing::ShouldThrow_UnmockedMethodException_WhenCallingANonStubbedMethod), //
+					TEST(BasicStubbing::test_b)  //
+							)  //
 	{
 	}
 
-	struct SomeInterface
-		{
-			virtual int func(int) = 0;
-			virtual void proc(int) = 0;
-		};
+	struct SomeInterface {
+		virtual int func(int) = 0;
+		virtual void proc(int) = 0;
+	};
 
-	void ExceptionWhenCallingANonStubbedMethod()
-	{
+	void ShouldThrow_UnmockedMethodException_WhenCallingANonStubbedMethod() {
 		Mock<SomeInterface> mock;
-		//SomeInterface &i = mock.get();
+		SomeInterface &i = mock.get();
+		ASSERT_THROW(i.func(1),UnmockedMethodException);
+		ASSERT_THROW(i.proc(1),UnmockedMethodException);
+	}
 
-		//Assert::ExpectException<UnmockedMethodException>([&i]{ i.func(1); });
-		//Assert::ExpectException<UnmockedMethodException>([&i]{ i.proc(2); });
+
+	void ShouldReturn_DefaultValue_WhenCallingAStubbedMethodWithNoSpecifiedBehaviour() {
+			Mock<SomeInterface> mock;
+//			mock[&SomeInterface::func] = [](...){return 0;};
+//			SomeInterface &i = mock.get();
+//			ASSERT_EQUAL(1,i.func(1));
+//			ASSERT_THROW(i.proc(1),UnmockedMethodException);
 	}
 
 	void test_a() {

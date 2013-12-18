@@ -123,7 +123,7 @@ private:
 	std::function<void()> unmockedMethodCallHandler;
 
 	void unmocked(){
-		DynamicProxy * m = this; // this should work
+		//DynamicProxy * m = this; // this should work
 		unmockedMethodCallHandler();
 	}
 
