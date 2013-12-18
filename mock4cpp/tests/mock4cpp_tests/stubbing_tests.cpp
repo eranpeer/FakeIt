@@ -18,7 +18,7 @@ struct test_any: tpunit::TestFixture {
 
 	void ExceptionWhenCallingANonStubbedMethod()
 	{
-		//Mock<SomeInterface> mock;
+		Mock<SomeInterface> mock;
 		//SomeInterface &i = mock.get();
 
 		//Assert::ExpectException<UnmockedMethodException>([&i]{ i.func(1); });
