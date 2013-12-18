@@ -65,16 +65,14 @@ namespace mock4cpp {
 
 			virtual ~NextFunctionStubbingProgress() {}
 
-			template <class = typename std::enable_if<!std::is_void<R>::value>::type>
 			NextFunctionStubbingProgress<R, arglist...>&
 				ThenReturn(const R& r) {
 					return ThenDo([&r](...)->R{ return r; });
 				}
 
-			template <class = typename std::enable_if<std::is_void<R>::value>::type>
-			NextFunctionStubbingProgress<R, arglist...>& 
+			NextFunctionStubbingProgress<R, arglist...>&
 				ThenReturn() {
-					return ThenDo([](...)->R{ return; });
+					return Do([](...)->R{ DefaultValue::value<R>(); });
 				}
 
 			template <typename E>
@@ -98,16 +96,14 @@ namespace mock4cpp {
 
 			virtual ~FirstFunctionStubbingProgress() {};
 
-			template<typename NO_REF = std::remove_reference<R>::type>
-			typename std::enable_if<std::is_trivially_copy_constructible<NO_REF>::value, NextFunctionStubbingProgress<R, arglist...>&>::type
-				Return(const R& r) {
-					return Do([r](...)->R{ return r; });
-				}
-
-			template<typename NO_REF = std::remove_reference<R>::type>
-			typename std::enable_if<!std::is_trivially_copy_constructible<NO_REF>::value, NextFunctionStubbingProgress<R, arglist...>&>::type
+			NextFunctionStubbingProgress<R, arglist...>&
 				Return(const R& r) { 
 					return Do([&r](...)->R{ return r; });
+				}
+
+			NextFunctionStubbingProgress<R, arglist...>&
+				Return() {
+					return Do([](...)->R{ DefaultValue::value<R>(); });
 				}
 
 			template <typename E>
@@ -119,7 +115,7 @@ namespace mock4cpp {
 				Do(method);
 			}
 
-			virtual  NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) = 0;
+			virtual  auto Do(std::function<R(arglist...)> method) -> NextFunctionStubbingProgress<R, arglist...>& = 0;
 
 			virtual  void VerifyInvocations(const int times) override = 0;
 
