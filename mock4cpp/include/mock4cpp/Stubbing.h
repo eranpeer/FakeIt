@@ -17,7 +17,7 @@ namespace mock4cpp {
 		const std::string msg;
 	};
 
-	namespace verification{
+	namespace verification {
 
 		struct MethodVerificationProgress
 		{
@@ -92,7 +92,7 @@ namespace mock4cpp {
 
 
 		template <typename R, typename... arglist>
-		struct FirstFunctionStubbingProgress: public virtual MethodVerificationProgress {
+		struct FirstFunctionStubbingProgress : public virtual verification::MethodVerificationProgress {
 
 			virtual ~FirstFunctionStubbingProgress() {};
 
@@ -143,7 +143,7 @@ namespace mock4cpp {
 
 
 		template <typename R, typename... arglist>
-		struct FirstProcedureStubbingProgress : public virtual MethodVerificationProgress {
+		struct FirstProcedureStubbingProgress : public virtual verification::MethodVerificationProgress {
 
 			virtual ~FirstProcedureStubbingProgress() {};
 
