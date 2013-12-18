@@ -63,7 +63,7 @@ namespace mock4cpp {
 		template <typename R, typename... arglist>
 		struct NextFunctionStubbingProgress {
 
-			virtual ~NextFunctionStubbingProgress() {};
+			virtual ~NextFunctionStubbingProgress() {}
 
 			template <class = typename std::enable_if<!std::is_void<R>::value>::type>
 			NextFunctionStubbingProgress<R, arglist...>&
@@ -74,7 +74,7 @@ namespace mock4cpp {
 			template <class = typename std::enable_if<std::is_void<R>::value>::type>
 			NextFunctionStubbingProgress<R, arglist...>& 
 				ThenReturn() {
-					return ThenDo([](...)->R{ return DefaultValue::value<R>(); });
+					return ThenDo([](...)->R{ return; });
 				}
 
 			template <typename E>
