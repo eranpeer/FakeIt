@@ -31,14 +31,14 @@ private:
 
 	template <typename R, typename... arglist>
 	class StubbingContextImpl : public StubbingContext<R,arglist...> {
-		R(C::*vMethod)(arglist...);
 		Mock<C>& mock;
+		R(C::*vMethod)(arglist...);
 	public:
-		StubbingContextImpl(Mock<C>& mock, R(C::*vMethod)(arglist...)) :mock{mock},vMethod{ vMethod }{
+		StubbingContextImpl(Mock<C>& mock, R(C::*vMethod)(arglist...)) :mock(mock),vMethod(vMethod){
 		}
 		virtual MethodMock<R, arglist...>& getMethodMock() override {
 			return mock.stubMethodIfNotStubbed(mock.instance,vMethod);
-		};
+		}
 	};
 
 	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>

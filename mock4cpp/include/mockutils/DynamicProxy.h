@@ -18,7 +18,7 @@ struct DynamicProxy
 {
 	static_assert(std::is_polymorphic<C>::value, "DynamicProxy requires a polymorphic type");
 
-	DynamicProxy(std::function<void()> unmockedMethodCallHandler) : unmockedMethodCallHandler{ unmockedMethodCallHandler }, vtable(), methodMocks(){
+	DynamicProxy(std::function<void()> unmockedMethodCallHandler) : vtable(), methodMocks(), unmockedMethodCallHandler{ unmockedMethodCallHandler } {
 		auto mptr = union_cast<void*>(&DynamicProxy::unmocked);
 		for (unsigned int i = 0; i < vtable.getSize(); i++) {
 			vtable.setMethod(i, mptr);
