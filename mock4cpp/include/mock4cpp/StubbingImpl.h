@@ -173,14 +173,16 @@ namespace mock4cpp {
 	private:
 		FunctionStubbingRoot & operator= (const FunctionStubbingRoot & other) = delete;
 	protected:
+
 		virtual MethodInvocationMockBase<R, arglist...>& InvocationMock() override  {
-			return *invocationMock;
+			return *MethodStubbingBase<R, arglist...>::invocationMock;
 		}
+
 	public:
 		FunctionStubbingRoot(std::shared_ptr<StubbingContext <R, arglist... >> stubbingContext) :
-			MethodStubbingBase(stubbingContext),
-			FunctionStubbingProgress(),
-			FirstFunctionStubbingProgress()
+			MethodStubbingBase<R, arglist...>(stubbingContext),
+			FunctionStubbingProgress<R, arglist...>(),
+			FirstFunctionStubbingProgress<R, arglist...>()
 		{
 		}
 
@@ -192,19 +194,19 @@ namespace mock4cpp {
 		}
 
 		FirstFunctionStubbingProgress<R, arglist...>& Using(const arglist&... args) {
-			invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>>{new ExpectedInvocationMock<R, arglist...>(args...)};
+			MethodStubbingBase<R, arglist...>::invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>>{new ExpectedInvocationMock<R, arglist...>(args...)};
 			return *this;
 		}
 
 		FirstFunctionStubbingProgress<R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
-			invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {new MatchingInvocationMock<R, arglist...>(matcher)};
+			MethodStubbingBase<R, arglist...>::invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {new MatchingInvocationMock<R, arglist...>(matcher)};
 			return *this;
 		}
 
 		NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 			// Must override since the implementation in base class is privately inherited
-			startStubbing();
-			initInvocationMockIfNeeded();
+			MethodStubbingBase<R, arglist...>::startStubbing();
+			MethodStubbingBase<R, arglist...>::initInvocationMockIfNeeded();
 			return FunctionStubbingProgress<R, arglist...>::Do(method);
 		}
 
@@ -231,14 +233,14 @@ namespace mock4cpp {
 		ProcedureStubbingRoot & operator= (const ProcedureStubbingRoot & other) = delete;
 	protected:
 		virtual MethodInvocationMockBase<R, arglist...>& InvocationMock() override  {
-			return *invocationMock;
+			return *MethodStubbingBase<R, arglist...>::invocationMock;
 		}
 
 	public:
 		ProcedureStubbingRoot(std::shared_ptr < StubbingContext < R, arglist... >> stubbingContext) :
-			MethodStubbingBase(stubbingContext),
-			ProcedureStubbingProgress(),
-			FirstProcedureStubbingProgress()
+			MethodStubbingBase<R, arglist...>(stubbingContext),
+			ProcedureStubbingProgress<R, arglist...>(),
+			FirstProcedureStubbingProgress<R, arglist...>()
 		{
 		}
 
@@ -250,19 +252,19 @@ namespace mock4cpp {
 		}
 
 		FirstProcedureStubbingProgress<R, arglist...>& Using(const arglist&... args) {
-			invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>>{new ExpectedInvocationMock<R, arglist...>(args...)};
+			MethodStubbingBase<R, arglist...>::invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>>{new ExpectedInvocationMock<R, arglist...>(args...)};
 			return *this;
 		}
 
 		FirstProcedureStubbingProgress<R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
-			invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>>{new MatchingInvocationMock<R, arglist...>(matcher)};
+			MethodStubbingBase<R, arglist...>::invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>>{new MatchingInvocationMock<R, arglist...>(matcher)};
 			return *this;
 		}
 
 		NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 			// Must override since the implementation in base class is privately inherited
-			startStubbing();
-			initInvocationMockIfNeeded();
+			MethodStubbingBase<R, arglist...>::startStubbing();
+			MethodStubbingBase<R, arglist...>::initInvocationMockIfNeeded();
 			return ProcedureStubbingProgress<R, arglist...>::Do(method);
 		}
 

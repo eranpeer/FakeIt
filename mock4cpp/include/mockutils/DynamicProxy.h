@@ -47,11 +47,11 @@ struct DynamicProxy
 		return ptr.get() != nullptr;
 	}
 
-	template <typename MOCK, typename R, typename... arglist>
-	MOCK getMethodMock(R(C::*vMethod)(arglist...)){
+	template <typename R, typename... arglist>
+	Destructable * getMethodMock(R(C::*vMethod)(arglist...)){
 		std::shared_ptr < MethodProxy<R, arglist...>> methodProxy = MethodProxyCreator<R, arglist...>::createMethodProxy(vMethod);
 		std::shared_ptr<Destructable> ptr = methodMocks[methodProxy->getOffset()];
-		return reinterpret_cast<MOCK>(ptr.get());
+		return ptr.get();
 	}
 
 	template <typename DATA_TYPE, typename... arglist>

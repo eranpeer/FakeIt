@@ -24,7 +24,8 @@ private:
 			auto methodMock = std::shared_ptr<MethodInvocationHandler<R, arglist...>>{new MethodMock<R, arglist...>(*this)};
 			instance.stubMethod(vMethod, methodMock);
 		}
-		MethodMock<R, arglist...> * methodMock = instance.getMethodMock<MethodMock<R, arglist...> *>(vMethod);
+		Destructable * d = instance.getMethodMock(vMethod);
+		MethodMock<R, arglist...> * methodMock = reinterpret_cast<MethodMock<R, arglist...> *>(d);
 		return *methodMock;
 	}
 
