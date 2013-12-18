@@ -16,14 +16,15 @@ struct DefaultValue {
 	}
 
 	// Type is default constructible => It can have a default value.
-	template<typename C, class REF = std::add_reference<C>::type>
+	//template<typename C, class REF = std::add_reference<C>::type>
+	template<typename C>
 	static typename
 		std::enable_if <
 		!std::is_void<C>::value &&
 		!std::is_reference<C>::value &&
 		!std::is_abstract<C>::value &&
 		std::is_default_constructible<C>::value
-		, REF > ::type
+		, C& > ::type
 		value()
 	{
 		static C val{};

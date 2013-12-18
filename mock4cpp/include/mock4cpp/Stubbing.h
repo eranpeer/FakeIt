@@ -65,22 +65,17 @@ namespace mock4cpp {
 
 			virtual ~NextFunctionStubbingProgress() {};
 
-			template<typename NO_REF = std::remove_reference<R>::type>
-			typename std::enable_if<!std::is_void<R>::value && is_copy_initializable<NO_REF>::value, NextFunctionStubbingProgress<R, arglist...>&>::type
-				ThenReturn(const R& r) {
-					return ThenDo([r](...)->R{ return r; });
-				}
-
-			template<typename NO_REF = std::remove_reference<R>::type>
-			typename std::enable_if<!std::is_void<R>::value && !is_copy_initializable<NO_REF>::value, NextFunctionStubbingProgress<R, arglist...>&>::type
+			template <class = typename std::enable_if<!std::is_void<R>::value>::type>
+			NextFunctionStubbingProgress<R, arglist...>&
 				ThenReturn(const R& r) {
 					return ThenDo([&r](...)->R{ return r; });
 				}
 
 			template <class = typename std::enable_if<std::is_void<R>::value>::type>
-			NextFunctionStubbingProgress<R, arglist...>& ThenReturn(R) {
-				return ThenDo([](...)->R{ return DefaultValue::value<R>(); });
-			}
+			NextFunctionStubbingProgress<R, arglist...>& 
+				ThenReturn() {
+					return ThenDo([](...)->R{ return DefaultValue::value<R>(); });
+				}
 
 			template <typename E>
 			NextFunctionStubbingProgress<R, arglist...>& ThenThrow(const E& e) {
@@ -91,7 +86,7 @@ namespace mock4cpp {
 				return ThenDo(std::function<R(arglist...)>(method));
 			}
 
-			virtual  NextFunctionStubbingProgress<R, arglist...>& ThenDo(std::function<R(arglist...)> method) = 0;
+			virtual auto ThenDo(std::function<R(arglist...)> method) -> NextFunctionStubbingProgress<R, arglist...>& = 0;
 
 		private:
 			NextFunctionStubbingProgress & operator= (const NextFunctionStubbingProgress & other) = delete;

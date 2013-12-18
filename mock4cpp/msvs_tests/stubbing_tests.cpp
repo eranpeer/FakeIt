@@ -369,6 +369,3 @@ namespace mock4cpp_tests
 		}
 	};
 }
-
-
-
