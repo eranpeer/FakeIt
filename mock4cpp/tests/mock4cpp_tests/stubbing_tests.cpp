@@ -37,7 +37,7 @@ struct BasicStubbing: tpunit::TestFixture {
 			mock[&SomeInterface::func] = [](...){return 1;};
 
 			When(mock[&SomeInterface::func]).Do([](...){return 1;});
-			//int a;
+//			int a;
 //			SomeInterface &i = mock.get();
 //			ASSERT_EQUAL(1,i.func(1));
 //			ASSERT_THROW(i.proc(1),UnmockedMethodException);
