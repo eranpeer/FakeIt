@@ -150,8 +150,8 @@ public:
 		typename MEMBER
 		, class = typename std::enable_if<std::is_member_function_pointer<MEMBER>::value>::type
 	>
-	auto operator [](MEMBER member) -> decltype(When(member)) {
-		return When(member);
+	auto operator [](MEMBER member) -> decltype(this->When(member)) {
+		return this->When(member);
 	}
 
 };
@@ -172,12 +172,12 @@ public:
 	WhenFunctor() {}
 
 	template <typename R, typename... arglist>
-	FirstProcedureStubbingProgress<R, arglist...>& operator()(FirstProcedureStubbingProgress<R, arglist...>& stubbingProgress) {
+	FirstProcedureStubbingProgress<R, arglist...>& operator()(ProcedureStubbingRoot<R, arglist...>&& stubbingProgress) {
 		return  stubbingProgress;
 	}
 
 	template <typename R, typename... arglist>
-	FirstFunctionStubbingProgress<R, arglist...>& operator()(FirstFunctionStubbingProgress<R, arglist...>& stubbingProgress) {
+	FirstFunctionStubbingProgress<R, arglist...>& operator()(FunctionStubbingRoot<R, arglist...>&& stubbingProgress) {
 		return  stubbingProgress;
 	}
 
