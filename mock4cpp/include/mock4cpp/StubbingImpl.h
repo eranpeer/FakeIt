@@ -239,8 +239,8 @@ namespace mock4cpp {
 	public:
 		ProcedureStubbingRoot(std::shared_ptr < StubbingContext < R, arglist... >> stubbingContext) :
 			MethodStubbingBase<R, arglist...>(stubbingContext),
-			ProcedureStubbingProgress<R, arglist...>(),
-			FirstProcedureStubbingProgress<R, arglist...>()
+			FirstProcedureStubbingProgress<R, arglist...>(),
+			ProcedureStubbingProgress<R, arglist...>()
 		{
 		}
 

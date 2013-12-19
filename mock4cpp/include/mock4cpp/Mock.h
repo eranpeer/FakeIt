@@ -125,7 +125,7 @@ public:
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	auto When(R(C::*vMethod)(arglist...)) -> decltype(StubImpl(vMethod)){
+	ProcedureStubbingRoot<R, arglist...> When(R(C::*vMethod)(arglist...)){
 		return StubImpl(vMethod);
 	}
 

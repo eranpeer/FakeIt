@@ -13,6 +13,7 @@ struct BasicStubbing: tpunit::TestFixture {
 	struct SomeInterface {
 		virtual int func(int) = 0;
 		virtual void proc(int) = 0;
+		int a = 0;
 	};
 
 	void ShouldThrow_UnmockedMethodException_WhenCallingANonStubbedMethod() {
@@ -25,7 +26,12 @@ struct BasicStubbing: tpunit::TestFixture {
 
 	void ShouldReturn_DefaultValue_WhenCallingAStubbedMethodWithNoSpecifiedBehaviour() {
 			Mock<SomeInterface> mock;
-//			mock[&SomeInterface::func] = [](...){return 0;};
+			//mock[&SomeInterface::func] = [](...){return 0;};
+			mock.When(&SomeInterface::func).Return(0);
+			mock.When(&SomeInterface::func).Do([](...){return 0;});
+			mock.When(&SomeInterface::proc).Return();
+			//mock.When(&SomeInterface::proc).Do([](...){return ;});
+			//int a;
 //			SomeInterface &i = mock.get();
 //			ASSERT_EQUAL(1,i.func(1));
 //			ASSERT_THROW(i.proc(1),UnmockedMethodException);
