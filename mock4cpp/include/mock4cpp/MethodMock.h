@@ -102,7 +102,7 @@ namespace mock4cpp {
 	struct DefaultInvocationMock : public MethodInvocationMockBase<R, arglist...>
 	{
 		DefaultInvocationMock(std::function<R(arglist...)> methodBehavior) {
-			appendDo(methodBehavior);
+			MethodInvocationMockBase<R, arglist...>::appendDo(methodBehavior);
 		}
 
 		virtual bool matches(ActualInvocation<arglist...>& invocation) override {
