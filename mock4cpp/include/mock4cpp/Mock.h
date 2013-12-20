@@ -215,12 +215,12 @@ public:
 	WhenFunctor() {}
 
 	template <typename R, typename... arglist>
-	FirstProcedureStubbingProgress<R, arglist...>& operator()(const ProcedureStubbingRoot<R, arglist...>& stubbingProgress) {
+	FirstProcedureStubbingProgress<R, arglist...>& operator()(const FirstProcedureStubbingProgress<R, arglist...>& stubbingProgress) {
 		return  (FirstProcedureStubbingProgress<R, arglist...>&)stubbingProgress;
 	}
 
 	template <typename R, typename... arglist>
-	FirstFunctionStubbingProgress<R, arglist...>& operator()(const FunctionStubbingRoot<R, arglist...>& stubbingProgress) {
+	FirstFunctionStubbingProgress<R, arglist...>& operator()(const FirstFunctionStubbingProgress<R, arglist...>& stubbingProgress) {
 		return  (FirstFunctionStubbingProgress<R, arglist...>&)stubbingProgress;
 	}
 
