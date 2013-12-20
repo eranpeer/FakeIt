@@ -31,7 +31,7 @@ namespace mock4cpp {
 		{
 
 			FunctionStubbingProgress() = default;
-			~FunctionStubbingProgress() override = default;
+			virtual ~FunctionStubbingProgress() override = default;
 
 			NextFunctionStubbingProgress<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
 				InvocationMock().appendDo(method);

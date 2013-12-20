@@ -27,19 +27,19 @@ struct BasicStubbing: tpunit::TestFixture {
 	void ShouldReturn_DefaultValue_WhenCallingAStubbedMethodWithNoSpecifiedBehaviour() {
 			Mock<SomeInterface> mock;
 			//mock[&SomeInterface::func] = [](...){return 0;};
-			mock.When(&SomeInterface::func).Return(0);
-			mock.When(&SomeInterface::func).Do([](...){return 0;});
-			mock.When(&SomeInterface::proc).Return();
-			mock.When(&SomeInterface::proc).Do([](...){return ;});
-			mock.When(&SomeInterface::proc).Throw(1);
-			mock[&SomeInterface::proc];
-			mock[&SomeInterface::proc] = [](...){return ;};
-			mock[&SomeInterface::func] = [](...){return 1;};
+//			mock.When(&SomeInterface::func).Return(0);
+//			mock.When(&SomeInterface::func).Do([](...){return 0;});
+//			mock.When(&SomeInterface::proc).Return();
+//			mock.When(&SomeInterface::proc).Do([](...){return ;});
+//			mock.When(&SomeInterface::proc).Throw(1);
+//			mock[&SomeInterface::proc];
+//			mock[&SomeInterface::proc] = [](...){return ;};
+//			mock[&SomeInterface::func] = [](...){return 1;};
 
-			//When(mock[&SomeInterface::func]).Do([](...){return 1;});
+			When(mock[&SomeInterface::func]).Do([](...){return 1;});
 			//int a;
-//			SomeInterface &i = mock.get();
-//			ASSERT_EQUAL(1,i.func(1));
+			SomeInterface &i = mock.get();
+			ASSERT_EQUAL(1,i.func(1));
 //			ASSERT_THROW(i.proc(1),UnmockedMethodException);
 	}
 
