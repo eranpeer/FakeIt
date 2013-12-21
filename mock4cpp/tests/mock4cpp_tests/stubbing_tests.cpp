@@ -55,17 +55,6 @@ struct BasicStubbing: tpunit::TestFixture {
 		ASSERT_NO_THROW(i.proc(1));
 	}
 
-	void stubbing_a_method_to_default_behaviore() {
-		Mock<SomeInterface> mock;
-
-		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
-
-		SomeInterface &i = mock.get();
-
-		ASSERT_EQUAL(0, i.func(1));
-		ASSERT_NO_THROW(i.proc(1));
-	}
-
 	void stub_a_function_to_return_a_specified_value() {
 		Mock<SomeInterface> mock;
 
