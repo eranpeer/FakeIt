@@ -12,7 +12,10 @@ struct BasicStubbing: tpunit::TestFixture {
 					TEST(BasicStubbing::stub_a_function_to_return_a_specified_value),
 					TEST(BasicStubbing::stub_a_method_to_throw_a_specified_exception), //
 					TEST(BasicStubbing::stub_a_method_with_lambda_delegate), //
-					TEST(BasicStubbing::stub_a_method_with_static_method_delegate) //
+					TEST(BasicStubbing::stub_a_method_with_static_method_delegate), //
+					TEST(BasicStubbing::stub_by_assignment_with_lambda_delegate), //
+					TEST(BasicStubbing::stub_by_assignment_with_static_method_delegate), //
+					TEST(BasicStubbing::stub_function_by_assigning_a_return_value) //
 							)  //
 	{
 	}
@@ -134,6 +137,49 @@ struct BasicStubbing: tpunit::TestFixture {
 		} catch (int e) {
 			ASSERT_EQUAL(1, e);
 		}
+	}
+
+	void stub_by_assignment_with_lambda_delegate() {
+		Mock<SomeInterface> mock;
+
+		int a = 0;
+
+		mock[&SomeInterface::func] = [](int val) {return val;};
+		mock[&SomeInterface::proc] = [&a](int val) {a = val;};
+
+		SomeInterface &i = mock.get();
+
+		ASSERT_EQUAL(3, i.func(3));
+
+		i.proc(3);
+		ASSERT_EQUAL(3, a);
+	}
+
+	void stub_by_assignment_with_static_method_delegate() {
+		Mock<SomeInterface> mock;
+
+		mock[&SomeInterface::func] = func_delegate;
+		mock[&SomeInterface::proc] = proc_delegate;
+
+		SomeInterface &i = mock.get();
+
+		ASSERT_EQUAL(3, i.func(3));
+
+		try {
+			i.proc(1);
+		} catch (int e) {
+			ASSERT_EQUAL(1, e);
+		}
+	}
+
+	void stub_function_by_assigning_a_return_value() {
+		Mock<SomeInterface> mock;
+
+		mock[&SomeInterface::func] = 3;
+
+		SomeInterface &i = mock.get();
+
+		ASSERT_EQUAL(3, i.func(5));
 	}
 
 } __test_any;
