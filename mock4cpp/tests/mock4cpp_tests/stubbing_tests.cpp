@@ -4,8 +4,8 @@
 struct BasicStubbing: tpunit::TestFixture {
 	BasicStubbing() :
 			tpunit::TestFixture( //
-					TEST(BasicStubbing::ShouldThrow_UnmockedMethodException_WhenCallingANonStubbedMethod), //
-					TEST(BasicStubbing::ShouldReturn_DefaultValue_WhenCallingAStubbedMethodWithNoSpecifiedBehaviour), //
+					TEST(BasicStubbing::calling_an_unstubbed_method_should_raise_UnmockedMethodException), //
+					TEST(BasicStubbing::stubbing_method_to_default_behaviore), //
 					TEST(BasicStubbing::test_b)  //
 							)  //
 	{
@@ -17,7 +17,7 @@ struct BasicStubbing: tpunit::TestFixture {
 		int a = 0;
 	};
 
-	void ShouldThrow_UnmockedMethodException_WhenCallingANonStubbedMethod() {
+	void calling_an_unstubbed_method_should_raise_UnmockedMethodException() {
 		Mock<SomeInterface> mock;
 		SomeInterface &i = mock.get();
 		ASSERT_THROW(i.func(1),UnmockedMethodException);
@@ -25,9 +25,20 @@ struct BasicStubbing: tpunit::TestFixture {
 	}
 
 
-	void ShouldReturn_DefaultValue_WhenCallingAStubbedMethodWithNoSpecifiedBehaviour() {
+	void stubbing_method_to_default_behaviore() {
 			Mock<SomeInterface> mock;
-			//mock[&SomeInterface::func] = [](...){return 0;};
+
+			Stub(mock[&SomeInterface::func]);
+			//Stub(mock[&SomeInterface::proc]);
+
+			//SomeInterface &i = mock.get();
+
+			//ASSERT_EQUAL(0,i.func(1));
+			//ASSERT_NO_THROW(i.proc(1));
+	}
+
+	void test_a() {
+		//mock[&SomeInterface::func] = [](...){return 0;};
 //			mock.When(&SomeInterface::func).Return(0);
 //			mock.When(&SomeInterface::func).Do([](...){return 0;});
 //			mock.When(&SomeInterface::proc).Return();
@@ -37,14 +48,6 @@ struct BasicStubbing: tpunit::TestFixture {
 //			mock[&SomeInterface::proc] = [](...){return ;};
 //			mock[&SomeInterface::func] = [](...){return 1;};
 
-			When(mock[&SomeInterface::func]).Do([](...){return 1;});
-//			int a;
-			SomeInterface &i = mock.get();
-			ASSERT_EQUAL(1,i.func(1));
-//			ASSERT_THROW(i.proc(1),UnmockedMethodException);
-	}
-
-	void test_a() {
 	}
 
 	void test_b() {
