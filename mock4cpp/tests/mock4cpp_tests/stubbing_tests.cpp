@@ -29,12 +29,12 @@ struct BasicStubbing: tpunit::TestFixture {
 			Mock<SomeInterface> mock;
 
 			Stub(mock[&SomeInterface::func]);
-			//Stub(mock[&SomeInterface::proc]);
+			Stub(mock[&SomeInterface::proc]);
 
-			//SomeInterface &i = mock.get();
+			SomeInterface &i = mock.get();
 
-			//ASSERT_EQUAL(0,i.func(1));
-			//ASSERT_NO_THROW(i.proc(1));
+			ASSERT_EQUAL(0,i.func(1));
+			ASSERT_NO_THROW(i.proc(1));
 	}
 
 	void test_a() {
