@@ -234,20 +234,18 @@ public:
 	StubFunctor() {}
 
 	template <typename H>
-	H& operator() (H& head) {
-		//When(head).startStubbing();
-		head.startStubbing();
-		return head;
+	H& operator() (const H& head) {
+		H& headWithoutConst = (H&) head;
+		headWithoutConst.startStubbing();
+		return headWithoutConst;
 	}
 
 	template <typename H, typename... M>
-	void operator() (H& head, M&... tail) {
-		//When(head).startStubbing();
-		head.startStubbing();
+	void operator() (const H& head, const M&... tail) {
+		H& headWithoutConst = (H&) head;
+		headWithoutConst.startStubbing();
 		this->operator()(tail...);
 	}
 } static Stub;
-
-
 
 #endif // Mock_h__
