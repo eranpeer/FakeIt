@@ -180,11 +180,6 @@ public:
 		FirstFunctionStubbingProgress<R, arglist...>::operator = (method);
 	}
 
-	virtual void operator=(const R& returnValue) {
-		// Must override since the implementation in base class is privately inherited
-		FirstFunctionStubbingProgress<R, arglist...>::operator = (returnValue);
-	}
-
 	FirstFunctionStubbingProgress<R, arglist...>& Using(const arglist&... args) {
 		MethodStubbingBase<R, arglist...>::invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {
 				new ExpectedInvocationMock<R, arglist...>(args...) };

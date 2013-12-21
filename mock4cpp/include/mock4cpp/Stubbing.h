@@ -119,10 +119,6 @@ struct FirstFunctionStubbingProgress: public virtual verification::MethodVerific
 		Do(method);
 	}
 
-	virtual void operator=(const R& returnValue) {
-		Do([returnValue](...)->R {return returnValue;});
-	}
-
 	virtual auto Do(std::function<R(arglist...)> method) -> NextFunctionStubbingProgress<R, arglist...>& = 0;
 
 	virtual void VerifyInvocations(const int times) override = 0;

@@ -14,8 +14,7 @@ struct BasicStubbing: tpunit::TestFixture {
 					TEST(BasicStubbing::stub_a_method_with_lambda_delegate), //
 					TEST(BasicStubbing::stub_a_method_with_static_method_delegate), //
 					TEST(BasicStubbing::stub_by_assignment_with_lambda_delegate), //
-					TEST(BasicStubbing::stub_by_assignment_with_static_method_delegate), //
-					TEST(BasicStubbing::stub_function_by_assigning_a_return_value) //
+					TEST(BasicStubbing::stub_by_assignment_with_static_method_delegate) //
 							)  //
 	{
 	}
@@ -170,16 +169,6 @@ struct BasicStubbing: tpunit::TestFixture {
 		} catch (int e) {
 			ASSERT_EQUAL(1, e);
 		}
-	}
-
-	void stub_function_by_assigning_a_return_value() {
-		Mock<SomeInterface> mock;
-
-		mock[&SomeInterface::func] = 3;
-
-		SomeInterface &i = mock.get();
-
-		ASSERT_EQUAL(3, i.func(5));
 	}
 
 } __test_any;
