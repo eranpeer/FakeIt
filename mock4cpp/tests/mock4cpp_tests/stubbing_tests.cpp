@@ -7,10 +7,12 @@ struct BasicStubbing: tpunit::TestFixture {
 			tpunit::TestFixture(
 					//
 					TEST(BasicStubbing::calling_an_unstubbed_method_should_raise_UnmockedMethodException), //
-					TEST(BasicStubbing::stubbing_method_to_default_behaviore), //
-					TEST(BasicStubbing::stubbing_multiple_methods_to_default_behaviore),
-					TEST(BasicStubbing::stubbing_a_function_and_returning_a_specified_value),
-					TEST(BasicStubbing::stubbing_a_method_and_throwing_a_specified_exception) //
+					TEST(BasicStubbing::stub_method_to_default_behaviore), //
+					TEST(BasicStubbing::stub_multiple_methods_to_default_behaviore),
+					TEST(BasicStubbing::stub_a_function_to_return_a_specified_value),
+					TEST(BasicStubbing::stub_a_method_to_throw_a_specified_exception), //
+					TEST(BasicStubbing::stub_a_method_with_lambda_delegate), //
+					TEST(BasicStubbing::stub_a_method_with_static_method_delegate) //
 							)  //
 	{
 	}
@@ -28,7 +30,7 @@ struct BasicStubbing: tpunit::TestFixture {
 		ASSERT_THROW(i.proc(1), UnmockedMethodException);
 	}
 
-	void stubbing_method_to_default_behaviore() {
+	void stub_method_to_default_behaviore() {
 		Mock<SomeInterface> mock;
 
 		Stub(mock[&SomeInterface::func]);
@@ -40,7 +42,7 @@ struct BasicStubbing: tpunit::TestFixture {
 		ASSERT_NO_THROW(i.proc(1));
 	}
 
-	void stubbing_multiple_methods_to_default_behaviore() {
+	void stub_multiple_methods_to_default_behaviore() {
 		Mock<SomeInterface> mock;
 
 		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
@@ -62,7 +64,7 @@ struct BasicStubbing: tpunit::TestFixture {
 		ASSERT_NO_THROW(i.proc(1));
 	}
 
-	void stubbing_a_function_and_returning_a_specified_value() {
+	void stub_a_function_to_return_a_specified_value() {
 		Mock<SomeInterface> mock;
 
 		When(mock[&SomeInterface::func]).Return(1);
@@ -72,41 +74,66 @@ struct BasicStubbing: tpunit::TestFixture {
 		ASSERT_EQUAL(1, i.func(1));
 	}
 
-	void stubbing_a_method_and_throwing_a_specified_exception() {
+	void stub_a_method_to_throw_a_specified_exception() {
 		Mock<SomeInterface> mock;
 
-		When(mock[&SomeInterface::func]).Throw(std::string("exception"));
-		When(mock[&SomeInterface::proc]).Throw(std::string("exception"));
+		When(mock[&SomeInterface::func]).Throw(std::string("func exception"));
+		When(mock[&SomeInterface::proc]).Throw(std::string("proc exception"));
 
 		SomeInterface &i = mock.get();
 
 		try {
 			i.func(1);
 		} catch (std::string e) {
-			ASSERT_EQUAL(std::string("exception"), e);
+			ASSERT_EQUAL(std::string("func exception"), e);
 		}
 
 		try {
 			i.proc(1);
 		} catch (std::string e) {
-			ASSERT_EQUAL(std::string("exception"), e);
+			ASSERT_EQUAL(std::string("proc exception"), e);
 		}
 	}
 
-	void test_a() {
-		//mock[&SomeInterface::func] = [](...){return 0;};
-//			mock.When(&SomeInterface::func).Return(0);
-//			mock.When(&SomeInterface::func).Do([](...){return 0;});
-//			mock.When(&SomeInterface::proc).Return();
-//			mock.When(&SomeInterface::proc).Do([](...){return ;});
-//			mock.When(&SomeInterface::proc).Throw(1);
-//			mock[&SomeInterface::proc];
-//			mock[&SomeInterface::proc] = [](...){return ;};
-//			mock[&SomeInterface::func] = [](...){return 1;};
+	void stub_a_method_with_lambda_delegate() {
+		Mock<SomeInterface> mock;
 
+		int a = 0;
+
+		When(mock[&SomeInterface::func]).Do([](int val) {return val;});
+		When(mock[&SomeInterface::proc]).Do([&a](int val) {a = val;});
+
+		SomeInterface &i = mock.get();
+
+		ASSERT_EQUAL(3, i.func(3));
+
+		i.proc(3);
+		ASSERT_EQUAL(3, a);
 	}
 
-	void test_b() {
+	static int func_delegate(int val) {
+		return val;
+	}
+
+	static void proc_delegate(int val) {
+		throw val;
+	}
+
+	void stub_a_method_with_static_method_delegate() {
+		Mock<SomeInterface> mock;
+
+		When(mock[&SomeInterface::func]).Do(func_delegate);
+		When(mock[&SomeInterface::proc]).Do(proc_delegate);
+
+		SomeInterface &i = mock.get();
+
+		ASSERT_EQUAL(3, i.func(3));
+
+		try {
+			i.proc(1);
+		} catch (int e) {
+			ASSERT_EQUAL(1, e);
+		}
 	}
 
 } __test_any;
