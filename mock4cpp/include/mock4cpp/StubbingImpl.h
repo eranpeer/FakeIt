@@ -77,8 +77,18 @@ private:
 using namespace mock4cpp;
 using namespace mock4cpp::stubbing;
 
+struct MethodStubbingInternal {
+
+	virtual void clearProgress() = 0;
+
+	virtual void startStubbing() = 0;
+
+	virtual void startVerification() = 0;
+
+};
+
 template<typename R, typename ... arglist>
-class MethodStubbingBase: public virtual verification::MethodVerificationProgress {
+class MethodStubbingBase: private virtual MethodStubbingInternal, public virtual verification::MethodVerificationProgress {
 protected:
 	std::shared_ptr<StubbingContext<R, arglist...>> stubbingContext;
 	std::shared_ptr<MethodInvocationMockBase<R, arglist...>> invocationMock;
@@ -102,8 +112,7 @@ protected:
 		}
 	}
 
-
-	virtual ~MethodStubbingBase() {
+	virtual ~MethodStubbingBase() noexcept(false) {
 		if (progressType == ProgressType::NONE) {
 			return;
 		}
@@ -120,14 +129,19 @@ protected:
 			invocationMock = nullptr;
 
 			if (expectedInvocationCount == -1) {
-				if (actualInvocations == 0)
-					throw(AssertionException(std::string("no matching invocation")));
+				if (actualInvocations == 0) {
+					if (!std::uncaught_exception()) {
+						throw(AssertionException(std::string("no matching invocation")));
+					}
+				}
 				return;
 			}
 			if (actualInvocations != expectedInvocationCount) {
-				throw(AssertionException(
-						std::string("expected ") + std::to_string(expectedInvocationCount) + " but was "
-								+ std::to_string(actualInvocations)));
+				if (!std::uncaught_exception()) {
+					throw(AssertionException(
+							std::string("expected ") + std::to_string(expectedInvocationCount) + " but was "
+									+ std::to_string(actualInvocations)));
+				}
 			}
 		}
 	}
@@ -141,7 +155,7 @@ public:
 		}
 	}
 
-	void startStubbing() {
+	virtual void startStubbing() {
 		progressType = ProgressType::STUBBING;
 	}
 
@@ -157,7 +171,7 @@ public:
 };
 
 template<typename R, typename ... arglist>
-class FunctionStubbingRoot: public virtual MethodStubbingBase<R, arglist...>,
+class FunctionStubbingRoot: private virtual MethodStubbingBase<R, arglist...>,
 		public virtual FirstFunctionStubbingProgress<R, arglist...>,
 		private virtual FunctionStubbingProgress<R, arglist...> {
 private:
@@ -176,9 +190,11 @@ public:
 
 	FunctionStubbingRoot(const FunctionStubbingRoot& other) = default;
 
+	~FunctionStubbingRoot() noexcept(false) {}
+
 	virtual void operator=(std::function<R(arglist...)> method) override {
 		// Must override since the implementation in base class is privately inherited
-		FirstFunctionStubbingProgress<R, arglist...>::operator = (method);
+		FirstFunctionStubbingProgress<R, arglist...>::operator =(method);
 	}
 
 	FirstFunctionStubbingProgress<R, arglist...>& Using(const arglist&... args) {
@@ -214,7 +230,7 @@ public:
 };
 
 template<typename R, typename ... arglist>
-class ProcedureStubbingRoot: public virtual MethodStubbingBase<R, arglist...>,
+class ProcedureStubbingRoot: private virtual MethodStubbingBase<R, arglist...>,
 		public virtual FirstProcedureStubbingProgress<R, arglist...>,
 		private virtual ProcedureStubbingProgress<R, arglist...> {
 private:
@@ -229,6 +245,8 @@ public:
 			MethodStubbingBase<R, arglist...>(stubbingContext), FirstProcedureStubbingProgress<R, arglist...>(), ProcedureStubbingProgress<
 					R, arglist...>() {
 	}
+
+	~ProcedureStubbingRoot() noexcept(false) {}
 
 	ProcedureStubbingRoot(const ProcedureStubbingRoot& other) = default;
 

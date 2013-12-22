@@ -161,6 +161,7 @@ struct BasicStubbing: tpunit::TestFixture {
 	}
 
 	void consditional_stubbing() {
+		int a;
 //		Mock<SomeInterface> mock;
 //
 //		Stub(mock[&SomeInterface::func].Using(1));
@@ -168,7 +169,7 @@ struct BasicStubbing: tpunit::TestFixture {
 //		SomeInterface &i = mock.get();
 //
 //		ASSERT_EQUAL(1, i.func(1));
-
+//
 //		try {
 //			i.func(2);
 //		} catch (int e) {
@@ -176,4 +177,4 @@ struct BasicStubbing: tpunit::TestFixture {
 //		}
 	}
 
-} __test_any;
+} __BasicStubbing;

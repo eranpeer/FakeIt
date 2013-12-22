@@ -12,16 +12,15 @@ using namespace mock4cpp;
 using namespace mock4cpp::stubbing;
 using namespace mock4cpp::verification;
 
-template <typename C>
-class Mock : private MockBase
-{	
+template<typename C>
+class Mock: private MockBase {
 private:
 	DynamicProxy<C> instance;
 
-	template <typename R, typename... arglist>
-	MethodMock<R, arglist...>& stubMethodIfNotStubbed(DynamicProxy<C> &instance, R(C::*vMethod)(arglist...)){
-		if (!instance.isStubbed(vMethod)){
-			auto methodMock = std::shared_ptr<MethodInvocationHandler<R, arglist...>>{new MethodMock<R, arglist...>(*this)};
+	template<typename R, typename ... arglist>
+	MethodMock<R, arglist...>& stubMethodIfNotStubbed(DynamicProxy<C> &instance, R (C::*vMethod)(arglist...)) {
+		if (!instance.isStubbed(vMethod)) {
+			auto methodMock = std::shared_ptr<MethodInvocationHandler<R, arglist...>> { new MethodMock<R, arglist...>(*this) };
 			instance.stubMethod(vMethod, methodMock);
 		}
 		Destructable * d = instance.getMethodMock(vMethod);
@@ -29,35 +28,36 @@ private:
 		return *methodMock;
 	}
 
-	template <typename R, typename... arglist>
-	class StubbingContextImpl : public StubbingContext<R,arglist...> {
+	template<typename R, typename ... arglist>
+	class StubbingContextImpl: public StubbingContext<R, arglist...> {
 		Mock<C>& mock;
-		R(C::*vMethod)(arglist...);
+		R (C::*vMethod)(arglist...);
 	public:
-		StubbingContextImpl(Mock<C>& mock, R(C::*vMethod)(arglist...)) :mock(mock),vMethod(vMethod){
+		StubbingContextImpl(Mock<C>& mock, R (C::*vMethod)(arglist...)) :
+				mock(mock), vMethod(vMethod) {
 		}
 		virtual MethodMock<R, arglist...>& getMethodMock() override {
-			return mock.stubMethodIfNotStubbed(mock.instance,vMethod);
+			return mock.stubMethodIfNotStubbed(mock.instance, vMethod);
 		}
 	};
 
-	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionStubbingRoot< R, arglist...> StubImpl(R(C::*vMethod)(arglist...)){
+	template<typename R, typename ... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
+	FunctionStubbingRoot<R, arglist...> StubImpl(R (C::*vMethod)(arglist...)) {
 		return FunctionStubbingRoot<R, arglist...>(
-			std::shared_ptr<StubbingContext <R, arglist...>>(new StubbingContextImpl< R, arglist...>(*this, vMethod)));
+				std::shared_ptr<StubbingContext<R, arglist...>>(new StubbingContextImpl<R, arglist...>(*this, vMethod)));
 	}
 
-	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureStubbingRoot<R, arglist...> StubImpl(R(C::*vMethod)(arglist...)){
+	template<typename R, typename ... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
+	ProcedureStubbingRoot<R, arglist...> StubImpl(R (C::*vMethod)(arglist...)) {
 		return ProcedureStubbingRoot<R, arglist...>(
-			std::shared_ptr <StubbingContext<R, arglist...>>(new StubbingContextImpl< R, arglist...>(*this, vMethod)));
+				std::shared_ptr<StubbingContext<R, arglist...>>(new StubbingContextImpl<R, arglist...>(*this, vMethod)));
 	}
 
-	void Stub(){}
+	void Stub() {
+	}
 
-	template <class DATA_TYPE, typename... arglist>
-	DataMemberStubbingRoot<C, DATA_TYPE> stubDataMember(DATA_TYPE C::*member, const arglist&... ctorargs)
-	{
+	template<class DATA_TYPE, typename ... arglist>
+	DataMemberStubbingRoot<C, DATA_TYPE> stubDataMember(DATA_TYPE C::*member, const arglist&... ctorargs) {
 		instance.stubDataMember(member, ctorargs...);
 		return DataMemberStubbingRoot<C, DATA_TYPE>();
 	}
@@ -65,36 +65,34 @@ private:
 public:
 	static_assert(std::is_polymorphic<C>::value, "Can only mock a polymorphic type");
 
-	Mock() : MockBase{}, instance{ []{ throw UnmockedMethodException{}; } }{
+	Mock() :
+			MockBase { }, instance { [] {throw UnmockedMethodException {};} } {
 	}
-	
-	~Mock(){
+
+	~Mock() {
 	}
-	
-	C& get()
-	{
+
+	C& get() {
 		return instance.get();
 	}
 
-	C& operator()()
-	{
+	C& operator()() {
 		return instance.get();
 	}
 
-	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionStubbingRoot<R, arglist...> When(R(C::*vMethod)(arglist...) const){
-		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
-		return StubImpl(methodWithoutConstVolatile);
+	template<typename R, typename ... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
+	FunctionStubbingRoot<R, arglist...> When(R (C::*vMethod)(arglist...) const) {
+		auto methodWithoutConstVolatile = reinterpret_cast<R (C::*)(arglist...)>(vMethod);return StubImpl(methodWithoutConstVolatile);
 	}
 
 	template < typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionStubbingRoot<R, arglist...> When(R(C::*vMethod)(arglist...) volatile){
+	FunctionStubbingRoot<R, arglist...> When(R(C::*vMethod)(arglist...) volatile) {
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return StubImpl(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionStubbingRoot<R, arglist...> When(R(C::*vMethod)(arglist...) const volatile){
+	FunctionStubbingRoot<R, arglist...> When(R(C::*vMethod)(arglist...) const volatile) {
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return StubImpl(methodWithoutConstVolatile);
 	}
@@ -107,30 +105,30 @@ public:
 	//		
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureStubbingRoot<R, arglist...> When(R(C::*vMethod)(arglist...) const){
+	ProcedureStubbingRoot<R, arglist...> When(R(C::*vMethod)(arglist...) const) {
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return StubImpl(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureStubbingRoot<R, arglist...> When(R(C::*vMethod)(arglist...) volatile){
+	ProcedureStubbingRoot<R, arglist...> When(R(C::*vMethod)(arglist...) volatile) {
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return StubImpl(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureStubbingRoot<R, arglist...> When(R(C::*vMethod)(arglist...) const volatile){
+	ProcedureStubbingRoot<R, arglist...> When(R(C::*vMethod)(arglist...) const volatile) {
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return StubImpl(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureStubbingRoot<R, arglist...> When(R(C::*vMethod)(arglist...)){
+	ProcedureStubbingRoot<R, arglist...> When(R(C::*vMethod)(arglist...)) {
 		return StubImpl(vMethod);
 	}
 
 	template <class DATA_TYPE, typename... arglist
-		, class = typename std::enable_if<std::is_member_object_pointer<DATA_TYPE C::*>::value>::type
+	, class = typename std::enable_if<std::is_member_object_pointer<DATA_TYPE C::*>::value>::type
 	>
 	DataMemberStubbingRoot<C, DATA_TYPE> Stub(DATA_TYPE C::* member, const arglist&... ctorargs)
 	{
@@ -138,31 +136,28 @@ public:
 	}
 
 	template <typename H, typename... M
-		, class = typename std::enable_if<std::is_member_function_pointer<H>::value>::type
+	, class = typename std::enable_if<std::is_member_function_pointer<H>::value>::type
 	>
-	void Stub(H head, M... tail) 
+	void Stub(H head, M... tail)
 	{
 		When(head).startStubbing();
 		Stub(tail...);
 	}
 
-
-
-
 	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionStubbingRoot<R, arglist...> operator [](R(C::*vMethod)(arglist...) const){
+	FunctionStubbingRoot<R, arglist...> operator [](R(C::*vMethod)(arglist...) const) {
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return StubImpl(methodWithoutConstVolatile);
 	}
 
 	template < typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionStubbingRoot<R, arglist...> operator [](R(C::*vMethod)(arglist...) volatile){
+	FunctionStubbingRoot<R, arglist...> operator [](R(C::*vMethod)(arglist...) volatile) {
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return StubImpl(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionStubbingRoot<R, arglist...> operator [](R(C::*vMethod)(arglist...) const volatile){
+	FunctionStubbingRoot<R, arglist...> operator [](R(C::*vMethod)(arglist...) const volatile) {
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return StubImpl(methodWithoutConstVolatile);
 	}
@@ -172,80 +167,80 @@ public:
 		return StubImpl(vMethod);
 	}
 
-
-
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureStubbingRoot<R, arglist...> operator [](R(C::*vMethod)(arglist...) const){
+	ProcedureStubbingRoot<R, arglist...> operator [](R(C::*vMethod)(arglist...) const) {
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return StubImpl(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureStubbingRoot<R, arglist...> operator [](R(C::*vMethod)(arglist...) volatile){
+	ProcedureStubbingRoot<R, arglist...> operator [](R(C::*vMethod)(arglist...) volatile) {
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return StubImpl(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureStubbingRoot<R, arglist...> operator [](R(C::*vMethod)(arglist...) const volatile){
+	ProcedureStubbingRoot<R, arglist...> operator [](R(C::*vMethod)(arglist...) const volatile) {
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return StubImpl(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureStubbingRoot<R, arglist...> operator [](R(C::*vMethod)(arglist...)){
+	ProcedureStubbingRoot<R, arglist...> operator [](R(C::*vMethod)(arglist...)) {
 		return StubImpl(vMethod);
 	}
 
 };
 
-class VerifyFunctor
-{
+class VerifyFunctor {
 public:
-	VerifyFunctor() {}
-	MethodVerificationProgress& operator() (MethodVerificationProgress& verificationProgress) {
-		verificationProgress.startVerification();
-		return  verificationProgress;
+	VerifyFunctor() {
 	}
-} static Verify;
+	MethodVerificationProgress& operator()(const MethodVerificationProgress& verificationProgress) {
+		MethodVerificationProgress& verificationProgressWithoutConst = (MethodVerificationProgress&)verificationProgress;
+		verificationProgressWithoutConst.startVerification();
+		return verificationProgressWithoutConst;
+	}
+}static Verify;
 
-class WhenFunctor
-{
+class WhenFunctor {
 public:
-	WhenFunctor() {}
+	WhenFunctor() {
+	}
 
-	template <typename R, typename... arglist>
+	template<typename R, typename ... arglist>
 	FirstProcedureStubbingProgress<R, arglist...>& operator()(const FirstProcedureStubbingProgress<R, arglist...>& stubbingProgress) {
-		return  (FirstProcedureStubbingProgress<R, arglist...>&)stubbingProgress;
+		return (FirstProcedureStubbingProgress<R, arglist...>&) stubbingProgress;
 	}
 
-	template <typename R, typename... arglist>
+	template<typename R, typename ... arglist>
 	FirstFunctionStubbingProgress<R, arglist...>& operator()(const FirstFunctionStubbingProgress<R, arglist...>& stubbingProgress) {
-		return  (FirstFunctionStubbingProgress<R, arglist...>&)stubbingProgress;
+		return (FirstFunctionStubbingProgress<R, arglist...>&) stubbingProgress;
 	}
 
-} static When;
+}static When;
 
-class StubFunctor
-{
+class StubFunctor {
 private:
-	void operator() (){}
+	void operator()() {
+	}
 public:
-	StubFunctor() {}
+	StubFunctor() {
+	}
 
-	template <typename H>
-	H& operator() (const H& head) {
+	template<typename H>
+	H& operator()(const H& head) {
 		H& headWithoutConst = (H&) head;
-		headWithoutConst.startStubbing();
+		((MethodStubbingInternal&) headWithoutConst).startStubbing();
 		return headWithoutConst;
 	}
 
-	template <typename H, typename... M>
-	void operator() (const H& head, const M&... tail) {
+	template<typename H, typename ... M>
+	void operator()(const H& head, const M&... tail) {
 		H& headWithoutConst = (H&) head;
-		headWithoutConst.startStubbing();
+		((MethodStubbingInternal&) headWithoutConst).startStubbing();
 		this->operator()(tail...);
 	}
-} static Stub;
+}static Stub;
 
 #endif // Mock_h__

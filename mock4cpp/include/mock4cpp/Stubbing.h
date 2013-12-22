@@ -22,8 +22,11 @@ private:
 namespace verification {
 
 struct MethodVerificationProgress {
+
 	MethodVerificationProgress() {
 	}
+
+	~MethodVerificationProgress() noexcept(false) {}
 
 	void Never() {
 		Times(0);
@@ -65,7 +68,7 @@ namespace stubbing {
 template<typename R, typename ... arglist>
 struct NextFunctionStubbingProgress {
 
-	virtual ~NextFunctionStubbingProgress() {
+	virtual ~NextFunctionStubbingProgress() noexcept (false) {
 	}
 
 	NextFunctionStubbingProgress<R, arglist...>&
@@ -96,9 +99,8 @@ private:
 template<typename R, typename ... arglist>
 struct FirstFunctionStubbingProgress: public virtual verification::MethodVerificationProgress {
 
-	virtual ~FirstFunctionStubbingProgress() {
+	virtual ~FirstFunctionStubbingProgress() noexcept (false) {
 	}
-	;
 
 	NextFunctionStubbingProgress<R, arglist...>&
 	Return(const R& r) {
@@ -129,9 +131,8 @@ private:
 
 template<typename R, typename ... arglist>
 struct NextProcedureStubbingProgress {
-	virtual ~NextProcedureStubbingProgress() {
+	virtual ~NextProcedureStubbingProgress() noexcept (false) {
 	}
-	;
 
 	NextProcedureStubbingProgress<R, arglist...>& ThenReturn() {
 		return ThenDo([](...)->R {return DefaultValue::value<R>();});
@@ -150,9 +151,8 @@ private:
 template<typename R, typename ... arglist>
 struct FirstProcedureStubbingProgress: public virtual verification::MethodVerificationProgress {
 
-	virtual ~FirstProcedureStubbingProgress() {
+	virtual ~FirstProcedureStubbingProgress() noexcept (false) {
 	}
-	;
 
 	NextProcedureStubbingProgress<R, arglist...>& Return() {
 		return Do([](...)->R {return DefaultValue::value<R>();});
