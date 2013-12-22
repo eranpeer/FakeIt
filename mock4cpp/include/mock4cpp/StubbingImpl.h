@@ -102,7 +102,6 @@ protected:
 		}
 	}
 
-public:
 
 	virtual ~MethodStubbingBase() {
 		if (progressType == ProgressType::NONE) {
@@ -132,6 +131,8 @@ public:
 			}
 		}
 	}
+
+public:
 
 	virtual void clearProgress() {
 		progressType = ProgressType::NONE;
