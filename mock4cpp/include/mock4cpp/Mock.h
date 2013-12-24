@@ -229,10 +229,9 @@ public:
 	}
 
 	template<typename H>
-	H& operator()(const H& head) {
+	void operator()(const H& head) {
 		H& headWithoutConst = (H&) head;
 		((MethodStubbingInternal&) headWithoutConst).startStubbing();
-		return headWithoutConst;
 	}
 
 	template<typename H, typename ... M>
@@ -241,6 +240,7 @@ public:
 		((MethodStubbingInternal&) headWithoutConst).startStubbing();
 		this->operator()(tail...);
 	}
+
 }static Stub;
 
 #endif // Mock_h__
