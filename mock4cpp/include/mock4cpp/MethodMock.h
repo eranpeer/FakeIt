@@ -66,8 +66,9 @@ namespace mock4cpp {
 	template <typename R, typename... arglist>
 	struct ExpectedInvocationMock : public MethodInvocationMockBase<R, arglist...>
 	{
-		ExpectedInvocationMock(const arglist&... args) : expectedArguments(args...)
+		ExpectedInvocationMock(const arglist&... args, std::function<R(arglist...)> methodBehavior) : expectedArguments(args...)
 		{
+			MethodInvocationMockBase<R, arglist...>::appendDo(methodBehavior);
 		}
 
 		virtual bool matches(ActualInvocation<arglist...>& invocation) override {
@@ -84,8 +85,9 @@ namespace mock4cpp {
 	template <typename R, typename... arglist>
 	struct MatchingInvocationMock : public MethodInvocationMockBase<R, arglist...>
 	{
-		MatchingInvocationMock(std::function<bool(arglist...)> matcher) : matcher{ matcher }
+		MatchingInvocationMock(std::function<bool(arglist...)> matcher, std::function<R(arglist...)> methodBehavior) : matcher{ matcher }
 		{
+			MethodInvocationMockBase<R, arglist...>::appendDo(methodBehavior);
 		}
 
 		virtual bool matches(ActualInvocation<arglist...>& invocation) override {

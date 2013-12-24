@@ -202,14 +202,16 @@ public:
 	}
 
 	FirstFunctionStubbingProgress<R, arglist...>& Using(const arglist&... args) {
+		auto initialMethodBehavior = [](const arglist&... args)->R {return DefaultValue::value<R>(); };
 		MethodStubbingBase<R, arglist...>::invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {
-				new ExpectedInvocationMock<R, arglist...>(args...) };
+			new ExpectedInvocationMock<R, arglist...>(args..., initialMethodBehavior) };
 		return *this;
 	}
 
 	FirstFunctionStubbingProgress<R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
+		auto initialMethodBehavior = [](const arglist&... args)->R {return DefaultValue::value<R>(); };
 		MethodStubbingBase<R, arglist...>::invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {
-				new MatchingInvocationMock<R, arglist...>(matcher) };
+			new MatchingInvocationMock<R, arglist...>(matcher, initialMethodBehavior) };
 		return *this;
 	}
 
@@ -262,14 +264,16 @@ public:
 	}
 
 	FirstProcedureStubbingProgress<R, arglist...>& Using(const arglist&... args) {
+		auto initialMethodBehavior = [](const arglist&... args)->R {return DefaultValue::value<R>(); };
 		MethodStubbingBase<R, arglist...>::invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {
-				new ExpectedInvocationMock<R, arglist...>(args...) };
+			new ExpectedInvocationMock<R, arglist...>(args..., initialMethodBehavior) };
 		return *this;
 	}
 
 	FirstProcedureStubbingProgress<R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
+		auto initialMethodBehavior = [](const arglist&... args)->R {return DefaultValue::value<R>(); };
 		MethodStubbingBase<R, arglist...>::invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {
-				new MatchingInvocationMock<R, arglist...>(matcher) };
+			new MatchingInvocationMock<R, arglist...>(matcher, initialMethodBehavior) };
 		return *this;
 	}
 
