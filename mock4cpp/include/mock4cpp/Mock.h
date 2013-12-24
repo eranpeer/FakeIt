@@ -231,13 +231,15 @@ public:
 	template<typename H>
 	void operator()(const H& head) {
 		H& headWithoutConst = (H&) head;
-		((MethodStubbingInternal&) headWithoutConst).startStubbing();
+		auto& internal = dynamic_cast<MethodStubbingInternal&> (headWithoutConst);
+		internal.startStubbing();
 	}
 
 	template<typename H, typename ... M>
 	void operator()(const H& head, const M&... tail) {
 		H& headWithoutConst = (H&) head;
-		((MethodStubbingInternal&) headWithoutConst).startStubbing();
+		auto& internal = dynamic_cast<MethodStubbingInternal&> (headWithoutConst);
+		internal.startStubbing();
 		this->operator()(tail...);
 	}
 

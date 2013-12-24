@@ -91,7 +91,7 @@ struct MethodStubbingInternal {
 };
 
 template<typename R, typename ... arglist>
-class MethodStubbingBase: protected virtual MethodStubbingInternal, public virtual verification::MethodVerificationProgress {
+class MethodStubbingBase: public virtual MethodStubbingInternal, public virtual verification::MethodVerificationProgress {
 protected:
 	std::shared_ptr<StubbingContext<R, arglist...>> stubbingContext;
 	std::shared_ptr<MethodInvocationMockBase<R, arglist...>> invocationMock;
@@ -174,7 +174,7 @@ public:
 };
 
 template<typename R, typename ... arglist>
-class FunctionStubbingRoot: private virtual MethodStubbingBase<R, arglist...>,
+class FunctionStubbingRoot: public virtual MethodStubbingBase<R, arglist...>,
 		public virtual FirstFunctionStubbingProgress<R, arglist...>,
 		private virtual FunctionStubbingProgress<R, arglist...> {
 private:
@@ -236,7 +236,7 @@ public:
 };
 
 template<typename R, typename ... arglist>
-class ProcedureStubbingRoot: private virtual MethodStubbingBase<R, arglist...>,
+class ProcedureStubbingRoot: public virtual MethodStubbingBase<R, arglist...>,
 		public virtual FirstProcedureStubbingProgress<R, arglist...>,
 		private virtual ProcedureStubbingProgress<R, arglist...> {
 private:
