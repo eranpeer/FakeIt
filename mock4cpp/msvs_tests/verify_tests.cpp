@@ -100,7 +100,5 @@ namespace mock4cpp_tests
 			Assert::ExpectException<AssertionException>([&mock]{ Verify(mock[&SomeInterface::func1]).Times(-1); });
 			Assert::ExpectException<AssertionException>([&mock]{ Verify(mock[&SomeInterface::proc1]).Times(-1); });
 		}
-
 	};
 }
-

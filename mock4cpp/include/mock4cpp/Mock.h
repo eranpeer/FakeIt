@@ -140,8 +140,8 @@ public:
 	>
 	void Stub(H head, M... tail)
 	{
-		When(head).startStubbing();
-		Stub(tail...);
+ 		((MethodStubbingInternal&)When(head)).startStubbing();
+ 		Stub(tail...);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>

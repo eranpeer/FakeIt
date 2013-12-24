@@ -1,6 +1,12 @@
 #ifndef Clouses_h__
 #define Clouses_h__
 
+#ifdef _WIN32
+#define THROWS throw(...)
+#else
+#define THROWS noexcept(false)
+#endif
+
 #include <functional>
 #include <type_traits>
 #include "mockutils/traits.h"
@@ -26,7 +32,7 @@ struct MethodVerificationProgress {
 	MethodVerificationProgress() {
 	}
 
-	~MethodVerificationProgress() noexcept(false) {}
+	~MethodVerificationProgress() THROWS {}
 
 	void Never() {
 		Times(0);
@@ -68,7 +74,7 @@ namespace stubbing {
 template<typename R, typename ... arglist>
 struct NextFunctionStubbingProgress {
 
-	virtual ~NextFunctionStubbingProgress() noexcept (false) {
+	virtual ~NextFunctionStubbingProgress() THROWS {
 	}
 
 	NextFunctionStubbingProgress<R, arglist...>&
@@ -99,7 +105,7 @@ private:
 template<typename R, typename ... arglist>
 struct FirstFunctionStubbingProgress: public virtual verification::MethodVerificationProgress {
 
-	virtual ~FirstFunctionStubbingProgress() noexcept (false) {
+	virtual ~FirstFunctionStubbingProgress() THROWS {
 	}
 
 	NextFunctionStubbingProgress<R, arglist...>&
@@ -131,7 +137,7 @@ private:
 
 template<typename R, typename ... arglist>
 struct NextProcedureStubbingProgress {
-	virtual ~NextProcedureStubbingProgress() noexcept (false) {
+	virtual ~NextProcedureStubbingProgress() THROWS {
 	}
 
 	NextProcedureStubbingProgress<R, arglist...>& ThenReturn() {
@@ -151,7 +157,7 @@ private:
 template<typename R, typename ... arglist>
 struct FirstProcedureStubbingProgress: public virtual verification::MethodVerificationProgress {
 
-	virtual ~FirstProcedureStubbingProgress() noexcept (false) {
+	virtual ~FirstProcedureStubbingProgress() THROWS {
 	}
 
 	NextProcedureStubbingProgress<R, arglist...>& Return() {

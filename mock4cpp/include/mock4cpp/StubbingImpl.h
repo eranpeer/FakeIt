@@ -79,6 +79,9 @@ using namespace mock4cpp::stubbing;
 
 struct MethodStubbingInternal {
 
+	~MethodStubbingInternal() = default;
+	MethodStubbingInternal() = default;
+
 	virtual void clearProgress() = 0;
 
 	virtual void startStubbing() = 0;
@@ -88,7 +91,7 @@ struct MethodStubbingInternal {
 };
 
 template<typename R, typename ... arglist>
-class MethodStubbingBase: private virtual MethodStubbingInternal, public virtual verification::MethodVerificationProgress {
+class MethodStubbingBase: protected virtual MethodStubbingInternal, public virtual verification::MethodVerificationProgress {
 protected:
 	std::shared_ptr<StubbingContext<R, arglist...>> stubbingContext;
 	std::shared_ptr<MethodInvocationMockBase<R, arglist...>> invocationMock;
@@ -112,7 +115,7 @@ protected:
 		}
 	}
 
-	virtual ~MethodStubbingBase() noexcept(false) {
+	virtual ~MethodStubbingBase() THROWS {
 		if (progressType == ProgressType::NONE) {
 			return;
 		}
@@ -176,6 +179,17 @@ class FunctionStubbingRoot: private virtual MethodStubbingBase<R, arglist...>,
 		private virtual FunctionStubbingProgress<R, arglist...> {
 private:
 	FunctionStubbingRoot & operator=(const FunctionStubbingRoot & other) = delete;
+	
+	// put method here to silent the MSC++ warning C4250: inherits via dominance
+	virtual void startVerification() override {
+		MethodStubbingBase<R, arglist...>::startVerification();
+	}
+
+	// put method here to silent the MSC++ warning C4250: inherits via dominance
+	virtual void clearProgress() override {
+		MethodStubbingBase<R, arglist...>::clearProgress();
+	}
+
 protected:
 
 	virtual MethodInvocationMockBase<R, arglist...>& InvocationMock() override {
@@ -183,6 +197,7 @@ protected:
 	}
 
 public:
+
 	FunctionStubbingRoot(std::shared_ptr<StubbingContext<R, arglist...>> stubbingContext) :
 			MethodStubbingBase<R, arglist...>(stubbingContext), FirstFunctionStubbingProgress<R, arglist...>(), FunctionStubbingProgress<R,
 					arglist...>() {
@@ -190,7 +205,7 @@ public:
 
 	FunctionStubbingRoot(const FunctionStubbingRoot& other) = default;
 
-	~FunctionStubbingRoot() noexcept(false) {}
+	~FunctionStubbingRoot() THROWS {}
 
 	virtual void operator=(std::function<R(arglist...)> method) override {
 		// Must override since the implementation in base class is privately inherited
@@ -219,14 +234,6 @@ public:
 	virtual void VerifyInvocations(const int times) override {
 		MethodStubbingBase<R, arglist...>::VerifyInvocations(times);
 	}
-
-	virtual void startVerification() override {
-		MethodStubbingBase<R, arglist...>::startVerification();
-	}
-
-	virtual void clearProgress() override {
-		MethodStubbingBase<R, arglist...>::clearProgress();
-	}
 };
 
 template<typename R, typename ... arglist>
@@ -235,18 +242,28 @@ class ProcedureStubbingRoot: private virtual MethodStubbingBase<R, arglist...>,
 		private virtual ProcedureStubbingProgress<R, arglist...> {
 private:
 	ProcedureStubbingRoot & operator=(const ProcedureStubbingRoot & other) = delete;
+
+	// put method here to silent the MSC++ warning C4250: inherits via dominance
+	virtual void startVerification() override {
+		MethodStubbingBase<R, arglist...>::startVerification();
+	}
+
+	// put method here to silent the MSC++ warning C4250: inherits via dominance
+	virtual void clearProgress() override {
+		MethodStubbingBase<R, arglist...>::clearProgress();
+	}
+
 protected:
 	virtual MethodInvocationMockBase<R, arglist...>& InvocationMock() override {
 		return *MethodStubbingBase<R, arglist...>::invocationMock;
 	}
-
 public:
 	ProcedureStubbingRoot(std::shared_ptr<StubbingContext<R, arglist...>> stubbingContext) :
 			MethodStubbingBase<R, arglist...>(stubbingContext), FirstProcedureStubbingProgress<R, arglist...>(), ProcedureStubbingProgress<
 					R, arglist...>() {
 	}
 
-	~ProcedureStubbingRoot() noexcept(false) {}
+	~ProcedureStubbingRoot() THROWS {}
 
 	ProcedureStubbingRoot(const ProcedureStubbingRoot& other) = default;
 
@@ -276,14 +293,6 @@ public:
 
 	virtual void VerifyInvocations(const int times) override {
 		MethodStubbingBase<R, arglist...>::VerifyInvocations(times);
-	}
-
-	virtual void startVerification() override {
-		MethodStubbingBase<R, arglist...>::startVerification();
-	}
-
-	virtual void clearProgress() override {
-		MethodStubbingBase<R, arglist...>::clearProgress();
 	}
 };
 
