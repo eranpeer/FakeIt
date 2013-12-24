@@ -11,11 +11,9 @@
 #include <type_traits>
 #include "mockutils/traits.h"
 #include "mockutils/DefaultValue.hpp"
+#include "UnmockedMethodException.h"
 
 namespace mock4cpp {
-
-struct UnmockedMethodException: public std::exception {
-};
 
 struct AssertionException: public std::exception {
 	AssertionException(const std::string& s) :
