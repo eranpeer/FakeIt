@@ -1,6 +1,7 @@
 #include "tpunit++.hpp"
 #include "mock4cpp.h"
 #include <string>
+#include "mock4cpp/UnmockedMethodException.h"
 
 struct BasicStubbing: tpunit::TestFixture {
 	BasicStubbing() :
@@ -170,12 +171,7 @@ struct BasicStubbing: tpunit::TestFixture {
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(0, i.func(1));
-//
-//		try {
-//			i.func(2);
-//		} catch (int e) {
-//			ASSERT_EQUAL(1, e);
-//		}
+		ASSERT_THROW(i.func(2),mock4cpp::UnmockedMethodException);
 	}
 
 } __BasicStubbing;
