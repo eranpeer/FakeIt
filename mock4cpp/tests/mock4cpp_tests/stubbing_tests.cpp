@@ -163,15 +163,19 @@ struct BasicStubbing: tpunit::TestFixture {
 	}
 
 	void consditional_stubbing() {
-		int a;
 		Mock<SomeInterface> mock;
 
 		Stub(mock[&SomeInterface::func].Using(1));
+		Stub(mock[&SomeInterface::proc].Using(1));
 
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(0, i.func(1));
 		ASSERT_THROW(i.func(2),mock4cpp::UnmockedMethodException);
+
+		i.proc(1);
+		ASSERT_THROW(i.proc(2),mock4cpp::UnmockedMethodException);
+
 	}
 
 } __BasicStubbing;
