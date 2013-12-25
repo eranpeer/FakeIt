@@ -2,6 +2,7 @@
 #include "mock4cpp.h"
 #include <string>
 #include "mock4cpp/UnmockedMethodCallException.h"
+#include <queue>
 
 struct BasicStubbing: tpunit::TestFixture {
 	BasicStubbing() :
@@ -18,8 +19,10 @@ struct BasicStubbing: tpunit::TestFixture {
 					TEST(BasicStubbing::stub_by_assignment_with_static_method_delegate), //
 					TEST(BasicStubbing::stub_to_default_behavior_with_filter), //
 					TEST(BasicStubbing::change_method_behavior_with_filter), //
-					TEST(BasicStubbing::change_method_behavior_with_matcher)
-			)  //
+					TEST(BasicStubbing::change_method_behavior_with_matcher),  //
+					TEST(BasicStubbing::stub_multiple_return_values), //
+					TEST(BasicStubbing::stub_multiple_return_values_using_quque)//
+					)
 	{
 	}
 
@@ -197,22 +200,46 @@ struct BasicStubbing: tpunit::TestFixture {
 		ASSERT_THROW(i.proc(2), mock4cpp::UnmockedMethodCallException);
 	}
 
-
 	void change_method_behavior_with_matcher() {
-			class Exc: public std::exception {
-			} e;
+		class Exc: public std::exception {
+		} e;
 
-			Mock<SomeInterface> mock;
+		Mock<SomeInterface> mock;
 
-			When(mock[&SomeInterface::func].Matching([](int a){return a == 1;})).Return(1);
-			When(mock[&SomeInterface::proc].Matching([](int a){return a == 1;})).Throw(e);
+		When(mock[&SomeInterface::func].Matching([](int a) {return a == 1;})).Return(1);
+		When(mock[&SomeInterface::proc].Matching([](int a) {return a == 1;})).Throw(e);
 
-			SomeInterface &i = mock.get();
+		SomeInterface &i = mock.get();
 
-			ASSERT_EQUAL(1, i.func(1));
-			ASSERT_THROW(i.func(2), mock4cpp::UnmockedMethodCallException);
+		ASSERT_EQUAL(1, i.func(1));
+		ASSERT_THROW(i.func(2), mock4cpp::UnmockedMethodCallException);
 
-			ASSERT_THROW(i.proc(1), Exc);
-			ASSERT_THROW(i.proc(2), mock4cpp::UnmockedMethodCallException);
-		}
+		ASSERT_THROW(i.proc(1), Exc);
+		ASSERT_THROW(i.proc(2), mock4cpp::UnmockedMethodCallException);
+	}
+
+
+	void stub_multiple_return_values() {
+		Mock<SomeInterface> mock;
+
+		When(mock[&SomeInterface::func]).Return(1).ThenReturn(2);
+
+		SomeInterface &i = mock.get();
+
+		ASSERT_EQUAL(1, i.func(0));
+		ASSERT_EQUAL(2, i.func(0));
+	}
+
+	void stub_multiple_return_values_using_quque() {
+		Mock<SomeInterface> mock;
+		std::queue<int> q({1,2});
+
+		When(mock[&SomeInterface::func]).Do([&](...){int rv = q.front(); q.pop(); return rv;});
+
+		SomeInterface &i = mock.get();
+
+		ASSERT_EQUAL(1, i.func(0));
+		ASSERT_EQUAL(2, i.func(0));
+	}
+
 } __BasicStubbing;
