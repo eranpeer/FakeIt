@@ -30,7 +30,8 @@ struct MethodVerificationProgress {
 	MethodVerificationProgress() {
 	}
 
-	~MethodVerificationProgress() THROWS {}
+	~MethodVerificationProgress() THROWS {
+	}
 
 	void Never() {
 		Times(0);
