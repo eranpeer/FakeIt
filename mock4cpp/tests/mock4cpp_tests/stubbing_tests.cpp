@@ -1,13 +1,13 @@
 #include "tpunit++.hpp"
 #include "mock4cpp.h"
 #include <string>
-#include "mock4cpp/UnmockedMethodException.h"
+#include "mock4cpp/UnmockedMethodCallException.h"
 
 struct BasicStubbing: tpunit::TestFixture {
 	BasicStubbing() :
 			tpunit::TestFixture(
 					//
-					TEST(BasicStubbing::calling_an_unstubbed_method_should_raise_UnmockedMethodException), //
+					TEST(BasicStubbing::calling_an_unstubbed_method_should_raise_UnmockedMethodCallException), //
 					TEST(BasicStubbing::stub_method_to_default_behaviore), //
 					TEST(BasicStubbing::stub_multiple_methods_to_default_behaviore),
 					TEST(BasicStubbing::stub_a_function_to_return_a_specified_value),
@@ -27,11 +27,11 @@ struct BasicStubbing: tpunit::TestFixture {
 		int a = 0;
 	};
 
-	void calling_an_unstubbed_method_should_raise_UnmockedMethodException() {
+	void calling_an_unstubbed_method_should_raise_UnmockedMethodCallException() {
 		Mock<SomeInterface> mock;
 		SomeInterface &i = mock.get();
-		ASSERT_THROW(i.func(1), UnmockedMethodException);
-		ASSERT_THROW(i.proc(1), UnmockedMethodException);
+		ASSERT_THROW(i.func(1), UnmockedMethodCallException);
+		ASSERT_THROW(i.proc(1), UnmockedMethodCallException);
 	}
 
 	void stub_method_to_default_behaviore() {
@@ -171,10 +171,10 @@ struct BasicStubbing: tpunit::TestFixture {
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(0, i.func(1));
-		ASSERT_THROW(i.func(2),mock4cpp::UnmockedMethodException);
+		ASSERT_THROW(i.func(2),mock4cpp::UnmockedMethodCallException);
 
 		i.proc(1);
-		ASSERT_THROW(i.proc(2),mock4cpp::UnmockedMethodException);
+		ASSERT_THROW(i.proc(2),mock4cpp::UnmockedMethodCallException);
 
 	}
 

@@ -11,7 +11,7 @@
 #include <type_traits>
 #include "mockutils/traits.h"
 #include "mockutils/DefaultValue.hpp"
-#include "UnmockedMethodException.h"
+#include "mock4cpp/UnmockedMethodCallException.h"
 
 namespace mock4cpp {
 

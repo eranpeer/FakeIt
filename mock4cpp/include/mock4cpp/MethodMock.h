@@ -8,7 +8,7 @@
 #include "mock4cpp/InvocationMatcher.h"
 #include "mock4cpp/MockRepository.h"
 #include "mock4cpp/ActualInvocation.h"
-#include "mock4cpp/UnmockedMethodException.h"
+#include "mock4cpp/UnmockedMethodCallException.h"
 
 namespace mock4cpp {
 
@@ -134,7 +134,7 @@ struct MethodMock: public MethodInvocationHandler<R, arglist...> {
 		actualInvocations.push_back(actualInvoaction);
 		auto methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
 		if (!methodInvocationMock) {
-			throw UnmockedMethodException();
+			throw UnmockedMethodCallException();
 		}
 		return methodInvocationMock->handleMethodInvocation(args...);
 	}

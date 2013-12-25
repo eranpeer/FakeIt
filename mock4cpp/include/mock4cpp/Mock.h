@@ -66,7 +66,7 @@ public:
 	static_assert(std::is_polymorphic<C>::value, "Can only mock a polymorphic type");
 
 	Mock() :
-			MockBase { }, instance { [] {throw UnmockedMethodException {};} } {
+			MockBase { }, instance { [] {throw UnmockedMethodCallException {};} } {
 	}
 
 	~Mock() {
