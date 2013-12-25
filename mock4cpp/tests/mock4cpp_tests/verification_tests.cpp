@@ -7,7 +7,8 @@ struct BasicVerification: tpunit::TestFixture {
 			tpunit::TestFixture(
 			//
 					TEST(BasicVerification::verify_should_not_throw_exception_if_method_was_called), //
-					TEST(BasicVerification::verify_should_throw_AssertionException_if_method_was_not_called) //
+					TEST(BasicVerification::verify_should_throw_AssertionException_if_method_was_not_called), //
+					TEST(BasicVerification::verify_with_filter)
 							)  //
 	{
 	}
@@ -31,5 +32,15 @@ struct BasicVerification: tpunit::TestFixture {
 		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
 		ASSERT_THROW(Verify(mock[&SomeInterface::func]), mock4cpp::AssertionException);
 	}
+
+	void verify_with_filter() {
+		Mock<SomeInterface> mock;
+		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
+		SomeInterface &i = mock.get();
+		i.func(1);
+		Verify(mock[&SomeInterface::func].Using(1));
+		ASSERT_THROW(Verify(mock[&SomeInterface::func].Using(2)), mock4cpp::AssertionException);
+	}
+
 
 } __BasicVerification;
