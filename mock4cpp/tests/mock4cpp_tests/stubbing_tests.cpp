@@ -16,7 +16,8 @@ struct BasicStubbing: tpunit::TestFixture {
 					TEST(BasicStubbing::stub_a_method_with_static_method_delegate), //
 					TEST(BasicStubbing::stub_by_assignment_with_lambda_delegate), //
 					TEST(BasicStubbing::stub_by_assignment_with_static_method_delegate), //
-					TEST(BasicStubbing::consditional_stubbing)
+					TEST(BasicStubbing::stub_to_default_behavior_with_filter),
+					TEST(BasicStubbing::change_method_behavior_with_filter)
 							)  //
 	{
 	}
@@ -162,7 +163,7 @@ struct BasicStubbing: tpunit::TestFixture {
 		}
 	}
 
-	void consditional_stubbing() {
+	void stub_to_default_behavior_with_filter() {
 		Mock<SomeInterface> mock;
 
 		Stub(mock[&SomeInterface::func].Using(1));
@@ -175,7 +176,24 @@ struct BasicStubbing: tpunit::TestFixture {
 
 		i.proc(1);
 		ASSERT_THROW(i.proc(2),mock4cpp::UnmockedMethodCallException);
+	}
 
+	void change_method_behavior_with_filter() {
+		class Exc : public std::exception {} e;
+
+		Mock<SomeInterface> mock;
+
+		When(mock[&SomeInterface::func].Using(1)).Return(1);
+		When(mock[&SomeInterface::proc].Using(1)).Throw(e);
+
+		SomeInterface &i = mock.get();
+
+		ASSERT_EQUAL(1, i.func(1));
+		ASSERT_THROW(i.func(2),mock4cpp::UnmockedMethodCallException);
+
+
+		ASSERT_THROW(i.proc(1),Exc);
+		ASSERT_THROW(i.proc(2),mock4cpp::UnmockedMethodCallException);
 	}
 
 } __BasicStubbing;
