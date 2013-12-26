@@ -15,8 +15,16 @@
 
 namespace mock4cpp {
 
-struct AssertionException: public std::exception {
-	AssertionException(const std::string& s) :
+struct MethodCallVerificationException: public std::exception {
+	MethodCallVerificationException(const std::string& s) :
+			std::exception(), msg { s } {
+	}
+private:
+	const std::string msg;
+};
+
+struct IllegalArgumentException: public std::exception {
+	IllegalArgumentException(const std::string& s) :
 			std::exception(), msg { s } {
 	}
 private:
@@ -52,7 +60,7 @@ struct MethodVerificationProgress {
 	virtual void Times(const int times) {
 		if (times < 0) {
 			clearProgress();
-			throw AssertionException(std::string("bad argument times:").append(std::to_string(times)));
+			throw IllegalArgumentException(std::string("bad argument times:").append(std::to_string(times)));
 		}
 		VerifyInvocations(times);
 	}

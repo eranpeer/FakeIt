@@ -134,14 +134,14 @@ protected:
 			if (expectedInvocationCount == -1) {
 				if (actualInvocations == 0) {
 					if (!std::uncaught_exception()) {
-						throw(AssertionException(std::string("no matching invocation")));
+						throw(MethodCallVerificationException(std::string("no matching invocation")));
 					}
 				}
 				return;
 			}
 			if (actualInvocations != expectedInvocationCount) {
 				if (!std::uncaught_exception()) {
-					throw(AssertionException(
+					throw(MethodCallVerificationException(
 							std::string("expected ") + std::to_string(expectedInvocationCount) + " but was "
 									+ std::to_string(actualInvocations)));
 				}
