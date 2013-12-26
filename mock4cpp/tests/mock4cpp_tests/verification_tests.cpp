@@ -12,8 +12,8 @@ struct BasicVerification: tpunit::TestFixture {
 					TEST(BasicVerification::verify_method_was_called_at_least_once), //
 					TEST(BasicVerification::verify_method_was_called_exactly_once), //
 					TEST(BasicVerification::verify_method_was_never_called), //
-					TEST(BasicVerification::verify_with_filter)
-							)  //
+					TEST(BasicVerification::verify_method_was_called_exactly_x_times), //
+					TEST(BasicVerification::verify_with_filter))  //
 	{
 	}
 
@@ -47,6 +47,10 @@ struct BasicVerification: tpunit::TestFixture {
 
 	void verify_method_was_called_at_least_once() {
 		Mock<SomeInterface> mock;
+
+		ASSERT_THROW(Verify(mock[&SomeInterface::func]), mock4cpp::MethodCallVerificationException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::proc]), mock4cpp::MethodCallVerificationException);
+
 		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
 		SomeInterface &i = mock.get();
 		i.func(1);
@@ -106,6 +110,33 @@ struct BasicVerification: tpunit::TestFixture {
 		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).Never(), mock4cpp::MethodCallVerificationException);
 	}
 
+	void verify_method_was_called_exactly_x_times() {
+		Mock<SomeInterface> mock;
+
+		ASSERT_THROW(Verify(mock[&SomeInterface::func]).Times(2), mock4cpp::MethodCallVerificationException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).Times(2), mock4cpp::MethodCallVerificationException);
+
+		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
+		SomeInterface &i = mock.get();
+
+		ASSERT_THROW(Verify(mock[&SomeInterface::func]).Times(2), mock4cpp::MethodCallVerificationException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).Times(2), mock4cpp::MethodCallVerificationException);
+
+		i.func(1);
+		i.func(1);
+		i.proc(1);
+		i.proc(1);
+
+		Verify(mock[&SomeInterface::func]).Times(2);
+		Verify(mock[&SomeInterface::proc]).Times(2);
+
+		i.func(1);
+		i.proc(1);
+
+		ASSERT_THROW(Verify(mock[&SomeInterface::func]).Times(2), mock4cpp::MethodCallVerificationException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).Times(2), mock4cpp::MethodCallVerificationException);
+	}
+
 	void verify_with_filter() {
 		Mock<SomeInterface> mock;
 		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
@@ -114,6 +145,5 @@ struct BasicVerification: tpunit::TestFixture {
 		Verify(mock[&SomeInterface::func].Using(1));
 		ASSERT_THROW(Verify(mock[&SomeInterface::func].Using(2)), mock4cpp::MethodCallVerificationException);
 	}
-
 
 } __BasicVerification;

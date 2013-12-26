@@ -23,6 +23,14 @@ private:
 	const std::string msg;
 };
 
+struct IllegalArgumentException: public std::exception {
+	IllegalArgumentException(const std::string& s) :
+			std::exception(), msg { s } {
+	}
+private:
+	const std::string msg;
+};
+
 namespace verification {
 
 struct MethodVerificationProgress {
@@ -52,7 +60,7 @@ struct MethodVerificationProgress {
 	virtual void Times(const int times) {
 		if (times < 0) {
 			clearProgress();
-			throw MethodCallVerificationException(std::string("bad argument times:").append(std::to_string(times)));
+			throw IllegalArgumentException(std::string("bad argument times:").append(std::to_string(times)));
 		}
 		VerifyInvocations(times);
 	}
