@@ -30,7 +30,6 @@ struct BasicStubbing: tpunit::TestFixture {
 	struct SomeInterface {
 		virtual int func(int) = 0;
 		virtual void proc(int) = 0;
-		int a = 0;
 	};
 
 	void calling_an_unstubbed_method_should_raise_UnmockedMethodCallException() {
@@ -251,29 +250,28 @@ struct BasicStubbing: tpunit::TestFixture {
 
 		SomeInterface &i = mock.get();
 
-		try{
+		try {
 			i.func(0);
-		} catch (std::string & e){
-			ASSERT_EQUAL(std::string("A"),e);
+		} catch (std::string & e) {
+			ASSERT_EQUAL(std::string("A"), e);
 		}
 
-		try{
+		try {
 			i.func(0);
-		} catch (std::string & e){
-			ASSERT_EQUAL(std::string("B"),e);
+		} catch (std::string & e) {
+			ASSERT_EQUAL(std::string("B"), e);
 		}
 
-
-		try{
+		try {
 			i.proc(0);
-		} catch (std::string & e){
-			ASSERT_EQUAL(std::string("A"),e);
+		} catch (std::string & e) {
+			ASSERT_EQUAL(std::string("A"), e);
 		}
 
-		try{
+		try {
 			i.proc(0);
-		} catch (std::string & e){
-			ASSERT_EQUAL(std::string("B"),e);
+		} catch (std::string & e) {
+			ASSERT_EQUAL(std::string("B"), e);
 		}
 	}
 

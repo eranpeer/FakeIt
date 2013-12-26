@@ -7,7 +7,7 @@ struct BasicVerification: tpunit::TestFixture {
 			tpunit::TestFixture(
 			//
 					TEST(BasicVerification::verify_should_not_throw_exception_if_method_was_called), //
-					TEST(BasicVerification::verify_should_throw_AssertionException_if_method_was_not_called), //
+					TEST(BasicVerification::verify_should_throw_MethodCallVerificationException_if_method_was_not_called), //
 					TEST(BasicVerification::verify_with_filter)
 							)  //
 	{
@@ -27,10 +27,10 @@ struct BasicVerification: tpunit::TestFixture {
 		Verify(mock[&SomeInterface::func]);
 	}
 
-	void verify_should_throw_AssertionException_if_method_was_not_called() {
+	void verify_should_throw_MethodCallVerificationException_if_method_was_not_called() {
 		Mock<SomeInterface> mock;
 		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
-		ASSERT_THROW(Verify(mock[&SomeInterface::func]), mock4cpp::AssertionException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::func]), mock4cpp::MethodCallVerificationException);
 	}
 
 	void verify_with_filter() {
@@ -39,7 +39,7 @@ struct BasicVerification: tpunit::TestFixture {
 		SomeInterface &i = mock.get();
 		i.func(1);
 		Verify(mock[&SomeInterface::func].Using(1));
-		ASSERT_THROW(Verify(mock[&SomeInterface::func].Using(2)), mock4cpp::AssertionException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::func].Using(2)), mock4cpp::MethodCallVerificationException);
 	}
 
 
