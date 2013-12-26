@@ -66,12 +66,12 @@ namespace mock4cpp_tests
 
 			Verify(mock[&SomeInterface::func1]);
 			Verify(mock[&SomeInterface::func2]);
-			Assert::ExpectException<AssertionException>([&mock]{ Verify(mock[&SomeInterface::func3]); });
+			Assert::ExpectException<MethodCallVerificationException>([&mock]{ Verify(mock[&SomeInterface::func3]); });
 
 
 			Verify(mock[&SomeInterface::proc1]);
 			Verify(mock[&SomeInterface::proc2]);
-			Assert::ExpectException<AssertionException>([&mock]{ Verify(mock[&SomeInterface::proc3]); });
+			Assert::ExpectException<MethodCallVerificationException>([&mock]{ Verify(mock[&SomeInterface::proc3]); });
 		}
 
 		TEST_METHOD(VerifyMethodInvocationCount)
@@ -89,16 +89,16 @@ namespace mock4cpp_tests
 			Verify(mock[&SomeInterface::func1].Using(2)).Once();
 			Verify(mock[&SomeInterface::func1].Using(3)).Never();
 
-			Assert::ExpectException<AssertionException>([&mock]{ Verify(mock[&SomeInterface::func1]).Never(); });
-			Assert::ExpectException<AssertionException>([&mock]{ Verify(mock[&SomeInterface::func1].Using(1)).Never(); });
+			Assert::ExpectException<MethodCallVerificationException>([&mock]{ Verify(mock[&SomeInterface::func1]).Never(); });
+			Assert::ExpectException<MethodCallVerificationException>([&mock]{ Verify(mock[&SomeInterface::func1].Using(1)).Never(); });
 		}
 
 		TEST_METHOD(ExceptionOnNegativeVerifiedTimes)
 		{
 			Mock<SomeInterface> mock;
 			SomeInterface &i = mock.get();
-			Assert::ExpectException<AssertionException>([&mock]{ Verify(mock[&SomeInterface::func1]).Times(-1); });
-			Assert::ExpectException<AssertionException>([&mock]{ Verify(mock[&SomeInterface::proc1]).Times(-1); });
+			Assert::ExpectException<IllegalArgumentException>([&mock]{ Verify(mock[&SomeInterface::func1]).Times(-1); });
+			Assert::ExpectException<IllegalArgumentException>([&mock]{ Verify(mock[&SomeInterface::proc1]).Times(-1); });
 		}
 	};
 }
