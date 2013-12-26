@@ -13,6 +13,7 @@ struct BasicVerification: tpunit::TestFixture {
 					TEST(BasicVerification::verify_method_was_called_exactly_once), //
 					TEST(BasicVerification::verify_method_was_never_called), //
 					TEST(BasicVerification::verify_method_was_called_exactly_x_times), //
+					TEST(BasicVerification::should_throw_IllegalArgumentException_on_negative_times_argument), //
 					TEST(BasicVerification::verify_with_filter))  //
 	{
 	}
@@ -135,6 +136,12 @@ struct BasicVerification: tpunit::TestFixture {
 
 		ASSERT_THROW(Verify(mock[&SomeInterface::func]).Times(2), mock4cpp::MethodCallVerificationException);
 		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).Times(2), mock4cpp::MethodCallVerificationException);
+	}
+
+	void should_throw_IllegalArgumentException_on_negative_times_argument() {
+		Mock<SomeInterface> mock;
+		ASSERT_THROW(Verify(mock[&SomeInterface::func]).Times(-1), mock4cpp::IllegalArgumentException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).Times(-1), mock4cpp::IllegalArgumentException);
 	}
 
 	void verify_with_filter() {
