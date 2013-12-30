@@ -11,8 +11,6 @@
 
 namespace mock4cpp {
 
-namespace stubbing {
-
 enum class ProgressType {
 	NONE, STUBBING, VERIFYING
 };
@@ -72,26 +70,10 @@ private:
 	ProcedureStubbingProgress & operator=(const ProcedureStubbingProgress & other) = delete;
 };
 
-}
-
 using namespace mock4cpp;
-using namespace mock4cpp::stubbing;
-
-struct MethodStubbingInternal {
-
-	~MethodStubbingInternal() = default;
-	MethodStubbingInternal() = default;
-
-	virtual void clearProgress() = 0;
-
-	virtual void startStubbing() = 0;
-
-	virtual void startVerification() = 0;
-
-};
 
 template<typename R, typename ... arglist>
-class MethodStubbingBase: public virtual MethodStubbingInternal, public virtual verification::MethodVerificationProgress {
+class MethodStubbingBase: public virtual MethodStubbingInternal, public virtual MethodVerificationProgress {
 protected:
 	std::shared_ptr<StubbingContext<R, arglist...>> stubbingContext;
 	std::shared_ptr<MethodInvocationMockBase<R, arglist...>> invocationMock;
@@ -316,10 +298,5 @@ public:
 // 		}
 
 };
-}
-
-namespace mock4cpp {
-
-
 }
 #endif // ClousesImpl_h__

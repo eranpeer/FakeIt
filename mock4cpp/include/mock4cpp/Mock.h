@@ -9,8 +9,6 @@
 #include "mock4cpp/MockRepository.h"
 
 using namespace mock4cpp;
-using namespace mock4cpp::stubbing;
-using namespace mock4cpp::verification;
 
 template<typename C>
 class Mock: private MockBase {

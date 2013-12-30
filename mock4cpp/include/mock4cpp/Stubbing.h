@@ -15,8 +15,6 @@
 
 namespace mock4cpp {
 
-namespace verification {
-
 struct MethodVerificationProgress {
 
 	MethodVerificationProgress() {
@@ -58,10 +56,6 @@ private:
 	MethodVerificationProgress & operator=(const MethodVerificationProgress & other) = delete;
 };
 
-}
-
-namespace stubbing {
-
 template<typename R, typename ... arglist>
 struct NextFunctionStubbingProgress {
 
@@ -94,7 +88,7 @@ private:
 };
 
 template<typename R, typename ... arglist>
-struct FirstFunctionStubbingProgress: public virtual verification::MethodVerificationProgress {
+struct FirstFunctionStubbingProgress: public virtual mock4cpp::MethodVerificationProgress {
 
 	virtual ~FirstFunctionStubbingProgress() THROWS {
 	}
@@ -146,7 +140,7 @@ private:
 };
 
 template<typename R, typename ... arglist>
-struct FirstProcedureStubbingProgress: public virtual verification::MethodVerificationProgress {
+struct FirstProcedureStubbingProgress: public virtual mock4cpp::MethodVerificationProgress {
 
 	virtual ~FirstProcedureStubbingProgress() THROWS {
 	}
@@ -170,7 +164,21 @@ struct FirstProcedureStubbingProgress: public virtual verification::MethodVerifi
 private:
 	FirstProcedureStubbingProgress & operator=(const FirstProcedureStubbingProgress & other) = delete;
 };
-}
+
+
+struct MethodStubbingInternal {
+
+	~MethodStubbingInternal() = default;
+	MethodStubbingInternal() = default;
+
+	virtual void clearProgress() = 0;
+
+	virtual void startStubbing() = 0;
+
+	virtual void startVerification() = 0;
+
+};
+
 }
 
 #endif // Clouses_h__
