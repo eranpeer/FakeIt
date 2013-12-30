@@ -1,7 +1,7 @@
 #include "tpunit++.hpp"
 #include "mock4cpp.h"
 #include <string>
-#include "mock4cpp/UnmockedMethodCallException.h"
+#include "mock4cpp/Exceptions.h"
 #include <queue>
 
 struct BasicStubbing: tpunit::TestFixture {
