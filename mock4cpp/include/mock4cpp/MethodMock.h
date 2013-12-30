@@ -8,7 +8,7 @@
 #include "mock4cpp/InvocationMatcher.h"
 #include "mock4cpp/MockRepository.h"
 #include "mock4cpp/ActualInvocation.h"
-#include "mock4cpp/UnmockedMethodCallException.h"
+#include "mock4cpp/Exceptions.h"
 
 namespace mock4cpp {
 
