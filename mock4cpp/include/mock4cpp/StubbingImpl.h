@@ -74,6 +74,11 @@ using namespace mock4cpp;
 
 template<typename R, typename ... arglist>
 class MethodStubbingBase: public virtual MethodStubbingInternal, public virtual MethodVerificationProgress {
+
+	friend class VerifyFunctor;
+	friend class StubFunctor;
+	friend class WhenFunctor;
+
 protected:
 	std::shared_ptr<StubbingContext<R, arglist...>> stubbingContext;
 	std::shared_ptr<MethodInvocationMockBase<R, arglist...>> invocationMock;
@@ -161,6 +166,11 @@ class FunctionStubbingRoot: public virtual MethodStubbingBase<R, arglist...>,
 		private virtual FunctionStubbingProgress<R, arglist...> {
 private:
 	FunctionStubbingRoot & operator=(const FunctionStubbingRoot & other) = delete;
+
+	friend class VerifyFunctor;
+	friend class StubFunctor;
+	friend class WhenFunctor;
+
 protected:
 
 	virtual MethodInvocationMockBase<R, arglist...>& InvocationMock() override {
@@ -225,6 +235,10 @@ class ProcedureStubbingRoot: public virtual MethodStubbingBase<R, arglist...>,
 		private virtual ProcedureStubbingProgress<R, arglist...> {
 private:
 	ProcedureStubbingRoot & operator=(const ProcedureStubbingRoot & other) = delete;
+
+	friend class VerifyFunctor;
+	friend class StubFunctor;
+	friend class WhenFunctor;
 
 protected:
 	virtual MethodInvocationMockBase<R, arglist...>& InvocationMock() override {
