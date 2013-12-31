@@ -73,7 +73,7 @@ private:
 using namespace mock4cpp;
 
 template<typename R, typename ... arglist>
-class MethodStubbingBase: protected virtual MethodStubbingInternal, public virtual MethodVerificationProgress {
+class MethodStubbingBase: public virtual MethodStubbingInternal, public virtual MethodVerificationProgress {
 
 	friend class VerifyFunctor;
 	friend class StubFunctor;
@@ -161,7 +161,7 @@ public:
 };
 
 template<typename R, typename ... arglist>
-class FunctionStubbingRoot: protected virtual MethodStubbingBase<R, arglist...>,
+class FunctionStubbingRoot: public virtual MethodStubbingBase<R, arglist...>,
 		public virtual FirstFunctionStubbingProgress<R, arglist...>,
 		private virtual FunctionStubbingProgress<R, arglist...> {
 private:
@@ -230,7 +230,7 @@ public:
 };
 
 template<typename R, typename ... arglist>
-class ProcedureStubbingRoot: protected virtual MethodStubbingBase<R, arglist...>,
+class ProcedureStubbingRoot: public virtual MethodStubbingBase<R, arglist...>,
 		public virtual FirstProcedureStubbingProgress<R, arglist...>,
 		private virtual ProcedureStubbingProgress<R, arglist...> {
 private:
