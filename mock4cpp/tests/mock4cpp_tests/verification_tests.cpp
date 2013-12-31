@@ -127,7 +127,7 @@ struct BasicVerification: tpunit::TestFixture {
 		i.func(1);
 		i.proc(1);
 		i.proc(1);
-
+//
 		Verify(mock[&SomeInterface::func]).Times(2);
 		Verify(mock[&SomeInterface::proc]).Times(2);
 
