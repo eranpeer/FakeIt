@@ -139,8 +139,8 @@ namespace mock4cpp_tests
 		TEST_METHOD(StubOnlySpecifiedCallsToAlternateBehavior)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func);
-			mock.Stub(&SomeInterface::proc);
+			Stub(mock[&SomeInterface::func]);
+			Stub(mock[&SomeInterface::proc]);
 
 			mock.When(&SomeInterface::func).Using(1).Return(1);
 			mock.When(&SomeInterface::proc).Using(1).Throw(std::string("error"));
@@ -159,8 +159,8 @@ namespace mock4cpp_tests
 		TEST_METHOD(StubOnlySpecifiedCallsToAlternateBehavior_MockitoStyle)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func);
-			mock.Stub(&SomeInterface::proc);
+			Stub(mock[&SomeInterface::func]);
+			Stub(mock[&SomeInterface::proc]);
 
 			When(mock[&SomeInterface::func].Using(1)).Return(1);
 			When(mock[&SomeInterface::proc].Using(1)).Throw(std::string("error"));
@@ -205,8 +205,8 @@ namespace mock4cpp_tests
 		{
 			Mock<SomeInterface> mock;
 
-			mock.Stub(&SomeInterface::func);
-			mock.Stub(&SomeInterface::proc);
+			Stub(mock[&SomeInterface::func]);
+			Stub(mock[&SomeInterface::proc]);
 
 			mock[&SomeInterface::func].Using(1) = [](...){return 1; };
 			mock[&SomeInterface::proc].Using(1) = [](...){throw std::string("error"); };
@@ -329,8 +329,8 @@ namespace mock4cpp_tests
 
 		TEST_METHOD(StubProcWithReferenceParams){
 			Mock<ReferenceInterface> mock;
-			mock.Stub(&ReferenceInterface::proc1, &ReferenceInterface::proc2);
-			mock.Stub(&ReferenceInterface::func1, &ReferenceInterface::func2);
+			Stub(mock[&ReferenceInterface::proc1], mock[&ReferenceInterface::proc2]);
+			Stub(mock[&ReferenceInterface::func1], mock[&ReferenceInterface::func2]);
 
 			ReferenceInterface & i = mock.get();
 			ReferenceInterface* pReferenceInterface{ nullptr };
@@ -345,10 +345,10 @@ namespace mock4cpp_tests
 
 		TEST_METHOD(StubProcWithPointerParams){
 			Mock<PointerInterface> mock;
-			mock.Stub(&PointerInterface::proc1);
-			mock.Stub(&PointerInterface::proc2);
-			mock.Stub(&PointerInterface::func1);
-			mock.Stub(&PointerInterface::func2);
+			Stub(mock[&PointerInterface::proc1]);
+			Stub(mock[&PointerInterface::proc2]);
+			Stub(mock[&PointerInterface::func1]);
+			Stub(mock[&PointerInterface::func2]);
 			PointerInterface & i = mock.get();
 			i.proc1(nullptr);
 			i.proc2(nullptr);

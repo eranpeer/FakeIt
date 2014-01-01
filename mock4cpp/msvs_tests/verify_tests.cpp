@@ -47,12 +47,12 @@ namespace mock4cpp_tests
 		TEST_METHOD(VerifyAtLeastOnceIsTheDefaultBehavior)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func1);
-			mock.Stub(&SomeInterface::func2);
-			mock.Stub(&SomeInterface::func3);
-			mock.Stub(&SomeInterface::proc1);
-			mock.Stub(&SomeInterface::proc2);
-			mock.Stub(&SomeInterface::proc3);
+			Stub(mock[&SomeInterface::func1]);
+			Stub(mock[&SomeInterface::func2]);
+			Stub(mock[&SomeInterface::func3]);
+			Stub(mock[&SomeInterface::proc1]);
+			Stub(mock[&SomeInterface::proc2]);
+			Stub(mock[&SomeInterface::proc3]);
 
 			SomeInterface &i = mock.get();
 
@@ -77,7 +77,7 @@ namespace mock4cpp_tests
 		TEST_METHOD(VerifyMethodInvocationCount)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func1, &SomeInterface::proc1);
+			Stub(mock[&SomeInterface::func1], mock[&SomeInterface::proc1]);
 
 			SomeInterface &i = mock.get();
 

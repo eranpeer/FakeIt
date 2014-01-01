@@ -70,7 +70,7 @@ namespace stubbing_tests
 		TEST_METHOD(StabManyMethodsInOneCall)
 		{
 			Mock<ScalarFuctions> mock;
-			mock.Stub(&ScalarFuctions::boolFunc, &ScalarFuctions::charFunc, &ScalarFuctions::intFunc);
+			Stub(mock[&ScalarFuctions::boolFunc], mock[&ScalarFuctions::charFunc], mock[&ScalarFuctions::intFunc]);
 
 			ScalarFuctions &i = mock.get();
 
@@ -82,23 +82,23 @@ namespace stubbing_tests
 		TEST_METHOD(DefaultBeaviorOfScalarFunctionsIsToReturnZero)
 		{
 			Mock<ScalarFuctions> mock;
-			mock.Stub(&ScalarFuctions::boolFunc);
-			mock.Stub(&ScalarFuctions::charFunc);
-			mock.Stub(&ScalarFuctions::char16Func);
-			mock.Stub(&ScalarFuctions::char32Func);
-			mock.Stub(&ScalarFuctions::wcharFunc);
-			mock.Stub(&ScalarFuctions::shortFunc);
-			mock.Stub(&ScalarFuctions::intFunc);
-			mock.Stub(&ScalarFuctions::longFunc);
-			mock.Stub(&ScalarFuctions::longLongFunc);
-			mock.Stub(&ScalarFuctions::floatFunc);
-			mock.Stub(&ScalarFuctions::doubleFunc);
-			mock.Stub(&ScalarFuctions::longDoubleFunc);
-			mock.Stub(&ScalarFuctions::enumFunc);
-			mock.Stub(&ScalarFuctions::pIntFunc);
-			mock.Stub(&ScalarFuctions::pScalarFuctionsfunc);
-			mock.Stub(&ScalarFuctions::nullptrFunc);
-			mock.Stub(&ScalarFuctions::pMemberFunc);
+			Stub(mock[&ScalarFuctions::boolFunc]);
+			Stub(mock[&ScalarFuctions::charFunc]);
+			Stub(mock[&ScalarFuctions::char16Func]);
+			Stub(mock[&ScalarFuctions::char32Func]);
+			Stub(mock[&ScalarFuctions::wcharFunc]);
+			Stub(mock[&ScalarFuctions::shortFunc]);
+			Stub(mock[&ScalarFuctions::intFunc]);
+			Stub(mock[&ScalarFuctions::longFunc]);
+			Stub(mock[&ScalarFuctions::longLongFunc]);
+			Stub(mock[&ScalarFuctions::floatFunc]);
+			Stub(mock[&ScalarFuctions::doubleFunc]);
+			Stub(mock[&ScalarFuctions::longDoubleFunc]);
+			Stub(mock[&ScalarFuctions::enumFunc]);
+			Stub(mock[&ScalarFuctions::pIntFunc]);
+			Stub(mock[&ScalarFuctions::pScalarFuctionsfunc]);
+			Stub(mock[&ScalarFuctions::nullptrFunc]);
+			Stub(mock[&ScalarFuctions::pMemberFunc]);
 
 			ScalarFuctions &i = mock.get();
 
@@ -132,8 +132,8 @@ namespace stubbing_tests
 		TEST_METHOD(DefaultBeaviorOfVoidFunctionsIsToDoNothing)
 		{
 			Mock<VoidFunctions> mock;
-			mock.Stub(&VoidFunctions::proc1);
-			mock.Stub(&VoidFunctions::proc2);
+			Stub(mock[&VoidFunctions::proc1]);
+			Stub(mock[&VoidFunctions::proc2]);
 			VoidFunctions& i = mock.get();
 			i.proc1();
 			i.proc2(1);
@@ -159,7 +159,7 @@ namespace stubbing_tests
 		TEST_METHOD(ReturnByValue_ReturnDefaultConstructedObject)
 		{
 			Mock<DefaultConstructibleFunctions> mock;
-			mock.Stub(&DefaultConstructibleFunctions::stringfunc);
+			Stub(mock[&DefaultConstructibleFunctions::stringfunc]);
 			DefaultConstructibleFunctions& i = mock.get();
 			Assert::AreEqual(std::string(), i.stringfunc());
 		}
@@ -167,8 +167,8 @@ namespace stubbing_tests
 		TEST_METHOD(ReturnByReference_ReturnReferenceToDefaultConstructedObject)
 		{
 			Mock<ReferenceFunctions> mock;
-			mock.Stub(&ReferenceFunctions::scalarFunc);
-			mock.Stub(&ReferenceFunctions::stringFunc);
+			Stub(mock[&ReferenceFunctions::scalarFunc]);
+			Stub(mock[&ReferenceFunctions::stringFunc]);
 			ReferenceFunctions& i = mock.get();
 			Assert::AreEqual(0, i.scalarFunc());
 			Assert::AreEqual(std::string(), i.stringFunc());
@@ -177,7 +177,7 @@ namespace stubbing_tests
 		TEST_METHOD(ReturnByValue_ThrowExceptionIfNotDefaultConstructible)
 		{
 			Mock<NonDefaultConstructibleFunctions> mock;
-			mock.Stub(&NonDefaultConstructibleFunctions::notDefaultConstructibleFunc);
+			Stub(mock[&NonDefaultConstructibleFunctions::notDefaultConstructibleFunc]);
 			NonDefaultConstructibleFunctions& i = mock.get();
 			Assert::ExpectException<std::string>([&i]{ i.notDefaultConstructibleFunc(); });
 		}
@@ -185,7 +185,7 @@ namespace stubbing_tests
 		TEST_METHOD(ReturnByReference_ThrowExceptionIfNotDefaultConstructible)
 		{
 			Mock<ReferenceFunctions> mock;
-			mock.Stub(&ReferenceFunctions::notDefaultConstructibleFunc);
+			Stub(mock[&ReferenceFunctions::notDefaultConstructibleFunc]);
 			ReferenceFunctions& i = mock.get();
 			Assert::ExpectException<std::string>([&i]{ i.notDefaultConstructibleFunc(); }, 
 				L"should fail to create default value");
@@ -194,7 +194,7 @@ namespace stubbing_tests
 		TEST_METHOD(ReturnByReference_ThrowExceptionIfAbstract)
 		{
 			Mock<ReferenceFunctions> mock;
-			mock.Stub(&ReferenceFunctions::abstractTypeFunc);
+			Stub(mock[&ReferenceFunctions::abstractTypeFunc]);
 			ReferenceFunctions& i = mock.get();
 			Assert::ExpectException<std::string>([&i]{ i.abstractTypeFunc(); },
 				L"should fail to create default value");
@@ -237,8 +237,8 @@ namespace stubbing_tests
 		TEST_METHOD(DefualtBehaviorMatchAllInvocations)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::proc);
-			mock.Stub(&SomeInterface::func);
+			Stub(mock[&SomeInterface::proc]);
+			Stub(mock[&SomeInterface::func]);
 			SomeInterface& i = mock.get();
 			i.proc(1);
 			i.proc(2);
@@ -293,7 +293,7 @@ namespace stubbing_tests
 		TEST_METHOD(ReturnByValue_ReturnDefaultConstructedUnion)
 		{
 			Mock<UnionFunctions> mock;
-			mock.Stub(&UnionFunctions::unionFunc);
+			Stub(mock[&UnionFunctions::unionFunc]);
 			UnionFunctions& i = mock.get();
 			Assert::IsTrue(MyUnion() == i.unionFunc());
 		}
@@ -301,7 +301,7 @@ namespace stubbing_tests
 		TEST_METHOD(ReturnByReference_ReturnReferenceToDefaultConstructedUnion)
 		{
 			Mock<UnionFunctions> mock;
-			mock.Stub(&UnionFunctions::unionRefFunc);
+			Stub(mock[&UnionFunctions::unionRefFunc]);
 			Stub(mock[&UnionFunctions::unionRefFunc]);
 			UnionFunctions& i = mock.get();
 			Assert::IsTrue(MyUnion() == i.unionRefFunc());

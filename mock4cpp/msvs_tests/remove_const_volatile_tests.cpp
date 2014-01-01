@@ -32,20 +32,20 @@ namespace stubbing_tests
 		{
 			Mock<ConstVolatileFunctions> mock;
 			//mock.getA().foo();
-			mock.Stub(&ConstVolatileFunctions::func1);
-			mock.Stub(&ConstVolatileFunctions::func2);
-			mock.Stub(&ConstVolatileFunctions::func3);
-			mock.Stub(&ConstVolatileFunctions::func4);
-			mock.Stub(&ConstVolatileFunctions::func6);
-			mock.Stub(&ConstVolatileFunctions::func7);
+			Stub(mock[&ConstVolatileFunctions::func1]);
+			Stub(mock[&ConstVolatileFunctions::func2]);
+			Stub(mock[&ConstVolatileFunctions::func3]);
+			Stub(mock[&ConstVolatileFunctions::func4]);
+			Stub(mock[&ConstVolatileFunctions::func6]);
+			Stub(mock[&ConstVolatileFunctions::func7]);
 
-			mock.Stub(&ConstVolatileFunctions::proc1);
-			mock.Stub(&ConstVolatileFunctions::proc2);
-			mock.Stub(&ConstVolatileFunctions::proc3);
-			mock.Stub(&ConstVolatileFunctions::proc4);
-// 			mock.Stub(&ConstVolatileFunctions::proc5);
-// 			mock.Stub(&ConstVolatileFunctions::proc6);
-// 			mock.Stub(&ConstVolatileFunctions::proc7);
+			Stub(mock[&ConstVolatileFunctions::proc1]);
+			Stub(mock[&ConstVolatileFunctions::proc2]);
+			Stub(mock[&ConstVolatileFunctions::proc3]);
+			Stub(mock[&ConstVolatileFunctions::proc4]);
+// 			Stub(mock[&ConstVolatileFunctions::proc5));
+// 			Stub(mock[&ConstVolatileFunctions::proc6));
+// 			Stub(mock[&ConstVolatileFunctions::proc7));
 
 			ConstVolatileFunctions& i = mock.get();
 			Assert::AreEqual(0, i.func1());
@@ -70,7 +70,7 @@ namespace stubbing_tests
 		TEST_METHOD(TestConstParameters)
 		{
 			Mock<ConstVolatileParameters> mock;
-			mock.Stub(&ConstVolatileParameters::func1);
+			Stub(mock[&ConstVolatileParameters::func1]);
 			ConstVolatileParameters& i = mock.get();
 			Assert::AreEqual(0, i.func1(1,std::string()));
 		}

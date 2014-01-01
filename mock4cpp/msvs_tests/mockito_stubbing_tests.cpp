@@ -20,7 +20,7 @@ namespace mock4cpp_tests
 		TEST_METHOD(StubAllCallsToAlternateBeavior)
 		{
 			Mock<SomeInterface> mock;
-			mock.Stub(&SomeInterface::func, &SomeInterface::proc);
+			Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
 
 // 			When(mock().func(1)).Return(1);
 // 			When(mock().func(2)).Return(1);
