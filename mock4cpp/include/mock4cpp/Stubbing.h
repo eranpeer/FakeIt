@@ -165,71 +165,22 @@ private:
 	FirstProcedureStubbingProgress & operator=(const FirstProcedureStubbingProgress & other) = delete;
 };
 
-struct MethodStubbingInternal {
+class MethodStubbingInternal {
+public:
 
-	~MethodStubbingInternal() = default;
 	MethodStubbingInternal() = default;
+	~MethodStubbingInternal() = default;
 
-	virtual void clearProgress() = 0;
 
 	virtual void startStubbing() = 0;
+
+protected:
+
+	virtual void clearProgress() = 0;
 
 	virtual void startVerification() = 0;
 
 };
-
-class VerifyFunctor {
-public:
-	VerifyFunctor() {
-	}
-	MethodVerificationProgress& operator()(const MethodVerificationProgress& verificationProgress) {
-		MethodVerificationProgress& verificationProgressWithoutConst = (MethodVerificationProgress&) verificationProgress;
-		verificationProgressWithoutConst.startVerification();
-		return verificationProgressWithoutConst;
-	}
-}static Verify;
-
-class WhenFunctor {
-public:
-	WhenFunctor() {
-	}
-
-	template<typename R, typename ... arglist>
-	FirstProcedureStubbingProgress<R, arglist...>& operator()(const FirstProcedureStubbingProgress<R, arglist...>& stubbingProgress) {
-		return (FirstProcedureStubbingProgress<R, arglist...>&) stubbingProgress;
-	}
-
-	template<typename R, typename ... arglist>
-	FirstFunctionStubbingProgress<R, arglist...>& operator()(const FirstFunctionStubbingProgress<R, arglist...>& stubbingProgress) {
-		return (FirstFunctionStubbingProgress<R, arglist...>&) stubbingProgress;
-	}
-
-}static When;
-
-class StubFunctor {
-private:
-	void operator()() {
-	}
-public:
-	StubFunctor() {
-	}
-
-	template<typename H>
-	void operator()(const H& head) {
-		H& headWithoutConst = const_cast<H&>(head);
-		auto& internal = dynamic_cast<MethodStubbingInternal&>(headWithoutConst);
-		internal.startStubbing();
-	}
-
-	template<typename H, typename ... M>
-	void operator()(const H& head, const M&... tail) {
-		H& headWithoutConst = const_cast<H&>(head);
-		auto& internal = dynamic_cast<MethodStubbingInternal&>(headWithoutConst);
-		internal.startStubbing();
-		this->operator()(tail...);
-	}
-
-}static Stub;
 
 }
 

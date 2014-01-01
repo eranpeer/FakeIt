@@ -193,14 +193,14 @@ public:
 		FirstFunctionStubbingProgress<R, arglist...>::operator =(method);
 	}
 
-	FirstFunctionStubbingProgress<R, arglist...>& Using(const arglist&... args) {
+	FunctionStubbingRoot<R, arglist...>& Using(const arglist&... args) {
 		auto initialMethodBehavior = [](const arglist&... args)->R {return DefaultValue::value<R>();};
 		MethodStubbingBase<R, arglist...>::invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {
 				new ExpectedInvocationMock<R, arglist...>(args..., initialMethodBehavior) };
 		return *this;
 	}
 
-	FirstFunctionStubbingProgress<R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
+	FunctionStubbingRoot<R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
 		auto initialMethodBehavior = [](const arglist&... args)->R {return DefaultValue::value<R>();};
 		MethodStubbingBase<R, arglist...>::invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {
 				new MatchingInvocationMock<R, arglist...>(matcher, initialMethodBehavior) };
@@ -259,14 +259,14 @@ public:
 		FirstProcedureStubbingProgress<R, arglist...>::operator =(method);
 	}
 
-	FirstProcedureStubbingProgress<R, arglist...>& Using(const arglist&... args) {
+	ProcedureStubbingRoot<R, arglist...>& Using(const arglist&... args) {
 		auto initialMethodBehavior = [](const arglist&... args)->R {return DefaultValue::value<R>();};
 		MethodStubbingBase<R, arglist...>::invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {
 				new ExpectedInvocationMock<R, arglist...>(args..., initialMethodBehavior) };
 		return *this;
 	}
 
-	FirstProcedureStubbingProgress<R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
+	ProcedureStubbingRoot<R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
 		auto initialMethodBehavior = [](const arglist&... args)->R {return DefaultValue::value<R>();};
 		MethodStubbingBase<R, arglist...>::invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {
 				new MatchingInvocationMock<R, arglist...>(matcher, initialMethodBehavior) };
@@ -305,12 +305,60 @@ public:
 
 	void operator=(const DATA_TYPE& val) {
 	}
-
-// 		void Construct(const arglist&... ctorargs)
-// 		{
-// 			
-// 		}
-
 };
+
+class VerifyFunctor {
+public:
+	VerifyFunctor() {
+	}
+	MethodVerificationProgress& operator()(const MethodVerificationProgress& verificationProgress) {
+		MethodVerificationProgress& verificationProgressWithoutConst = (MethodVerificationProgress&) verificationProgress;
+		verificationProgressWithoutConst.startVerification();
+		return verificationProgressWithoutConst;
+	}
+}static Verify;
+
+class WhenFunctor {
+public:
+	WhenFunctor() {
+	}
+
+	template<typename R, typename ... arglist>
+	FirstProcedureStubbingProgress<R, arglist...>& operator()(const FirstProcedureStubbingProgress<R, arglist...>& stubbingProgress) {
+		return (FirstProcedureStubbingProgress<R, arglist...>&) stubbingProgress;
+	}
+
+	template<typename R, typename ... arglist>
+	FirstFunctionStubbingProgress<R, arglist...>& operator()(const FirstFunctionStubbingProgress<R, arglist...>& stubbingProgress) {
+		return (FirstFunctionStubbingProgress<R, arglist...>&) stubbingProgress;
+	}
+
+}static When;
+
+class StubFunctor {
+private:
+	void operator()() {
+	}
+public:
+	StubFunctor() {
+	}
+
+	template<typename H>
+	void operator()(const H& head) {
+		H& headWithoutConst = const_cast<H&>(head);
+		auto& internal = dynamic_cast<MethodStubbingInternal&>(headWithoutConst);
+		internal.startStubbing();
+	}
+
+	template<typename H, typename ... M>
+	void operator()(const H& head, const M&... tail) {
+		H& headWithoutConst = const_cast<H&>(head);
+		auto& internal = dynamic_cast<MethodStubbingInternal&>(headWithoutConst);
+		internal.startStubbing();
+		this->operator()(tail...);
+	}
+
+}static Stub;
+
 }
 #endif // ClousesImpl_h__
