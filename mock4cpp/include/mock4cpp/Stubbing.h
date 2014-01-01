@@ -171,10 +171,9 @@ public:
 	MethodStubbingInternal() = default;
 	~MethodStubbingInternal() = default;
 
+protected:
 
 	virtual void startStubbing() = 0;
-
-protected:
 
 	virtual void clearProgress() = 0;
 

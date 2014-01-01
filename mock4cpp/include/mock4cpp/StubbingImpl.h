@@ -214,6 +214,10 @@ public:
 		return FunctionStubbingProgress<R, arglist...>::Do(method);
 	}
 
+	virtual void startStubbing() override {
+		MethodStubbingBase<R, arglist...>::startStubbing();
+	}
+
 	virtual void VerifyInvocations(const int times) override {
 		MethodStubbingBase<R, arglist...>::VerifyInvocations(times);
 	}
@@ -280,6 +284,10 @@ public:
 		return ProcedureStubbingProgress<R, arglist...>::Do(method);
 	}
 
+	virtual void startStubbing() override {
+		MethodStubbingBase<R, arglist...>::startStubbing();
+	}
+
 	virtual void VerifyInvocations(const int times) override {
 		MethodStubbingBase<R, arglist...>::VerifyInvocations(times);
 	}
@@ -311,6 +319,7 @@ class VerifyFunctor {
 public:
 	VerifyFunctor() {
 	}
+
 	MethodVerificationProgress& operator()(const MethodVerificationProgress& verificationProgress) {
 		MethodVerificationProgress& verificationProgressWithoutConst = (MethodVerificationProgress&) verificationProgress;
 		verificationProgressWithoutConst.startVerification();
@@ -324,12 +333,12 @@ public:
 	}
 
 	template<typename R, typename ... arglist>
-	FirstProcedureStubbingProgress<R, arglist...>& operator()(const FirstProcedureStubbingProgress<R, arglist...>& stubbingProgress) {
+	FirstProcedureStubbingProgress<R, arglist...>& operator()(const ProcedureStubbingRoot<R, arglist...>& stubbingProgress) {
 		return (FirstProcedureStubbingProgress<R, arglist...>&) stubbingProgress;
 	}
 
 	template<typename R, typename ... arglist>
-	FirstFunctionStubbingProgress<R, arglist...>& operator()(const FirstFunctionStubbingProgress<R, arglist...>& stubbingProgress) {
+	FirstFunctionStubbingProgress<R, arglist...>& operator()(const FunctionStubbingRoot<R, arglist...>& stubbingProgress) {
 		return (FirstFunctionStubbingProgress<R, arglist...>&) stubbingProgress;
 	}
 
@@ -346,15 +355,13 @@ public:
 	template<typename H>
 	void operator()(const H& head) {
 		H& headWithoutConst = const_cast<H&>(head);
-		auto& internal = dynamic_cast<MethodStubbingInternal&>(headWithoutConst);
-		internal.startStubbing();
+		headWithoutConst.startStubbing();
 	}
 
 	template<typename H, typename ... M>
 	void operator()(const H& head, const M&... tail) {
 		H& headWithoutConst = const_cast<H&>(head);
-		auto& internal = dynamic_cast<MethodStubbingInternal&>(headWithoutConst);
-		internal.startStubbing();
+		headWithoutConst.startStubbing();
 		this->operator()(tail...);
 	}
 
