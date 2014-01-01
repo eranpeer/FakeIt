@@ -165,7 +165,6 @@ private:
 	FirstProcedureStubbingProgress & operator=(const FirstProcedureStubbingProgress & other) = delete;
 };
 
-
 struct MethodStubbingInternal {
 
 	~MethodStubbingInternal() = default;
@@ -184,7 +183,7 @@ public:
 	VerifyFunctor() {
 	}
 	MethodVerificationProgress& operator()(const MethodVerificationProgress& verificationProgress) {
-		MethodVerificationProgress& verificationProgressWithoutConst = (MethodVerificationProgress&)verificationProgress;
+		MethodVerificationProgress& verificationProgressWithoutConst = (MethodVerificationProgress&) verificationProgress;
 		verificationProgressWithoutConst.startVerification();
 		return verificationProgressWithoutConst;
 	}
@@ -217,15 +216,15 @@ public:
 
 	template<typename H>
 	void operator()(const H& head) {
-		H& headWithoutConst = (H&) head;
-		auto& internal = dynamic_cast<MethodStubbingInternal&> (headWithoutConst);
+		H& headWithoutConst = const_cast<H&>(head);
+		auto& internal = dynamic_cast<MethodStubbingInternal&>(headWithoutConst);
 		internal.startStubbing();
 	}
 
 	template<typename H, typename ... M>
 	void operator()(const H& head, const M&... tail) {
-		H& headWithoutConst = (H&) head;
-		auto& internal = dynamic_cast<MethodStubbingInternal&> (headWithoutConst);
+		H& headWithoutConst = const_cast<H&>(head);
+		auto& internal = dynamic_cast<MethodStubbingInternal&>(headWithoutConst);
 		internal.startStubbing();
 		this->operator()(tail...);
 	}
