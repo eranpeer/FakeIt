@@ -162,7 +162,7 @@ public:
 
 template<typename R, typename ... arglist>
 class FunctionStubbingRoot: public virtual MethodStubbingBase<R, arglist...>,
-		public virtual FirstFunctionStubbingProgress<R, arglist...>,
+		protected virtual FirstFunctionStubbingProgress<R, arglist...>,
 		private virtual FunctionStubbingProgress<R, arglist...> {
 private:
 	FunctionStubbingRoot & operator=(const FunctionStubbingRoot & other) = delete;
@@ -235,7 +235,7 @@ public:
 
 template<typename R, typename ... arglist>
 class ProcedureStubbingRoot: public virtual MethodStubbingBase<R, arglist...>,
-		public virtual FirstProcedureStubbingProgress<R, arglist...>,
+		protected virtual FirstProcedureStubbingProgress<R, arglist...>,
 		private virtual ProcedureStubbingProgress<R, arglist...> {
 private:
 	ProcedureStubbingRoot & operator=(const ProcedureStubbingRoot & other) = delete;
