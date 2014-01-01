@@ -27,8 +27,8 @@ namespace mock4cpp_tests
 		TEST_METHOD(MatchInvocation_ByValue)
 		{
 			Mock<SomeInterface> mock;
-			mock.When(&SomeInterface::func1).Matching([](int a, std::string s){return a == 1; }).Return(2);
-			mock.When(&SomeInterface::proc1).Matching([](int a, std::string s){return a == 1; }).Throw(std::string("exception"));
+			When(mock[&SomeInterface::func1].Matching([](int a, std::string s){return a == 1; })).Return(2);
+			When(mock[&SomeInterface::proc1].Matching([](int a, std::string s){return a == 1; })).Throw(std::string("exception"));
 
 			SomeInterface &i = mock.get();
 
@@ -39,8 +39,8 @@ namespace mock4cpp_tests
 		TEST_METHOD(MatchInvocation_ByRef)
 		{
 			Mock<SomeInterface> mock;
-			mock.When(&SomeInterface::func2).Matching([](int a, std::string s){return a == 1; }).Return(2);
-			mock.When(&SomeInterface::proc2).Matching([](int a, std::string s){return a == 1; }).Throw(std::string("exception"));
+			When(mock[&SomeInterface::func2].Matching([](int a, std::string s){return a == 1; })).Return(2);
+			When(mock[&SomeInterface::proc2].Matching([](int a, std::string s){return a == 1; })).Throw(std::string("exception"));
 
 			SomeInterface &i = mock.get();
 			int one = 1;
@@ -52,12 +52,12 @@ namespace mock4cpp_tests
 		TEST_METHOD(MatchInvocation_const_primitive_parameter)
 		{
 			Mock<SomeInterface> mock;
-			mock.When(&SomeInterface::func3).Matching([](int a, const std::string &s){return a == 1; }).Return(2);
-			mock.When(&SomeInterface::proc3).Matching([](int a, const std::string &s){return a == 1; }).Throw(std::string("exception"));
+			When(mock[&SomeInterface::func3].Matching([](int a, const std::string &s){return a == 1; })).Return(2);
+			When(mock[&SomeInterface::proc3].Matching([](int a, const std::string &s){return a == 1; })).Throw(std::string("exception"));
 
 			// should also work
-			mock.When(&SomeInterface::func3).Matching([](int a, std::string s){return a == 2; }).Return(2);
-			mock.When(&SomeInterface::proc3).Matching([](int a, std::string s){return a == 2; }).Throw(std::string("exception"));
+			When(mock[&SomeInterface::func3].Matching([](int a, std::string s){return a == 2; })).Return(2);
+			When(mock[&SomeInterface::proc3].Matching([](int a, std::string s){return a == 2; })).Throw(std::string("exception"));
 
 			SomeInterface &i = mock.get();
 			std::string s{ "" };

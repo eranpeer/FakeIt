@@ -203,8 +203,8 @@ namespace stubbing_tests
 		TEST_METHOD(OverrideDefualtBehavior_Scalar)
 		{
 			Mock<ScalarFuctions> mock;
-			mock.When(&ScalarFuctions::boolFunc).Return(true);
-			mock.When(&ScalarFuctions::doubleFunc).Return(1.1);
+			When(mock[&ScalarFuctions::boolFunc]).Return(true);
+			When(mock[&ScalarFuctions::doubleFunc]).Return(1.1);
 			ScalarFuctions& i = mock.get();
 			Assert::IsTrue(i.boolFunc());
 			Assert::AreEqual(1.1, i.doubleFunc());
@@ -213,7 +213,7 @@ namespace stubbing_tests
 		TEST_METHOD(OverrideDefualtBehavior_NotDefaultConstructible)
 		{
 			Mock<NonDefaultConstructibleFunctions> mock;
-			mock.When(&NonDefaultConstructibleFunctions::notDefaultConstructibleFunc).Return(NotDefaultConstructible(1));
+			When(mock[&NonDefaultConstructibleFunctions::notDefaultConstructibleFunc]).Return(NotDefaultConstructible(1));
 			NonDefaultConstructibleFunctions& i = mock.get();
 			Assert::IsTrue(NotDefaultConstructible(1) == i.notDefaultConstructibleFunc());
 			Assert::IsFalse(NotDefaultConstructible(2) == i.notDefaultConstructibleFunc());
@@ -224,7 +224,7 @@ namespace stubbing_tests
 			Mock<ReferenceFunctions> mock;
 			ReferenceFunctions* pAbstractType{ nullptr };
 			ReferenceFunctions& refAbstractType{ *pAbstractType };
-			mock.When(&ReferenceFunctions::abstractTypeFunc).Return(refAbstractType);
+			When(mock[&ReferenceFunctions::abstractTypeFunc]).Return(refAbstractType);
 			ReferenceFunctions& i = mock.get();
 			Assert::IsNull(&i.abstractTypeFunc());
  		}
@@ -249,8 +249,8 @@ namespace stubbing_tests
 		TEST_METHOD(OverideDefualtBehaviorMatchAllInvocations)
 		{
 			Mock<SomeInterface> mock;
-			mock.When(&SomeInterface::proc).Throw(std::string());
-			mock.When(&SomeInterface::func).Return(1);
+			When(mock[&SomeInterface::proc]).Throw(std::string());
+			When(mock[&SomeInterface::func]).Return(1);
 			SomeInterface& i = mock.get();
 			
  			Assert::ExpectException<std::string>([&](){i.proc(1); });
