@@ -320,11 +320,20 @@ public:
 	VerifyFunctor() {
 	}
 
-	MethodVerificationProgress& operator()(const MethodVerificationProgress& verificationProgress) {
-		MethodVerificationProgress& verificationProgressWithoutConst = (MethodVerificationProgress&) verificationProgress;
+	template<typename R, typename ... arglist>
+	MethodVerificationProgress& operator()(const ProcedureStubbingRoot<R, arglist...>& verificationProgress) {
+		MethodVerificationProgress& verificationProgressWithoutConst = const_cast<ProcedureStubbingRoot<R, arglist...>&>(verificationProgress);
 		verificationProgressWithoutConst.startVerification();
 		return verificationProgressWithoutConst;
 	}
+
+	template<typename R, typename ... arglist>
+	MethodVerificationProgress& operator()(const FunctionStubbingRoot<R, arglist...>& verificationProgress) {
+		MethodVerificationProgress& verificationProgressWithoutConst = const_cast<FunctionStubbingRoot<R, arglist...>&>(verificationProgress);
+		verificationProgressWithoutConst.startVerification();
+		return verificationProgressWithoutConst;
+	}
+
 }static Verify;
 
 class WhenFunctor {
