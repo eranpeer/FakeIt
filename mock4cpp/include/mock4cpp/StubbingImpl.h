@@ -161,8 +161,8 @@ public:
 };
 
 template<typename R, typename ... arglist>
-class FunctionStubbingRoot: protected virtual MethodStubbingBase<R, arglist...>,
-		protected virtual FirstFunctionStubbingProgress<R, arglist...>,
+class FunctionStubbingRoot: //
+protected virtual MethodStubbingBase<R, arglist...>,
 		private virtual FunctionStubbingProgress<R, arglist...> {
 private:
 	FunctionStubbingRoot & operator=(const FunctionStubbingRoot & other) = delete;
@@ -234,8 +234,8 @@ public:
 };
 
 template<typename R, typename ... arglist>
-class ProcedureStubbingRoot: protected virtual MethodStubbingBase<R, arglist...>,
-		protected virtual FirstProcedureStubbingProgress<R, arglist...>,
+class ProcedureStubbingRoot: //
+		protected virtual MethodStubbingBase<R, arglist...>,
 		private virtual ProcedureStubbingProgress<R, arglist...> {
 private:
 	ProcedureStubbingRoot & operator=(const ProcedureStubbingRoot & other) = delete;
@@ -322,14 +322,16 @@ public:
 
 	template<typename R, typename ... arglist>
 	MethodVerificationProgress& operator()(const ProcedureStubbingRoot<R, arglist...>& verificationProgress) {
-		MethodVerificationProgress& verificationProgressWithoutConst = const_cast<ProcedureStubbingRoot<R, arglist...>&>(verificationProgress);
+		MethodVerificationProgress& verificationProgressWithoutConst =
+				const_cast<ProcedureStubbingRoot<R, arglist...>&>(verificationProgress);
 		verificationProgressWithoutConst.startVerification();
 		return verificationProgressWithoutConst;
 	}
 
 	template<typename R, typename ... arglist>
 	MethodVerificationProgress& operator()(const FunctionStubbingRoot<R, arglist...>& verificationProgress) {
-		MethodVerificationProgress& verificationProgressWithoutConst = const_cast<FunctionStubbingRoot<R, arglist...>&>(verificationProgress);
+		MethodVerificationProgress& verificationProgressWithoutConst =
+				const_cast<FunctionStubbingRoot<R, arglist...>&>(verificationProgress);
 		verificationProgressWithoutConst.startVerification();
 		return verificationProgressWithoutConst;
 	}
