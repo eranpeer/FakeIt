@@ -136,8 +136,6 @@ protected:
 		}
 	}
 
-public:
-
 	virtual void clearProgress() {
 		progressType = ProgressType::NONE;
 		if (invocationMock) {
