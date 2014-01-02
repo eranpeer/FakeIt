@@ -73,7 +73,8 @@ private:
 using namespace mock4cpp;
 
 template<typename R, typename ... arglist>
-class MethodStubbingBase: public virtual MethodStubbingInternal, protected virtual MethodVerificationProgress {
+class MethodStubbingBase: protected virtual MethodStubbingInternal,
+	protected virtual MethodVerificationProgress {
 
 	friend class VerifyFunctor;
 	friend class StubFunctor;
