@@ -136,8 +136,6 @@ protected:
 		}
 	}
 
-public:
-
 	virtual void clearProgress() {
 		progressType = ProgressType::NONE;
 		if (invocationMock) {
@@ -212,6 +210,7 @@ public:
 		return FunctionStubbingProgress<R, arglist...>::Do(method);
 	}
 
+protected:
 	virtual void startStubbing() override {
 		MethodStubbingBase<R, arglist...>::startStubbing();
 	}
@@ -282,6 +281,7 @@ public:
 		return ProcedureStubbingProgress<R, arglist...>::Do(method);
 	}
 
+protected:
 	virtual void startStubbing() override {
 		MethodStubbingBase<R, arglist...>::startStubbing();
 	}
