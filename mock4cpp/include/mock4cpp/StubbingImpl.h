@@ -173,6 +173,24 @@ protected:
 		return *MethodStubbingBase<R, arglist...>::invocationMock;
 	}
 
+	virtual void startStubbing() override {
+		MethodStubbingBase<R, arglist...>::startStubbing();
+	}
+
+	virtual void VerifyInvocations(const int times) override {
+		MethodStubbingBase<R, arglist...>::VerifyInvocations(times);
+	}
+
+	// put method here to silent the MSC++ warning C4250: inherits via dominance
+	virtual void startVerification() override {
+		MethodStubbingBase<R, arglist...>::startVerification();
+	}
+
+	// put method here to silent the MSC++ warning C4250: inherits via dominance
+	virtual void clearProgress() override {
+		MethodStubbingBase<R, arglist...>::clearProgress();
+	}
+
 public:
 
 	FunctionStubbingRoot(std::shared_ptr<StubbingContext<R, arglist...>> stubbingContext) :
@@ -209,25 +227,6 @@ public:
 		MethodStubbingBase<R, arglist...>::initInvocationMockIfNeeded();
 		return FunctionStubbingProgress<R, arglist...>::Do(method);
 	}
-
-protected:
-	virtual void startStubbing() override {
-		MethodStubbingBase<R, arglist...>::startStubbing();
-	}
-
-	virtual void VerifyInvocations(const int times) override {
-		MethodStubbingBase<R, arglist...>::VerifyInvocations(times);
-	}
-
-	// put method here to silent the MSC++ warning C4250: inherits via dominance
-	virtual void startVerification() override {
-		MethodStubbingBase<R, arglist...>::startVerification();
-	}
-
-	// put method here to silent the MSC++ warning C4250: inherits via dominance
-	virtual void clearProgress() override {
-		MethodStubbingBase<R, arglist...>::clearProgress();
-	}
 };
 
 template<typename R, typename ... arglist>
@@ -245,6 +244,25 @@ protected:
 	virtual MethodInvocationMockBase<R, arglist...>& InvocationMock() override {
 		return *MethodStubbingBase<R, arglist...>::invocationMock;
 	}
+
+	virtual void startStubbing() override {
+		MethodStubbingBase<R, arglist...>::startStubbing();
+	}
+
+	virtual void VerifyInvocations(const int times) override {
+		MethodStubbingBase<R, arglist...>::VerifyInvocations(times);
+	}
+
+	// put method here to silent the MSC++ warning C4250: inherits via dominance
+	virtual void startVerification() override {
+		MethodStubbingBase<R, arglist...>::startVerification();
+	}
+
+	// put method here to silent the MSC++ warning C4250: inherits via dominance
+	virtual void clearProgress() override {
+		MethodStubbingBase<R, arglist...>::clearProgress();
+	}
+
 public:
 	ProcedureStubbingRoot(std::shared_ptr<StubbingContext<R, arglist...>> stubbingContext) :
 			MethodStubbingBase<R, arglist...>(stubbingContext), FirstProcedureStubbingProgress<R, arglist...>(), ProcedureStubbingProgress<
@@ -279,25 +297,6 @@ public:
 		MethodStubbingBase<R, arglist...>::startStubbing();
 		MethodStubbingBase<R, arglist...>::initInvocationMockIfNeeded();
 		return ProcedureStubbingProgress<R, arglist...>::Do(method);
-	}
-
-protected:
-	virtual void startStubbing() override {
-		MethodStubbingBase<R, arglist...>::startStubbing();
-	}
-
-	virtual void VerifyInvocations(const int times) override {
-		MethodStubbingBase<R, arglist...>::VerifyInvocations(times);
-	}
-
-	// put method here to silent the MSC++ warning C4250: inherits via dominance
-	virtual void startVerification() override {
-		MethodStubbingBase<R, arglist...>::startVerification();
-	}
-
-	// put method here to silent the MSC++ warning C4250: inherits via dominance
-	virtual void clearProgress() override {
-		MethodStubbingBase<R, arglist...>::clearProgress();
 	}
 };
 
