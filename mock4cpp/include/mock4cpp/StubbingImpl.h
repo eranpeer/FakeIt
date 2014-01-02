@@ -210,6 +210,7 @@ public:
 		return FunctionStubbingProgress<R, arglist...>::Do(method);
 	}
 
+protected:
 	virtual void startStubbing() override {
 		MethodStubbingBase<R, arglist...>::startStubbing();
 	}
@@ -280,6 +281,7 @@ public:
 		return ProcedureStubbingProgress<R, arglist...>::Do(method);
 	}
 
+protected:
 	virtual void startStubbing() override {
 		MethodStubbingBase<R, arglist...>::startStubbing();
 	}
