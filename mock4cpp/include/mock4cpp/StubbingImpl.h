@@ -161,7 +161,7 @@ public:
 };
 
 template<typename R, typename ... arglist>
-class FunctionStubbingRoot: public virtual MethodStubbingBase<R, arglist...>,
+class FunctionStubbingRoot: protected virtual MethodStubbingBase<R, arglist...>,
 		protected virtual FirstFunctionStubbingProgress<R, arglist...>,
 		private virtual FunctionStubbingProgress<R, arglist...> {
 private:
@@ -234,7 +234,7 @@ public:
 };
 
 template<typename R, typename ... arglist>
-class ProcedureStubbingRoot: public virtual MethodStubbingBase<R, arglist...>,
+class ProcedureStubbingRoot: protected virtual MethodStubbingBase<R, arglist...>,
 		protected virtual FirstProcedureStubbingProgress<R, arglist...>,
 		private virtual ProcedureStubbingProgress<R, arglist...> {
 private:
