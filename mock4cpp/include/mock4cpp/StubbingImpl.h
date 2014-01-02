@@ -23,8 +23,8 @@ struct StubbingContext {
 };
 
 template<typename R, typename ... arglist>
-struct FunctionStubbingProgress: public virtual FirstFunctionStubbingProgress<R, arglist...>, public virtual NextFunctionStubbingProgress<R,
-		arglist...> {
+struct FunctionStubbingProgress: public virtual FirstFunctionStubbingProgress<R, arglist...>, //
+		public virtual NextFunctionStubbingProgress<R, arglist...> {
 
 	FunctionStubbingProgress() = default;
 	virtual ~FunctionStubbingProgress() override = default;
@@ -47,7 +47,7 @@ private:
 };
 
 template<typename R, typename ... arglist>
-struct ProcedureStubbingProgress: public virtual FirstProcedureStubbingProgress<R, arglist...>,
+struct ProcedureStubbingProgress: public virtual FirstProcedureStubbingProgress<R, arglist...>, //
 		public virtual NextProcedureStubbingProgress<R, arglist...> {
 
 	ProcedureStubbingProgress() = default;
@@ -161,9 +161,7 @@ public:
 };
 
 template<typename R, typename ... arglist>
-class FunctionStubbingRoot:
-	private virtual MethodStubbingBase<R, arglist...>,
-	private virtual FunctionStubbingProgress<R, arglist...> {
+class FunctionStubbingRoot: private virtual MethodStubbingBase<R, arglist...>, private virtual FunctionStubbingProgress<R, arglist...> {
 private:
 	FunctionStubbingRoot & operator=(const FunctionStubbingRoot & other) = delete;
 
@@ -322,7 +320,7 @@ public:
 
 	template<typename R, typename ... arglist>
 	MethodVerificationProgress& operator()(const ProcedureStubbingRoot<R, arglist...>& verificationProgress) {
-		MethodVerificationProgress& verificationProgressWithoutConst =
+		ProcedureStubbingRoot<R, arglist...>& verificationProgressWithoutConst =
 				const_cast<ProcedureStubbingRoot<R, arglist...>&>(verificationProgress);
 		verificationProgressWithoutConst.startVerification();
 		return verificationProgressWithoutConst;
@@ -330,7 +328,7 @@ public:
 
 	template<typename R, typename ... arglist>
 	MethodVerificationProgress& operator()(const FunctionStubbingRoot<R, arglist...>& verificationProgress) {
-		MethodVerificationProgress& verificationProgressWithoutConst =
+		FunctionStubbingRoot<R, arglist...>& verificationProgressWithoutConst =
 				const_cast<FunctionStubbingRoot<R, arglist...>&>(verificationProgress);
 		verificationProgressWithoutConst.startVerification();
 		return verificationProgressWithoutConst;

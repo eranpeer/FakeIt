@@ -47,11 +47,11 @@ struct MethodVerificationProgress {
 		VerifyInvocations(times);
 	}
 
-	virtual void startVerification() = 0;
+
 protected:
+	virtual void startVerification() = 0;
 	virtual void VerifyInvocations(const int times) = 0;
 	virtual void clearProgress() = 0;
-
 private:
 	MethodVerificationProgress & operator=(const MethodVerificationProgress & other) = delete;
 };
