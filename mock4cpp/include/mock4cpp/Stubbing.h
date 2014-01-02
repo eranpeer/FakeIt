@@ -87,7 +87,7 @@ private:
 };
 
 template<typename R, typename ... arglist>
-struct FirstFunctionStubbingProgress: public virtual mock4cpp::MethodVerificationProgress {
+struct FirstFunctionStubbingProgress: protected virtual mock4cpp::MethodVerificationProgress {
 
 	virtual ~FirstFunctionStubbingProgress() THROWS {
 	}
@@ -137,7 +137,7 @@ private:
 };
 
 template<typename R, typename ... arglist>
-struct FirstProcedureStubbingProgress: public virtual mock4cpp::MethodVerificationProgress {
+struct FirstProcedureStubbingProgress: protected virtual mock4cpp::MethodVerificationProgress {
 
 	virtual ~FirstProcedureStubbingProgress() THROWS {
 	}
