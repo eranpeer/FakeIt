@@ -49,7 +49,6 @@ struct MethodVerificationProgress {
 
 
 protected:
-	virtual void startVerification() = 0;
 	virtual void VerifyInvocations(const int times) = 0;
 	virtual void clearProgress() = 0;
 private:
