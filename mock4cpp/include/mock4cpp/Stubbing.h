@@ -113,8 +113,6 @@ struct FirstFunctionStubbingProgress: public virtual mock4cpp::MethodVerificatio
 
 	virtual auto Do(std::function<R(arglist...)> method) -> NextFunctionStubbingProgress<R, arglist...>& = 0;
 
-	virtual void VerifyInvocations(const int times) override = 0;
-
 private:
 	FirstFunctionStubbingProgress & operator=(const FirstFunctionStubbingProgress & other) = delete;
 };
@@ -157,9 +155,8 @@ struct FirstProcedureStubbingProgress: public virtual mock4cpp::MethodVerificati
 		Do(method);
 	}
 
-	virtual void VerifyInvocations(const int times) override = 0;
-
 	virtual NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) = 0;
+
 private:
 	FirstProcedureStubbingProgress & operator=(const FirstProcedureStubbingProgress & other) = delete;
 };
