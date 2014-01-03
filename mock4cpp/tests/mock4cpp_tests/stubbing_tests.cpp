@@ -19,7 +19,9 @@ struct BasicStubbing: tpunit::TestFixture {
 					TEST(BasicStubbing::stub_by_assignment_with_static_method_delegate), //
 					TEST(BasicStubbing::stub_to_default_behavior_with_filter), //
 					TEST(BasicStubbing::change_method_behavior_with_filter), //
+					TEST(BasicStubbing::change_method_behavior_with_functor_filter), //
 					TEST(BasicStubbing::change_method_behavior_with_matcher),  //
+					TEST(BasicStubbing::change_method_behavior_with_functor_matcher),  //
 					TEST(BasicStubbing::stub_multiple_return_values), //
 					TEST(BasicStubbing::stub_multiple_return_values_using_quque), //
 					TEST(BasicStubbing::stub_multiple_throws)
@@ -200,6 +202,24 @@ struct BasicStubbing: tpunit::TestFixture {
 		ASSERT_THROW(i.proc(2), mock4cpp::UnmockedMethodCallException);
 	}
 
+	void change_method_behavior_with_functor_filter() {
+		class Exc: public std::exception {
+		} e;
+
+		Mock<SomeInterface> mock;
+
+		When(mock[&SomeInterface::func](1)).Return(1);
+		When(mock[&SomeInterface::proc](1)).Throw(e);
+
+		SomeInterface &i = mock.get();
+
+		ASSERT_EQUAL(1, i.func(1));
+		ASSERT_THROW(i.func(2), mock4cpp::UnmockedMethodCallException);
+
+		ASSERT_THROW(i.proc(1), Exc);
+		ASSERT_THROW(i.proc(2), mock4cpp::UnmockedMethodCallException);
+	}
+
 	void change_method_behavior_with_matcher() {
 		class Exc: public std::exception {
 		} e;
@@ -217,6 +237,25 @@ struct BasicStubbing: tpunit::TestFixture {
 		ASSERT_THROW(i.proc(1), Exc);
 		ASSERT_THROW(i.proc(2), mock4cpp::UnmockedMethodCallException);
 	}
+
+	void change_method_behavior_with_functor_matcher() {
+		class Exc: public std::exception {
+		} e;
+
+		Mock<SomeInterface> mock;
+
+		When(mock[&SomeInterface::func]([](int a) {return a == 1;})).Return(1);
+		When(mock[&SomeInterface::proc]([](int a) {return a == 1;})).Throw(e);
+
+		SomeInterface &i = mock.get();
+
+		ASSERT_EQUAL(1, i.func(1));
+		ASSERT_THROW(i.func(2), mock4cpp::UnmockedMethodCallException);
+
+		ASSERT_THROW(i.proc(1), Exc);
+		ASSERT_THROW(i.proc(2), mock4cpp::UnmockedMethodCallException);
+	}
+
 
 	void stub_multiple_return_values() {
 		Mock<SomeInterface> mock;
