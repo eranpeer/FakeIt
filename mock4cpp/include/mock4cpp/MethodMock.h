@@ -30,18 +30,25 @@ private:
 };
 
 template<typename R, typename ... arglist>
-struct MethodInvocationMock: public InvocationMatcher<arglist...>, public MethodInvocationHandler<R, arglist...> {
+struct MethodInvocationMock: public InvocationMatcher<arglist...>,
+		public MethodInvocationHandler<R, arglist...> {
 
 };
 
 template<typename R, typename ... arglist>
 struct MethodInvocationMockBase: public MethodInvocationMock<R, arglist...> {
+
+	MethodInvocationMockBase(std::function<R(arglist...)> methodBehavior){
+		appendDo(methodBehavior);
+	}
+
 	void append(std::shared_ptr<BehaviorMock<R, arglist...>> mock) {
 		behaviorMocks.push_back(mock);
 	}
 
 	void appendDo(std::function<R(arglist...)> method) {
-		auto doMock = std::shared_ptr<BehaviorMock<R, arglist...>> { new DoMock<R, arglist...>(method) };
+		auto doMock = std::shared_ptr<BehaviorMock<R, arglist...>> { new DoMock<
+				R, arglist...>(method) };
 		append(doMock);
 	}
 
@@ -52,7 +59,8 @@ struct MethodInvocationMockBase: public MethodInvocationMock<R, arglist...> {
 	virtual bool matches(ActualInvocation<arglist...>& actualArgs) override = 0;
 
 	R handleMethodInvocation(const arglist&... args) override {
-		std::shared_ptr<BehaviorMock<R, arglist...>> behavior = behaviorMocks.front();
+		std::shared_ptr<BehaviorMock<R, arglist...>> behavior =
+				behaviorMocks.front();
 		if (behaviorMocks.size() > 1)
 			behaviorMocks.erase(behaviorMocks.begin());
 		return behavior->invoke(args...);
@@ -64,9 +72,9 @@ private:
 
 template<typename R, typename ... arglist>
 struct ExpectedInvocationMock: public MethodInvocationMockBase<R, arglist...> {
-	ExpectedInvocationMock(const arglist&... args, std::function<R(arglist...)> methodBehavior) :
+	ExpectedInvocationMock(const arglist&... args,
+			std::function<R(arglist...)> methodBehavior) : MethodInvocationMockBase<R, arglist...>(methodBehavior),
 			expectedArguments(args...) {
-		MethodInvocationMockBase<R, arglist...>::appendDo(methodBehavior);
 	}
 
 	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
@@ -81,9 +89,9 @@ private:
 
 template<typename R, typename ... arglist>
 struct MatchingInvocationMock: public MethodInvocationMockBase<R, arglist...> {
-	MatchingInvocationMock(std::function<bool(arglist...)> matcher, std::function<R(arglist...)> methodBehavior) :
+	MatchingInvocationMock(std::function<bool(arglist...)> matcher,
+			std::function<R(arglist...)> methodBehavior) : MethodInvocationMockBase<R, arglist...>(methodBehavior),
 			matcher { matcher } {
-		MethodInvocationMockBase<R, arglist...>::appendDo(methodBehavior);
 	}
 
 	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
@@ -91,15 +99,17 @@ struct MatchingInvocationMock: public MethodInvocationMockBase<R, arglist...> {
 	}
 private:
 	virtual bool matches(const std::tuple<arglist...>& actualArgs) {
-		return invoke<arglist...>(matcher, std::tuple<arglist...> { actualArgs });
+		return invoke<arglist...>(matcher,
+				std::tuple<arglist...> { actualArgs });
 	}
 	std::function<bool(arglist...)> matcher;
 };
 
 template<typename R, typename ... arglist>
 struct DefaultInvocationMock: public MethodInvocationMockBase<R, arglist...> {
-	DefaultInvocationMock(std::function<R(arglist...)> methodBehavior) {
-		MethodInvocationMockBase<R, arglist...>::appendDo(methodBehavior);
+	DefaultInvocationMock(std::function<R(arglist...)> methodBehavior)
+	: MethodInvocationMockBase<R, arglist...>(methodBehavior)
+	{
 	}
 
 	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
@@ -121,7 +131,8 @@ struct MethodMock: public MethodInvocationHandler<R, arglist...> {
 	virtual ~MethodMock() override {
 	}
 
-	void stubMethodInvocation(std::shared_ptr<MethodInvocationMock<R, arglist...>> methodInvocationMock) {
+	void stubMethodInvocation(
+			std::shared_ptr<MethodInvocationMock<R, arglist...>> methodInvocationMock) {
 		methodInvocationMocks.push_back(methodInvocationMock);
 	}
 
@@ -130,16 +141,19 @@ struct MethodMock: public MethodInvocationHandler<R, arglist...> {
 	}
 
 	R handleMethodInvocation(const arglist&... args) override {
-		auto actualInvoaction = std::shared_ptr<ActualInvocation<arglist...>> { new ActualInvocation<arglist...>(args...) };
+		auto actualInvoaction = std::shared_ptr<ActualInvocation<arglist...>> {
+				new ActualInvocation<arglist...>(args...) };
 		actualInvocations.push_back(actualInvoaction);
-		auto methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
+		auto methodInvocationMock = getMethodInvocationMockForActualArgs(
+				*actualInvoaction);
 		if (!methodInvocationMock) {
 			throw UnmockedMethodCallException();
 		}
 		return methodInvocationMock->handleMethodInvocation(args...);
 	}
 
-	std::vector<std::shared_ptr<ActualInvocation<arglist...>> > getActualInvocations(InvocationMatcher<arglist...>& matcher) {
+	std::vector<std::shared_ptr<ActualInvocation<arglist...>> > getActualInvocations(
+			InvocationMatcher<arglist...>& matcher) {
 		std::vector < std::shared_ptr<ActualInvocation<arglist...>> > result;
 		for (auto actualInvocation : actualInvocations) {
 			if (matcher.matches(*actualInvocation)) {

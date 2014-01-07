@@ -7,12 +7,11 @@
 
 namespace mock4cpp {
 
-	template <typename... arglist>
-	struct InvocationMatcher:public Destructable
-	{
-		virtual bool matches(ActualInvocation<arglist...>& actualArgs) = 0;
-	};
+template<typename ... arglist>
+struct InvocationMatcher: public Destructable {
+	virtual bool matches(ActualInvocation<arglist...>& actualArgs) = 0;
+};
+
 }
 #endif // InvocationMatcher_h__
-
 

@@ -84,6 +84,7 @@ protected:
 
 	std::shared_ptr<StubbingContext<R, arglist...>> stubbingContext;
 	std::shared_ptr<MethodInvocationMockBase<R, arglist...>> invocationMock;
+
 	ProgressType progressType;
 	int expectedInvocationCount;
 
