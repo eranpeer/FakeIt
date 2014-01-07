@@ -38,7 +38,7 @@ struct MethodInvocationMock: public InvocationMatcher<arglist...>,
 template<typename R, typename ... arglist>
 struct MethodInvocationMockBase: public MethodInvocationMock<R, arglist...> {
 
-	MethodInvocationMockBase(std::function<R(arglist...)> methodBehavior){
+	MethodInvocationMockBase(std::shared_ptr<InvocationMatcher<arglist...>> matcher, std::function<R(arglist...)> methodBehavior):matcher{matcher} {
 		appendDo(methodBehavior);
 	}
 
@@ -56,7 +56,9 @@ struct MethodInvocationMockBase: public MethodInvocationMock<R, arglist...> {
 		behaviorMocks.clear();
 	}
 
-	virtual bool matches(ActualInvocation<arglist...>& actualArgs) override = 0;
+	virtual bool matches(ActualInvocation<arglist...>& actualArgs) {
+		return matcher->matches(actualArgs);
+	}
 
 	R handleMethodInvocation(const arglist&... args) override {
 		std::shared_ptr<BehaviorMock<R, arglist...>> behavior =
@@ -67,15 +69,14 @@ struct MethodInvocationMockBase: public MethodInvocationMock<R, arglist...> {
 	}
 
 private:
+	std::shared_ptr<InvocationMatcher<arglist...>> matcher;
 	std::vector<std::shared_ptr<BehaviorMock<R, arglist...>>>behaviorMocks;
 };
 
-template<typename R, typename ... arglist>
-struct ExpectedInvocationMock: public MethodInvocationMockBase<R, arglist...> {
-	ExpectedInvocationMock(const arglist&... args,
-			std::function<R(arglist...)> methodBehavior) : MethodInvocationMockBase<R, arglist...>(methodBehavior),
-			expectedArguments(args...) {
-	}
+template<typename ... arglist>
+struct ExpectedInvocationMatcher: public InvocationMatcher<arglist...> {
+	ExpectedInvocationMatcher(const arglist&... args) :
+			expectedArguments(args...) {}
 
 	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
 		return matches(invocation.getActualArguments());
@@ -87,12 +88,9 @@ private:
 	const std::tuple<arglist...> expectedArguments;
 };
 
-template<typename R, typename ... arglist>
-struct MatchingInvocationMock: public MethodInvocationMockBase<R, arglist...> {
-	MatchingInvocationMock(std::function<bool(arglist...)> matcher,
-			std::function<R(arglist...)> methodBehavior) : MethodInvocationMockBase<R, arglist...>(methodBehavior),
-			matcher { matcher } {
-	}
+template<typename ... arglist>
+struct MatchingInvocationMatcher: public InvocationMatcher<arglist...> {
+	MatchingInvocationMatcher(std::function<bool(arglist...)> matcher) : matcher { matcher } {}
 
 	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
 		return matches(invocation.getActualArguments());
@@ -105,12 +103,9 @@ private:
 	std::function<bool(arglist...)> matcher;
 };
 
-template<typename R, typename ... arglist>
-struct DefaultInvocationMock: public MethodInvocationMockBase<R, arglist...> {
-	DefaultInvocationMock(std::function<R(arglist...)> methodBehavior)
-	: MethodInvocationMockBase<R, arglist...>(methodBehavior)
-	{
-	}
+template<typename ... arglist>
+struct DefaultInvocationMatcher: public InvocationMatcher<arglist...> {
+	DefaultInvocationMatcher(){}
 
 	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
 		return matches(invocation.getActualArguments());
