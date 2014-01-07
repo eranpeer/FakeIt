@@ -48,7 +48,7 @@ private:
 
 template<typename R, typename ... arglist>
 struct ProcedureStubbingProgress: protected virtual FirstProcedureStubbingProgress<R, arglist...>, //
-protected virtual NextProcedureStubbingProgress<R, arglist...> {
+		protected virtual NextProcedureStubbingProgress<R, arglist...> {
 
 	ProcedureStubbingProgress() = default;
 	~ProcedureStubbingProgress() override = default;
@@ -100,7 +100,8 @@ protected:
 	void initInvocationMockIfNeeded() {
 		if (!invocationMock) {
 			auto initialMethodBehavior = [](const arglist&... args)->R {return DefaultValue::value<R>();};
-			invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>> { new DefaultInvocationMock<R, arglist...>(
+			std::shared_ptr<DefaultInvocationMatcher<arglist...>> matcher { new DefaultInvocationMatcher<arglist...>() };
+			invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>> { new MethodInvocationMockBase<R, arglist...>(matcher,
 					initialMethodBehavior) };
 		}
 	}
@@ -132,7 +133,7 @@ protected:
 			if (actualInvocations != expectedInvocationCount) {
 				if (!std::uncaught_exception()) {
 					throw(MethodCallVerificationException(
-									std::string("expected ") + std::to_string(expectedInvocationCount) + " but was "
+							std::string("expected ") + std::to_string(expectedInvocationCount) + " but was "
 									+ std::to_string(actualInvocations)));
 				}
 			}
@@ -205,7 +206,8 @@ public:
 
 	FunctionStubbingRoot(const FunctionStubbingRoot& other) = default;
 
-	~FunctionStubbingRoot() THROWS {}
+	~FunctionStubbingRoot() THROWS {
+	}
 
 	virtual void operator=(std::function<R(arglist...)> method) override {
 		// Must override since the implementation in base class is privately inherited
@@ -214,29 +216,33 @@ public:
 
 	FunctionStubbingRoot<R, arglist...>& Using(const arglist&... args) {
 		auto initialMethodBehavior = [](const arglist&... args)->R {return DefaultValue::value<R>();};
+		std::shared_ptr<ExpectedInvocationMatcher<arglist...>> invocationMatcher(new ExpectedInvocationMatcher<arglist...>(args...));
 		MethodStubbingBase<R, arglist...>::invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {
-				new ExpectedInvocationMock<R, arglist...>(args..., initialMethodBehavior) };
+				new MethodInvocationMockBase<R, arglist...>(invocationMatcher, initialMethodBehavior) };
 		return *this;
 	}
 
 	FunctionStubbingRoot<R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
 		auto initialMethodBehavior = [](const arglist&... args)->R {return DefaultValue::value<R>();};
+		std::shared_ptr<MatchingInvocationMatcher<arglist...>> invocationMatcher(new MatchingInvocationMatcher<arglist...>(matcher));
 		MethodStubbingBase<R, arglist...>::invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {
-				new MatchingInvocationMock<R, arglist...>(matcher, initialMethodBehavior) };
+				new MethodInvocationMockBase<R, arglist...>(invocationMatcher, initialMethodBehavior) };
 		return *this;
 	}
 
 	FunctionStubbingRoot<R, arglist...>& operator()(const arglist&... args) {
 		auto initialMethodBehavior = [](const arglist&... args)->R {return DefaultValue::value<R>();};
+		std::shared_ptr<ExpectedInvocationMatcher<arglist...>> invocationMatcher { new ExpectedInvocationMatcher<arglist...>(args...) };
 		MethodStubbingBase<R, arglist...>::invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {
-				new ExpectedInvocationMock<R, arglist...>(args..., initialMethodBehavior) };
+				new MethodInvocationMockBase<R, arglist...>(invocationMatcher, initialMethodBehavior) };
 		return *this;
 	}
 
 	FunctionStubbingRoot<R, arglist...>& operator()(std::function<bool(arglist...)> matcher) {
 		auto initialMethodBehavior = [](const arglist&... args)->R {return DefaultValue::value<R>();};
+		std::shared_ptr<MatchingInvocationMatcher<arglist...>> invocationMatcher { new MatchingInvocationMatcher<arglist...>(matcher) };
 		MethodStubbingBase<R, arglist...>::invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {
-				new MatchingInvocationMock<R, arglist...>(matcher, initialMethodBehavior) };
+				new MethodInvocationMockBase<R, arglist...>(invocationMatcher, initialMethodBehavior) };
 		return *this;
 	}
 
@@ -288,7 +294,8 @@ public:
 					R, arglist...>() {
 	}
 
-	~ProcedureStubbingRoot() THROWS {}
+	~ProcedureStubbingRoot() THROWS {
+	}
 
 	ProcedureStubbingRoot(const ProcedureStubbingRoot& other) = default;
 
@@ -299,29 +306,33 @@ public:
 
 	ProcedureStubbingRoot<R, arglist...>& Using(const arglist&... args) {
 		auto initialMethodBehavior = [](const arglist&... args)->R {return DefaultValue::value<R>();};
+		std::shared_ptr<ExpectedInvocationMatcher<arglist...>> invocationMatcher(new ExpectedInvocationMatcher<arglist...>(args...));
 		MethodStubbingBase<R, arglist...>::invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {
-				new ExpectedInvocationMock<R, arglist...>(args..., initialMethodBehavior) };
+				new MethodInvocationMockBase<R, arglist...>(invocationMatcher, initialMethodBehavior) };
 		return *this;
 	}
 
 	ProcedureStubbingRoot<R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
 		auto initialMethodBehavior = [](const arglist&... args)->R {return DefaultValue::value<R>();};
+		std::shared_ptr<MatchingInvocationMatcher<arglist...>> invocationMatcher(new MatchingInvocationMatcher<arglist...>(matcher));
 		MethodStubbingBase<R, arglist...>::invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {
-				new MatchingInvocationMock<R, arglist...>(matcher, initialMethodBehavior) };
+				new MethodInvocationMockBase<R, arglist...>(invocationMatcher, initialMethodBehavior) };
 		return *this;
 	}
 
 	ProcedureStubbingRoot<R, arglist...>& operator()(const arglist&... args) {
 		auto initialMethodBehavior = [](const arglist&... args)->R {return DefaultValue::value<R>();};
+		std::shared_ptr<ExpectedInvocationMatcher<arglist...>> invocationMatcher(new ExpectedInvocationMatcher<arglist...>(args...));
 		MethodStubbingBase<R, arglist...>::invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {
-				new ExpectedInvocationMock<R, arglist...>(args..., initialMethodBehavior) };
+				new MethodInvocationMockBase<R, arglist...>(invocationMatcher, initialMethodBehavior) };
 		return *this;
 	}
 
 	ProcedureStubbingRoot<R, arglist...>& operator()(std::function<bool(arglist...)> matcher) {
 		auto initialMethodBehavior = [](const arglist&... args)->R {return DefaultValue::value<R>();};
+		std::shared_ptr<MatchingInvocationMatcher<arglist...>> invocationMatcher(new MatchingInvocationMatcher<arglist...>(matcher));
 		MethodStubbingBase<R, arglist...>::invocationMock = std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {
-				new MatchingInvocationMock<R, arglist...>(matcher, initialMethodBehavior) };
+				new MethodInvocationMockBase<R, arglist...>(invocationMatcher, initialMethodBehavior) };
 		return *this;
 	}
 
