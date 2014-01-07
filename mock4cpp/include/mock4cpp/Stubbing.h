@@ -166,9 +166,10 @@ class MethodStubbingInternal {
 public:
 
 	MethodStubbingInternal() = default;
-	~MethodStubbingInternal() = default;
 
 protected:
+
+	~MethodStubbingInternal() = default;
 
 	virtual void startStubbing() = 0;
 
@@ -178,6 +179,25 @@ protected:
 
 };
 
+}
+
+class Sequence
+{
+private:
+
+public:
+    Sequence() { }
+
+    friend Sequence operator+(const Sequence &s1, const Sequence &s2);
+
+    int GetCents() { throw 1; }
+};
+
+// note: this function is not a member function!
+Sequence operator+(const Sequence &s1, const Sequence &s2)
+{
+    //return Sequence(c1.data + c2.data);
+	throw 1;
 }
 
 #endif // Clouses_h__
