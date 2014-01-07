@@ -23,7 +23,7 @@ struct StubbingContext {
 };
 
 template<typename R, typename ... arglist>
-struct FunctionStubbingProgress: public virtual FirstFunctionStubbingProgress<R, arglist...>, //
+struct FunctionStubbingProgress: protected virtual FirstFunctionStubbingProgress<R, arglist...>, //
 		protected virtual NextFunctionStubbingProgress<R, arglist...> {
 
 	FunctionStubbingProgress() = default;
@@ -47,7 +47,7 @@ private:
 };
 
 template<typename R, typename ... arglist>
-struct ProcedureStubbingProgress: public virtual FirstProcedureStubbingProgress<R, arglist...>, //
+struct ProcedureStubbingProgress: protected virtual FirstProcedureStubbingProgress<R, arglist...>, //
 protected virtual NextProcedureStubbingProgress<R, arglist...> {
 
 	ProcedureStubbingProgress() = default;
