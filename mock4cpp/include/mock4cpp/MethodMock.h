@@ -74,8 +74,8 @@ private:
 };
 
 template<typename ... arglist>
-struct ExpectedInvocationMatcher: public InvocationMatcher<arglist...> {
-	ExpectedInvocationMatcher(const arglist&... args) :
+struct ExpectedArgumentsInvocationMatcher: public InvocationMatcher<arglist...> {
+	ExpectedArgumentsInvocationMatcher(const arglist&... args) :
 			expectedArguments(args...) {}
 
 	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
@@ -89,8 +89,8 @@ private:
 };
 
 template<typename ... arglist>
-struct MatchingInvocationMatcher: public InvocationMatcher<arglist...> {
-	MatchingInvocationMatcher(std::function<bool(arglist...)> matcher) : matcher { matcher } {}
+struct UserDefinedInvocationMatcher: public InvocationMatcher<arglist...> {
+	UserDefinedInvocationMatcher(std::function<bool(arglist...)> matcher) : matcher { matcher } {}
 
 	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
 		return matches(invocation.getActualArguments());
