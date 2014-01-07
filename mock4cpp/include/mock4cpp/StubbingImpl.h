@@ -24,7 +24,7 @@ struct StubbingContext {
 
 template<typename R, typename ... arglist>
 struct FunctionStubbingProgress: public virtual FirstFunctionStubbingProgress<R, arglist...>, //
-		public virtual NextFunctionStubbingProgress<R, arglist...> {
+		protected virtual NextFunctionStubbingProgress<R, arglist...> {
 
 	FunctionStubbingProgress() = default;
 	virtual ~FunctionStubbingProgress() override = default;
@@ -48,7 +48,7 @@ private:
 
 template<typename R, typename ... arglist>
 struct ProcedureStubbingProgress: public virtual FirstProcedureStubbingProgress<R, arglist...>, //
-		public virtual NextProcedureStubbingProgress<R, arglist...> {
+protected virtual NextProcedureStubbingProgress<R, arglist...> {
 
 	ProcedureStubbingProgress() = default;
 	~ProcedureStubbingProgress() override = default;
@@ -77,11 +77,11 @@ class MethodStubbingBase: //
 protected virtual MethodStubbingInternal,
 		protected virtual MethodVerificationProgress {
 
+protected:
 	friend class VerifyFunctor;
 	friend class StubFunctor;
 	friend class WhenFunctor;
 
-protected:
 	std::shared_ptr<StubbingContext<R, arglist...>> stubbingContext;
 	std::shared_ptr<MethodInvocationMockBase<R, arglist...>> invocationMock;
 	ProgressType progressType;
@@ -91,8 +91,8 @@ protected:
 			stubbingContext(stubbingContext), invocationMock(nullptr), progressType(ProgressType::NONE), expectedInvocationCount(-1) {
 	}
 
-	int CountInvocations(MethodInvocationMockBase<R, arglist...> &invocationMock) {
-		int times = stubbingContext->getMethodMock().getActualInvocations(invocationMock).size();
+	int CountInvocations(InvocationMatcher<arglist...>& invocationMatcher) {
+		int times = stubbingContext->getMethodMock().getActualInvocations(invocationMatcher).size();
 		return times;
 	}
 
@@ -408,4 +408,5 @@ public:
 }static Stub;
 
 }
+
 #endif // ClousesImpl_h__
