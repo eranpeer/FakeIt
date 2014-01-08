@@ -100,8 +100,6 @@ public:
 		return StubImpl(vMethod);
 	}
 
-	//		
-
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
 	ProcedureStubbingRoot<R, arglist...> When(R(C::*vMethod)(arglist...) const) {
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
@@ -138,8 +136,8 @@ public:
 	>
 	void Stub(H head, M... tail)
 	{
- 		((MethodStubbingInternal&)When(head)).startStubbing();
- 		Stub(tail...);
+		((MethodStubbingInternal&)When(head)).startStubbing();
+		Stub(tail...);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
