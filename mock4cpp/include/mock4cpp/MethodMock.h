@@ -35,7 +35,7 @@ struct MethodInvocationMock: public InvocationMatcher<arglist...>, public Method
 };
 
 template<typename R, typename ... arglist>
-struct MethodBehaviorRecorder: public MethodInvocationHandler<R, arglist...>  {
+struct RecordedMethodBody: public MethodInvocationHandler<R, arglist...>  {
 
 	void append(std::shared_ptr<BehaviorMock<R, arglist...>> mock) {
 		behaviorMocks.push_back(mock);
@@ -91,7 +91,7 @@ struct MethodInvocationMockBase: public virtual MethodInvocationMock<R, arglist.
 
 private:
 	std::shared_ptr<InvocationMatcher<arglist...>> matcher;
-	MethodBehaviorRecorder<R, arglist...> recorder;
+	RecordedMethodBody<R, arglist...> recorder;
 };
 
 template<typename ... arglist>
