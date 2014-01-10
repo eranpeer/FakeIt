@@ -100,10 +100,12 @@ protected:
 	std::shared_ptr<MethodInvocationMockBase<R, arglist...>> buildInitialMethodInvocationMock(
 			std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher) {
 		auto initialMethodBehavior = [](const arglist&... args)->R {return DefaultValue::value<R>();};
+
 		std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody { new RecordedMethodBody<R, arglist...>() };
 		recordedMethodBody->appendDo(initialMethodBehavior);
+
 		auto rv = std::shared_ptr<MethodInvocationMockBase<R, arglist...>> { new MethodInvocationMockBase<R, arglist...>(invocationMatcher,
-				initialMethodBehavior) };
+				recordedMethodBody) };
 		return rv;
 	}
 

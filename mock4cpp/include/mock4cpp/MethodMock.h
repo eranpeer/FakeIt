@@ -35,7 +35,7 @@ struct MethodInvocationMock: public InvocationMatcher<arglist...>, public Method
 };
 
 template<typename R, typename ... arglist>
-struct RecordedMethodBody: public MethodInvocationHandler<R, arglist...>  {
+struct RecordedMethodBody: public MethodInvocationHandler<R, arglist...> {
 
 	void append(std::shared_ptr<BehaviorMock<R, arglist...>> mock) {
 		behaviorMocks.push_back(mock);
@@ -64,25 +64,25 @@ private:
 template<typename R, typename ... arglist>
 struct MethodInvocationMockBase: public virtual MethodInvocationMock<R, arglist...> {
 
-	MethodInvocationMockBase(std::shared_ptr<InvocationMatcher<arglist...>> matcher, std::function<R(arglist...)> methodBehavior) :
-			matcher { matcher } {
-				recorder.appendDo(methodBehavior);
+	MethodInvocationMockBase(std::shared_ptr<InvocationMatcher<arglist...>> matcher,
+			std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody) :
+			matcher { matcher }, recordedMethodBody { recordedMethodBody } {
 	}
 
 	void append(std::shared_ptr<BehaviorMock<R, arglist...>> mock) {
-		recorder.append(mock);
+		recordedMethodBody->append(mock);
 	}
 
 	void appendDo(std::function<R(arglist...)> method) {
-		recorder.appendDo(method);
+		recordedMethodBody->appendDo(method);
 	}
 
 	void clear() {
-		recorder.clear();
+		recordedMethodBody->clear();
 	}
 
 	R handleMethodInvocation(const arglist&... args) override {
-		return recorder.handleMethodInvocation(args...);
+		return recordedMethodBody->handleMethodInvocation(args...);
 	}
 
 	virtual bool matches(ActualInvocation<arglist...>& actualArgs) {
@@ -91,7 +91,7 @@ struct MethodInvocationMockBase: public virtual MethodInvocationMock<R, arglist.
 
 private:
 	std::shared_ptr<InvocationMatcher<arglist...>> matcher;
-	RecordedMethodBody<R, arglist...> recorder;
+	std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody;
 };
 
 template<typename ... arglist>
