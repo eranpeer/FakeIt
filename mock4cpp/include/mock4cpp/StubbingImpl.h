@@ -30,18 +30,18 @@ struct FunctionStubbingProgress: protected virtual FirstFunctionStubbingProgress
 	virtual ~FunctionStubbingProgress() override = default;
 
 	NextFunctionStubbingProgress<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
-		InvocationMock().appendDo(method);
+		recordedMethodBody().appendDo(method);
 		return *this;
 	}
 
 	NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-		InvocationMock().clear();
-		InvocationMock().appendDo(method);
+		recordedMethodBody().clear();
+		recordedMethodBody().appendDo(method);
 		return *this;
 	}
 
 protected:
-	virtual MethodInvocationMockBase<R, arglist...>& InvocationMock() = 0;
+	virtual RecordedMethodBody<R, arglist...>& recordedMethodBody() = 0;
 private:
 	FunctionStubbingProgress & operator=(const FunctionStubbingProgress & other) = delete;
 };
@@ -54,18 +54,18 @@ struct ProcedureStubbingProgress: protected virtual FirstProcedureStubbingProgre
 	~ProcedureStubbingProgress() override = default;
 
 	NextProcedureStubbingProgress<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
-		InvocationMock().appendDo(method);
+		recordedMethodBody().appendDo(method);
 		return *this;
 	}
 
 	NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-		InvocationMock().clear();
-		InvocationMock().appendDo(method);
+		recordedMethodBody().clear();
+		recordedMethodBody().appendDo(method);
 		return *this;
 	}
 
 protected:
-	virtual MethodInvocationMockBase<R, arglist...>& InvocationMock() = 0;
+	virtual RecordedMethodBody<R, arglist...>& recordedMethodBody() = 0;
 private:
 	ProcedureStubbingProgress & operator=(const ProcedureStubbingProgress & other) = delete;
 };
@@ -85,6 +85,7 @@ protected:
 	std::shared_ptr<StubbingContext<R, arglist...>> stubbingContext;
 	std::shared_ptr<MethodInvocationMockBase<R, arglist...>> invocationMock;
 	std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher;
+	std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody;
 
 	ProgressType progressType;
 	int expectedInvocationCount;
@@ -92,6 +93,7 @@ protected:
 	MethodStubbingBase(std::shared_ptr<StubbingContext<R, arglist...>> stubbingContext) :
 			stubbingContext(stubbingContext), invocationMock(nullptr), invocationMatcher { new DefaultInvocationMatcher<arglist...>() }, progressType(
 					ProgressType::NONE), expectedInvocationCount(-1) {
+				recordedMethodBody =  buildInitialMethodBody();
 	}
 
 	int CountInvocations(InvocationMatcher<arglist...>& invocationMatcher) {
@@ -101,7 +103,6 @@ protected:
 
 	std::shared_ptr<MethodInvocationMockBase<R, arglist...>> buildInitialMethodInvocationMock(
 			std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher) {
-		std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody =  buildInitialMethodBody();
 		return std::shared_ptr<MethodInvocationMockBase<R, arglist...>> { new MethodInvocationMockBase<R, arglist...>(invocationMatcher,
 				recordedMethodBody) };
 	}
@@ -186,8 +187,8 @@ private:
 
 protected:
 
-	virtual MethodInvocationMockBase<R, arglist...>& InvocationMock() override {
-		return *MethodStubbingBase<R, arglist...>::invocationMock;
+	virtual RecordedMethodBody<R, arglist...>& recordedMethodBody() override {
+		return *MethodStubbingBase<R, arglist...>::recordedMethodBody;
 	}
 
 	virtual void startStubbing() override {
@@ -269,8 +270,8 @@ private:
 	friend class WhenFunctor;
 
 protected:
-	virtual MethodInvocationMockBase<R, arglist...>& InvocationMock() override {
-		return *MethodStubbingBase<R, arglist...>::invocationMock;
+	virtual RecordedMethodBody<R, arglist...>& recordedMethodBody() override {
+		return *MethodStubbingBase<R, arglist...>::recordedMethodBody;
 	}
 
 	virtual void startStubbing() override {
