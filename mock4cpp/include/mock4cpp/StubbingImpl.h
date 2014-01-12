@@ -107,11 +107,9 @@ protected:
 	}
 
 	std::shared_ptr<RecordedMethodBody<R, arglist...>> buildInitialMethodBody() {
-
 		auto initialMethodBehavior = [](const arglist&... args)->R {return DefaultValue::value<R>();};
 		std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody { new RecordedMethodBody<R, arglist...>() };
 		recordedMethodBody->appendDo(initialMethodBehavior);
-
 		return recordedMethodBody;
 	}
 
