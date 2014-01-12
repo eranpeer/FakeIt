@@ -65,12 +65,12 @@ template<typename R, typename ... arglist>
 struct MethodInvocationMockBase: public virtual MethodInvocationMock<R, arglist...> {
 
 	MethodInvocationMockBase(std::shared_ptr<InvocationMatcher<arglist...>> matcher,
-			std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody) :
-			matcher { matcher }, recordedMethodBody { recordedMethodBody } {
+			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) :
+			matcher { matcher }, invocationHandler { invocationHandler } {
 	}
 
 	R handleMethodInvocation(const arglist&... args) override {
-		return recordedMethodBody->handleMethodInvocation(args...);
+		return invocationHandler->handleMethodInvocation(args...);
 	}
 
 	virtual bool matches(ActualInvocation<arglist...>& actualArgs) {
@@ -79,7 +79,7 @@ struct MethodInvocationMockBase: public virtual MethodInvocationMock<R, arglist.
 
 private:
 	std::shared_ptr<InvocationMatcher<arglist...>> matcher;
-	std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody;
+	std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler;
 };
 
 template<typename ... arglist>
@@ -139,8 +139,8 @@ struct MethodMock: public MethodInvocationHandler<R, arglist...> {
 	}
 
 	void stubMethodInvocation(std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher,
-			std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody) {
-		methodInvocationMocks.push_back(buildMethodInvocationMock(invocationMatcher, recordedMethodBody));
+			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {
+		methodInvocationMocks.push_back(buildMethodInvocationMock(invocationMatcher, invocationHandler));
 	}
 
 	void clear() {
@@ -175,9 +175,9 @@ private:
 
 	std::shared_ptr<MethodInvocationMockBase<R, arglist...>> buildMethodInvocationMock(
 			std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher,
-			std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody) {
+			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {
 		return std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {new MethodInvocationMockBase<R, arglist...>(invocationMatcher,
-					recordedMethodBody)};
+					invocationHandler)};
 	}
 
 	std::shared_ptr<MethodInvocationMock<R, arglist...>> getMethodInvocationMockForActualArgs(ActualInvocation<arglist...>& invocation) {
