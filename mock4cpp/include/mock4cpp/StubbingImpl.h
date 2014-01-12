@@ -77,6 +77,28 @@ class MethodStubbingBase: //
 protected virtual MethodStubbingInternal,
 		protected virtual MethodVerificationProgress {
 
+private:
+
+	std::shared_ptr<RecordedMethodBody<R, arglist...>> buildInitialMethodBody() {
+		auto initialMethodBehavior = [](const arglist&... args)->R {return DefaultValue::value<R>();};
+		std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody { new RecordedMethodBody<R, arglist...>() };
+		recordedMethodBody->appendDo(initialMethodBehavior);
+		return recordedMethodBody;
+	}
+
+	std::shared_ptr<MethodInvocationMockBase<R, arglist...>> buildInitialMethodInvocationMock(
+			std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher) {
+		return std::shared_ptr<MethodInvocationMockBase<R, arglist...>> { new MethodInvocationMockBase<R, arglist...>(invocationMatcher,
+				recordedMethodBody) };
+	}
+
+	void initInvocationMockIfNeeded() {
+		if (!invocationMock) {
+			MethodStubbingBase<R, arglist...>::invocationMock = MethodStubbingBase<R, arglist...>::buildInitialMethodInvocationMock(
+					invocationMatcher);
+		}
+	}
+
 protected:
 	friend class VerifyFunctor;
 	friend class StubFunctor;
@@ -101,25 +123,6 @@ protected:
 		return times;
 	}
 
-	std::shared_ptr<MethodInvocationMockBase<R, arglist...>> buildInitialMethodInvocationMock(
-			std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher) {
-		return std::shared_ptr<MethodInvocationMockBase<R, arglist...>> { new MethodInvocationMockBase<R, arglist...>(invocationMatcher,
-				recordedMethodBody) };
-	}
-
-	std::shared_ptr<RecordedMethodBody<R, arglist...>> buildInitialMethodBody() {
-		auto initialMethodBehavior = [](const arglist&... args)->R {return DefaultValue::value<R>();};
-		std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody { new RecordedMethodBody<R, arglist...>() };
-		recordedMethodBody->appendDo(initialMethodBehavior);
-		return recordedMethodBody;
-	}
-
-	void initInvocationMockIfNeeded() {
-		if (!invocationMock) {
-			MethodStubbingBase<R, arglist...>::invocationMock = MethodStubbingBase<R, arglist...>::buildInitialMethodInvocationMock(
-					invocationMatcher);
-		}
-	}
 
 	virtual ~MethodStubbingBase() THROWS {
 		if (progressType == ProgressType::NONE) {
