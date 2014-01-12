@@ -157,9 +157,9 @@ protected:
 
 	virtual void clearProgress() {
 		progressType = ProgressType::NONE;
-		if (invocationMock) {
-			invocationMock = nullptr;
-		}
+//		if (invocationMock) {
+//			invocationMock = nullptr;
+//		}
 	}
 
 	virtual void startStubbing() {
