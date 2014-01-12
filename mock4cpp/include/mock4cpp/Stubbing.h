@@ -36,7 +36,7 @@ struct MethodVerificationProgress {
 	}
 
 	virtual void AtLeastOnce() {
-		VerifyInvocations(-1);
+		verifyInvocations(-1);
 	}
 
 	virtual void Times(const int times) {
@@ -44,13 +44,13 @@ struct MethodVerificationProgress {
 			clearProgress();
 			throw IllegalArgumentException(std::string("bad argument times:").append(std::to_string(times)));
 		}
-		VerifyInvocations(times);
+		verifyInvocations(times);
 	}
 
 
 protected:
 	virtual void startVerification() = 0;
-	virtual void VerifyInvocations(const int times) = 0;
+	virtual void verifyInvocations(const int times) = 0;
 	virtual void clearProgress() = 0;
 private:
 	MethodVerificationProgress & operator=(const MethodVerificationProgress & other) = delete;

@@ -162,7 +162,7 @@ protected:
 		progressType = ProgressType::VERIFYING;
 	}
 
-	virtual void VerifyInvocations(const int times) override {
+	virtual void verifyInvocations(const int times) override {
 		startVerification();
 		expectedInvocationCount = times;
 	}
@@ -190,8 +190,8 @@ protected:
 		MethodStubbingBase<R, arglist...>::startStubbing();
 	}
 
-	virtual void VerifyInvocations(const int times) override {
-		MethodStubbingBase<R, arglist...>::VerifyInvocations(times);
+	virtual void verifyInvocations(const int times) override {
+		MethodStubbingBase<R, arglist...>::verifyInvocations(times);
 	}
 
 	// put method here to silent the MSC++ warning C4250: inherits via dominance
@@ -272,8 +272,8 @@ protected:
 		MethodStubbingBase<R, arglist...>::startStubbing();
 	}
 
-	virtual void VerifyInvocations(const int times) override {
-		MethodStubbingBase<R, arglist...>::VerifyInvocations(times);
+	virtual void verifyInvocations(const int times) override {
+		MethodStubbingBase<R, arglist...>::verifyInvocations(times);
 	}
 
 	// put method here to silent the MSC++ warning C4250: inherits via dominance
