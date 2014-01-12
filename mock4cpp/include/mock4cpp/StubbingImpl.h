@@ -253,7 +253,6 @@ public:
 	NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 		// Must override since the implementation in base class is privately inherited
 		MethodStubbingBase<R, arglist...>::startStubbing();
-		MethodStubbingBase<R, arglist...>::initInvocationMockIfNeeded();
 		return FunctionStubbingProgress<R, arglist...>::Do(method);
 	}
 };
@@ -335,7 +334,6 @@ public:
 	NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 		// Must override since the implementation in base class is privately inherited
 		MethodStubbingBase<R, arglist...>::startStubbing();
-		MethodStubbingBase<R, arglist...>::initInvocationMockIfNeeded();
 		return ProcedureStubbingProgress<R, arglist...>::Do(method);
 	}
 };
