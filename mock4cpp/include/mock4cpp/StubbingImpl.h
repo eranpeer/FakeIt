@@ -86,7 +86,9 @@ private:
 		return recordedMethodBody;
 	}
 
-	std::shared_ptr<MethodInvocationMockBase<R, arglist...>> buildMethodInvocationMock() {
+	std::shared_ptr<MethodInvocationMockBase<R, arglist...>> buildMethodInvocationMock(
+			std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher,
+			std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody) {
 		return std::shared_ptr<MethodInvocationMockBase<R, arglist...>> { new MethodInvocationMockBase<R, arglist...>(invocationMatcher,
 				recordedMethodBody) };
 	}
@@ -120,8 +122,7 @@ protected:
 		}
 
 		if (progressType == ProgressType::STUBBING) {
-			auto invocationMock = MethodStubbingBase<R, arglist...>::buildMethodInvocationMock();
-			stubbingContext->getMethodMock().stubMethodInvocation(invocationMock);
+			stubbingContext->getMethodMock().stubMethodInvocation(invocationMatcher, recordedMethodBody);
 			return;
 		}
 

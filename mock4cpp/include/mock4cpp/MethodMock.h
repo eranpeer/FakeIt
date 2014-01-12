@@ -69,18 +69,6 @@ struct MethodInvocationMockBase: public virtual MethodInvocationMock<R, arglist.
 			matcher { matcher }, recordedMethodBody { recordedMethodBody } {
 	}
 
-	void append(std::shared_ptr<BehaviorMock<R, arglist...>> mock) {
-		recordedMethodBody->append(mock);
-	}
-
-	void appendDo(std::function<R(arglist...)> method) {
-		recordedMethodBody->appendDo(method);
-	}
-
-	void clear() {
-		recordedMethodBody->clear();
-	}
-
 	R handleMethodInvocation(const arglist&... args) override {
 		return recordedMethodBody->handleMethodInvocation(args...);
 	}
@@ -150,8 +138,9 @@ struct MethodMock: public MethodInvocationHandler<R, arglist...> {
 	virtual ~MethodMock() override {
 	}
 
-	void stubMethodInvocation(std::shared_ptr<MethodInvocationMock<R, arglist...>> methodInvocationMock) {
-		methodInvocationMocks.push_back(methodInvocationMock);
+	void stubMethodInvocation(std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher,
+			std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody) {
+		methodInvocationMocks.push_back(buildMethodInvocationMock(invocationMatcher, recordedMethodBody));
 	}
 
 	void clear() {
@@ -183,6 +172,13 @@ private:
 	MockBase& mock;
 	std::vector<std::shared_ptr<MethodInvocationMock<R, arglist...>>>methodInvocationMocks;
 	std::vector<std::shared_ptr<ActualInvocation<arglist...>>> actualInvocations;
+
+	std::shared_ptr<MethodInvocationMockBase<R, arglist...>> buildMethodInvocationMock(
+			std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher,
+			std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody) {
+		return std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {new MethodInvocationMockBase<R, arglist...>(invocationMatcher,
+					recordedMethodBody)};
+	}
 
 	std::shared_ptr<MethodInvocationMock<R, arglist...>> getMethodInvocationMockForActualArgs(ActualInvocation<arglist...>& invocation) {
 		for (auto i = methodInvocationMocks.rbegin(); i != methodInvocationMocks.rend(); ++i) {
