@@ -92,20 +92,12 @@ private:
 				recordedMethodBody) };
 	}
 
-	void initInvocationMockIfNeeded() {
-		if (!invocationMock) {
-			MethodStubbingBase<R, arglist...>::invocationMock = MethodStubbingBase<R, arglist...>::buildInitialMethodInvocationMock(
-					invocationMatcher);
-		}
-	}
-
 protected:
 	friend class VerifyFunctor;
 	friend class StubFunctor;
 	friend class WhenFunctor;
 
 	std::shared_ptr<StubbingContext<R, arglist...>> stubbingContext;
-	std::shared_ptr<MethodInvocationMockBase<R, arglist...>> invocationMock;
 	std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher;
 	std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody;
 
@@ -113,9 +105,9 @@ protected:
 	int expectedInvocationCount;
 
 	MethodStubbingBase(std::shared_ptr<StubbingContext<R, arglist...>> stubbingContext) :
-			stubbingContext(stubbingContext), invocationMock(nullptr), invocationMatcher { new DefaultInvocationMatcher<arglist...>() }, progressType(
+			stubbingContext(stubbingContext), invocationMatcher { new DefaultInvocationMatcher<arglist...>() }, progressType(
 					ProgressType::NONE), expectedInvocationCount(-1) {
-				recordedMethodBody =  buildInitialMethodBody();
+		recordedMethodBody = buildInitialMethodBody();
 	}
 
 	int CountInvocations(InvocationMatcher<arglist...>& invocationMatcher) {
@@ -123,14 +115,13 @@ protected:
 		return times;
 	}
 
-
 	virtual ~MethodStubbingBase() THROWS {
 		if (progressType == ProgressType::NONE) {
 			return;
 		}
 
 		if (progressType == ProgressType::STUBBING) {
-			initInvocationMockIfNeeded();
+			auto invocationMock = MethodStubbingBase<R, arglist...>::buildInitialMethodInvocationMock(invocationMatcher);
 			stubbingContext->getMethodMock().stubMethodInvocation(invocationMock);
 			return;
 		}
@@ -157,9 +148,6 @@ protected:
 
 	virtual void clearProgress() {
 		progressType = ProgressType::NONE;
-//		if (invocationMock) {
-//			invocationMock = nullptr;
-//		}
 	}
 
 	virtual void startStubbing() {
