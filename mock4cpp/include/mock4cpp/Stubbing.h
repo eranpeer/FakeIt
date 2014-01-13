@@ -41,17 +41,16 @@ struct MethodVerificationProgress {
 
 	virtual void Times(const int times) {
 		if (times < 0) {
-			clearProgress();
+			cancelVerification();
 			throw IllegalArgumentException(std::string("bad argument times:").append(std::to_string(times)));
 		}
 		verifyInvocations(times);
 	}
 
-
 protected:
 	virtual void startVerification() = 0;
 	virtual void verifyInvocations(const int times) = 0;
-	virtual void clearProgress() = 0;
+	virtual void cancelVerification() = 0;
 private:
 	MethodVerificationProgress & operator=(const MethodVerificationProgress & other) = delete;
 };
@@ -173,31 +172,67 @@ protected:
 
 	virtual void startStubbing() = 0;
 
-	virtual void clearProgress() = 0;
+	//virtual void cancelVerification() = 0;
 
-	virtual void startVerification() = 0;
+	//virtual void startVerification() = 0;
 
 };
 
+class Sequence {
+private:
+	bool _isActive;
+
+protected:
+	virtual void startVerification() {
+		_isActive = true;
+	}
+
+	virtual void cancelVerification() {
+		_isActive = false;
+	}
+
+	bool isActive(){
+		return _isActive;
+	}
+
+public:
+
+	Sequence():_isActive(false) {
+	}
+
+	friend std::shared_ptr<Sequence> operator+(const Sequence &s1, const Sequence &s2);
+	friend std::shared_ptr<Sequence> operator*(const Sequence &s1, const int times);
+	friend class VerifyFunctor;
+};
+
+class ConcatenatedSequence: public virtual Sequence {
+private:
+	const Sequence &s1;
+	const Sequence &s2;
+public:
+	ConcatenatedSequence(const Sequence &s1, const Sequence &s2) :
+			s1(s1), s2(s2) {
+	}
+};
+
+class RepeatedSequence: public virtual Sequence {
+private:
+	const Sequence &s1;
+	const int times;
+public:
+	RepeatedSequence(const Sequence &s1, const int times) :
+			s1(s1), times(times) {
+	}
+};
+
+std::shared_ptr<Sequence> operator+(const Sequence &s1, const Sequence &s2) {
+	return std::shared_ptr<Sequence> { new ConcatenatedSequence(s1, s2) };
 }
 
-// class Sequence
-// {
-// private:
-// 
-// public:
-//     Sequence() { }
-// 
-//     friend Sequence operator+(const Sequence &s1, const Sequence &s2);
-// 
-//     int GetCents() { throw 1; }
-// };
-// 
-// // note: this function is not a member function!
-// Sequence operator+(const Sequence &s1, const Sequence &s2)
-// {
-//     //return Sequence(c1.data + c2.data);
-// 	throw 1;
-// }
+std::shared_ptr<Sequence> operator*(const Sequence &s1, const int times) {
+	return std::shared_ptr<Sequence> { new RepeatedSequence(s1, times) };
+}
+
+}
 
 #endif // Clouses_h__

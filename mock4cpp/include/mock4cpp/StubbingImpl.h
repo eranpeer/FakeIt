@@ -75,8 +75,8 @@ using namespace mock4cpp;
 template<typename R, typename ... arglist>
 class MethodStubbingBase: //
 protected virtual MethodStubbingInternal,
-		protected virtual MethodVerificationProgress {
-
+		protected virtual MethodVerificationProgress,
+		protected virtual Sequence {
 private:
 
 	std::shared_ptr<RecordedMethodBody<R, arglist...>> buildInitialMethodBody() {
@@ -130,7 +130,7 @@ protected:
 			return;
 		}
 
-		if (progressType == ProgressType::VERIFYING) {
+		if (Sequence::isActive()) {
 			auto actualInvocations = CountInvocations(*invocationMatcher);
 			if (expectedInvocationCount == -1) {
 				if (actualInvocations == 0) {
@@ -150,8 +150,9 @@ protected:
 		}
 	}
 
-	virtual void clearProgress() {
+	virtual void cancelVerification() {
 		progressType = ProgressType::NONE;
+		Sequence::cancelVerification();
 	}
 
 	virtual void startStubbing() {
@@ -160,6 +161,7 @@ protected:
 
 	virtual void startVerification() override {
 		progressType = ProgressType::VERIFYING;
+		Sequence::startVerification();
 	}
 
 	virtual void verifyInvocations(const int times) override {
@@ -200,8 +202,8 @@ protected:
 	}
 
 	// put method here to silent the MSC++ warning C4250: inherits via dominance
-	virtual void clearProgress() override {
-		MethodStubbingBase<R, arglist...>::clearProgress();
+	virtual void cancelVerification() override {
+		MethodStubbingBase<R, arglist...>::cancelVerification();
 	}
 
 public:
@@ -282,8 +284,8 @@ protected:
 	}
 
 	// put method here to silent the MSC++ warning C4250: inherits via dominance
-	virtual void clearProgress() override {
-		MethodStubbingBase<R, arglist...>::clearProgress();
+	virtual void cancelVerification() override {
+		MethodStubbingBase<R, arglist...>::cancelVerification();
 	}
 
 public:
