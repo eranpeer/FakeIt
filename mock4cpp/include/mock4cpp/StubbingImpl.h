@@ -76,7 +76,7 @@ template<typename R, typename ... arglist>
 class MethodStubbingBase: //
 protected virtual MethodStubbingInternal,
 		protected virtual MethodVerificationProgress,
-		protected virtual Sequence {
+		public virtual Sequence {
 private:
 
 	std::shared_ptr<RecordedMethodBody<R, arglist...>> buildInitialMethodBody() {
@@ -97,6 +97,8 @@ protected:
 	friend class VerifyFunctor;
 	friend class StubFunctor;
 	friend class WhenFunctor;
+	friend std::shared_ptr<Sequence> operator+(const Sequence &s1, const Sequence &s2);
+	friend std::shared_ptr<Sequence> operator*(const Sequence &s1, const int times);
 
 	std::shared_ptr<StubbingContext<R, arglist...>> stubbingContext;
 	std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher;
@@ -173,7 +175,7 @@ protected:
 
 template<typename R, typename ... arglist>
 class FunctionStubbingRoot: //
-private virtual MethodStubbingBase<R, arglist...>, //
+public virtual MethodStubbingBase<R, arglist...>, //
 		private virtual FunctionStubbingProgress<R, arglist...> {
 private:
 	FunctionStubbingRoot & operator=(const FunctionStubbingRoot & other) = delete;
@@ -181,6 +183,8 @@ private:
 	friend class VerifyFunctor;
 	friend class StubFunctor;
 	friend class WhenFunctor;
+	friend std::shared_ptr<Sequence> operator+(const Sequence &s1, const Sequence &s2);
+	friend std::shared_ptr<Sequence> operator*(const Sequence &s1, const int times);
 
 protected:
 
@@ -256,7 +260,7 @@ public:
 
 template<typename R, typename ... arglist>
 class ProcedureStubbingRoot: //
-private virtual MethodStubbingBase<R, arglist...>,
+public virtual MethodStubbingBase<R, arglist...>,
 		private virtual ProcedureStubbingProgress<R, arglist...> {
 private:
 	ProcedureStubbingRoot & operator=(const ProcedureStubbingRoot & other) = delete;

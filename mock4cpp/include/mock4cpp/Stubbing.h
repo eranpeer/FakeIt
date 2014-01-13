@@ -225,11 +225,11 @@ public:
 	}
 };
 
-std::shared_ptr<Sequence> operator+(const Sequence &s1, const Sequence &s2) {
+static std::shared_ptr<Sequence> operator+(const Sequence &s1, const Sequence &s2) {
 	return std::shared_ptr<Sequence> { new ConcatenatedSequence(s1, s2) };
 }
 
-std::shared_ptr<Sequence> operator*(const Sequence &s1, const int times) {
+static std::shared_ptr<Sequence> operator*(const Sequence &s1, const int times) {
 	return std::shared_ptr<Sequence> { new RepeatedSequence(s1, times) };
 }
 
