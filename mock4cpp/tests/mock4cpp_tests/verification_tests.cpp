@@ -152,5 +152,10 @@ struct BasicVerification: tpunit::TestFixture {
 		Verify(mock[&SomeInterface::func].Using(1));
 		ASSERT_THROW(Verify(mock[&SomeInterface::func].Using(2)), mock4cpp::MethodCallVerificationException);
 	}
-///
+
+	void tryfunc() {
+		Mock<SomeInterface> mock;
+		mock[&SomeInterface::func] * 2;
+	}
+	///
 } __BasicVerification;
