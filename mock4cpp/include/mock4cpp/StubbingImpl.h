@@ -97,8 +97,8 @@ protected:
 	friend class VerifyFunctor;
 	friend class StubFunctor;
 	friend class WhenFunctor;
-	friend std::shared_ptr<Sequence> operator+(const Sequence &s1, const Sequence &s2);
-	friend std::shared_ptr<Sequence> operator*(const Sequence &s1, const int times);
+	friend ConcatenatedSequence operator+(const Sequence &s1, const Sequence &s2);
+	friend RepeatedSequence operator*(const Sequence &s1, const int times);
 
 	std::shared_ptr<StubbingContext<R, arglist...>> stubbingContext;
 	std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher;
@@ -183,8 +183,8 @@ private:
 	friend class VerifyFunctor;
 	friend class StubFunctor;
 	friend class WhenFunctor;
-	friend std::shared_ptr<Sequence> operator+(const Sequence &s1, const Sequence &s2);
-	friend std::shared_ptr<Sequence> operator*(const Sequence &s1, const int times);
+	friend ConcatenatedSequence operator+(const Sequence &s1, const Sequence &s2);
+	friend RepeatedSequence operator*(const Sequence &s1, const int times);
 
 protected:
 
@@ -268,6 +268,8 @@ private:
 	friend class VerifyFunctor;
 	friend class StubFunctor;
 	friend class WhenFunctor;
+	friend ConcatenatedSequence operator+(const Sequence &s1, const Sequence &s2);
+	friend RepeatedSequence operator*(const Sequence &s1, const int times);
 
 protected:
 	virtual RecordedMethodBody<R, arglist...>& recordedMethodBody() override {

@@ -200,8 +200,6 @@ public:
 	Sequence():_isActive(false) {
 	}
 
-	friend inline std::shared_ptr<Sequence> operator+(const Sequence &s1, const Sequence &s2);
-	friend inline std::shared_ptr<Sequence> operator*(const Sequence &s1, const int times);
 	friend class VerifyFunctor;
 };
 
@@ -213,6 +211,8 @@ public:
 	ConcatenatedSequence(const Sequence &s1, const Sequence &s2) :
 			s1(s1), s2(s2) {
 	}
+
+	friend inline ConcatenatedSequence operator+(const Sequence &s1, const Sequence &s2);
 };
 
 class RepeatedSequence: public virtual Sequence {
@@ -223,14 +223,16 @@ public:
 	RepeatedSequence(const Sequence &s1, const int times) :
 			s1(s1), times(times) {
 	}
+
+	friend inline RepeatedSequence operator*(const Sequence &s1, const int times);
 };
 
-inline std::shared_ptr<Sequence> operator+(const Sequence &s1, const Sequence &s2) {
-	return std::shared_ptr<Sequence> { new ConcatenatedSequence(s1, s2) };
+inline ConcatenatedSequence operator+(const Sequence &s1, const Sequence &s2) {
+	return ConcatenatedSequence(s1, s2);
 }
 
-inline std::shared_ptr<Sequence> operator*(const Sequence &s1, const int times) {
-	return std::shared_ptr<Sequence> { new RepeatedSequence(s1, times) };
+inline RepeatedSequence operator*(const Sequence &s1, const int times) {
+	return RepeatedSequence(s1, times);
 }
 
 }
