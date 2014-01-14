@@ -105,7 +105,7 @@ namespace mock4cpp_tests
 		{
 			Mock<SomeInterface> mock;
 			SomeInterface &i = mock.get();
-			mock[&SomeInterface::func1] * 2;
+			Verify(mock[&SomeInterface::func1] * 2);
 		}
 
 	};
