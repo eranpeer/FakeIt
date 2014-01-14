@@ -375,12 +375,10 @@ public:
 	}
 
 
-	MethodVerificationProgress& operator()(const Sequence& verificationProgress) {
+	void operator()(const Sequence& verificationProgress) {
 		Sequence& verificationProgressWithoutConst =
 			const_cast<Sequence&>(verificationProgress);
 		verificationProgressWithoutConst.startVerification();
-		MethodVerificationProgress& rv = dynamic_cast<MethodVerificationProgress&>(verificationProgressWithoutConst);
-		return rv;
 	}
 
 }static Verify;
