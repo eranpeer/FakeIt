@@ -86,13 +86,6 @@ private:
 		return recordedMethodBody;
 	}
 
-	std::shared_ptr<MethodInvocationMockBase<R, arglist...>> buildMethodInvocationMock(
-			std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher,
-			std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody) {
-		return std::shared_ptr<MethodInvocationMockBase<R, arglist...>> { new MethodInvocationMockBase<R, arglist...>(invocationMatcher,
-				recordedMethodBody) };
-	}
-
 protected:
 	friend class VerifyFunctor;
 	friend class StubFunctor;

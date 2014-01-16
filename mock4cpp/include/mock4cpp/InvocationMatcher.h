@@ -7,9 +7,18 @@
 
 namespace mock4cpp {
 
+struct AnyInvocationMatcher: public virtual Destructable {
+	virtual bool matches(AnyInvocation& invocation) = 0;
+};
+
 template<typename ... arglist>
-struct InvocationMatcher: public Destructable {
-	virtual bool matches(ActualInvocation<arglist...>& actualArgs) = 0;
+struct InvocationMatcher: public virtual Destructable, public virtual AnyInvocationMatcher {
+
+	virtual bool matches(AnyInvocation& invocation) override {
+		return false;
+	}
+
+	virtual bool matches(ActualInvocation<arglist...>& actualInvocation) = 0;
 };
 
 }

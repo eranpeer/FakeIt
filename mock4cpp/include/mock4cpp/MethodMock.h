@@ -68,8 +68,8 @@ private:
 template<typename R, typename ... arglist>
 struct MethodInvocationMockBase: public virtual MethodInvocationMock<R, arglist...> {
 
-	MethodInvocationMockBase(std::shared_ptr<InvocationMatcher<arglist...>> matcher,
-			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) :
+	MethodInvocationMockBase(const Method& method, std::shared_ptr<InvocationMatcher<arglist...>> matcher,
+			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) : method(method),
 			matcher { matcher }, invocationHandler { invocationHandler } {
 	}
 
@@ -77,11 +77,21 @@ struct MethodInvocationMockBase: public virtual MethodInvocationMock<R, arglist.
 		return invocationHandler->handleMethodInvocation(args...);
 	}
 
-	virtual bool matches(ActualInvocation<arglist...>& actualArgs) {
-		return matcher->matches(actualArgs);
+	virtual bool matches(ActualInvocation<arglist...>& actualInvocation) {
+		return matcher->matches(actualInvocation);
+	}
+
+	virtual bool matches(AnyInvocation& invocation) override {
+		if (&invocation.getMethod() != &method){
+			return false;
+		}
+
+		ActualInvocation<arglist...>& actualInvocation = dynamic_cast<ActualInvocation<arglist...>&>(invocation);
+		return matches(actualInvocation);
 	}
 
 private:
+	const Method& method;
 	std::shared_ptr<InvocationMatcher<arglist...>> matcher;
 	std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler;
 };
@@ -181,7 +191,7 @@ private:
 	std::shared_ptr<MethodInvocationMockBase<R, arglist...>> buildMethodInvocationMock(
 			std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher,
 			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {
-		return std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {new MethodInvocationMockBase<R, arglist...>(invocationMatcher,
+		return std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {new MethodInvocationMockBase<R, arglist...>(*this, invocationMatcher,
 					invocationHandler)};
 	}
 

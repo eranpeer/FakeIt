@@ -6,14 +6,20 @@
 struct Method {
 };
 
-struct ActualInvocationInfo {
+struct AnyInvocation {
 
-	ActualInvocationInfo(const int ordinal, const Method & method) :
+	AnyInvocation(const int ordinal, const Method & method) :
 			ordinal(ordinal), method(method) {
 	}
 
+	virtual ~AnyInvocation() = default;
+
 	int getOrdinal() {
 		return ordinal;
+	}
+
+	const Method & getMethod(){
+		return method;
 	}
 
 private:
@@ -22,10 +28,10 @@ private:
 };
 
 template<typename ... arglist>
-struct ActualInvocation: public virtual ActualInvocationInfo {
+struct ActualInvocation: public virtual AnyInvocation {
 
 	ActualInvocation(const int ordinal, const Method & method, const arglist&... args) :
-			ActualInvocationInfo(ordinal, method), actualArguments { args... } {
+		AnyInvocation(ordinal, method), actualArguments { args... } {
 	}
 
 	const std::tuple<arglist...>& getActualArguments() {
