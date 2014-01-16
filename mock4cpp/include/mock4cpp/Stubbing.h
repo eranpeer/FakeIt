@@ -195,10 +195,10 @@ protected:
 		return _isActive;
 	}
 
-public:
-
 	Sequence():_isActive(false) {
 	}
+
+public:
 
 	friend class VerifyFunctor;
 };
@@ -207,9 +207,18 @@ class ConcatenatedSequence: public virtual Sequence {
 private:
 	const Sequence &s1;
 	const Sequence &s2;
-public:
+
+protected:
 	ConcatenatedSequence(const Sequence &s1, const Sequence &s2) :
 			s1(s1), s2(s2) {
+	}
+
+public:
+
+	~ConcatenatedSequence(){
+		if (isActive()){
+
+		}
 	}
 
 	friend inline ConcatenatedSequence operator+(const Sequence &s1, const Sequence &s2);
@@ -219,9 +228,18 @@ class RepeatedSequence: public virtual Sequence {
 private:
 	const Sequence &s1;
 	const int times;
-public:
+
+protected:
 	RepeatedSequence(const Sequence &s1, const int times) :
 			s1(s1), times(times) {
+	}
+
+public:
+
+	~RepeatedSequence(){
+		if (isActive()){
+
+		}
 	}
 
 	friend inline RepeatedSequence operator*(const Sequence &s1, const int times);

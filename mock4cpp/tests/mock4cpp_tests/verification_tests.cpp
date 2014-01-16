@@ -155,7 +155,7 @@ struct BasicVerification: tpunit::TestFixture {
 
 	void tryfunc() {
 		Mock<SomeInterface> mock;
-		mock[&SomeInterface::func] * 2;
+		Verify(mock[&SomeInterface::func] * 2 + mock[&SomeInterface::func]);
 	}
-
+//
 } __BasicVerification;

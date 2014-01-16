@@ -375,10 +375,10 @@ public:
 	}
 
 
-	void operator()(const Sequence& verificationProgress) {
-		Sequence& verificationProgressWithoutConst =
-			const_cast<Sequence&>(verificationProgress);
-		verificationProgressWithoutConst.startVerification();
+	void operator()(const Sequence& sequence) {
+		Sequence& sequenceWithoutConst =
+			const_cast<Sequence&>(sequence);
+		sequenceWithoutConst.startVerification();
 	}
 
 }static Verify;

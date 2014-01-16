@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <functional>
+#include <atomic>
 
 #include "mockutils/TupleDispatcher.h"
 #include "mock4cpp/InvocationMatcher.h"
@@ -10,7 +11,10 @@
 #include "mock4cpp/ActualInvocation.h"
 #include "mock4cpp/Exceptions.h"
 
+
 namespace mock4cpp {
+
+static std::atomic_int invocationOrdinal;
 
 template<typename R, typename ... arglist>
 struct BehaviorMock {
@@ -130,7 +134,7 @@ private:
 };
 
 template<typename R, typename ... arglist>
-struct MethodMock: public MethodInvocationHandler<R, arglist...> {
+struct MethodMock: public virtual Method, public virtual MethodInvocationHandler<R, arglist...> {
 	MethodMock(MockBase& mock) :
 			mock(mock) {
 	}
@@ -148,7 +152,8 @@ struct MethodMock: public MethodInvocationHandler<R, arglist...> {
 	}
 
 	R handleMethodInvocation(const arglist&... args) override {
-		auto actualInvoaction = std::shared_ptr<ActualInvocation<arglist...>> { new ActualInvocation<arglist...>(args...) };
+		int ordinal = invocationOrdinal++;
+		auto actualInvoaction = std::shared_ptr<ActualInvocation<arglist...>> { new ActualInvocation<arglist...>(ordinal,*this, args...) };
 		actualInvocations.push_back(actualInvoaction);
 		auto methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
 		if (!methodInvocationMock) {
