@@ -14,7 +14,9 @@ struct BasicVerification: tpunit::TestFixture {
 					TEST(BasicVerification::verify_method_was_never_called), //
 					TEST(BasicVerification::verify_method_was_called_exactly_x_times), //
 					TEST(BasicVerification::should_throw_IllegalArgumentException_on_negative_times_argument), //
-					TEST(BasicVerification::verify_with_filter))  //
+					TEST(BasicVerification::verify_with_filter),//
+					TEST(BasicVerification::tryfunc)
+					)  //
 	{
 	}
 
@@ -157,5 +159,5 @@ struct BasicVerification: tpunit::TestFixture {
 		Mock<SomeInterface> mock;
 		Verify(mock[&SomeInterface::func] * 2 + mock[&SomeInterface::func]);
 	}
-//
+
 } __BasicVerification;

@@ -11,7 +11,6 @@
 #include "mock4cpp/ActualInvocation.h"
 #include "mock4cpp/Exceptions.h"
 
-
 namespace mock4cpp {
 
 static std::atomic_int invocationOrdinal;
@@ -69,8 +68,8 @@ template<typename R, typename ... arglist>
 struct MethodInvocationMockBase: public virtual MethodInvocationMock<R, arglist...> {
 
 	MethodInvocationMockBase(const Method& method, std::shared_ptr<InvocationMatcher<arglist...>> matcher,
-			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) : method(method),
-			matcher { matcher }, invocationHandler { invocationHandler } {
+			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) :
+			method(method), matcher { matcher }, invocationHandler { invocationHandler } {
 	}
 
 	R handleMethodInvocation(const arglist&... args) override {
@@ -79,15 +78,6 @@ struct MethodInvocationMockBase: public virtual MethodInvocationMock<R, arglist.
 
 	virtual bool matches(ActualInvocation<arglist...>& actualInvocation) {
 		return matcher->matches(actualInvocation);
-	}
-
-	virtual bool matches(AnyInvocation& invocation) override {
-		if (&invocation.getMethod() != &method){
-			return false;
-		}
-
-		ActualInvocation<arglist...>& actualInvocation = dynamic_cast<ActualInvocation<arglist...>&>(invocation);
-		return matches(actualInvocation);
 	}
 
 private:
@@ -163,7 +153,7 @@ struct MethodMock: public virtual Method, public virtual MethodInvocationHandler
 
 	R handleMethodInvocation(const arglist&... args) override {
 		int ordinal = invocationOrdinal++;
-		auto actualInvoaction = std::shared_ptr<ActualInvocation<arglist...>> { new ActualInvocation<arglist...>(ordinal,*this, args...) };
+		auto actualInvoaction = std::shared_ptr<ActualInvocation<arglist...>> { new ActualInvocation<arglist...>(ordinal, *this, args...) };
 		actualInvocations.push_back(actualInvoaction);
 		auto methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
 		if (!methodInvocationMock) {

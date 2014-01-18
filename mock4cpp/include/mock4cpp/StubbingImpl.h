@@ -4,9 +4,14 @@
 #include <functional>
 #include <type_traits>
 #include <memory>
+#include <vector>
+#include <unordered_set>
+#include <set>
 
 #include "mock4cpp/MethodMock.h"
 #include "mock4cpp/Stubbing.h"
+#include "mock4cpp/ActualInvocation.h"
+#include "mock4cpp/InvocationMatcher.h"
 #include "mockutils/ExtractMemberType.h"
 
 namespace mock4cpp {
@@ -76,7 +81,8 @@ template<typename R, typename ... arglist>
 class MethodStubbingBase: //
 protected virtual MethodStubbingInternal,
 		protected virtual MethodVerificationProgress,
-		public virtual Sequence {
+		public virtual Sequence,
+		protected virtual AnyInvocationMatcher {
 private:
 
 	std::shared_ptr<RecordedMethodBody<R, arglist...>> buildInitialMethodBody() {
@@ -162,6 +168,30 @@ protected:
 	virtual void verifyInvocations(const int times) override {
 		startVerification();
 		expectedInvocationCount = times;
+	}
+
+public:
+	virtual bool matches(AnyInvocation& invocation) override {
+		if (&invocation.getMethod() != &stubbingContext->getMethodMock()) {
+			return false;
+		}
+
+		ActualInvocation<arglist...>& actualInvocation = dynamic_cast<ActualInvocation<arglist...>&>(invocation);
+		return invocationMatcher->matches(actualInvocation);
+	}
+
+	void getActualInvocationSequence(std::unordered_set<AnyInvocation*>& into) const override {
+		std::vector<std::shared_ptr<ActualInvocation<arglist...>>>actualInvocations = stubbingContext->getMethodMock().getActualInvocations(*invocationMatcher);
+		for (auto i : actualInvocations) {
+			AnyInvocation* ai = i.get();
+			into.insert(ai);
+		}
+	}
+
+	void getExpectedInvocationSequence(std::vector<AnyInvocationMatcher*>& into) const override {
+		const AnyInvocationMatcher* b = this;
+		AnyInvocationMatcher* c = const_cast<AnyInvocationMatcher*>(b);
+		into.push_back(c);
 	}
 
 };
@@ -367,11 +397,37 @@ public:
 		return verificationProgressWithoutConst;
 	}
 
-
 	void operator()(const Sequence& sequence) {
-		Sequence& sequenceWithoutConst =
-			const_cast<Sequence&>(sequence);
+		Sequence& sequenceWithoutConst = const_cast<Sequence&>(sequence);
 		sequenceWithoutConst.startVerification();
+
+		std::unordered_set<AnyInvocation*> actualIvocations;
+		sequenceWithoutConst.getActualInvocationSequence(actualIvocations);
+
+		auto comp = [](AnyInvocation* a, AnyInvocation* b)-> bool {return a->getOrdinal() < b->getOrdinal();};
+		std::set<AnyInvocation*,decltype(comp)> sortedActualIvocations(comp);
+		for (auto i : actualIvocations)
+			sortedActualIvocations.insert(i);
+
+		std::vector<AnyInvocation*> actualSequence;
+		for (auto i : sortedActualIvocations)
+			actualSequence.push_back(i);
+
+		std::vector<AnyInvocationMatcher*> expectedSequence;
+		sequenceWithoutConst.getExpectedInvocationSequence(expectedSequence);
+
+		bool found = false;
+		for (int i = 0; !found && i< ((int)actualSequence.size() - (int)expectedSequence.size() + 1);i++){
+			found = true;
+			for (unsigned int j = 0;found && j<expectedSequence.size();j++){
+				AnyInvocation* actual = actualSequence[i + j];
+				AnyInvocationMatcher* expected = expectedSequence[j];
+				found = expected->matches(*actual);
+			}
+		}
+		if (!found){
+			throw 1;
+		}
 	}
 
 }static Verify;

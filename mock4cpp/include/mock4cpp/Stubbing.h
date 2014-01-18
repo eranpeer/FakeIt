@@ -9,9 +9,14 @@
 
 #include <functional>
 #include <type_traits>
+#include <unordered_set>
+#include <vector>
+
 #include "mockutils/traits.h"
 #include "mockutils/DefaultValue.hpp"
 #include "mock4cpp/Exceptions.h"
+#include "mock4cpp/InvocationMatcher.h"
+#include "mock4cpp/ActualInvocation.h"
 
 namespace mock4cpp {
 
@@ -172,10 +177,6 @@ protected:
 
 	virtual void startStubbing() = 0;
 
-	//virtual void cancelVerification() = 0;
-
-	//virtual void startVerification() = 0;
-
 };
 
 class Sequence {
@@ -191,14 +192,18 @@ protected:
 		_isActive = false;
 	}
 
-	bool isActive(){
+	bool isActive() {
 		return _isActive;
 	}
 
-	Sequence():_isActive(false) {
+	Sequence() :
+			_isActive(false) {
 	}
 
 public:
+	virtual void getActualInvocationSequence(std::unordered_set<AnyInvocation*>& into) const = 0;
+
+	virtual void getExpectedInvocationSequence(std::vector<AnyInvocationMatcher*>& into) const = 0;
 
 	friend class VerifyFunctor;
 };
@@ -215,10 +220,20 @@ protected:
 
 public:
 
-	~ConcatenatedSequence(){
-		if (isActive()){
+	~ConcatenatedSequence() {
+		if (isActive()) {
 
 		}
+	}
+
+	void getActualInvocationSequence(std::unordered_set<AnyInvocation*>& into) const override {
+		s1.getActualInvocationSequence(into);
+		s2.getActualInvocationSequence(into);
+	}
+
+	void getExpectedInvocationSequence(std::vector<AnyInvocationMatcher*>& into) const override {
+		s1.getExpectedInvocationSequence(into);
+		s2.getExpectedInvocationSequence(into);
 	}
 
 	friend inline ConcatenatedSequence operator+(const Sequence &s1, const Sequence &s2);
@@ -236,20 +251,29 @@ protected:
 
 public:
 
-	~RepeatedSequence(){
-		if (isActive()){
+	~RepeatedSequence() {
+		if (isActive()) {
 
 		}
 	}
 
-	friend inline RepeatedSequence operator*(const Sequence &s1, const int times);
+	friend inline RepeatedSequence operator*(const Sequence &s1, int times);
+
+	void getActualInvocationSequence(std::unordered_set<AnyInvocation*>& into) const override {
+		s1.getActualInvocationSequence(into);
+	}
+
+	void getExpectedInvocationSequence(std::vector<AnyInvocationMatcher*>& into) const override {
+		for (int i = 0; i < times; i++)
+			s1.getExpectedInvocationSequence(into);
+	}
 };
 
 inline ConcatenatedSequence operator+(const Sequence &s1, const Sequence &s2) {
 	return ConcatenatedSequence(s1, s2);
 }
 
-inline RepeatedSequence operator*(const Sequence &s1, const int times) {
+inline RepeatedSequence operator*(const Sequence &s1, int times) {
 	return RepeatedSequence(s1, times);
 }
 
