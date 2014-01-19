@@ -379,16 +379,25 @@ public:
 class VerifyFunctor {
 public:
 
-	struct VerificationProgress {
-		VerificationProgress(const Sequence& sequence) : sequence(sequence){}
+	struct VerificationProgress: public virtual MethodVerificationProgress {
+		VerificationProgress(const Sequence& sequence) :
+				sequence(sequence), expectedInvocationCount(-1), _isActive(true) {
+		}
 
 		~VerificationProgress() THROWS {
+
+			if (!_isActive)
+				return;
+
+			if (std::uncaught_exception()) {
+				return;
+			}
 
 			std::unordered_set<AnyInvocation*> actualIvocations;
 			sequence.getActualInvocationSequence(actualIvocations);
 
 			auto comp = [](AnyInvocation* a, AnyInvocation* b)-> bool {return a->getOrdinal() < b->getOrdinal();};
-			std::set<AnyInvocation*,decltype(comp)> sortedActualIvocations(comp);
+			std::set<AnyInvocation*, decltype(comp)> sortedActualIvocations(comp);
 			for (auto i : actualIvocations)
 				sortedActualIvocations.insert(i);
 
@@ -400,12 +409,12 @@ public:
 			sequence.getExpectedInvocationSequence(expectedSequence);
 
 			int count = 0;
-			for (int i = 0; i< ((int)actualSequence.size() - (int)expectedSequence.size() + 1);i++){
+			for (int i = 0; i < ((int) actualSequence.size() - (int) expectedSequence.size() + 1); i++) {
 				bool found = true;
-				for (unsigned int j = 0; found && j<expectedSequence.size();j++){
+				for (unsigned int j = 0; found && j < expectedSequence.size(); j++) {
 					AnyInvocation* actual = actualSequence[i + j];
 					AnyInvocationMatcher* expected = expectedSequence[j];
-					if (j >= 1){
+					if (j >= 1) {
 						AnyInvocation* prevActual = actualSequence[i + j - 1];
 						found = actual->getOrdinal() - prevActual->getOrdinal() == 1;
 					}
@@ -413,15 +422,37 @@ public:
 				}
 				if (found) {
 					count++;
-					i+= (expectedSequence.size() - 1);
+					i += (expectedSequence.size() - 1);
 				}
 			}
-			if (!count){
-				throw(MethodCallVerificationException(std::string("Expected invocation scenario does not match actual invocation order")));
+			if (expectedInvocationCount == -1) {
+				if (count == 0) {
+					throw(MethodCallVerificationException(
+							std::string("Expected invocation scenario does not match actual invocation order")));
+				}
+				return;
+			}
+			if (count != expectedInvocationCount) {
+				throw(MethodCallVerificationException(
+						std::string("expected ") + std::to_string(expectedInvocationCount) + " but was " + std::to_string(count)));
 			}
 		}
+
+		virtual void cancelVerification() {
+			_isActive = false;
+		}
+
+		virtual void startVerification() override {
+		}
+
+		virtual void verifyInvocations(const int times) override {
+			expectedInvocationCount = times;
+		}
+
 	private:
 		const Sequence& sequence;
+		int expectedInvocationCount;
+		bool _isActive; // not needed since we chech for uncought exception!!!
 	};
 
 	VerifyFunctor() {
