@@ -378,6 +378,52 @@ public:
 
 class VerifyFunctor {
 public:
+
+	struct VerificationProgress {
+		VerificationProgress(const Sequence& sequence) : sequence(sequence){}
+
+		~VerificationProgress() THROWS {
+
+			std::unordered_set<AnyInvocation*> actualIvocations;
+			sequence.getActualInvocationSequence(actualIvocations);
+
+			auto comp = [](AnyInvocation* a, AnyInvocation* b)-> bool {return a->getOrdinal() < b->getOrdinal();};
+			std::set<AnyInvocation*,decltype(comp)> sortedActualIvocations(comp);
+			for (auto i : actualIvocations)
+				sortedActualIvocations.insert(i);
+
+			std::vector<AnyInvocation*> actualSequence;
+			for (auto i : sortedActualIvocations)
+				actualSequence.push_back(i);
+
+			std::vector<AnyInvocationMatcher*> expectedSequence;
+			sequence.getExpectedInvocationSequence(expectedSequence);
+
+			int count = 0;
+			for (int i = 0; i< ((int)actualSequence.size() - (int)expectedSequence.size() + 1);i++){
+				bool found = true;
+				for (unsigned int j = 0; found && j<expectedSequence.size();j++){
+					AnyInvocation* actual = actualSequence[i + j];
+					AnyInvocationMatcher* expected = expectedSequence[j];
+					if (j >= 1){
+						AnyInvocation* prevActual = actualSequence[i + j - 1];
+						found = actual->getOrdinal() - prevActual->getOrdinal() == 1;
+					}
+					found = found || expected->matches(*actual);
+				}
+				if (found) {
+					count++;
+					i+= (expectedSequence.size() - 1);
+				}
+			}
+			if (!count){
+				throw(MethodCallVerificationException(std::string("Expected invocation scenario does not match actual invocation order")));
+			}
+		}
+	private:
+		const Sequence& sequence;
+	};
+
 	VerifyFunctor() {
 	}
 
@@ -397,37 +443,11 @@ public:
 		return verificationProgressWithoutConst;
 	}
 
-	void operator()(const Sequence& sequence) {
+	VerificationProgress operator()(const Sequence& sequence) {
 		Sequence& sequenceWithoutConst = const_cast<Sequence&>(sequence);
 		sequenceWithoutConst.startVerification();
-
-		std::unordered_set<AnyInvocation*> actualIvocations;
-		sequenceWithoutConst.getActualInvocationSequence(actualIvocations);
-
-		auto comp = [](AnyInvocation* a, AnyInvocation* b)-> bool {return a->getOrdinal() < b->getOrdinal();};
-		std::set<AnyInvocation*,decltype(comp)> sortedActualIvocations(comp);
-		for (auto i : actualIvocations)
-			sortedActualIvocations.insert(i);
-
-		std::vector<AnyInvocation*> actualSequence;
-		for (auto i : sortedActualIvocations)
-			actualSequence.push_back(i);
-
-		std::vector<AnyInvocationMatcher*> expectedSequence;
-		sequenceWithoutConst.getExpectedInvocationSequence(expectedSequence);
-
-		bool found = false;
-		for (int i = 0; !found && i< ((int)actualSequence.size() - (int)expectedSequence.size() + 1);i++){
-			found = true;
-			for (unsigned int j = 0;found && j<expectedSequence.size();j++){
-				AnyInvocation* actual = actualSequence[i + j];
-				AnyInvocationMatcher* expected = expectedSequence[j];
-				found = expected->matches(*actual);
-			}
-		}
-		if (!found){
-			throw 1;
-		}
+		VerificationProgress v(sequence);
+		return v;
 	}
 
 }static Verify;
