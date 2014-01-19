@@ -80,7 +80,7 @@ using namespace mock4cpp;
 template<typename R, typename ... arglist>
 class MethodStubbingBase: //
 protected virtual MethodStubbingInternal,
-		protected virtual MethodVerificationProgress,
+		//protected virtual MethodVerificationProgress,
 		public virtual Sequence,
 		protected virtual AnyInvocationMatcher {
 private:
@@ -112,16 +112,20 @@ protected:
 		recordedMethodBody = buildInitialMethodBody();
 	}
 
-	int CountInvocations(InvocationMatcher<arglist...>& invocationMatcher) {
-		int times = stubbingContext->getMethodMock().getActualInvocations(invocationMatcher).size();
-		return times;
-	}
+//	int CountInvocations(InvocationMatcher<arglist...>& invocationMatcher) {
+//		int times = stubbingContext->getMethodMock().getActualInvocations(invocationMatcher).size();
+//		return times;
+//	}
 
 	void setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher) {
 		MethodStubbingBase<R, arglist...>::invocationMatcher = invocationMatcher;
 	}
 
 	virtual ~MethodStubbingBase() THROWS {
+		if (std::uncaught_exception()) {
+			return;
+		}
+
 		if (progressType == ProgressType::NONE) {
 			return;
 		}
@@ -131,44 +135,44 @@ protected:
 			return;
 		}
 
-		if (Sequence::isActive()) {
-			auto actualInvocations = CountInvocations(*invocationMatcher);
-			if (expectedInvocationCount == -1) {
-				if (actualInvocations == 0) {
-					if (!std::uncaught_exception()) {
-						throw(MethodCallVerificationException(std::string("no matching invocation")));
-					}
-				}
-				return;
-			}
-			if (actualInvocations != expectedInvocationCount) {
-				if (!std::uncaught_exception()) {
-					throw(MethodCallVerificationException(
-							std::string("expected ") + std::to_string(expectedInvocationCount) + " but was "
-									+ std::to_string(actualInvocations)));
-				}
-			}
-		}
+//		if (Sequence::isActive()) {
+//			auto actualInvocations = CountInvocations(*invocationMatcher);
+//			if (expectedInvocationCount == -1) {
+//				if (actualInvocations == 0) {
+//					if (!std::uncaught_exception()) {
+//						throw(MethodCallVerificationException(std::string("no matching invocation")));
+//					}
+//				}
+//				return;
+//			}
+//			if (actualInvocations != expectedInvocationCount) {
+//				if (!std::uncaught_exception()) {
+//					throw(MethodCallVerificationException(
+//							std::string("expected ") + std::to_string(expectedInvocationCount) + " but was "
+//									+ std::to_string(actualInvocations)));
+//				}
+//			}
+//		}
 	}
 
-	virtual void cancelVerification() {
-		progressType = ProgressType::NONE;
-		Sequence::cancelVerification();
-	}
+//	virtual void cancelVerification() {
+//		progressType = ProgressType::NONE;
+//		Sequence::cancelVerification();
+//	}
 
 	virtual void startStubbing() {
 		progressType = ProgressType::STUBBING;
 	}
 
-	virtual void startVerification() override {
-		progressType = ProgressType::VERIFYING;
-		Sequence::startVerification();
-	}
+//	virtual void startVerification() override {
+//		progressType = ProgressType::VERIFYING;
+//		Sequence::startVerification();
+//	}
 
-	virtual void verifyInvocations(const int times) override {
-		startVerification();
-		expectedInvocationCount = times;
-	}
+//	virtual void verifyInvocations(const int times) override {
+//		startVerification();
+//		expectedInvocationCount = times;
+//	}
 
 public:
 	virtual bool matches(AnyInvocation& invocation) override {
@@ -219,19 +223,19 @@ protected:
 		MethodStubbingBase<R, arglist...>::startStubbing();
 	}
 
-	virtual void verifyInvocations(const int times) override {
-		MethodStubbingBase<R, arglist...>::verifyInvocations(times);
-	}
+//	virtual void verifyInvocations(const int times) override {
+//		MethodStubbingBase<R, arglist...>::verifyInvocations(times);
+//	}
 
-	// put method here to silent the MSC++ warning C4250: inherits via dominance
-	virtual void startVerification() override {
-		MethodStubbingBase<R, arglist...>::startVerification();
-	}
+//	// put method here to silent the MSC++ warning C4250: inherits via dominance
+//	virtual void startVerification() override {
+//		MethodStubbingBase<R, arglist...>::startVerification();
+//	}
 
-	// put method here to silent the MSC++ warning C4250: inherits via dominance
-	virtual void cancelVerification() override {
-		MethodStubbingBase<R, arglist...>::cancelVerification();
-	}
+//	// put method here to silent the MSC++ warning C4250: inherits via dominance
+//	virtual void cancelVerification() override {
+//		MethodStubbingBase<R, arglist...>::cancelVerification();
+//	}
 
 public:
 
@@ -301,20 +305,6 @@ protected:
 
 	virtual void startStubbing() override {
 		MethodStubbingBase<R, arglist...>::startStubbing();
-	}
-
-	virtual void verifyInvocations(const int times) override {
-		MethodStubbingBase<R, arglist...>::verifyInvocations(times);
-	}
-
-	// put method here to silent the MSC++ warning C4250: inherits via dominance
-	virtual void startVerification() override {
-		MethodStubbingBase<R, arglist...>::startVerification();
-	}
-
-	// put method here to silent the MSC++ warning C4250: inherits via dominance
-	virtual void cancelVerification() override {
-		MethodStubbingBase<R, arglist...>::cancelVerification();
 	}
 
 public:
@@ -475,10 +465,8 @@ public:
 //	}
 
 	VerificationProgress operator()(const Sequence& sequence) {
-		//Sequence& sequenceWithoutConst = const_cast<Sequence&>(sequence);
-		//sequenceWithoutConst.startVerification();
-		VerificationProgress v(sequence);
-		return v;
+		VerificationProgress progress(sequence);
+		return progress;
 	}
 
 }static Verify;
