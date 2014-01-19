@@ -373,9 +373,6 @@ public:
 			}
 		}
 
-		virtual void startVerification() override {
-		}
-
 		virtual void verifyInvocations(const int times) override {
 			expectedInvocationCount = times;
 		}
