@@ -163,7 +163,7 @@ struct BasicVerification: tpunit::TestFixture {
 		i.func(1);
 		i.func(2);
 		i.func(3);
-		Verify(mock[&SomeInterface::func] * 2 + mock[&SomeInterface::func]);
+		Verify(mock[&SomeInterface::func] * 2 + mock[&SomeInterface::func]).AtLeastOnce();
 	}
 
 	void tryfunc2() {
@@ -174,5 +174,5 @@ struct BasicVerification: tpunit::TestFixture {
 		i.func(2);
 		ASSERT_THROW(Verify(mock[&SomeInterface::func] * 2 + mock[&SomeInterface::func]),mock4cpp::MethodCallVerificationException);
 	}
-//
+
 } __BasicVerification;

@@ -458,25 +458,25 @@ public:
 	VerifyFunctor() {
 	}
 
-	template<typename R, typename ... arglist>
-	MethodVerificationProgress& operator()(const ProcedureStubbingRoot<R, arglist...>& verificationProgress) {
-		ProcedureStubbingRoot<R, arglist...>& verificationProgressWithoutConst =
-				const_cast<ProcedureStubbingRoot<R, arglist...>&>(verificationProgress);
-		verificationProgressWithoutConst.startVerification();
-		return verificationProgressWithoutConst;
-	}
-
-	template<typename R, typename ... arglist>
-	MethodVerificationProgress& operator()(const FunctionStubbingRoot<R, arglist...>& verificationProgress) {
-		FunctionStubbingRoot<R, arglist...>& verificationProgressWithoutConst =
-				const_cast<FunctionStubbingRoot<R, arglist...>&>(verificationProgress);
-		verificationProgressWithoutConst.startVerification();
-		return verificationProgressWithoutConst;
-	}
+//	template<typename R, typename ... arglist>
+//	MethodVerificationProgress& operator()(const ProcedureStubbingRoot<R, arglist...>& verificationProgress) {
+//		ProcedureStubbingRoot<R, arglist...>& verificationProgressWithoutConst =
+//				const_cast<ProcedureStubbingRoot<R, arglist...>&>(verificationProgress);
+//		verificationProgressWithoutConst.startVerification();
+//		return verificationProgressWithoutConst;
+//	}
+//
+//	template<typename R, typename ... arglist>
+//	MethodVerificationProgress& operator()(const FunctionStubbingRoot<R, arglist...>& verificationProgress) {
+//		FunctionStubbingRoot<R, arglist...>& verificationProgressWithoutConst =
+//				const_cast<FunctionStubbingRoot<R, arglist...>&>(verificationProgress);
+//		verificationProgressWithoutConst.startVerification();
+//		return verificationProgressWithoutConst;
+//	}
 
 	VerificationProgress operator()(const Sequence& sequence) {
-		Sequence& sequenceWithoutConst = const_cast<Sequence&>(sequence);
-		sequenceWithoutConst.startVerification();
+		//Sequence& sequenceWithoutConst = const_cast<Sequence&>(sequence);
+		//sequenceWithoutConst.startVerification();
 		VerificationProgress v(sequence);
 		return v;
 	}
