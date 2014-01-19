@@ -52,7 +52,6 @@ struct MethodVerificationProgress {
 	}
 
 protected:
-	virtual void startVerification() = 0;
 	virtual void verifyInvocations(const int times) = 0;
 private:
 	MethodVerificationProgress & operator=(const MethodVerificationProgress & other) = delete;
@@ -179,23 +178,10 @@ protected:
 
 class Sequence {
 private:
-	bool _isActive;
 
 protected:
-	virtual void startVerification() {
-		_isActive = true;
-	}
 
-	virtual void cancelVerification() {
-		_isActive = false;
-	}
-
-	bool isActive() {
-		return _isActive;
-	}
-
-	Sequence() :
-			_isActive(false) {
+	Sequence() {
 	}
 
 public:
@@ -219,9 +205,6 @@ protected:
 public:
 
 	~ConcatenatedSequence() {
-		if (isActive()) {
-
-		}
 	}
 
 	void getActualInvocationSequence(std::unordered_set<AnyInvocation*>& into) const override {
@@ -250,9 +233,6 @@ protected:
 public:
 
 	~RepeatedSequence() {
-		if (isActive()) {
-
-		}
 	}
 
 	friend inline RepeatedSequence operator*(const Sequence &s1, int times);
@@ -276,5 +256,4 @@ inline RepeatedSequence operator*(const Sequence &s1, int times) {
 }
 
 }
-
 #endif // Clouses_h__
