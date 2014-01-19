@@ -144,7 +144,8 @@ struct MethodMock: public virtual Method, public virtual MethodInvocationHandler
 
 	void stubMethodInvocation(std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher,
 			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {
-		methodInvocationMocks.push_back(buildMethodInvocationMock(invocationMatcher, invocationHandler));
+		auto mock = buildMethodInvocationMock(invocationMatcher, invocationHandler);
+		methodInvocationMocks.push_back(mock);
 	}
 
 	void clear() {

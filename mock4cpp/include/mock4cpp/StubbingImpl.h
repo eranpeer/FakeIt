@@ -129,7 +129,6 @@ protected:
 			stubbingContext->getMethodMock().stubMethodInvocation(invocationMatcher, recordedMethodBody);
 			return;
 		}
-
 	}
 
 	virtual void startStubbing() {
@@ -318,13 +317,19 @@ class VerifyFunctor {
 public:
 
 	struct VerificationProgress: public virtual MethodVerificationProgress {
+		friend class VerifyFunctor;
+
 		VerificationProgress(const Sequence& sequence) :
-				sequence(sequence), expectedInvocationCount(-1) {
+				sequence(sequence), expectedInvocationCount(-1), _isActive(true) {
 		}
 
 		~VerificationProgress() THROWS {
 
 			if (std::uncaught_exception()) {
+				return;
+			}
+
+			if (!_isActive) {
 				return;
 			}
 
@@ -380,6 +385,13 @@ public:
 	private:
 		const Sequence& sequence;
 		int expectedInvocationCount;
+		bool _isActive;
+
+		VerificationProgress(VerificationProgress& other) :sequence(other.sequence), expectedInvocationCount(other.expectedInvocationCount), _isActive(other._isActive)
+		{
+			other._isActive = false;
+		}
+
 	};
 
 	VerifyFunctor() {

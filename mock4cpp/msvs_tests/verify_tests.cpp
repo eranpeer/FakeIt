@@ -104,7 +104,10 @@ namespace mock4cpp_tests
 		TEST_METHOD(NewVerify)
 		{
 			Mock<SomeInterface> mock;
+			Stub(mock[&SomeInterface::func1]);
 			SomeInterface &i = mock.get();
+			i.func1(1);
+			i.func1(2);
 			Verify(mock[&SomeInterface::func1] * 2);
 		}
 
