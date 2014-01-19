@@ -332,7 +332,7 @@ public:
 			sequence.getActualInvocationSequence(actualIvocations);
 
 			auto comp = [](AnyInvocation* a, AnyInvocation* b)-> bool {return a->getOrdinal() < b->getOrdinal();};
-			std::set<AnyInvocation*, decltype(comp)> sortedActualIvocations(comp);
+			std::set<AnyInvocation*, bool(*)(AnyInvocation* a, AnyInvocation* b)> sortedActualIvocations(comp);
 			for (auto i : actualIvocations)
 				sortedActualIvocations.insert(i);
 
