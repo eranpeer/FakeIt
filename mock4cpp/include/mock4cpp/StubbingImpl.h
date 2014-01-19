@@ -112,11 +112,6 @@ protected:
 		recordedMethodBody = buildInitialMethodBody();
 	}
 
-//	int CountInvocations(InvocationMatcher<arglist...>& invocationMatcher) {
-//		int times = stubbingContext->getMethodMock().getActualInvocations(invocationMatcher).size();
-//		return times;
-//	}
-
 	void setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher) {
 		MethodStubbingBase<R, arglist...>::invocationMatcher = invocationMatcher;
 	}
@@ -135,44 +130,11 @@ protected:
 			return;
 		}
 
-//		if (Sequence::isActive()) {
-//			auto actualInvocations = CountInvocations(*invocationMatcher);
-//			if (expectedInvocationCount == -1) {
-//				if (actualInvocations == 0) {
-//					if (!std::uncaught_exception()) {
-//						throw(MethodCallVerificationException(std::string("no matching invocation")));
-//					}
-//				}
-//				return;
-//			}
-//			if (actualInvocations != expectedInvocationCount) {
-//				if (!std::uncaught_exception()) {
-//					throw(MethodCallVerificationException(
-//							std::string("expected ") + std::to_string(expectedInvocationCount) + " but was "
-//									+ std::to_string(actualInvocations)));
-//				}
-//			}
-//		}
 	}
-
-//	virtual void cancelVerification() {
-//		progressType = ProgressType::NONE;
-//		Sequence::cancelVerification();
-//	}
 
 	virtual void startStubbing() {
 		progressType = ProgressType::STUBBING;
 	}
-
-//	virtual void startVerification() override {
-//		progressType = ProgressType::VERIFYING;
-//		Sequence::startVerification();
-//	}
-
-//	virtual void verifyInvocations(const int times) override {
-//		startVerification();
-//		expectedInvocationCount = times;
-//	}
 
 public:
 	virtual bool matches(AnyInvocation& invocation) override {
@@ -222,20 +184,6 @@ protected:
 	virtual void startStubbing() override {
 		MethodStubbingBase<R, arglist...>::startStubbing();
 	}
-
-//	virtual void verifyInvocations(const int times) override {
-//		MethodStubbingBase<R, arglist...>::verifyInvocations(times);
-//	}
-
-//	// put method here to silent the MSC++ warning C4250: inherits via dominance
-//	virtual void startVerification() override {
-//		MethodStubbingBase<R, arglist...>::startVerification();
-//	}
-
-//	// put method here to silent the MSC++ warning C4250: inherits via dominance
-//	virtual void cancelVerification() override {
-//		MethodStubbingBase<R, arglist...>::cancelVerification();
-//	}
 
 public:
 
@@ -371,13 +319,10 @@ public:
 
 	struct VerificationProgress: public virtual MethodVerificationProgress {
 		VerificationProgress(const Sequence& sequence) :
-				sequence(sequence), expectedInvocationCount(-1), _isActive(true) {
+				sequence(sequence), expectedInvocationCount(-1) {
 		}
 
 		~VerificationProgress() THROWS {
-
-			if (!_isActive)
-				return;
 
 			if (std::uncaught_exception()) {
 				return;
@@ -428,10 +373,6 @@ public:
 			}
 		}
 
-		virtual void cancelVerification() {
-			_isActive = false;
-		}
-
 		virtual void startVerification() override {
 		}
 
@@ -442,27 +383,10 @@ public:
 	private:
 		const Sequence& sequence;
 		int expectedInvocationCount;
-		bool _isActive; // not needed since we chech for uncought exception!!!
 	};
 
 	VerifyFunctor() {
 	}
-
-//	template<typename R, typename ... arglist>
-//	MethodVerificationProgress& operator()(const ProcedureStubbingRoot<R, arglist...>& verificationProgress) {
-//		ProcedureStubbingRoot<R, arglist...>& verificationProgressWithoutConst =
-//				const_cast<ProcedureStubbingRoot<R, arglist...>&>(verificationProgress);
-//		verificationProgressWithoutConst.startVerification();
-//		return verificationProgressWithoutConst;
-//	}
-//
-//	template<typename R, typename ... arglist>
-//	MethodVerificationProgress& operator()(const FunctionStubbingRoot<R, arglist...>& verificationProgress) {
-//		FunctionStubbingRoot<R, arglist...>& verificationProgressWithoutConst =
-//				const_cast<FunctionStubbingRoot<R, arglist...>&>(verificationProgress);
-//		verificationProgressWithoutConst.startVerification();
-//		return verificationProgressWithoutConst;
-//	}
 
 	VerificationProgress operator()(const Sequence& sequence) {
 		VerificationProgress progress(sequence);

@@ -46,7 +46,6 @@ struct MethodVerificationProgress {
 
 	virtual void Times(const int times) {
 		if (times < 0) {
-			cancelVerification();
 			throw IllegalArgumentException(std::string("bad argument times:").append(std::to_string(times)));
 		}
 		verifyInvocations(times);
@@ -55,7 +54,6 @@ struct MethodVerificationProgress {
 protected:
 	virtual void startVerification() = 0;
 	virtual void verifyInvocations(const int times) = 0;
-	virtual void cancelVerification() = 0;
 private:
 	MethodVerificationProgress & operator=(const MethodVerificationProgress & other) = delete;
 };
