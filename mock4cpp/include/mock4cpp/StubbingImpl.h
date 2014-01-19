@@ -319,10 +319,6 @@ public:
 	struct VerificationProgress: public virtual MethodVerificationProgress {
 		friend class VerifyFunctor;
 
-		VerificationProgress(const Sequence& sequence) :
-				sequence(sequence), expectedInvocationCount(-1), _isActive(true) {
-		}
-
 		~VerificationProgress() THROWS {
 
 			if (std::uncaught_exception()) {
@@ -386,6 +382,10 @@ public:
 		const Sequence& sequence;
 		int expectedInvocationCount;
 		bool _isActive;
+
+		VerificationProgress(const Sequence& sequence) :
+				sequence(sequence), expectedInvocationCount(-1), _isActive(true) {
+		}
 
 		VerificationProgress(VerificationProgress& other) :sequence(other.sequence), expectedInvocationCount(other.expectedInvocationCount), _isActive(other._isActive)
 		{
