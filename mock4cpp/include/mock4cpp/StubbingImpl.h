@@ -265,9 +265,9 @@ public:
 
 	ProcedureStubbingRoot(const ProcedureStubbingRoot& other) = default;
 
-	virtual void operator=(std::function<R(arglist...)> method) override {
+	virtual void operator= (std::function<R(arglist...)> method) override {
 		// Must override since the implementation in base class is privately inherited
-		FirstProcedureStubbingProgress<R, arglist...>::operator =(method);
+		FirstProcedureStubbingProgress<R, arglist...>::operator= (method);
 	}
 
 	ProcedureStubbingRoot<R, arglist...>& Using(const arglist&... args) {
@@ -333,7 +333,7 @@ public:
 			sequence.getActualInvocationSequence(actualIvocations);
 
 			auto comp = [](AnyInvocation* a, AnyInvocation* b)-> bool {return a->getOrdinal() < b->getOrdinal();};
-			std::set<AnyInvocation*, bool(*)(AnyInvocation* a, AnyInvocation* b)> sortedActualIvocations(comp);
+			std::set<AnyInvocation*, bool (*)(AnyInvocation* a, AnyInvocation* b)> sortedActualIvocations(comp);
 			for (auto i : actualIvocations)
 				sortedActualIvocations.insert(i);
 
@@ -387,8 +387,8 @@ public:
 				sequence(sequence), expectedInvocationCount(-1), _isActive(true) {
 		}
 
-		VerificationProgress(VerificationProgress& other) :sequence(other.sequence), expectedInvocationCount(other.expectedInvocationCount), _isActive(other._isActive)
-		{
+		VerificationProgress(VerificationProgress& other) :
+				sequence(other.sequence), expectedInvocationCount(other.expectedInvocationCount), _isActive(other._isActive) {
 			other._isActive = false;
 		}
 
@@ -411,12 +411,14 @@ public:
 
 	template<typename R, typename ... arglist>
 	FirstProcedureStubbingProgress<R, arglist...>& operator()(const ProcedureStubbingRoot<R, arglist...>& stubbingProgress) {
-		return (FirstProcedureStubbingProgress<R, arglist...>&) stubbingProgress;
+		ProcedureStubbingRoot<R, arglist...>& rootWithoutConst = const_cast<ProcedureStubbingRoot<R, arglist...>&>(stubbingProgress);
+		return dynamic_cast<FirstProcedureStubbingProgress<R, arglist...>&>(rootWithoutConst);
 	}
 
 	template<typename R, typename ... arglist>
 	FirstFunctionStubbingProgress<R, arglist...>& operator()(const FunctionStubbingRoot<R, arglist...>& stubbingProgress) {
-		return (FirstFunctionStubbingProgress<R, arglist...>&) stubbingProgress;
+		FunctionStubbingRoot<R, arglist...>& rootWithoutConst = const_cast<FunctionStubbingRoot<R, arglist...>&>(stubbingProgress);
+		return dynamic_cast<FirstFunctionStubbingProgress<R, arglist...>&>(rootWithoutConst);
 	}
 
 }static When;
@@ -443,6 +445,12 @@ public:
 	}
 
 }static Stub;
+
+//template<typename R, typename ... arglist>
+//inline MethodStubbingBase<R,arglist...>& operator<<(const MethodStubbingBase<R,arglist...>& root, const R& rv)
+//{
+//	return (MethodStubbingBase<R,arglist...>&)root;
+//}
 
 }
 
