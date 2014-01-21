@@ -80,7 +80,6 @@ using namespace mock4cpp;
 template<typename R, typename ... arglist>
 class MethodStubbingBase: //
 protected virtual MethodStubbingInternal,
-		//protected virtual MethodVerificationProgress,
 		public virtual Sequence,
 		protected virtual AnyInvocationMatcher {
 private:
@@ -96,8 +95,6 @@ protected:
 	friend class VerifyFunctor;
 	friend class StubFunctor;
 	friend class WhenFunctor;
-//	friend ConcatenatedSequence operator+(const Sequence &s1, const Sequence &s2);
-//	friend RepeatedSequence operator*(const Sequence &s1, const int times);
 
 	std::shared_ptr<StubbingContext<R, arglist...>> stubbingContext;
 	std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher;
@@ -175,9 +172,6 @@ private:
 	friend class VerifyFunctor;
 	friend class StubFunctor;
 	friend class WhenFunctor;
-//	friend ConcatenatedSequence operator+(const Sequence &s1, const Sequence &s2);
-//	friend RepeatedSequence operator*(const Sequence &s1, const int times);
-
 protected:
 
 	virtual RecordedMethodBody<R, arglist...>& recordedMethodBody() override {
@@ -246,8 +240,6 @@ private:
 	friend class VerifyFunctor;
 	friend class StubFunctor;
 	friend class WhenFunctor;
-//	friend ConcatenatedSequence operator+(const Sequence &s1, const Sequence &s2);
-//	friend RepeatedSequence operator*(const Sequence &s1, const int times);
 
 protected:
 	virtual RecordedMethodBody<R, arglist...>& recordedMethodBody() override {
