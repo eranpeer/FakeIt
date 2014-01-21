@@ -323,51 +323,6 @@ public:
 	struct VerificationProgress: public virtual MethodVerificationProgress {
 		friend class VerifyFunctor;
 
-		int countMatches(std::vector<Sequence*> &pattern, std::vector<AnyInvocation*>& actualSequence) {
-			int end = -1;
-			int count = 0;
-			int startSearchIndex = 0;
-			while (find(pattern, actualSequence, startSearchIndex, end)) {
-				count++;
-				startSearchIndex = end;
-			}
-			return count;
-		}
-
-		bool find(std::vector<Sequence*> &pattern, std::vector<AnyInvocation*>& actualSequence, int startSearchIndex, int& end) {
-			for (auto sequence : pattern) {
-				int index = find(sequence, actualSequence, startSearchIndex);
-				if (index == -1) {
-					return false;
-				}
-				startSearchIndex = index + sequence->size();
-			}
-			end = startSearchIndex;
-			return true;
-		}
-
-		int find(Sequence* &pattern, std::vector<AnyInvocation*>& actualSequence, int startSearchIndex) {
-			std::vector<AnyInvocationMatcher*> expectedSequence;
-			pattern->getExpectedInvocationSequence(expectedSequence);
-
-			for (int i = startSearchIndex; i < ((int) actualSequence.size() - (int) expectedSequence.size() + 1); i++) {
-				bool found = true;
-				for (unsigned int j = 0; found && j < expectedSequence.size(); j++) {
-					AnyInvocation* actual = actualSequence[i + j];
-					AnyInvocationMatcher* expected = expectedSequence[j];
-					if (j >= 1) {
-						AnyInvocation* prevActual = actualSequence[i + j - 1];
-						found = actual->getOrdinal() - prevActual->getOrdinal() == 1;
-					}
-					found = found || expected->matches(*actual);
-				}
-				if (found) {
-					return i;
-				}
-			}
-			return -1;
-		}
-
 		~VerificationProgress() THROWS {
 
 			if (std::uncaught_exception()) {
@@ -430,6 +385,51 @@ public:
 				expectedPattern(other.expectedPattern), sequence(other.sequence), expectedInvocationCount(other.expectedInvocationCount), _isActive(
 						other._isActive) {
 			other._isActive = false;
+		}
+
+		int countMatches(std::vector<Sequence*> &pattern, std::vector<AnyInvocation*>& actualSequence) {
+			int end = -1;
+			int count = 0;
+			int startSearchIndex = 0;
+			while (findNextMatch(pattern, actualSequence, startSearchIndex, end)) {
+				count++;
+				startSearchIndex = end;
+			}
+			return count;
+		}
+
+		bool findNextMatch(std::vector<Sequence*> &pattern, std::vector<AnyInvocation*>& actualSequence, int startSearchIndex, int& end) {
+			for (auto sequence : pattern) {
+				int index = findNextMatch(sequence, actualSequence, startSearchIndex);
+				if (index == -1) {
+					return false;
+				}
+				startSearchIndex = index + sequence->size();
+			}
+			end = startSearchIndex;
+			return true;
+		}
+
+		int findNextMatch(Sequence* &pattern, std::vector<AnyInvocation*>& actualSequence, int startSearchIndex) {
+			std::vector<AnyInvocationMatcher*> expectedSequence;
+			pattern->getExpectedInvocationSequence(expectedSequence);
+
+			for (int i = startSearchIndex; i < ((int) actualSequence.size() - (int) expectedSequence.size() + 1); i++) {
+				bool found = true;
+				for (unsigned int j = 0; found && j < expectedSequence.size(); j++) {
+					AnyInvocation* actual = actualSequence[i + j];
+					AnyInvocationMatcher* expected = expectedSequence[j];
+					if (j >= 1) {
+						AnyInvocation* prevActual = actualSequence[i + j - 1];
+						found = actual->getOrdinal() - prevActual->getOrdinal() == 1;
+					}
+					found = found || expected->matches(*actual);
+				}
+				if (found) {
+					return i;
+				}
+			}
+			return -1;
 		}
 
 	};
