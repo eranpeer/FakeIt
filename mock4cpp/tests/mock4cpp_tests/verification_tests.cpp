@@ -15,7 +15,7 @@ struct BasicVerification: tpunit::TestFixture {
 					TEST(BasicVerification::verify_method_was_called_exactly_x_times), //
 					TEST(BasicVerification::should_throw_IllegalArgumentException_on_negative_times_argument), //
 					TEST(BasicVerification::verify_with_filter),//
-					TEST(BasicVerification::tryfunc),
+					TEST(BasicVerification::verify_concatenated_sequence),
 					TEST(BasicVerification::tryfunc2)
 					)  //
 	{
@@ -156,14 +156,18 @@ struct BasicVerification: tpunit::TestFixture {
 		ASSERT_THROW(Verify(mock[&SomeInterface::func].Using(2)), mock4cpp::MethodCallVerificationException);
 	}
 
-	void tryfunc() {
+	void verify_concatenated_sequence() {
 		Mock<SomeInterface> mock;
 		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
 		SomeInterface &i = mock.get();
+
 		i.func(1);
 		i.func(2);
 		i.func(3);
-		Verify(mock[&SomeInterface::func] * 2 + mock[&SomeInterface::func]).AtLeastOnce();
+
+		Verify(mock[&SomeInterface::func].Using(1) + mock[&SomeInterface::func].Using(2)).Once();
+		Verify(mock[&SomeInterface::func].Using(1) + mock[&SomeInterface::func].Using(2)).AtLeastOnce();
+		ASSERT_THROW(Verify(mock[&SomeInterface::func].Using(1) + mock[&SomeInterface::func].Using(3)),mock4cpp::MethodCallVerificationException);
 	}
 
 	void tryfunc2() {
@@ -174,5 +178,5 @@ struct BasicVerification: tpunit::TestFixture {
 		i.func(2);
 		ASSERT_THROW(Verify(mock[&SomeInterface::func] * 2 + mock[&SomeInterface::func]),mock4cpp::MethodCallVerificationException);
 	}
-
+//
 } __BasicVerification;

@@ -22,7 +22,7 @@ private:
 			instance.stubMethod(vMethod, methodMock);
 		}
 		Destructable * d = instance.getMethodMock(vMethod);
-		MethodMock<R, arglist...> * methodMock = dynamic_cast<MethodMock<R, arglist...> *>(d);
+		MethodMock<R, arglist...> * methodMock = reinterpret_cast<MethodMock<R, arglist...> *>(d);
 		return *methodMock;
 	}
 

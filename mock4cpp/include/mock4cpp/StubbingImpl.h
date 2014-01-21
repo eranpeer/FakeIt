@@ -415,7 +415,7 @@ public:
 						AnyInvocation* prevActual = actualSequence[i + j - 1];
 						found = actual->getOrdinal() - prevActual->getOrdinal() == 1;
 					}
-					found = found || expected->matches(*actual);
+					found = found && expected->matches(*actual);
 				}
 				if (found) {
 					return i;
