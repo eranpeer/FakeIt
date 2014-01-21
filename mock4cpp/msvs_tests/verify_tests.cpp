@@ -111,5 +111,52 @@ namespace mock4cpp_tests
 			Verify(mock[&SomeInterface::func1] * 2);
 		}
 
+
+		TEST_METHOD(verify_concatenated_sequence) {
+			Mock<SomeInterface> mock;
+			Stub(mock[&SomeInterface::func1], mock[&SomeInterface::proc1]);
+			SomeInterface &i = mock.get();
+
+			i.func1(1);
+			i.func1(2);
+			i.func1(3);
+			i.func1(4);
+
+			Verify(mock[&SomeInterface::func1].Using(1) + mock[&SomeInterface::func1].Using(2)).Once();
+			Verify(mock[&SomeInterface::func1].Using(2) + mock[&SomeInterface::func1].Using(3)).AtLeastOnce();
+			Verify(mock[&SomeInterface::func1].Using(3) + mock[&SomeInterface::func1].Using(4)).Once();
+			Verify(mock[&SomeInterface::func1] + mock[&SomeInterface::func1]).Twice();
+			Verify(mock[&SomeInterface::func1].Using(1) + mock[&SomeInterface::func1].Using(3)).Never();
+
+			Assert::ExpectException<MethodCallVerificationException>(
+				[&mock]{Verify(mock[&SomeInterface::func1].Using(1) + mock[&SomeInterface::func1].Using(3)); });
+		}
+
+		TEST_METHOD(verify_repeated_sequence) {
+			Mock<SomeInterface> mock;
+			Stub(mock[&SomeInterface::func1], mock[&SomeInterface::proc1]);
+			SomeInterface &i = mock.get();
+
+			i.func1(1);
+			i.func1(2);
+			i.func1(3);
+			i.func1(1);
+			i.func1(2);
+			i.func1(3);
+
+			Verify(mock[&SomeInterface::func1] * 1).Times(6);
+			Verify(mock[&SomeInterface::func1] * 2).Times(3);
+			Verify(mock[&SomeInterface::func1] * 3).Times(2);
+			Verify(mock[&SomeInterface::func1] * 4).Times(1);
+			Verify(mock[&SomeInterface::func1] * 5).Times(1);
+			Verify(mock[&SomeInterface::func1] * 6).Times(1);
+
+			Verify(mock[&SomeInterface::func1].Using(1) + mock[&SomeInterface::func1].Using(2) + mock[&SomeInterface::func1].Using(3)).Twice();
+			Verify((mock[&SomeInterface::func1].Using(1) + mock[&SomeInterface::func1].Using(2) + mock[&SomeInterface::func1].Using(3)) * 2).Once();
+			Verify(mock[&SomeInterface::func1].Using(1) * 2).Never();
+
+			Assert::ExpectException<MethodCallVerificationException>(
+				[&mock]{Verify(mock[&SomeInterface::func1].Using(1) * 2); });
+		}
 	};
 }

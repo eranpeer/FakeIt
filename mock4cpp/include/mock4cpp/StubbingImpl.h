@@ -313,6 +313,7 @@ class VerifyFunctor {
 public:
 
 	struct VerificationProgress: public virtual MethodVerificationProgress {
+		
 		friend class VerifyFunctor;
 
 		~VerificationProgress() THROWS {
@@ -370,12 +371,12 @@ public:
 		}
 
 		VerificationProgress(const std::vector<Sequence*> expectedPattern) :
-				expectedPattern(expectedPattern), sequence(*expectedPattern[0]), expectedInvocationCount(-1), _isActive(true) {
+			expectedPattern(expectedPattern), sequence(*expectedPattern[0]), expectedInvocationCount(-1), _isActive(true) {
 		}
 
 		VerificationProgress(VerificationProgress& other) :
-				expectedPattern(other.expectedPattern), sequence(other.sequence), expectedInvocationCount(other.expectedInvocationCount), _isActive(
-						other._isActive) {
+			expectedPattern(other.expectedPattern), sequence(other.sequence), expectedInvocationCount(other.expectedInvocationCount), _isActive(
+			other._isActive) {
 			other._isActive = false;
 		}
 
