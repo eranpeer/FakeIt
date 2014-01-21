@@ -159,6 +159,10 @@ public:
 		into.push_back(c);
 	}
 
+	unsigned int size() const override {
+		return 1;
+	}
+
 };
 
 template<typename R, typename ... arglist>
@@ -265,9 +269,9 @@ public:
 
 	ProcedureStubbingRoot(const ProcedureStubbingRoot& other) = default;
 
-	virtual void operator= (std::function<R(arglist...)> method) override {
+	virtual void operator=(std::function<R(arglist...)> method) override {
 		// Must override since the implementation in base class is privately inherited
-		FirstProcedureStubbingProgress<R, arglist...>::operator= (method);
+		FirstProcedureStubbingProgress<R, arglist...>::operator=(method);
 	}
 
 	ProcedureStubbingRoot<R, arglist...>& Using(const arglist&... args) {
@@ -319,33 +323,34 @@ public:
 	struct VerificationProgress: public virtual MethodVerificationProgress {
 		friend class VerifyFunctor;
 
-		~VerificationProgress() THROWS {
-
-			if (std::uncaught_exception()) {
-				return;
-			}
-
-			if (!_isActive) {
-				return;
-			}
-
-			std::unordered_set<AnyInvocation*> actualIvocations;
-			sequence.getActualInvocationSequence(actualIvocations);
-
-			auto comp = [](AnyInvocation* a, AnyInvocation* b)-> bool {return a->getOrdinal() < b->getOrdinal();};
-			std::set<AnyInvocation*, bool (*)(AnyInvocation* a, AnyInvocation* b)> sortedActualIvocations(comp);
-			for (auto i : actualIvocations)
-				sortedActualIvocations.insert(i);
-
-			std::vector<AnyInvocation*> actualSequence;
-			for (auto i : sortedActualIvocations)
-				actualSequence.push_back(i);
-
-			std::vector<AnyInvocationMatcher*> expectedSequence;
-			sequence.getExpectedInvocationSequence(expectedSequence);
-
+		int countMatches(std::vector<Sequence*> &pattern, std::vector<AnyInvocation*>& actualSequence) {
+			int end = -1;
 			int count = 0;
-			for (int i = 0; i < ((int) actualSequence.size() - (int) expectedSequence.size() + 1); i++) {
+			int startSearchIndex = 0;
+			while (find(pattern, actualSequence, startSearchIndex, end)) {
+				count++;
+				startSearchIndex = end;
+			}
+			return count;
+		}
+
+		bool find(std::vector<Sequence*> &pattern, std::vector<AnyInvocation*>& actualSequence, int startSearchIndex, int& end) {
+			for (auto sequence : pattern) {
+				int index = find(sequence, actualSequence, startSearchIndex);
+				if (index == -1) {
+					return false;
+				}
+				startSearchIndex = index + sequence->size();
+			}
+			end = startSearchIndex;
+			return true;
+		}
+
+		int find(Sequence* &pattern, std::vector<AnyInvocation*>& actualSequence, int startSearchIndex) {
+			std::vector<AnyInvocationMatcher*> expectedSequence;
+			pattern->getExpectedInvocationSequence(expectedSequence);
+
+			for (int i = startSearchIndex; i < ((int) actualSequence.size() - (int) expectedSequence.size() + 1); i++) {
 				bool found = true;
 				for (unsigned int j = 0; found && j < expectedSequence.size(); j++) {
 					AnyInvocation* actual = actualSequence[i + j];
@@ -357,10 +362,38 @@ public:
 					found = found || expected->matches(*actual);
 				}
 				if (found) {
-					count++;
-					i += (expectedSequence.size() - 1);
+					return i;
 				}
 			}
+			return -1;
+		}
+
+		~VerificationProgress() THROWS {
+
+			if (std::uncaught_exception()) {
+				return;
+			}
+
+			if (!_isActive) {
+				return;
+			}
+
+			std::unordered_set<AnyInvocation*> actualIvocations;
+			for (auto scenario : expectedPattern) {
+				scenario->getActualInvocationSequence(actualIvocations);
+			}
+
+			auto comp = [](AnyInvocation* a, AnyInvocation* b)-> bool {return a->getOrdinal() < b->getOrdinal();};
+			std::set<AnyInvocation*, bool (*)(AnyInvocation* a, AnyInvocation* b)> sortedActualIvocations(comp);
+			for (auto i : actualIvocations)
+				sortedActualIvocations.insert(i);
+
+			std::vector<AnyInvocation*> actualSequence;
+			for (auto i : sortedActualIvocations)
+				actualSequence.push_back(i);
+
+			int count = countMatches(expectedPattern, actualSequence);
+
 			if (expectedInvocationCount == -1) {
 				if (count == 0) {
 					throw(MethodCallVerificationException(
@@ -379,16 +412,23 @@ public:
 		}
 
 	private:
+		std::vector<Sequence*> expectedPattern;
 		const Sequence& sequence;
 		int expectedInvocationCount;
 		bool _isActive;
 
 		VerificationProgress(const Sequence& sequence) :
 				sequence(sequence), expectedInvocationCount(-1), _isActive(true) {
+			expectedPattern.push_back(&const_cast<Sequence&>(sequence));
+		}
+
+		VerificationProgress(const std::vector<Sequence*> expectedPattern) :
+				expectedPattern(expectedPattern), sequence(*expectedPattern[0]), expectedInvocationCount(-1), _isActive(true) {
 		}
 
 		VerificationProgress(VerificationProgress& other) :
-				sequence(other.sequence), expectedInvocationCount(other.expectedInvocationCount), _isActive(other._isActive) {
+				expectedPattern(other.expectedPattern), sequence(other.sequence), expectedInvocationCount(other.expectedInvocationCount), _isActive(
+						other._isActive) {
 			other._isActive = false;
 		}
 
@@ -397,12 +437,26 @@ public:
 	VerifyFunctor() {
 	}
 
-	VerificationProgress operator()(const Sequence& sequence) {
-		VerificationProgress progress(sequence);
+	std::vector<Sequence*>& concat(std::vector<Sequence*>& vec) {
+		return vec;
+	}
+
+	template<typename ... list>
+	std::vector<Sequence*>& concat(std::vector<Sequence*>& vec, const Sequence& sequence, const list&... tail) {
+		vec.push_back(&const_cast<Sequence&>(sequence));
+		return concat(vec, tail...);
+	}
+
+	template<typename ... list>
+	VerificationProgress operator()(const Sequence& sequence, const list&... tail) {
+		std::vector<Sequence*> vec;
+		concat(vec, sequence, tail...);
+		VerificationProgress progress(vec);
 		return progress;
 	}
 
-}static Verify;
+}
+static Verify;
 
 class WhenFunctor {
 public:

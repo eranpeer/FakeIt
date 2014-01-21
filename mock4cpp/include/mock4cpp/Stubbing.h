@@ -189,6 +189,8 @@ public:
 
 	virtual void getExpectedInvocationSequence(std::vector<AnyInvocationMatcher*>& into) const = 0;
 
+	virtual unsigned int size() const = 0;
+
 	friend class VerifyFunctor;
 };
 
@@ -205,6 +207,10 @@ protected:
 public:
 
 	~ConcatenatedSequence() {
+	}
+
+	unsigned int size() const override {
+		return s1.size() + s2.size();
 	}
 
 	void getActualInvocationSequence(std::unordered_set<AnyInvocation*>& into) const override {
@@ -235,6 +241,10 @@ public:
 	~RepeatedSequence() {
 	}
 
+	unsigned int size() const override {
+		return s1.size() * times;
+	}
+
 	friend inline RepeatedSequence operator*(const Sequence &s1, int times);
 
 	void getActualInvocationSequence(std::unordered_set<AnyInvocation*>& into) const override {
@@ -256,4 +266,5 @@ inline RepeatedSequence operator*(const Sequence &s1, int times) {
 }
 
 }
+
 #endif // Clouses_h__
