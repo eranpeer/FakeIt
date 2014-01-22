@@ -158,5 +158,30 @@ namespace mock4cpp_tests
 			Assert::ExpectException<MethodCallVerificationException>(
 				[&mock]{Verify(mock[&SomeInterface::func1].Using(1) * 2); });
 		}
+
+		TEST_METHOD(verify_no_other_invocations) {
+			Mock<SomeInterface> mock;
+			Stub(mock[&SomeInterface::func1]);
+			SomeInterface &i = mock.get();
+			VerifyNoOtherInvocations(mock);
+
+			i.func1(1);
+			i.func1(1);
+			Assert::ExpectException<MethodCallVerificationException>([&mock]{VerifyNoOtherInvocations(mock); });
+
+			Verify(mock[&SomeInterface::func1]).AtLeastOnce();
+			VerifyNoOtherInvocations(mock);
+
+			i.func1(1);
+			i.func1(1);
+			Assert::ExpectException<MethodCallVerificationException>([&mock]{VerifyNoOtherInvocations(mock); });
+
+			Verify(mock[&SomeInterface::func1] * 3);
+			Assert::ExpectException<MethodCallVerificationException>([&mock]{VerifyNoOtherInvocations(mock); });
+
+			Verify(mock[&SomeInterface::func1] * 4);
+			VerifyNoOtherInvocations(mock);
+		}
+
 	};
 }
