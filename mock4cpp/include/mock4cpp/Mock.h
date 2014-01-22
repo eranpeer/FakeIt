@@ -11,7 +11,7 @@
 using namespace mock4cpp;
 
 template<typename C>
-class Mock: private MockBase {
+class Mock: private MockBase, public virtual ActualInvocationsSource {
 private:
 	DynamicProxy<C> instance;
 
@@ -65,6 +65,17 @@ public:
 
 	Mock() :
 			MockBase { }, instance { [] {throw UnmockedMethodCallException {};} } {
+	}
+
+	/**
+	 * Return all actual invocations of this mock.
+	 */
+	void getActualInvocations(std::unordered_set<AnyInvocation*>& into) const override {
+		std::vector<ActualInvocationsSource*> vec;
+		instance.getMethodMocks(vec);
+		for (ActualInvocationsSource * s : vec){
+			s->getActualInvocations(into);
+		}
 	}
 
 	~Mock() {

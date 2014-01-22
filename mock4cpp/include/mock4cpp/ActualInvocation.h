@@ -2,6 +2,7 @@
 #define ActualInvocation_h__
 
 #include <typeinfo>
+#include <unordered_set>
 
 struct Method {
 };
@@ -40,6 +41,10 @@ struct ActualInvocation: public virtual AnyInvocation {
 
 private:
 	std::tuple<arglist...> actualArguments;
+};
+
+struct ActualInvocationsSource {
+	virtual void getActualInvocations(std::unordered_set<AnyInvocation*>& into) const = 0;
 };
 
 #endif // ActualInvocation_h__

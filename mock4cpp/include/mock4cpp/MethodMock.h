@@ -134,7 +134,9 @@ private:
 };
 
 template<typename R, typename ... arglist>
-struct MethodMock: public virtual Method, public virtual MethodInvocationHandler<R, arglist...> {
+struct MethodMock: public virtual Method, public virtual MethodInvocationHandler<R, arglist...>
+, public virtual ActualInvocationsSource
+{
 	MethodMock(MockBase& mock) :
 			mock(mock) {
 	}
@@ -173,6 +175,11 @@ struct MethodMock: public virtual Method, public virtual MethodInvocationHandler
 		return result;
 	}
 
+	void getActualInvocations(std::unordered_set<AnyInvocation*>& into) const {
+		for (auto invocation : actualInvocations){
+			into.insert(invocation.get());
+		}
+	}
 private:
 
 	MockBase& mock;

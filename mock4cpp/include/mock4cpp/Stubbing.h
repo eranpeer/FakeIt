@@ -185,9 +185,9 @@ protected:
 	}
 
 public:
-	virtual void getActualInvocationSequence(std::unordered_set<AnyInvocation*>& into) const = 0;
+	virtual void getActualInvocations(std::unordered_set<AnyInvocation*>& into) const = 0;
 
-	virtual void getExpectedInvocationSequence(std::vector<AnyInvocationMatcher*>& into) const = 0;
+	virtual void getExpectedSequence(std::vector<AnyInvocationMatcher*>& into) const = 0;
 
 	virtual unsigned int size() const = 0;
 
@@ -213,14 +213,14 @@ public:
 		return s1.size() + s2.size();
 	}
 
-	void getActualInvocationSequence(std::unordered_set<AnyInvocation*>& into) const override {
-		s1.getActualInvocationSequence(into);
-		s2.getActualInvocationSequence(into);
+	void getActualInvocations(std::unordered_set<AnyInvocation*>& into) const override {
+		s1.getActualInvocations(into);
+		s2.getActualInvocations(into);
 	}
 
-	void getExpectedInvocationSequence(std::vector<AnyInvocationMatcher*>& into) const override {
-		s1.getExpectedInvocationSequence(into);
-		s2.getExpectedInvocationSequence(into);
+	void getExpectedSequence(std::vector<AnyInvocationMatcher*>& into) const override {
+		s1.getExpectedSequence(into);
+		s2.getExpectedSequence(into);
 	}
 
 	friend inline ConcatenatedSequence operator+(const Sequence &s1, const Sequence &s2);
@@ -247,13 +247,13 @@ public:
 
 	friend inline RepeatedSequence operator*(const Sequence &s1, int times);
 
-	void getActualInvocationSequence(std::unordered_set<AnyInvocation*>& into) const override {
-		s1.getActualInvocationSequence(into);
+	void getActualInvocations(std::unordered_set<AnyInvocation*>& into) const override {
+		s1.getActualInvocations(into);
 	}
 
-	void getExpectedInvocationSequence(std::vector<AnyInvocationMatcher*>& into) const override {
+	void getExpectedSequence(std::vector<AnyInvocationMatcher*>& into) const override {
 		for (int i = 0; i < times; i++)
-			s1.getExpectedInvocationSequence(into);
+			s1.getExpectedSequence(into);
 	}
 };
 

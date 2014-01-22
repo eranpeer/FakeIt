@@ -81,6 +81,7 @@ template<typename R, typename ... arglist>
 class MethodStubbingBase: //
 protected virtual MethodStubbingInternal,
 		public virtual Sequence,
+		public virtual ActualInvocationsSource,
 		protected virtual AnyInvocationMatcher {
 private:
 
@@ -142,7 +143,7 @@ public:
 		return invocationMatcher->matches(actualInvocation);
 	}
 
-	void getActualInvocationSequence(std::unordered_set<AnyInvocation*>& into) const override {
+	void getActualInvocations(std::unordered_set<AnyInvocation*>& into) const override {
 		std::vector<std::shared_ptr<ActualInvocation<arglist...>>>actualInvocations = stubbingContext->getMethodMock().getActualInvocations(*invocationMatcher);
 		for (auto i : actualInvocations) {
 			AnyInvocation* ai = i.get();
@@ -150,7 +151,7 @@ public:
 		}
 	}
 
-	void getExpectedInvocationSequence(std::vector<AnyInvocationMatcher*>& into) const override {
+	void getExpectedSequence(std::vector<AnyInvocationMatcher*>& into) const override {
 		const AnyInvocationMatcher* b = this;
 		AnyInvocationMatcher* c = const_cast<AnyInvocationMatcher*>(b);
 		into.push_back(c);
@@ -328,7 +329,7 @@ public:
 
 			std::unordered_set<AnyInvocation*> actualIvocations;
 			for (auto scenario : expectedPattern) {
-				scenario->getActualInvocationSequence(actualIvocations);
+				scenario->getActualInvocations(actualIvocations);
 			}
 
 			auto comp = [](AnyInvocation* a, AnyInvocation* b)-> bool {return a->getOrdinal() < b->getOrdinal();};
@@ -405,7 +406,7 @@ public:
 
 		int findNextMatch(Sequence* &pattern, std::vector<AnyInvocation*>& actualSequence, int startSearchIndex) {
 			std::vector<AnyInvocationMatcher*> expectedSequence;
-			pattern->getExpectedInvocationSequence(expectedSequence);
+			pattern->getExpectedSequence(expectedSequence);
 
 			for (int i = startSearchIndex; i < ((int) actualSequence.size() - (int) expectedSequence.size() + 1); i++) {
 				bool found = true;
