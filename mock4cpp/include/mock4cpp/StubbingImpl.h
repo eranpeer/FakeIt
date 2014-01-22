@@ -310,6 +310,16 @@ public:
 	}
 };
 
+static void sort(std::unordered_set<AnyInvocation*>& actualIvocations, std::vector<AnyInvocation*>& actualSequence) {
+	auto comp = [](AnyInvocation* a, AnyInvocation* b)-> bool {return a->getOrdinal() < b->getOrdinal();};
+	std::set<AnyInvocation*, bool (*)(AnyInvocation* a, AnyInvocation* b)> sortedActualIvocations(comp);
+	for (auto i : actualIvocations)
+		sortedActualIvocations.insert(i);
+
+	for (auto i : sortedActualIvocations)
+		actualSequence.push_back(i);
+}
+
 class VerifyFunctor {
 
 	std::vector<Sequence*>& concat(std::vector<Sequence*>& vec) {
@@ -325,7 +335,7 @@ class VerifyFunctor {
 public:
 
 	struct VerificationProgress: public virtual MethodVerificationProgress {
-		
+
 		friend class VerifyFunctor;
 
 		~VerificationProgress() THROWS {
@@ -343,14 +353,9 @@ public:
 				scenario->getActualInvocations(actualIvocations);
 			}
 
-			auto comp = [](AnyInvocation* a, AnyInvocation* b)-> bool {return a->getOrdinal() < b->getOrdinal();};
-			std::set<AnyInvocation*, bool (*)(AnyInvocation* a, AnyInvocation* b)> sortedActualIvocations(comp);
-			for (auto i : actualIvocations)
-				sortedActualIvocations.insert(i);
-
 			std::vector<AnyInvocation*> actualSequence;
-			for (auto i : sortedActualIvocations)
-				actualSequence.push_back(i);
+
+			sort(actualIvocations, actualSequence);
 
 			std::vector<AnyInvocation*> matchedInvocations;
 			int count = countMatches(expectedPattern, actualSequence, matchedInvocations);
@@ -379,7 +384,7 @@ public:
 		int expectedInvocationCount;
 		bool _isActive;
 
-		static inline int AT_LEAST_ONCE(){
+		static inline int AT_LEAST_ONCE() {
 			return -1;
 		}
 
@@ -389,16 +394,17 @@ public:
 		}
 
 		VerificationProgress(const std::vector<Sequence*> expectedPattern) :
-			expectedPattern(expectedPattern), sequence(*expectedPattern[0]), expectedInvocationCount(-1), _isActive(true) {
+				expectedPattern(expectedPattern), sequence(*expectedPattern[0]), expectedInvocationCount(-1), _isActive(true) {
 		}
 
 		VerificationProgress(VerificationProgress& other) :
-			expectedPattern(other.expectedPattern), sequence(other.sequence), expectedInvocationCount(other.expectedInvocationCount), _isActive(
-			other._isActive) {
+				expectedPattern(other.expectedPattern), sequence(other.sequence), expectedInvocationCount(other.expectedInvocationCount), _isActive(
+						other._isActive) {
 			other._isActive = false;
 		}
 
-		int countMatches(std::vector<Sequence*> &pattern, std::vector<AnyInvocation*>& actualSequence, std::vector<AnyInvocation*>& matchedInvocations) {
+		int countMatches(std::vector<Sequence*> &pattern, std::vector<AnyInvocation*>& actualSequence,
+				std::vector<AnyInvocation*>& matchedInvocations) {
 			int end = -1;
 			int count = 0;
 			int startSearchIndex = 0;
@@ -409,14 +415,15 @@ public:
 			return count;
 		}
 
-		bool findNextMatch(std::vector<Sequence*> &pattern, std::vector<AnyInvocation*>& actualSequence, int startSearchIndex, int& end, std::vector<AnyInvocation*>& matchedInvocations) {
+		bool findNextMatch(std::vector<Sequence*> &pattern, std::vector<AnyInvocation*>& actualSequence, int startSearchIndex, int& end,
+				std::vector<AnyInvocation*>& matchedInvocations) {
 			for (auto sequence : pattern) {
 				int index = findNextMatch(sequence, actualSequence, startSearchIndex);
 				if (index == -1) {
 					return false;
 				}
 				int indexAfterMatchedPattern = index + sequence->size();
-				for(;startSearchIndex < indexAfterMatchedPattern;startSearchIndex++){
+				for (; startSearchIndex < indexAfterMatchedPattern; startSearchIndex++) {
 					matchedInvocations.push_back(actualSequence[startSearchIndex]);
 				}
 			}
@@ -461,6 +468,38 @@ public:
 
 }
 static Verify;
+
+class VerifyNoOtherInvocationsFunctor {
+public:
+	VerifyNoOtherInvocationsFunctor() {
+	}
+
+	void operator()() {
+	}
+
+	template<typename ... list>
+	void operator()(const ActualInvocationsSource& head, const list&... tail) {
+		std::unordered_set<AnyInvocation*> actualInvocations;
+		head.getActualInvocations(actualInvocations);
+
+		std::unordered_set<AnyInvocation*> nonVerifedIvocations;
+		for (auto invocation : actualInvocations) {
+			if (!invocation->isVerified()) {
+				nonVerifedIvocations.insert(invocation);
+			}
+		}
+
+		if (nonVerifedIvocations.size() > 0) {
+			std::vector<AnyInvocation*> sortedNonVerifedIvocations;
+			sort(nonVerifedIvocations, sortedNonVerifedIvocations);
+
+			throw(MethodCallVerificationException(
+					std::string("found ") + std::to_string(nonVerifedIvocations.size()) + " non verified invocations"));
+		}
+		return operator()(tail...);
+	}
+}
+static VerifyNoOtherInvocations;
 
 class WhenFunctor {
 public:

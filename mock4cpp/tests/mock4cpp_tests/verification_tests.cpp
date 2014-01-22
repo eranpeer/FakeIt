@@ -17,7 +17,9 @@ struct BasicVerification: tpunit::TestFixture {
 					TEST(BasicVerification::verify_with_filter), //
 					TEST(BasicVerification::verify_concatenated_sequence), //
 					TEST(BasicVerification::verify_repeated_sequence), //
-					TEST(BasicVerification::verify_multi_sequences_in_order))  //
+					TEST(BasicVerification::verify_multi_sequences_in_order),
+					TEST(BasicVerification::verify_no_other_invocations)//
+			)  //
 	{
 	}
 
@@ -275,6 +277,30 @@ struct BasicVerification: tpunit::TestFixture {
 
 		Verify(mock[&SomeInterface::func].Using(2) +  //
 				mock[&SomeInterface::func].Using(1)).Never();
+	}
+
+	void verify_no_other_invocations() {
+		Mock<SomeInterface> mock;
+		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
+		SomeInterface &i = mock.get();
+		VerifyNoOtherInvocations(mock);
+
+		i.func(1);
+		i.func(1);
+		ASSERT_THROW(VerifyNoOtherInvocations(mock), mock4cpp::MethodCallVerificationException);
+
+		Verify(mock[&SomeInterface::func]).AtLeastOnce();
+		VerifyNoOtherInvocations(mock);
+
+		i.func(1);
+		i.func(1);
+		ASSERT_THROW(VerifyNoOtherInvocations(mock), mock4cpp::MethodCallVerificationException);
+
+		Verify(mock[&SomeInterface::func]*3);
+		ASSERT_THROW(VerifyNoOtherInvocations(mock), mock4cpp::MethodCallVerificationException);
+
+		Verify(mock[&SomeInterface::func]*4);
+		VerifyNoOtherInvocations(mock);
 	}
 
 } __BasicVerification;
