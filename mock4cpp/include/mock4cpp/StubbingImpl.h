@@ -311,6 +311,17 @@ public:
 };
 
 class VerifyFunctor {
+
+	std::vector<Sequence*>& concat(std::vector<Sequence*>& vec) {
+		return vec;
+	}
+
+	template<typename ... list>
+	std::vector<Sequence*>& concat(std::vector<Sequence*>& vec, const Sequence& sequence, const list&... tail) {
+		vec.push_back(&const_cast<Sequence&>(sequence));
+		return concat(vec, tail...);
+	}
+
 public:
 
 	struct VerificationProgress: public virtual MethodVerificationProgress {
@@ -341,19 +352,21 @@ public:
 			for (auto i : sortedActualIvocations)
 				actualSequence.push_back(i);
 
-			int count = countMatches(expectedPattern, actualSequence);
+			std::vector<AnyInvocation*> matchedInvocations;
+			int count = countMatches(expectedPattern, actualSequence, matchedInvocations);
 
-			if (expectedInvocationCount == -1) {
+			if (expectedInvocationCount == AT_LEAST_ONCE()) {
 				if (count == 0) {
 					throw(MethodCallVerificationException(
 							std::string("Expected invocation scenario does not match actual invocation order")));
 				}
-				return;
-			}
-			if (count != expectedInvocationCount) {
+			} else if (count != expectedInvocationCount) {
 				throw(MethodCallVerificationException(
 						std::string("expected ") + std::to_string(expectedInvocationCount) + " but was " + std::to_string(count)));
 			}
+
+			for (auto i : matchedInvocations)
+				i->markAsVerified();
 		}
 
 		virtual void verifyInvocations(const int times) override {
@@ -365,6 +378,10 @@ public:
 		const Sequence& sequence;
 		int expectedInvocationCount;
 		bool _isActive;
+
+		static inline int AT_LEAST_ONCE(){
+			return -1;
+		}
 
 		VerificationProgress(const Sequence& sequence) :
 				sequence(sequence), expectedInvocationCount(-1), _isActive(true) {
@@ -381,24 +398,27 @@ public:
 			other._isActive = false;
 		}
 
-		int countMatches(std::vector<Sequence*> &pattern, std::vector<AnyInvocation*>& actualSequence) {
+		int countMatches(std::vector<Sequence*> &pattern, std::vector<AnyInvocation*>& actualSequence, std::vector<AnyInvocation*>& matchedInvocations) {
 			int end = -1;
 			int count = 0;
 			int startSearchIndex = 0;
-			while (findNextMatch(pattern, actualSequence, startSearchIndex, end)) {
+			while (findNextMatch(pattern, actualSequence, startSearchIndex, end, matchedInvocations)) {
 				count++;
 				startSearchIndex = end;
 			}
 			return count;
 		}
 
-		bool findNextMatch(std::vector<Sequence*> &pattern, std::vector<AnyInvocation*>& actualSequence, int startSearchIndex, int& end) {
+		bool findNextMatch(std::vector<Sequence*> &pattern, std::vector<AnyInvocation*>& actualSequence, int startSearchIndex, int& end, std::vector<AnyInvocation*>& matchedInvocations) {
 			for (auto sequence : pattern) {
 				int index = findNextMatch(sequence, actualSequence, startSearchIndex);
 				if (index == -1) {
 					return false;
 				}
-				startSearchIndex = index + sequence->size();
+				int indexAfterMatchedPattern = index + sequence->size();
+				for(;startSearchIndex < indexAfterMatchedPattern;startSearchIndex++){
+					matchedInvocations.push_back(actualSequence[startSearchIndex]);
+				}
 			}
 			end = startSearchIndex;
 			return true;
@@ -429,16 +449,6 @@ public:
 	};
 
 	VerifyFunctor() {
-	}
-
-	std::vector<Sequence*>& concat(std::vector<Sequence*>& vec) {
-		return vec;
-	}
-
-	template<typename ... list>
-	std::vector<Sequence*>& concat(std::vector<Sequence*>& vec, const Sequence& sequence, const list&... tail) {
-		vec.push_back(&const_cast<Sequence&>(sequence));
-		return concat(vec, tail...);
 	}
 
 	template<typename ... list>

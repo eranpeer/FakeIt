@@ -10,7 +10,7 @@ struct Method {
 struct AnyInvocation {
 
 	AnyInvocation(const int ordinal, const Method & method) :
-			ordinal(ordinal), method(method) {
+			ordinal(ordinal), method(method), _isVerified(false) {
 	}
 
 	virtual ~AnyInvocation() = default;
@@ -23,9 +23,18 @@ struct AnyInvocation {
 		return method;
 	}
 
+	void markAsVerified(){
+		_isVerified = true;
+	}
+
+	bool isVerified(){
+		return _isVerified;
+	}
+
 private:
 	const int ordinal;
 	const Method & method;
+	bool _isVerified;
 };
 
 template<typename ... arglist>

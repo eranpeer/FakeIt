@@ -276,5 +276,5 @@ struct BasicVerification: tpunit::TestFixture {
 		Verify(mock[&SomeInterface::func].Using(2) +  //
 				mock[&SomeInterface::func].Using(1)).Never();
 	}
-//
+
 } __BasicVerification;
