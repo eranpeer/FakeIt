@@ -159,7 +159,7 @@ namespace mock4cpp_tests
 				[&mock]{Verify(mock[&SomeInterface::func1].Using(1) * 2); });
 		}
 
-		TEST_METHOD(verify_no_other_invocations) {
+		TEST_METHOD(verify_no_other_invocations_for_mock) {
 			Mock<SomeInterface> mock;
 			Stub(mock[&SomeInterface::func1]);
 			SomeInterface &i = mock.get();
@@ -181,6 +181,30 @@ namespace mock4cpp_tests
 
 			Verify(mock[&SomeInterface::func1] * 4);
 			VerifyNoOtherInvocations(mock);
+		}
+
+		TEST_METHOD(verify_no_other_invocations_for_method_filter) {
+			Mock<SomeInterface> mock;
+			Stub(mock[&SomeInterface::func1]);
+			SomeInterface &i = mock.get();
+			VerifyNoOtherInvocations(mock[&SomeInterface::func1]);
+
+			i.func1(1);
+			i.func1(1);
+			Assert::ExpectException<MethodCallVerificationException>([&mock]{VerifyNoOtherInvocations(mock[&SomeInterface::func1]); });
+
+			Verify(mock[&SomeInterface::func1]).AtLeastOnce();
+			VerifyNoOtherInvocations(mock[&SomeInterface::func1]);
+
+			i.func1(1);
+			i.func1(1);
+			Assert::ExpectException<MethodCallVerificationException>([&mock]{VerifyNoOtherInvocations(mock[&SomeInterface::func1]); });
+
+			Verify(mock[&SomeInterface::func1] * 3);
+			Assert::ExpectException<MethodCallVerificationException>([&mock]{VerifyNoOtherInvocations(mock[&SomeInterface::func1]); });
+
+			Verify(mock[&SomeInterface::func1] * 4);
+			VerifyNoOtherInvocations(mock[&SomeInterface::func1]);
 		}
 
 	};
