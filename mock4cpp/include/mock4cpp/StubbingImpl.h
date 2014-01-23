@@ -349,12 +349,9 @@ public:
 			}
 
 			std::unordered_set<AnyInvocation*> actualIvocations;
-			for (auto scenario : expectedPattern) {
-				scenario->getActualInvocations(actualIvocations);
-			}
+			collectActualInvocations(expectedPattern, actualIvocations);
 
 			std::vector<AnyInvocation*> actualSequence;
-
 			sort(actualIvocations, actualSequence);
 
 			std::vector<AnyInvocation*> matchedInvocations;
@@ -398,11 +395,16 @@ public:
 			other._isActive = false;
 		}
 
+		void collectActualInvocations(std::vector<Sequence*>& expectedPattern, std::unordered_set<AnyInvocation*>& actualIvocations) {
+			for (auto scenario : expectedPattern) {
+				scenario->getActualInvocations(actualIvocations);
+			}
+		}
 		virtual void verifyInvocations(const int times) override {
 			expectedInvocationCount = times;
 		}
 
-		void markAsVerified(std::vector<AnyInvocation*>& matchedInvocations){
+		void markAsVerified(std::vector<AnyInvocation*>& matchedInvocations) {
 			for (auto i : matchedInvocations)
 				i->markAsVerified();
 		}
