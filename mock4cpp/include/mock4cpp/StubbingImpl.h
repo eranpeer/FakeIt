@@ -415,6 +415,13 @@ public:
 			return count;
 		}
 
+		void collectMatchedInvocations(std::vector<AnyInvocation*>& actualSequence, std::vector<AnyInvocation*>& matchedInvocations, int start, int length) {
+			int indexAfterMatchedPattern = start + length;
+			for (; start < indexAfterMatchedPattern; start++) {
+				matchedInvocations.push_back(actualSequence[start]);
+			}
+		}
+
 		bool findNextMatch(std::vector<Sequence*> &pattern, std::vector<AnyInvocation*>& actualSequence, int startSearchIndex, int& end,
 				std::vector<AnyInvocation*>& matchedInvocations) {
 			for (auto sequence : pattern) {
@@ -422,10 +429,8 @@ public:
 				if (index == -1) {
 					return false;
 				}
-				int indexAfterMatchedPattern = index + sequence->size();
-				for (; startSearchIndex < indexAfterMatchedPattern; startSearchIndex++) {
-					matchedInvocations.push_back(actualSequence[startSearchIndex]);
-				}
+				collectMatchedInvocations(actualSequence,matchedInvocations,index,sequence->size());
+				startSearchIndex = index + sequence->size();
 			}
 			end = startSearchIndex;
 			return true;
@@ -477,8 +482,7 @@ public:
 	void operator()() {
 	}
 
-	void selectNonVerifiedInvocations(std::unordered_set<AnyInvocation*>& actualInvocations,
-			std::unordered_set<AnyInvocation*>& into) {
+	void selectNonVerifiedInvocations(std::unordered_set<AnyInvocation*>& actualInvocations, std::unordered_set<AnyInvocation*>& into) {
 		for (auto invocation : actualInvocations) {
 			if (!invocation->isVerified()) {
 				into.insert(invocation);
