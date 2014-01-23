@@ -370,12 +370,7 @@ public:
 						std::string("expected ") + std::to_string(expectedInvocationCount) + " but was " + std::to_string(count)));
 			}
 
-			for (auto i : matchedInvocations)
-				i->markAsVerified();
-		}
-
-		virtual void verifyInvocations(const int times) override {
-			expectedInvocationCount = times;
+			markAsVerified(matchedInvocations);
 		}
 
 	private:
@@ -401,6 +396,15 @@ public:
 				expectedPattern(other.expectedPattern), sequence(other.sequence), expectedInvocationCount(other.expectedInvocationCount), _isActive(
 						other._isActive) {
 			other._isActive = false;
+		}
+
+		virtual void verifyInvocations(const int times) override {
+			expectedInvocationCount = times;
+		}
+
+		void markAsVerified(std::vector<AnyInvocation*>& matchedInvocations){
+			for (auto i : matchedInvocations)
+				i->markAsVerified();
 		}
 
 		int countMatches(std::vector<Sequence*> &pattern, std::vector<AnyInvocation*>& actualSequence,
@@ -454,7 +458,6 @@ public:
 		int findNextMatch(Sequence* &pattern, std::vector<AnyInvocation*>& actualSequence, int startSearchIndex) {
 			std::vector<AnyInvocationMatcher*> expectedSequence;
 			pattern->getExpectedSequence(expectedSequence);
-
 			for (int i = startSearchIndex; i < ((int) actualSequence.size() - (int) expectedSequence.size() + 1); i++) {
 				if (isMatch(actualSequence, expectedSequence, i)) {
 					return i;
