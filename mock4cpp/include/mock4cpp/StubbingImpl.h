@@ -415,7 +415,8 @@ public:
 			return count;
 		}
 
-		void collectMatchedInvocations(std::vector<AnyInvocation*>& actualSequence, std::vector<AnyInvocation*>& matchedInvocations, int start, int length) {
+		void collectMatchedInvocations(std::vector<AnyInvocation*>& actualSequence, std::vector<AnyInvocation*>& matchedInvocations,
+				int start, int length) {
 			int indexAfterMatchedPattern = start + length;
 			for (; start < indexAfterMatchedPattern; start++) {
 				matchedInvocations.push_back(actualSequence[start]);
@@ -429,11 +430,25 @@ public:
 				if (index == -1) {
 					return false;
 				}
-				collectMatchedInvocations(actualSequence,matchedInvocations,index,sequence->size());
+				collectMatchedInvocations(actualSequence, matchedInvocations, index, sequence->size());
 				startSearchIndex = index + sequence->size();
 			}
 			end = startSearchIndex;
 			return true;
+		}
+
+		bool isMatch(std::vector<AnyInvocation*>& actualSequence, std::vector<AnyInvocationMatcher*>& expectedSequence, int start) {
+			bool found = true;
+			for (unsigned int j = 0; found && j < expectedSequence.size(); j++) {
+				AnyInvocation* actual = actualSequence[start + j];
+				AnyInvocationMatcher* expected = expectedSequence[j];
+				if (j >= 1) {
+					AnyInvocation* prevActual = actualSequence[start + j - 1];
+					found = actual->getOrdinal() - prevActual->getOrdinal() == 1;
+				}
+				found = found && expected->matches(*actual);
+			}
+			return found;
 		}
 
 		int findNextMatch(Sequence* &pattern, std::vector<AnyInvocation*>& actualSequence, int startSearchIndex) {
@@ -441,17 +456,7 @@ public:
 			pattern->getExpectedSequence(expectedSequence);
 
 			for (int i = startSearchIndex; i < ((int) actualSequence.size() - (int) expectedSequence.size() + 1); i++) {
-				bool found = true;
-				for (unsigned int j = 0; found && j < expectedSequence.size(); j++) {
-					AnyInvocation* actual = actualSequence[i + j];
-					AnyInvocationMatcher* expected = expectedSequence[j];
-					if (j >= 1) {
-						AnyInvocation* prevActual = actualSequence[i + j - 1];
-						found = actual->getOrdinal() - prevActual->getOrdinal() == 1;
-					}
-					found = found && expected->matches(*actual);
-				}
-				if (found) {
+				if (isMatch(actualSequence, expectedSequence, i)) {
 					return i;
 				}
 			}
