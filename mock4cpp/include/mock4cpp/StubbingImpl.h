@@ -477,17 +477,22 @@ public:
 	void operator()() {
 	}
 
+	void selectNonVerifiedInvocations(std::unordered_set<AnyInvocation*>& actualInvocations,
+			std::unordered_set<AnyInvocation*>& into) {
+		for (auto invocation : actualInvocations) {
+			if (!invocation->isVerified()) {
+				into.insert(invocation);
+			}
+		}
+	}
+
 	template<typename ... list>
 	void operator()(const ActualInvocationsSource& head, const list&... tail) {
 		std::unordered_set<AnyInvocation*> actualInvocations;
 		head.getActualInvocations(actualInvocations);
 
 		std::unordered_set<AnyInvocation*> nonVerifedIvocations;
-		for (auto invocation : actualInvocations) {
-			if (!invocation->isVerified()) {
-				nonVerifedIvocations.insert(invocation);
-			}
-		}
+		selectNonVerifiedInvocations(actualInvocations, nonVerifedIvocations);
 
 		if (nonVerifedIvocations.size() > 0) {
 			std::vector<AnyInvocation*> sortedNonVerifedIvocations;
