@@ -359,11 +359,11 @@ public:
 
 			if (expectedInvocationCount == AT_LEAST_ONCE()) {
 				if (count == 0) {
-					throw(MethodCallVerificationException(
+					throw(VerificationException(
 							std::string("Expected invocation scenario does not match actual invocation order")));
 				}
 			} else if (count != expectedInvocationCount) {
-				throw(MethodCallVerificationException(
+				throw(VerificationException(
 						std::string("expected ") + std::to_string(expectedInvocationCount) + " but was " + std::to_string(count)));
 			}
 
@@ -515,7 +515,7 @@ public:
 			std::vector<AnyInvocation*> sortedActualIvocations;
 			sort(nonVerifedIvocations, sortedNonVerifedIvocations);
 
-			throw(MethodCallVerificationException(
+			throw(VerificationException(
 					std::string("found ") + std::to_string(nonVerifedIvocations.size()) + " non verified invocations"));
 		}
 		return operator()(tail...);

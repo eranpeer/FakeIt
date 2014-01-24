@@ -10,8 +10,8 @@ namespace mock4cpp {
 		{}
 	};
 
-	struct MethodCallVerificationException: public std::exception {
-		MethodCallVerificationException(const std::string& s) :
+	struct VerificationException: public std::exception {
+		VerificationException(const std::string& s) :
 				std::exception(), msg { s } {
 		}
 	private:
