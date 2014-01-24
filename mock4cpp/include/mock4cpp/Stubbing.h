@@ -11,6 +11,7 @@
 #include <type_traits>
 #include <unordered_set>
 #include <vector>
+#include <stdexcept>
 
 #include "mockutils/traits.h"
 #include "mockutils/DefaultValue.hpp"
@@ -46,7 +47,7 @@ struct MethodVerificationProgress {
 
 	virtual void Times(const int times) {
 		if (times < 0) {
-			throw IllegalArgumentException(std::string("bad argument times:").append(std::to_string(times)));
+			throw std::invalid_argument(std::string("bad argument times:").append(std::to_string(times)));
 		}
 		verifyInvocations(times);
 	}

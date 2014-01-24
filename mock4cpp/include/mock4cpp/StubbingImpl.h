@@ -522,8 +522,8 @@ public:
 			std::vector<AnyInvocation*> sortedActualIvocations;
 			sort(actualInvocations, sortedActualIvocations);
 
-			throw (VerificationException(
-					buildNoOtherInvocationsVerificationErrorMsg(sortedActualIvocations, sortedNonVerifedIvocations)));
+			throw VerificationException(
+					buildNoOtherInvocationsVerificationErrorMsg(sortedActualIvocations, sortedNonVerifedIvocations));
 		}
 		return operator()(tail...);
 	}

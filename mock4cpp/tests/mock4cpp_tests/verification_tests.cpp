@@ -1,8 +1,10 @@
+#include <string>
+#include <iostream>
+#include <stdexcept>
+
 #include "tpunit++.hpp"
 #include "mock4cpp.h"
-#include <string>
 #include "mockutils/PrintType.h"
-#include <iostream>
 
 struct BasicVerification: tpunit::TestFixture {
 	BasicVerification() :
@@ -152,8 +154,8 @@ struct BasicVerification: tpunit::TestFixture {
 
 	void should_throw_IllegalArgumentException_on_negative_times_argument() {
 		Mock<SomeInterface> mock;
-		ASSERT_THROW(Verify(mock[&SomeInterface::func]).Times(-1), mock4cpp::IllegalArgumentException);
-		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).Times(-1), mock4cpp::IllegalArgumentException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::func]).Times(-1), std::invalid_argument);
+		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).Times(-1), std::invalid_argument);
 	}
 
 	void verify_with_filter() {

@@ -18,14 +18,6 @@ namespace mock4cpp {
 		const std::string msg;
 	};
 
-	struct IllegalArgumentException: public std::exception {
-		IllegalArgumentException(const std::string& s) :
-				std::exception(), msg { s } {
-		}
-	private:
-		const std::string msg;
-	};
-
 }
 
 #endif // UnmockedMethodCallException_h__
