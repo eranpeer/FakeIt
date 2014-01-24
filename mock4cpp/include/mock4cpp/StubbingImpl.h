@@ -485,10 +485,13 @@ static Verify;
 
 class VerifyNoOtherInvocationsFunctor {
 
-	std::string buildNoOtherInvocationsVerificationErrorMsg(
-			std::vector<AnyInvocation*>& allIvocations,
-			std::vector<AnyInvocation*>& unverifedIvocations)
-	{
+	std::string format(AnyInvocation& i) {
+		return {};
+	}
+
+	std::string buildNoOtherInvocationsVerificationErrorMsg( //
+			std::vector<AnyInvocation*>& allIvocations, //
+			std::vector<AnyInvocation*>& unverifedIvocations) {
 		return std::string("found ") + std::to_string(unverifedIvocations.size()) + " non verified invocations";
 	}
 
@@ -522,8 +525,7 @@ public:
 			std::vector<AnyInvocation*> sortedActualIvocations;
 			sort(actualInvocations, sortedActualIvocations);
 
-			throw VerificationException(
-					buildNoOtherInvocationsVerificationErrorMsg(sortedActualIvocations, sortedNonVerifedIvocations));
+			throw VerificationException(buildNoOtherInvocationsVerificationErrorMsg(sortedActualIvocations, sortedNonVerifedIvocations));
 		}
 		return operator()(tail...);
 	}
