@@ -359,8 +359,7 @@ public:
 
 			if (expectedInvocationCount == AT_LEAST_ONCE()) {
 				if (count == 0) {
-					throw(VerificationException(
-							std::string("Expected invocation scenario does not match actual invocation order")));
+					throw(VerificationException(std::string("Expected invocation scenario does not match actual invocation order")));
 				}
 			} else if (count != expectedInvocationCount) {
 				throw(VerificationException(
@@ -485,6 +484,14 @@ public:
 static Verify;
 
 class VerifyNoOtherInvocationsFunctor {
+
+	std::string buildNoOtherInvocationsVerificationErrorMsg(
+			std::vector<AnyInvocation*>& allIvocations,
+			std::vector<AnyInvocation*>& unverifedIvocations)
+	{
+		return std::string("found ") + std::to_string(unverifedIvocations.size()) + " non verified invocations";
+	}
+
 public:
 	VerifyNoOtherInvocationsFunctor() {
 	}
@@ -513,10 +520,10 @@ public:
 			sort(nonVerifedIvocations, sortedNonVerifedIvocations);
 
 			std::vector<AnyInvocation*> sortedActualIvocations;
-			sort(nonVerifedIvocations, sortedNonVerifedIvocations);
+			sort(actualInvocations, sortedActualIvocations);
 
-			throw(VerificationException(
-					std::string("found ") + std::to_string(nonVerifedIvocations.size()) + " non verified invocations"));
+			throw (VerificationException(
+					buildNoOtherInvocationsVerificationErrorMsg(sortedActualIvocations, sortedNonVerifedIvocations)));
 		}
 		return operator()(tail...);
 	}
