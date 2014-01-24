@@ -97,8 +97,8 @@ namespace mock4cpp_tests
 		{
 			Mock<SomeInterface> mock;
 			SomeInterface &i = mock.get();
-			Assert::ExpectException<IllegalArgumentException>([&mock]{ Verify(mock[&SomeInterface::func1]).Times(-1); });
-			Assert::ExpectException<IllegalArgumentException>([&mock]{ Verify(mock[&SomeInterface::proc1]).Times(-1); });
+			Assert::ExpectException<std::invalid_argument>([&mock]{ Verify(mock[&SomeInterface::func1]).Times(-1); });
+			Assert::ExpectException<std::invalid_argument>([&mock]{ Verify(mock[&SomeInterface::proc1]).Times(-1); });
 		}
 
 		TEST_METHOD(NewVerify)
