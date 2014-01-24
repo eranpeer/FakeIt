@@ -512,6 +512,9 @@ public:
 			std::vector<AnyInvocation*> sortedNonVerifedIvocations;
 			sort(nonVerifedIvocations, sortedNonVerifedIvocations);
 
+			std::vector<AnyInvocation*> sortedActualIvocations;
+			sort(nonVerifedIvocations, sortedNonVerifedIvocations);
+
 			throw(MethodCallVerificationException(
 					std::string("found ") + std::to_string(nonVerifedIvocations.size()) + " non verified invocations"));
 		}

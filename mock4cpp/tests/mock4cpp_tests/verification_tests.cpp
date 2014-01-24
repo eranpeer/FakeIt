@@ -1,6 +1,8 @@
 #include "tpunit++.hpp"
 #include "mock4cpp.h"
 #include <string>
+#include "mockutils/PrintType.h"
+#include <iostream>
 
 struct BasicVerification: tpunit::TestFixture {
 	BasicVerification() :
@@ -27,6 +29,7 @@ struct BasicVerification: tpunit::TestFixture {
 	struct SomeInterface {
 		virtual int func(int) = 0;
 		virtual void proc(int) = 0;
+		virtual void proc2(int, SomeInterface&) = 0;
 	};
 
 	void verify_should_throw_MethodCallVerificationException_if_method_was_not_called() {
@@ -34,6 +37,9 @@ struct BasicVerification: tpunit::TestFixture {
 		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
 		ASSERT_THROW(Verify(mock[&SomeInterface::func]), mock4cpp::MethodCallVerificationException);
 		ASSERT_THROW(Verify(mock[&SomeInterface::proc]), mock4cpp::MethodCallVerificationException);
+		//std::cout<<PrintType<int>(1);
+		//std::cout<<PrintType<decltype(&SomeInterface::proc2)>()<<'\n';
+		//std::cout<<PrintType<SomeInterface>()<<'\n';
 	}
 
 	void verify_should_throw_MethodCallVerificationException_if_method_was_not_stubbed() {
@@ -327,5 +333,5 @@ struct BasicVerification: tpunit::TestFixture {
 		Verify(mock[&SomeInterface::func]*4);
 		VerifyNoOtherInvocations(mock[&SomeInterface::func].Using(1));
 	}
-
+//
 } __BasicVerification;
