@@ -338,5 +338,5 @@ struct BasicVerification: tpunit::TestFixture {
 		Verify(mock[&SomeInterface::func]*4);
 		VerifyNoOtherInvocations(mock[&SomeInterface::func].Using(1));
 	}
-//
+
 } __BasicVerification;

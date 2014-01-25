@@ -29,7 +29,7 @@ void print(std::ostream &strm, const std::tuple<Args...>& t)
 {
 	strm << "(";
 	TuplePrinter<decltype(t), sizeof...(Args)>::print(strm,t);
-	strm << ")\n";
+	strm << ")";
 }
 
 template<class... Args>
