@@ -133,7 +133,7 @@ private:
 	}
 };
 
-template<typename R, typename ... arglist>
+template<typename C, typename R, typename ... arglist>
 struct MethodMock: public virtual Method, public virtual MethodInvocationHandler<R, arglist...>
 , public virtual ActualInvocationsSource
 {

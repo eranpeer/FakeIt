@@ -22,11 +22,11 @@ enum class ProgressType {
 	NONE, STUBBING, VERIFYING
 };
 
-template<typename R, typename ... arglist>
+template<typename C, typename R, typename ... arglist>
 struct StubbingContext {
 	virtual ~StubbingContext() {
 	}
-	virtual MethodMock<R, arglist...>& getMethodMock() = 0;
+	virtual MethodMock<C, R, arglist...>& getMethodMock() = 0;
 };
 
 template<typename R, typename ... arglist>
@@ -79,7 +79,7 @@ private:
 
 using namespace mock4cpp;
 
-template<typename R, typename ... arglist>
+template<typename C, typename R, typename ... arglist>
 class MethodStubbingBase: //
 protected virtual MethodStubbingInternal,
 		public virtual Sequence,
@@ -99,21 +99,21 @@ protected:
 	friend class StubFunctor;
 	friend class WhenFunctor;
 
-	std::shared_ptr<StubbingContext<R, arglist...>> stubbingContext;
+	std::shared_ptr<StubbingContext<C, R, arglist...>> stubbingContext;
 	std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher;
 	std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody;
 
 	ProgressType progressType;
 	int expectedInvocationCount;
 
-	MethodStubbingBase(std::shared_ptr<StubbingContext<R, arglist...>> stubbingContext) :
+	MethodStubbingBase(std::shared_ptr<StubbingContext<C, R, arglist...>> stubbingContext) :
 			stubbingContext(stubbingContext), invocationMatcher { new DefaultInvocationMatcher<arglist...>() }, progressType(
 					ProgressType::NONE), expectedInvocationCount(-1) {
 		recordedMethodBody = buildInitialMethodBody();
 	}
 
 	void setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher) {
-		MethodStubbingBase<R, arglist...>::invocationMatcher = invocationMatcher;
+		MethodStubbingBase<C, R, arglist...>::invocationMatcher = invocationMatcher;
 	}
 
 	virtual ~MethodStubbingBase() THROWS {
@@ -165,9 +165,9 @@ public:
 
 };
 
-template<typename R, typename ... arglist>
+template<typename C, typename R, typename ... arglist>
 class FunctionStubbingRoot: //
-public virtual MethodStubbingBase<R, arglist...>, //
+public virtual MethodStubbingBase<C, R, arglist...>, //
 		private virtual FunctionStubbingProgress<R, arglist...> {
 private:
 	FunctionStubbingRoot & operator=(const FunctionStubbingRoot & other) = delete;
@@ -178,17 +178,17 @@ private:
 protected:
 
 	virtual RecordedMethodBody<R, arglist...>& recordedMethodBody() override {
-		return *MethodStubbingBase<R, arglist...>::recordedMethodBody;
+		return *MethodStubbingBase<C, R, arglist...>::recordedMethodBody;
 	}
 
 	virtual void startStubbing() override {
-		MethodStubbingBase<R, arglist...>::startStubbing();
+		MethodStubbingBase<C, R, arglist...>::startStubbing();
 	}
 
 public:
 
-	FunctionStubbingRoot(std::shared_ptr<StubbingContext<R, arglist...>> stubbingContext) :
-			MethodStubbingBase<R, arglist...>(stubbingContext), FirstFunctionStubbingProgress<R, arglist...>(), FunctionStubbingProgress<R,
+	FunctionStubbingRoot(std::shared_ptr<StubbingContext<C, R, arglist...>> stubbingContext) :
+			MethodStubbingBase<C, R, arglist...>(stubbingContext), FirstFunctionStubbingProgress<R, arglist...>(), FunctionStubbingProgress<R,
 					arglist...>() {
 	}
 
@@ -202,40 +202,40 @@ public:
 		FirstFunctionStubbingProgress<R, arglist...>::operator =(method);
 	}
 
-	FunctionStubbingRoot<R, arglist...>& Using(const arglist&... args) {
-		MethodStubbingBase<R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
+	FunctionStubbingRoot<C, R, arglist...>& Using(const arglist&... args) {
+		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
 				new ExpectedArgumentsInvocationMatcher<arglist...>(args...) });
 		return *this;
 	}
 
-	FunctionStubbingRoot<R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
-		MethodStubbingBase<R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
+	FunctionStubbingRoot<C, R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
+		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
 				new UserDefinedInvocationMatcher<arglist...>(matcher) });
 		return *this;
 	}
 
-	FunctionStubbingRoot<R, arglist...>& operator()(const arglist&... args) {
-		MethodStubbingBase<R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
+	FunctionStubbingRoot<C, R, arglist...>& operator()(const arglist&... args) {
+		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
 				new ExpectedArgumentsInvocationMatcher<arglist...>(args...) });
 		return *this;
 	}
 
-	FunctionStubbingRoot<R, arglist...>& operator()(std::function<bool(arglist...)> matcher) {
-		MethodStubbingBase<R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
+	FunctionStubbingRoot<C, R, arglist...>& operator()(std::function<bool(arglist...)> matcher) {
+		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
 				new UserDefinedInvocationMatcher<arglist...>(matcher) });
 		return *this;
 	}
 
 	NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 		// Must override since the implementation in base class is privately inherited
-		MethodStubbingBase<R, arglist...>::startStubbing();
+		MethodStubbingBase<C, R, arglist...>::startStubbing();
 		return FunctionStubbingProgress<R, arglist...>::Do(method);
 	}
 };
 
-template<typename R, typename ... arglist>
+template<typename C, typename R, typename ... arglist>
 class ProcedureStubbingRoot: //
-public virtual MethodStubbingBase<R, arglist...>,
+public virtual MethodStubbingBase<C, R, arglist...>,
 		private virtual ProcedureStubbingProgress<R, arglist...> {
 private:
 	ProcedureStubbingRoot & operator=(const ProcedureStubbingRoot & other) = delete;
@@ -246,16 +246,16 @@ private:
 
 protected:
 	virtual RecordedMethodBody<R, arglist...>& recordedMethodBody() override {
-		return *MethodStubbingBase<R, arglist...>::recordedMethodBody;
+		return *MethodStubbingBase<C, R, arglist...>::recordedMethodBody;
 	}
 
 	virtual void startStubbing() override {
-		MethodStubbingBase<R, arglist...>::startStubbing();
+		MethodStubbingBase<C, R, arglist...>::startStubbing();
 	}
 
 public:
-	ProcedureStubbingRoot(std::shared_ptr<StubbingContext<R, arglist...>> stubbingContext) :
-			MethodStubbingBase<R, arglist...>(stubbingContext), FirstProcedureStubbingProgress<R, arglist...>(), ProcedureStubbingProgress<
+	ProcedureStubbingRoot(std::shared_ptr<StubbingContext<C, R, arglist...>> stubbingContext) :
+			MethodStubbingBase<C, R, arglist...>(stubbingContext), FirstProcedureStubbingProgress<R, arglist...>(), ProcedureStubbingProgress<
 					R, arglist...>() {
 	}
 
@@ -269,33 +269,33 @@ public:
 		FirstProcedureStubbingProgress<R, arglist...>::operator=(method);
 	}
 
-	ProcedureStubbingRoot<R, arglist...>& Using(const arglist&... args) {
-		MethodStubbingBase<R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
+	ProcedureStubbingRoot<C, R, arglist...>& Using(const arglist&... args) {
+		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
 				new ExpectedArgumentsInvocationMatcher<arglist...>(args...) });
 		return *this;
 	}
 
-	ProcedureStubbingRoot<R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
-		MethodStubbingBase<R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
+	ProcedureStubbingRoot<C, R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
+		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
 				new UserDefinedInvocationMatcher<arglist...>(matcher) });
 		return *this;
 	}
 
-	ProcedureStubbingRoot<R, arglist...>& operator()(const arglist&... args) {
-		MethodStubbingBase<R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
+	ProcedureStubbingRoot<C, R, arglist...>& operator()(const arglist&... args) {
+		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
 				new ExpectedArgumentsInvocationMatcher<arglist...>(args...) });
 		return *this;
 	}
 
-	ProcedureStubbingRoot<R, arglist...>& operator()(std::function<bool(arglist...)> matcher) {
-		MethodStubbingBase<R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
+	ProcedureStubbingRoot<C, R, arglist...>& operator()(std::function<bool(arglist...)> matcher) {
+		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
 				new UserDefinedInvocationMatcher<arglist...>(matcher) });
 		return *this;
 	}
 
 	NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 		// Must override since the implementation in base class is privately inherited
-		MethodStubbingBase<R, arglist...>::startStubbing();
+		MethodStubbingBase<C, R, arglist...>::startStubbing();
 		return ProcedureStubbingProgress<R, arglist...>::Do(method);
 	}
 };
@@ -540,15 +540,15 @@ public:
 	WhenFunctor() {
 	}
 
-	template<typename R, typename ... arglist>
-	FirstProcedureStubbingProgress<R, arglist...>& operator()(const ProcedureStubbingRoot<R, arglist...>& stubbingProgress) {
-		ProcedureStubbingRoot<R, arglist...>& rootWithoutConst = const_cast<ProcedureStubbingRoot<R, arglist...>&>(stubbingProgress);
+	template<typename C, typename R, typename ... arglist>
+	FirstProcedureStubbingProgress<R, arglist...>& operator()(const ProcedureStubbingRoot<C, R, arglist...>& stubbingProgress) {
+		ProcedureStubbingRoot<C, R, arglist...>& rootWithoutConst = const_cast<ProcedureStubbingRoot<C, R, arglist...>&>(stubbingProgress);
 		return dynamic_cast<FirstProcedureStubbingProgress<R, arglist...>&>(rootWithoutConst);
 	}
 
-	template<typename R, typename ... arglist>
-	FirstFunctionStubbingProgress<R, arglist...>& operator()(const FunctionStubbingRoot<R, arglist...>& stubbingProgress) {
-		FunctionStubbingRoot<R, arglist...>& rootWithoutConst = const_cast<FunctionStubbingRoot<R, arglist...>&>(stubbingProgress);
+	template<typename C, typename R, typename ... arglist>
+	FirstFunctionStubbingProgress<R, arglist...>& operator()(const FunctionStubbingRoot<C, R, arglist...>& stubbingProgress) {
+		FunctionStubbingRoot<C, R, arglist...>& rootWithoutConst = const_cast<FunctionStubbingRoot<C, R, arglist...>&>(stubbingProgress);
 		return dynamic_cast<FirstFunctionStubbingProgress<R, arglist...>&>(rootWithoutConst);
 	}
 
