@@ -4,8 +4,14 @@
 #include <typeinfo>
 #include <unordered_set>
 #include <tuple>
+#include <string>
+
+#include "mockutils/TuplePrinter.h"
+#include "mockutils/format.h"
 
 struct Method {
+	virtual ~Method() = default;
+	virtual std::string getMethodName() = 0;
 };
 
 struct AnyInvocation {
@@ -16,21 +22,23 @@ struct AnyInvocation {
 
 	virtual ~AnyInvocation() = default;
 
-	int getOrdinal() {
+	int getOrdinal() const {
 		return ordinal;
 	}
 
-	const Method & getMethod(){
+	const Method & getMethod() const {
 		return method;
 	}
 
-	void markAsVerified(){
+	void markAsVerified() {
 		_isVerified = true;
 	}
 
-	bool isVerified(){
+	bool isVerified() const {
 		return _isVerified;
 	}
+
+	virtual std::string format() = 0;
 
 private:
 	const int ordinal;
@@ -42,16 +50,27 @@ template<typename ... arglist>
 struct ActualInvocation: public virtual AnyInvocation {
 
 	ActualInvocation(const int ordinal, const Method & method, const arglist&... args) :
-		AnyInvocation(ordinal, method), actualArguments { args... } {
+			AnyInvocation(ordinal, method), actualArguments { args... } {
 	}
 
-	const std::tuple<arglist...>& getActualArguments() {
+	const std::tuple<arglist...>& getActualArguments() const {
 		return actualArguments;
+	}
+
+	virtual std::string format() override {
+		return Formatterr<ActualInvocation<arglist...>>::format(*this);
 	}
 
 private:
 	std::tuple<arglist...> actualArguments;
 };
+
+template<typename ... arglist>
+std::ostream & operator<<(std::ostream &strm, const ActualInvocation<arglist...>& ai) {
+	const auto t = ai.getActualArguments();
+	strm << t;
+	return strm;
+}
 
 struct ActualInvocationsSource {
 	virtual void getActualInvocations(std::unordered_set<AnyInvocation*>& into) const = 0;

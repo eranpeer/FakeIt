@@ -144,6 +144,10 @@ struct MethodMock: public virtual Method, public virtual MethodInvocationHandler
 	virtual ~MethodMock() override {
 	}
 
+	std::string getMethodName() override {
+		return {};
+	}
+
 	void stubMethodInvocation(std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher,
 			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {
 		auto mock = buildMethodInvocationMock(invocationMatcher, invocationHandler);

@@ -7,12 +7,14 @@
 #include <vector>
 #include <unordered_set>
 #include <set>
+#include <iostream>
 
 #include "mock4cpp/MethodMock.h"
 #include "mock4cpp/Stubbing.h"
 #include "mock4cpp/ActualInvocation.h"
 #include "mock4cpp/InvocationMatcher.h"
 #include "mockutils/ExtractMemberType.h"
+#include "mockutils/format.h"
 
 namespace mock4cpp {
 
@@ -485,14 +487,15 @@ static Verify;
 
 class VerifyNoOtherInvocationsFunctor {
 
-	std::string format(AnyInvocation& i) {
-		return {};
-	}
-
 	std::string buildNoOtherInvocationsVerificationErrorMsg( //
 			std::vector<AnyInvocation*>& allIvocations, //
 			std::vector<AnyInvocation*>& unverifedIvocations) {
-		return std::string("found ") + std::to_string(unverifedIvocations.size()) + " non verified invocations";
+		auto format = std::string("found ") + std::to_string(unverifedIvocations.size()) + " non verified invocations.\n";
+		for (auto invocation : unverifedIvocations){
+			format += invocation->format();
+			format += '\n';
+		}
+		return format;
 	}
 
 public:

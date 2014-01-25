@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include <stdexcept>
+#include <tuple>
 
 #include "tpunit++.hpp"
 #include "mock4cpp.h"
@@ -313,6 +314,8 @@ struct BasicVerification: tpunit::TestFixture {
 	}
 
 	void verify_no_other_invocations_for_method_filter() {
+		std::tuple<int> a{1};
+//		std::cout<<a;
 		Mock<SomeInterface> mock;
 		Stub(mock[&SomeInterface::func]);
 		SomeInterface &i = mock.get();
