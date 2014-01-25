@@ -68,8 +68,8 @@ private:
 template<typename ... arglist>
 std::ostream & operator<<(std::ostream &strm, const ActualInvocation<arglist...>& ai) {
 	strm<<ai.getMethod().getMethodName();
-	const auto t = ai.getActualArguments();
-	strm << t;
+//	const auto t = ai.getActualArguments();
+//	strm << t;
 	return strm;
 }
 
