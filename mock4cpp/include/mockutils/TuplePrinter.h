@@ -5,14 +5,15 @@
 #include <tuple>
 #include <string>
 #include <sstream>
+#include "mockutils/PrintType.h"
 
 // helper function to print a tuple of any size
 template<class Tuple, std::size_t N>
 struct TuplePrinter {
 	static void print(std::ostream &strm, const Tuple& t)
 	{
-		TuplePrinter<Tuple, N-1>::print(strm, t);
-		strm << ", " << std::get<N-1>(t);
+		TuplePrinter<Tuple, N - 1>::print(strm, t);
+		strm << ", " << PrintType<decltype(std::get<N - 1>(t))>();
 	}
 };
 
@@ -20,7 +21,7 @@ template<class Tuple>
 struct TuplePrinter<Tuple, 1> {
 	static void print(std::ostream &strm, const Tuple& t)
 	{
-		strm << std::get<0>(t);
+		strm << PrintType<decltype(std::get<0>(t))>();
 	}
 };
 
