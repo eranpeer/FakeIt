@@ -14,19 +14,19 @@ static std::ostream& operator<<(std::ostream& os, PrintType<T_>) {
 }
 
 template<>
-static std::ostream& operator<<(std::ostream& os, PrintType<void>) {
+std::ostream& operator<<(std::ostream& os, PrintType<void>) {
 	os << "void";
 	return os;
 }
 
 template<>
-static std::ostream& operator<<(std::ostream& os, PrintType<int>) {
+std::ostream& operator<<(std::ostream& os, PrintType<int>) {
 	os << "int";
 	return os;
 }
 
 template<>
-static std::ostream& operator<<(std::ostream& os, PrintType<char>) {
+std::ostream& operator<<(std::ostream& os, PrintType<char>) {
 	os << "char";
 	return os;
 }
