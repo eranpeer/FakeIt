@@ -7,7 +7,8 @@
 #include "mock4cpp.h"
 #include "mockutils/PrintType.h"
 
-struct A {};
+struct A {
+};
 
 template<> struct Formatter<A> {
 	static std::string format(const A& val) {
@@ -35,7 +36,6 @@ struct BasicVerification: tpunit::TestFixture {
 							)  //
 	{
 	}
-
 
 	struct SomeInterface {
 		virtual int func(int) = 0;
@@ -331,7 +331,7 @@ struct BasicVerification: tpunit::TestFixture {
 
 		i.func(1);
 		i.func(1);
-		ASSERT_THROW(VerifyNoOtherInvocations(mock[&SomeInterface::func],mock[&SomeInterface::proc3]), mock4cpp::VerificationException);
+		ASSERT_THROW(VerifyNoOtherInvocations(mock[&SomeInterface::func], mock[&SomeInterface::proc3]), mock4cpp::VerificationException);
 
 		Verify(mock[&SomeInterface::func]).AtLeastOnce();
 		VerifyNoOtherInvocations(mock[&SomeInterface::func]);
@@ -346,6 +346,5 @@ struct BasicVerification: tpunit::TestFixture {
 		Verify(mock[&SomeInterface::func] * 4);
 		VerifyNoOtherInvocations(mock[&SomeInterface::func].Using(1));
 	}
-
+//
 } __BasicVerification;
-

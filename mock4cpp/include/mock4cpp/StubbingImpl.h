@@ -540,7 +540,6 @@ public:
 
 			throw VerificationException(buildNoOtherInvocationsVerificationErrorMsg(sortedActualIvocations, sortedNonVerifedIvocations));
 		}
-		return operator()(tail...);
 	}
 }
 static VerifyNoOtherInvocations;
