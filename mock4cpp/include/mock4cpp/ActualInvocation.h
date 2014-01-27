@@ -5,6 +5,8 @@
 #include <unordered_set>
 #include <tuple>
 #include <string>
+#include <iostream>
+#include <sstream>
 
 #include "mockutils/TuplePrinter.h"
 #include "mockutils/format.h"
@@ -50,7 +52,8 @@ template<typename ... arglist>
 struct ActualInvocation: public virtual AnyInvocation {
 
 	ActualInvocation(const int ordinal, const Method & method, const arglist&... args) :
-			AnyInvocation(ordinal, method), actualArguments { args... } {
+
+	AnyInvocation(ordinal, method), actualArguments { args... } {
 	}
 
 	const std::tuple<arglist...>& getActualArguments() const {
@@ -58,7 +61,10 @@ struct ActualInvocation: public virtual AnyInvocation {
 	}
 
 	virtual std::string format() override {
-		return Formatterr<ActualInvocation<arglist...>>::format(*this);
+		std::stringstream strm;
+		strm << getMethod().getMethodName();
+		strm << getActualArguments();
+		return strm.str();
 	}
 
 private:
@@ -67,9 +73,7 @@ private:
 
 template<typename ... arglist>
 std::ostream & operator<<(std::ostream &strm, const ActualInvocation<arglist...>& ai) {
-	strm<<ai.getMethod().getMethodName();
-	const auto t = ai.getActualArguments();
-	strm << t;
+	strm << ai.format();
 	return strm;
 }
 

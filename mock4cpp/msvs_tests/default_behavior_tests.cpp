@@ -70,7 +70,9 @@ namespace stubbing_tests
 		TEST_METHOD(StabManyMethodsInOneCall)
 		{
 			Mock<ScalarFuctions> mock;
-			Stub(mock[&ScalarFuctions::boolFunc], mock[&ScalarFuctions::charFunc], mock[&ScalarFuctions::intFunc]);
+			Stub(mock[&ScalarFuctions::boolFunc]);
+			Stub(mock[&ScalarFuctions::charFunc]);
+			Stub(mock[&ScalarFuctions::intFunc]);
 
 			ScalarFuctions &i = mock.get();
 
