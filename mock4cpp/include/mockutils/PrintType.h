@@ -8,11 +8,11 @@
 template<class T> struct Formatter {
 	static std::string format(const T& val){
 		if (std::is_const<T>::value)
-			return Formatter<std::remove_const<T>::type>::format(val);
+			return Formatter<typename std::remove_const<T>::type>::format(val);
 		if (std::is_reference<T>::value)
-			return Formatter<std::remove_reference<T>::type>::format(val);
+			return Formatter<typename std::remove_reference<T>::type>::format(val);
 		if (std::is_volatile<T>::value)
-			return Formatter<std::remove_volatile<T>::type>::format(val);
+			return Formatter<typename std::remove_volatile<T>::type>::format(val);
 		return{ "?" };
 	}
 };
