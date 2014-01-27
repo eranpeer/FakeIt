@@ -498,11 +498,14 @@ class VerifyNoOtherInvocationsFunctor {
 		return format;
 	}
 
-public:
-	VerifyNoOtherInvocationsFunctor() {
+	template<typename ... list>
+	void collectActualInvocations(std::unordered_set<AnyInvocation*>& actualInvocations) {
 	}
 
-	void operator()() {
+	template<typename ... list>
+	void collectActualInvocations(std::unordered_set<AnyInvocation*>& actualInvocations, const ActualInvocationsSource& head, const list&... tail) {
+		head.getActualInvocations(actualInvocations);
+		collectActualInvocations(actualInvocations,tail...);
 	}
 
 	void selectNonVerifiedInvocations(std::unordered_set<AnyInvocation*>& actualInvocations, std::unordered_set<AnyInvocation*>& into) {
@@ -513,10 +516,17 @@ public:
 		}
 	}
 
+public:
+	VerifyNoOtherInvocationsFunctor() {
+	}
+
+	void operator()() {
+	}
+
 	template<typename ... list>
 	void operator()(const ActualInvocationsSource& head, const list&... tail) {
 		std::unordered_set<AnyInvocation*> actualInvocations;
-		head.getActualInvocations(actualInvocations);
+		collectActualInvocations(actualInvocations, head, tail...);
 
 		std::unordered_set<AnyInvocation*> nonVerifedIvocations;
 		selectNonVerifiedInvocations(actualInvocations, nonVerifedIvocations);
