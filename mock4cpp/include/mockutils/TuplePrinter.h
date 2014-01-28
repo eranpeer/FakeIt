@@ -5,7 +5,7 @@
 #include <tuple>
 #include <string>
 #include <sstream>
-#include "mockutils/PrintType.h"
+#include "mockutils/Formatter.h"
 
 // helper function to print a tuple of any size
 template<class Tuple, std::size_t N>

@@ -1,12 +1,12 @@
-//#ifndef Formatter_h__
-//#define Formatter_h__
+//#ifndef Inserter_h__
+//#define Inserter_h__
 //
 //#include <iostream>
 //#include <string>
 //#include <sstream>
 //
 //template<class T>
-//class Formatterr {
+//class Inserterr {
 //public:
 //	static std::string format( T& t) {
 //		std::stringstream sstream;
@@ -16,4 +16,4 @@
 //	}
 //};
 //
-//#endif // Formatter_h__
+//#endif // Inserter_h__

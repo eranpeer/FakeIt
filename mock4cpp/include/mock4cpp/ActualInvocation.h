@@ -7,9 +7,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
-
 #include "mockutils/TuplePrinter.h"
-#include "mockutils/format.h"
 
 struct Method {
 	virtual ~Method() = default;

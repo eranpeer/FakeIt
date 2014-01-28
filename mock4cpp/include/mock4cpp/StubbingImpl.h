@@ -14,7 +14,6 @@
 #include "mock4cpp/ActualInvocation.h"
 #include "mock4cpp/InvocationMatcher.h"
 #include "mockutils/ExtractMemberType.h"
-#include "mockutils/format.h"
 
 namespace mock4cpp {
 
