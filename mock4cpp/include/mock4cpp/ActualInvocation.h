@@ -8,10 +8,15 @@
 #include <iostream>
 #include <sstream>
 #include "mockutils/TuplePrinter.h"
+#include "mock4cpp/MockRepository.h"
+
+namespace mock4cpp {
+
 
 struct Method {
 	virtual ~Method() = default;
 	virtual std::string getMethodName() const = 0;
+	virtual MockObject& getMockObject() = 0;
 };
 
 struct AnyInvocation {
@@ -79,4 +84,5 @@ struct ActualInvocationsSource {
 	virtual void getActualInvocations(std::unordered_set<AnyInvocation*>& into) const = 0;
 };
 
+}
 #endif // ActualInvocation_h__

@@ -137,7 +137,7 @@ template<typename C, typename R, typename ... arglist>
 struct MethodMock: public virtual Method, public virtual MethodInvocationHandler<R, arglist...>
 , public virtual ActualInvocationsSource
 {
-	MethodMock(MockBase& mock, R(C::*vMethod)(arglist...)) :
+	MethodMock(MockObject& mock, R(C::*vMethod)(arglist...)) :
 			mock(mock),vMethod(vMethod) {
 	}
 
@@ -146,6 +146,10 @@ struct MethodMock: public virtual Method, public virtual MethodInvocationHandler
 
 	std::string getMethodName() const override {
 		return typeid(vMethod).name();
+	}
+
+	virtual MockObject& getMockObject() override {
+		return mock;
 	}
 
 	void stubMethodInvocation(std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher,
@@ -186,7 +190,7 @@ struct MethodMock: public virtual Method, public virtual MethodInvocationHandler
 	}
 private:
 
-	MockBase& mock;
+	MockObject& mock;
 	R(C::*vMethod)(arglist...);
 	std::vector<std::shared_ptr<MethodInvocationMock<R, arglist...>>>methodInvocationMocks;
 	std::vector<std::shared_ptr<ActualInvocation<arglist...>>> actualInvocations;

@@ -11,7 +11,7 @@
 using namespace mock4cpp;
 
 template<typename C>
-class Mock: private MockBase, public virtual ActualInvocationsSource {
+class Mock: private MockObject, public virtual ActualInvocationsSource {
 private:
 	DynamicProxy<C> instance;
 
@@ -64,7 +64,7 @@ public:
 	static_assert(std::is_polymorphic<C>::value, "Can only mock a polymorphic type");
 
 	Mock() :
-			MockBase { }, instance { [] {throw UnmockedMethodCallException {};} } {
+			MockObject { }, instance { [] {throw UnmockedMethodCallException {};} } {
 	}
 
 	/**

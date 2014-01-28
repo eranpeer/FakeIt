@@ -3,8 +3,7 @@
 
 namespace mock4cpp {
 
-	struct MockBase {
-	private:
+	struct MockObject {
 	};
 
 }

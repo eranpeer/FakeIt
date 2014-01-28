@@ -7,6 +7,20 @@
 
 namespace mock4cpp {
 
+//template<class T>
+//std::ostream & operator<<(std::ostream &strm, const T& t) {
+//	if (std::is_const < T > ::value)
+//		strm << t;
+////	if (std::is_reference < T > ::value)
+////		return Formatter<typename std::remove_reference<T>::type>::format(val);
+////	if (std::is_volatile < T > ::value)
+////		return Formatter<typename std::remove_volatile<T>::type>::format(val);
+////	return {"?"};
+//
+//	return strm;
+//}
+
+
 template<class T> struct Formatter {
 	static std::string format(const T& val) {
 		if (std::is_const < T > ::value)
@@ -15,6 +29,9 @@ template<class T> struct Formatter {
 			return Formatter<typename std::remove_reference<T>::type>::format(val);
 		if (std::is_volatile < T > ::value)
 			return Formatter<typename std::remove_volatile<T>::type>::format(val);
+//		if (std::is_pointer < T > ::value)
+//			return Formatter<typename std::remove_pointer<T>::type>::format(*val);
+
 		return {"?"};
 	}
 };
