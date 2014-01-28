@@ -12,14 +12,14 @@ template<class Tuple, std::size_t N>
 struct TuplePrinter {
 	static void print(std::ostream &strm, const Tuple& t) {
 		TuplePrinter<Tuple, N - 1>::print(strm, t);
-		strm << ", " << Formatter<decltype(std::get<N - 1>(t))>::format(std::get<N - 1>(t));
+		strm << ", " << mock4cpp::Formatter<decltype(std::get<N - 1>(t))>::format(std::get<N - 1>(t));
 	}
 };
 
 template<class Tuple>
 struct TuplePrinter<Tuple, 1> {
 	static void print(std::ostream &strm, const Tuple& t) {
-		strm << Formatter<decltype(std::get<0>(t))>::format(std::get<0>(t));
+		strm << mock4cpp::Formatter<decltype(std::get<0>(t))>::format(std::get<0>(t));
 	}
 };
 

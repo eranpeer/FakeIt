@@ -10,11 +10,13 @@
 struct A {
 };
 
+namespace mock4cpp {
 template<> struct Formatter<A> {
 	static std::string format(const A& val) {
 		return {"a"};
 	}
 };
+}
 
 struct BasicVerification: tpunit::TestFixture {
 	BasicVerification() :
