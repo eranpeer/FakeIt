@@ -13,12 +13,6 @@
 namespace mock4cpp {
 
 
-struct Method {
-	virtual ~Method() = default;
-	virtual std::string getMethodName() const = 0;
-	virtual MockObject& getMockObject() = 0;
-};
-
 struct AnyInvocation {
 
 	AnyInvocation(const int ordinal, const Method & method) :
