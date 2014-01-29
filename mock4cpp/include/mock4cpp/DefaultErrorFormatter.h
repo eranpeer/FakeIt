@@ -12,7 +12,6 @@
 
 namespace mock4cpp {
 
-
 struct DefaultErrorFormatter: public virtual ErrorFormatter {
 	virtual ~DefaultErrorFormatter() = default;
 

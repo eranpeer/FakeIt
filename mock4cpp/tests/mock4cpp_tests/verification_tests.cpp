@@ -95,30 +95,30 @@ struct BasicVerification: tpunit::TestFixture {
 	}
 
 	void verify_method_was_called_at_least_twice() {
-			Mock<SomeInterface> mock;
+		Mock<SomeInterface> mock;
 
-			ASSERT_THROW(Verify(mock[&SomeInterface::func]).AtLeast(2), mock4cpp::VerificationException);
-			ASSERT_THROW(Verify(mock[&SomeInterface::proc]).AtLeast(2), mock4cpp::VerificationException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::func]).AtLeast(2), mock4cpp::VerificationException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).AtLeast(2), mock4cpp::VerificationException);
 
-			Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
-			SomeInterface &i = mock.get();
-			i.func(1);
-			i.proc(2);
+		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
+		SomeInterface &i = mock.get();
+		i.func(1);
+		i.proc(2);
 
-			ASSERT_THROW(Verify(mock[&SomeInterface::func]).AtLeast(2), mock4cpp::VerificationException);
-			ASSERT_THROW(Verify(mock[&SomeInterface::proc]).AtLeast(2), mock4cpp::VerificationException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::func]).AtLeast(2), mock4cpp::VerificationException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).AtLeast(2), mock4cpp::VerificationException);
 
-			i.func(1);
-			i.proc(2);
+		i.func(1);
+		i.proc(2);
 
-			Verify(mock[&SomeInterface::func]).AtLeast(2);
-			Verify(mock[&SomeInterface::proc]).AtLeast(2);
+		Verify(mock[&SomeInterface::func]).AtLeast(2);
+		Verify(mock[&SomeInterface::proc]).AtLeast(2);
 
-			i.func(1);
-			i.proc(2);
+		i.func(1);
+		i.proc(2);
 
-			Verify(mock[&SomeInterface::func]).AtLeast(2);
-			Verify(mock[&SomeInterface::proc]).AtLeast(2);
+		Verify(mock[&SomeInterface::func]).AtLeast(2);
+		Verify(mock[&SomeInterface::proc]).AtLeast(2);
 	}
 
 	void verify_method_was_called_exactly_once() {
