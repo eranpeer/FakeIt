@@ -4,12 +4,14 @@
  *  Created on: Jan 29, 2014
  *      Author: eran
  */
-
-#ifndef DEFAULTERRORFORMATTER_H_
-#define DEFAULTERRORFORMATTER_H_
+#ifndef DefaultErrorFormatter_h__
+#define DefaultErrorFormatter_h__
 
 #include <vector>
 #include "mock4cpp/ErrorFormatter.h"
+
+namespace mock4cpp {
+
 
 struct DefaultErrorFormatter: public virtual ErrorFormatter {
 	virtual ~DefaultErrorFormatter() = default;
@@ -37,5 +39,5 @@ struct DefaultErrorFormatter: public virtual ErrorFormatter {
 	}
 }static defaultErrorFormatter;
 
-
-#endif /* DEFAULTERRORFORMATTER_H_ */
+}
+#endif /* DefaultErrorFormatter_h__ */
