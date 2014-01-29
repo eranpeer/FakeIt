@@ -1,5 +1,5 @@
-#ifndef MockRepository_h__
-#define MockRepository_h__
+#ifndef DomainObjects_h__
+#define DomainObjects_h__
 
 #include <string>
 
@@ -16,4 +16,4 @@ namespace mock4cpp {
 
 }
 
-#endif // MockRepository_h__
+#endif // DomainObjects_h__

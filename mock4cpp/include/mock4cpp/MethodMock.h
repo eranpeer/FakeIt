@@ -7,7 +7,7 @@
 
 #include "mockutils/TupleDispatcher.h"
 #include "mock4cpp/InvocationMatcher.h"
-#include "mock4cpp/MockRepository.h"
+#include "mock4cpp/DomainObjects.h"
 #include "mock4cpp/ActualInvocation.h"
 #include "mock4cpp/Exceptions.h"
 

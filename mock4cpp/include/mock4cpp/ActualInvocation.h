@@ -8,7 +8,7 @@
 #include <iostream>
 #include <sstream>
 #include "mockutils/TuplePrinter.h"
-#include "mock4cpp/MockRepository.h"
+#include "mock4cpp/DomainObjects.h"
 
 namespace mock4cpp {
 
