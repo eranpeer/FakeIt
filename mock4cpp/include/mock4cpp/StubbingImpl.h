@@ -13,6 +13,7 @@
 #include "mock4cpp/Stubbing.h"
 #include "mock4cpp/ActualInvocation.h"
 #include "mock4cpp/InvocationMatcher.h"
+#include "mock4cpp/ErrorFormatter.h"
 #include "mockutils/ExtractMemberType.h"
 
 namespace mock4cpp {
@@ -74,20 +75,6 @@ protected:
 	virtual RecordedMethodBody<R, arglist...>& recordedMethodBody() = 0;
 private:
 	ProcedureStubbingProgress & operator=(const ProcedureStubbingProgress & other) = delete;
-};
-
-struct ErrorFormatter {
-	virtual ~ErrorFormatter() = default;
-
-	virtual std::string buildNoOtherInvocationsVerificationErrorMsg( //
-			std::vector<AnyInvocation*>& allIvocations, //
-			std::vector<AnyInvocation*>& unverifedIvocations) = 0;
-
-	virtual std::string buildExactVerificationErrorMsg(std::vector<Sequence*>& expectedPattern, std::vector<AnyInvocation*>& actualSequence,
-			int expectedInvocationCount, int count)= 0;
-
-	virtual std::string buildAtLeastVerificationErrorMsg(std::vector<Sequence*>& expectedPattern,
-			std::vector<AnyInvocation*>& actualSequence, int expectedInvocationCount, int count)= 0;
 };
 
 struct DefaultErrorFormatter: public virtual ErrorFormatter {

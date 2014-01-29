@@ -8,6 +8,7 @@
 namespace mock4cpp {
 
 struct AnyInvocationMatcher {
+	//virtual ~AnyInvocationMatcher() = default;
 	virtual bool matches(AnyInvocation& invocation) = 0;
 };
 
