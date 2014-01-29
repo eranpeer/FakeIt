@@ -187,8 +187,8 @@ protected:
 public:
 
 	FunctionStubbingRoot(std::shared_ptr<StubbingContext<C, R, arglist...>> stubbingContext) :
-			MethodStubbingBase<C, R, arglist...>(stubbingContext), FirstFunctionStubbingProgress<R, arglist...>(), FunctionStubbingProgress<R,
-					arglist...>() {
+			MethodStubbingBase<C, R, arglist...>(stubbingContext), FirstFunctionStubbingProgress<R, arglist...>(), FunctionStubbingProgress<
+					R, arglist...>() {
 	}
 
 	FunctionStubbingRoot(const FunctionStubbingRoot& other) = default;
@@ -358,23 +358,33 @@ public:
 			std::vector<AnyInvocation*> matchedInvocations;
 			int count = countMatches(expectedPattern, actualSequence, matchedInvocations);
 
-			if (expectedInvocationCount == AT_LEAST_ONCE()) {
-				if (count == 0) {
-					throw(VerificationException(std::string("Expected invocation scenario does not match actual invocation order")));
+			if (expectedInvocationCount < 0) {
+				if (count < -expectedInvocationCount) {
+					throw(VerificationException(
+							buildAtLeastVerificationErrorMsg(expectedPattern, actualSequence, -expectedInvocationCount, count)));
 				}
 			} else if (count != expectedInvocationCount) {
-				throw(VerificationException(
-						std::string("expected ") + std::to_string(expectedInvocationCount) + " but was " + std::to_string(count)));
+				throw(VerificationException(buildExactVerificationErrorMsg(expectedPattern, actualSequence, expectedInvocationCount, count)));
 			}
 
 			markAsVerified(matchedInvocations);
 		}
 
 	private:
+
+		std::string buildExactVerificationErrorMsg(std::vector<Sequence*>& expectedPattern, std::vector<AnyInvocation*>& actualSequence,
+				int expectedInvocationCount, int count) {
+			return std::string("expected ") + std::to_string(expectedInvocationCount) + " but was " + std::to_string(count);
+		}
+
+		std::string buildAtLeastVerificationErrorMsg(std::vector<Sequence*>& expectedPattern, std::vector<AnyInvocation*>& actualSequence,
+				int expectedInvocationCount, int count) {
+			return std::string("Expected invocation scenario does not match actual invocation order");
+		}
+
 		std::vector<Sequence*> expectedPattern;
 		const Sequence& sequence;
-		int expectedInvocationCount;
-		bool _isActive;
+		int expectedInvocationCount;bool _isActive;
 
 		static inline int AT_LEAST_ONCE() {
 			return -1;
@@ -490,7 +500,7 @@ class VerifyNoOtherInvocationsFunctor {
 			std::vector<AnyInvocation*>& allIvocations, //
 			std::vector<AnyInvocation*>& unverifedIvocations) {
 		auto format = std::string("found ") + std::to_string(unverifedIvocations.size()) + " non verified invocations.\n";
-		for (auto invocation : unverifedIvocations){
+		for (auto invocation : unverifedIvocations) {
 			format += invocation->format();
 			format += '\n';
 		}
@@ -502,9 +512,10 @@ class VerifyNoOtherInvocationsFunctor {
 	}
 
 	template<typename ... list>
-	void collectActualInvocations(std::unordered_set<AnyInvocation*>& actualInvocations, const ActualInvocationsSource& head, const list&... tail) {
+	void collectActualInvocations(std::unordered_set<AnyInvocation*>& actualInvocations, const ActualInvocationsSource& head,
+			const list&... tail) {
 		head.getActualInvocations(actualInvocations);
-		collectActualInvocations(actualInvocations,tail...);
+		collectActualInvocations(actualInvocations, tail...);
 	}
 
 	void selectNonVerifiedInvocations(std::unordered_set<AnyInvocation*>& actualInvocations, std::unordered_set<AnyInvocation*>& into) {
