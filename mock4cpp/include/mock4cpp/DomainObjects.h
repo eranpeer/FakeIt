@@ -5,14 +5,14 @@
 
 namespace mock4cpp {
 
-	struct MockObject {
-	};
+struct MockObject {
+};
 
-	struct Method {
-		virtual ~Method() = default;
-		virtual std::string getMethodName() const = 0;
-		virtual MockObject& getMockObject() = 0;
-	};
+struct Method {
+	virtual ~Method() = default;
+	virtual std::string getMethodName() const = 0;
+	virtual MockObject& getMockObject() = 0;
+};
 
 }
 

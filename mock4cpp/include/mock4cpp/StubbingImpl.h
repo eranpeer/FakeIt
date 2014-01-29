@@ -76,7 +76,61 @@ private:
 	ProcedureStubbingProgress & operator=(const ProcedureStubbingProgress & other) = delete;
 };
 
-using namespace mock4cpp;
+struct ErrorFormatter {
+	virtual ~ErrorFormatter() = default;
+
+	virtual std::string buildNoOtherInvocationsVerificationErrorMsg( //
+			std::vector<AnyInvocation*>& allIvocations, //
+			std::vector<AnyInvocation*>& unverifedIvocations) = 0;
+
+	virtual std::string buildExactVerificationErrorMsg(std::vector<Sequence*>& expectedPattern, std::vector<AnyInvocation*>& actualSequence,
+			int expectedInvocationCount, int count)= 0;
+
+	virtual std::string buildAtLeastVerificationErrorMsg(std::vector<Sequence*>& expectedPattern,
+			std::vector<AnyInvocation*>& actualSequence, int expectedInvocationCount, int count)= 0;
+};
+
+struct DefaultErrorFormatter: public virtual ErrorFormatter {
+	virtual ~DefaultErrorFormatter() = default;
+
+	virtual std::string buildNoOtherInvocationsVerificationErrorMsg( //
+			std::vector<AnyInvocation*>& allIvocations, //
+			std::vector<AnyInvocation*>& unverifedIvocations) override {
+
+		auto format = std::string("found ") + std::to_string(unverifedIvocations.size()) + " non verified invocations.\n";
+		for (auto invocation : unverifedIvocations) {
+			format += invocation->format();
+			format += '\n';
+		}
+		return format;
+	}
+
+	virtual std::string buildExactVerificationErrorMsg(std::vector<Sequence*>& expectedPattern, std::vector<AnyInvocation*>& actualSequence,
+			int expectedInvocationCount, int count) override {
+		return std::string("expected ") + std::to_string(expectedInvocationCount) + " but was " + std::to_string(count);
+	}
+
+	virtual std::string buildAtLeastVerificationErrorMsg(std::vector<Sequence*>& expectedPattern,
+			std::vector<AnyInvocation*>& actualSequence, int expectedInvocationCount, int count) override {
+		return std::string("Expected invocation scenario does not match actual invocation order");
+	}
+}static defaultErrorFormatter;
+
+struct Mock4cppRoot {
+	Mock4cppRoot(ErrorFormatter& errorFormatter) :
+			errorFormatter(errorFormatter) {
+	}
+	void setErrorFormatter(ErrorFormatter& ef) {
+		errorFormatter = ef;
+	}
+
+	ErrorFormatter& getErrorFromatter() {
+		return errorFormatter;
+	}
+
+private:
+	ErrorFormatter& errorFormatter;
+}static Mock4cpp(defaultErrorFormatter);
 
 template<typename C, typename R, typename ... arglist>
 class MethodStubbingBase: //
@@ -360,27 +414,20 @@ public:
 
 			if (expectedInvocationCount < 0) {
 				if (count < -expectedInvocationCount) {
-					throw(VerificationException(
-							buildAtLeastVerificationErrorMsg(expectedPattern, actualSequence, -expectedInvocationCount, count)));
+					throw VerificationException(
+							Mock4cpp.getErrorFromatter().buildAtLeastVerificationErrorMsg(expectedPattern, actualSequence,
+									-expectedInvocationCount, count));
 				}
 			} else if (count != expectedInvocationCount) {
-				throw(VerificationException(buildExactVerificationErrorMsg(expectedPattern, actualSequence, expectedInvocationCount, count)));
+				throw VerificationException(
+						Mock4cpp.getErrorFromatter().buildExactVerificationErrorMsg(expectedPattern, actualSequence,
+								expectedInvocationCount, count));
 			}
 
 			markAsVerified(matchedInvocations);
 		}
 
 	private:
-
-		std::string buildExactVerificationErrorMsg(std::vector<Sequence*>& expectedPattern, std::vector<AnyInvocation*>& actualSequence,
-				int expectedInvocationCount, int count) {
-			return std::string("expected ") + std::to_string(expectedInvocationCount) + " but was " + std::to_string(count);
-		}
-
-		std::string buildAtLeastVerificationErrorMsg(std::vector<Sequence*>& expectedPattern, std::vector<AnyInvocation*>& actualSequence,
-				int expectedInvocationCount, int count) {
-			return std::string("Expected invocation scenario does not match actual invocation order");
-		}
 
 		std::vector<Sequence*> expectedPattern;
 		const Sequence& sequence;
@@ -548,7 +595,9 @@ public:
 			std::vector<AnyInvocation*> sortedActualIvocations;
 			sort(actualInvocations, sortedActualIvocations);
 
-			throw VerificationException(buildNoOtherInvocationsVerificationErrorMsg(sortedActualIvocations, sortedNonVerifedIvocations));
+			throw VerificationException(
+					Mock4cpp.getErrorFromatter().buildNoOtherInvocationsVerificationErrorMsg(sortedActualIvocations,
+							sortedNonVerifedIvocations));
 		}
 	}
 }
@@ -596,12 +645,5 @@ public:
 
 }static Stub;
 
-//template<typename R, typename ... arglist>
-//inline MethodStubbingBase<R,arglist...>& operator<<(const MethodStubbingBase<R,arglist...>& root, const R& rv)
-//{
-//	return (MethodStubbingBase<R,arglist...>&)root;
-//}
-
 }
-
 #endif // ClousesImpl_h__
