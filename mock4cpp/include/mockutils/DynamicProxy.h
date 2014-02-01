@@ -121,7 +121,7 @@ private:
 		}
 	};
 
-	VirtualTable<30> vtable;
+	VirtualTable<30,C> vtable;
 
 	// Here we alloc too many bytes since sizeof(C) includes the pointer to the virtual table.
 	// Should be sizeof(C) - ptr_size.

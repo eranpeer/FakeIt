@@ -352,8 +352,6 @@ struct BasicVerification: tpunit::TestFixture {
 	}
 
 	void verify_no_other_invocations_for_method_filter() {
-		std::tuple<int> a { 1 };
-//		std::cout<<a;
 		Mock<SomeInterface> mock;
 		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc3]);
 		SomeInterface &i = mock.get();

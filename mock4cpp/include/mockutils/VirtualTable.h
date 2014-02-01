@@ -1,18 +1,24 @@
 #ifndef VirtualTable_h__
 #define VirtualTable_h__
 
-template <int SIZE>
+template <int SIZE, class C>
 struct VirtualTable {
 
 	VirtualTable(){
-		methods = new void*[SIZE];
-		for (unsigned int i = 0; i < SIZE; i++){
-			methods[i] = 0;
+		auto array = new void*[SIZE + 2];
+		for (unsigned int i = 0; i < SIZE + 2; i++){
+			array[i] = 0;
 		}
+		array[1] = (void*)&typeid(C); // initialize type_info pointer
+		firstMethod = array;
+		firstMethod++; // top_offset
+		firstMethod++; // type_info ptr
 	}
 
 	~VirtualTable() {
-		delete [] methods;
+		firstMethod--;
+		firstMethod--;
+		delete [] firstMethod;
 	}
 
 	void setMethod(unsigned int index, void *method)
@@ -20,11 +26,11 @@ struct VirtualTable {
 		if (index >= SIZE){
 			throw "error";
 		}
-		methods[index] = method;
+		firstMethod[index] = method;
 	}
 
 	void * getMethod(unsigned int index){
-		return methods[index];
+		return firstMethod[index];
 	}
 
 	unsigned int getSize(){
@@ -32,6 +38,6 @@ struct VirtualTable {
 	}
 
 private:
-	void** methods;
+	void** firstMethod;
 };
 #endif // VirtualTable_h__
