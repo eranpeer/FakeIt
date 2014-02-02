@@ -8,7 +8,7 @@
 #include <new>
 
 #include "mockutils/MethodProxy.h"
-#include "mockutils/VirtualTable.h"
+#include "mockutils/mscpp/VirtualTable.h"
 #include "mockutils/VirtualOffestSelector.h"
 #include "mockutils/union_cast.h"
 #include "mockutils/MethodInvocationHandler.h"
