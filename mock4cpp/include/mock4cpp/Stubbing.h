@@ -1,11 +1,6 @@
 #ifndef Clouses_h__
 #define Clouses_h__
-
-#ifdef _WIN32
-#define THROWS throw(...)
-#else
-#define THROWS noexcept(false)
-#endif
+#include "mockutils/Macros.h"
 
 #include <functional>
 #include <type_traits>

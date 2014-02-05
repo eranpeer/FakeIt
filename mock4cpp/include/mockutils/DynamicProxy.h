@@ -7,8 +7,13 @@
 #include <array>
 #include <new>
 
-#include "mockutils/MethodProxy.h"
+#ifdef _WIN32
 #include "mockutils/mscpp/VirtualTable.h"
+#else
+#include "mockutils/gcc/VirtualTable.h"
+#endif
+
+#include "mockutils/MethodProxy.h"
 #include "mockutils/VirtualOffestSelector.h"
 #include "mockutils/union_cast.h"
 #include "mockutils/MethodInvocationHandler.h"

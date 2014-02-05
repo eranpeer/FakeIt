@@ -11,6 +11,14 @@
 typedef unsigned long DWORD;
 struct TypeDescriptor
 {
+	TypeDescriptor() :ptrToVTable(0), spare(0){
+		// ptrToVTable should ontain the pointer to the virtual table of the type type_info!!!
+		int ** tiVFTPtr = (int**)(&typeid(void));
+		int * i = (int*)tiVFTPtr[0];
+		int type_info_vft_ptr = (int)i;
+		ptrToVTable = type_info_vft_ptr;
+	}
+
     DWORD ptrToVTable;
     DWORD spare;
     char name[8];
@@ -21,9 +29,13 @@ struct PMD
     int mdisp;  //member displacement
     int pdisp;  //vbtable displacement
     int vdisp;  //displacement inside vbtable
+
+	PMD():mdisp(0), pdisp(0), vdisp(0){}
 };
 struct RTTIBaseClassDescriptor
 {
+	RTTIBaseClassDescriptor() :pTypeDescriptor(nullptr), numContainedBases(0), attributes(0){}
+
     struct TypeDescriptor* pTypeDescriptor; //type descriptor of the class
     DWORD numContainedBases; //number of nested classes following in the Base Class Array
     struct PMD where;        //pointer-to-member displacement info
@@ -32,14 +44,17 @@ struct RTTIBaseClassDescriptor
 
 struct RTTIClassHierarchyDescriptor
 {
+	RTTIClassHierarchyDescriptor() :signature(0), attributes(0), numBaseClasses(0), pBaseClassArray(nullptr){}
+
     DWORD signature;      //always zero?
     DWORD attributes;     //bit 0 set = multiple inheritance, bit 1 set = virtual inheritance
     DWORD numBaseClasses; //number of classes in pBaseClassArray
-    struct RTTIBaseClassArray* pBaseClassArray;
+	RTTIBaseClassDescriptor **pBaseClassArray;
 };
 
 struct RTTICompleteObjectLocator
 {
+	RTTICompleteObjectLocator() :signature(0), offset(0), cdOffset(0), pTypeDescriptor(nullptr), pClassDescriptor(nullptr){}
     DWORD signature; //always zero ?
     DWORD offset;    //offset of this vtable in the complete class
     DWORD cdOffset;  //constructor displacement offset
@@ -57,12 +72,17 @@ struct VirtualTable {
 			array[i] = 0;
 		}
 		RTTICompleteObjectLocator * objectLocator = new RTTICompleteObjectLocator();
-		objectLocator->signature = 0;
-		objectLocator->cdOffset = 0;
-		objectLocator->pClassDescriptor = nullptr;
-		objectLocator->pClassDescriptor = nullptr;
+		TypeDescriptor* typeDescriptorPtr = (TypeDescriptor*)&typeid(C);
+		objectLocator->pTypeDescriptor = typeDescriptorPtr;
+		
+		//RTTIClassHierarchyDescriptor* classDescriptorPtr = new RTTIClassHierarchyDescriptor();
+		//classDescriptorPtr->numBaseClasses = 1;
+		//RTTIBaseClassDescriptor * baseClassDescriptor = new RTTIBaseClassDescriptor();
+		//RTTIBaseClassDescriptor ** baseClassDescriptorArr = new RTTIBaseClassDescriptor*[1];
+		//baseClassDescriptorArr[0] = baseClassDescriptor;
+		//objectLocator->pClassDescriptor = classDescriptorPtr;
 
-		array[0] = objectLocator; // initialize type_info pointer
+		array[0] = objectLocator; // initialize RTTICompleteObjectLocator pointer
 		firstMethod = array;
 		firstMethod++; // skip objectLocator
 	}
@@ -93,6 +113,5 @@ struct VirtualTable {
 private:
 	void** firstMethod;
 };
-
 
 #endif /* VIRTUALTABLE_H_ */
