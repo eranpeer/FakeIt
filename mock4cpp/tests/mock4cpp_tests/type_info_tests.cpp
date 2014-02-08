@@ -3,12 +3,14 @@
 #include <stdexcept>
 #include <tuple>
 #include <iostream>
+#include <type_traits>
 
 #include "tpunit++.hpp"
 #include "mock4cpp.h"
 #include "mockutils/Formatter.h"
 
 struct TypeInfoTests: tpunit::TestFixture {
+
 	TypeInfoTests() :
 			tpunit::TestFixture(
 			//
@@ -24,12 +26,9 @@ struct TypeInfoTests: tpunit::TestFixture {
 
 	void mock_should_use_same_typeid_as_moked_class() {
 		Mock<SomeInterface> mock;
-		//SomeInterface* iPtr = &mock.get();
-		//int ** iVFTPtr = (int**)(iPtr);
-		//RTTICompleteObjectLocator  iObjectLocatorPtr =
-		//	*((RTTICompleteObjectLocator *)(*((int*)iVFTPtr[0] - 1)));
 		ASSERT_EQUAL(typeid(mock.get()),typeid(SomeInterface));
 	}
+
 	/*
 	class Dclass
 	{
@@ -114,5 +113,5 @@ struct TypeInfoTests: tpunit::TestFixture {
 			*((RTTICompleteObjectLocator *)(*((int*)tiVFTPtr[0] - 1)));
 	}
 	*/
-	//
+	
 } __TypeInfoTests;

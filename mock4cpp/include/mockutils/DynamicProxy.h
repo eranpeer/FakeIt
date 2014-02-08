@@ -18,7 +18,7 @@
 #include "mockutils/union_cast.h"
 #include "mockutils/MethodInvocationHandler.h"
 
-template<typename C>
+template <typename C>
 struct DynamicProxy {
 	static_assert(std::is_polymorphic<C>::value, "DynamicProxy requires a polymorphic type");
 
