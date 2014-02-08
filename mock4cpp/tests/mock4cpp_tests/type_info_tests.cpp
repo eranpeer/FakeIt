@@ -14,7 +14,9 @@ struct TypeInfoTests: tpunit::TestFixture {
 	TypeInfoTests() :
 			tpunit::TestFixture(
 			//
-					TEST(TypeInfoTests::mock_should_use_same_typeid_as_moked_class)
+					TEST(TypeInfoTests::mock_should_use_same_typeid_as_moked_class), //
+					TEST(TypeInfoTests::simple_inheritance_upcast), //
+					TEST(TypeInfoTests::simple_inheritance_dynamic_down_cast)
 					//, TEST(TypeInfoTests::try_type_info)//
 							)  //
 	{
@@ -27,6 +29,47 @@ struct TypeInfoTests: tpunit::TestFixture {
 	void mock_should_use_same_typeid_as_moked_class() {
 		Mock<SomeInterface> mock;
 		ASSERT_EQUAL(typeid(mock.get()),typeid(SomeInterface));
+	}
+
+	struct TopLeft {
+		int topLeft;
+		virtual int f()=0;
+	};
+
+	struct Left: public TopLeft {
+		int left;
+		virtual int f() override = 0;
+	};
+
+	struct A: public Left {
+		int a;
+		virtual int f() override = 0;
+	};
+
+	void simple_inheritance_upcast() {
+		Mock<A> aMock;
+		A& a= aMock.get();
+		Stub(aMock[&A::f]);
+
+		Left& left= a;
+		TopLeft& topLeft= left;
+
+		ASSERT_EQUAL(0, a.f());
+		ASSERT_EQUAL(0, left.f());
+		ASSERT_EQUAL(0, topLeft.f());
+	}
+
+	void simple_inheritance_dynamic_down_cast() {
+		Mock<A> aMock;
+		Stub(aMock[&A::f]);
+		TopLeft& topLeft= aMock.get();
+
+		Left& left= dynamic_cast<Left&>(topLeft);
+		A& a= dynamic_cast<A&>(topLeft);
+
+		ASSERT_EQUAL(0, a.f());
+		ASSERT_EQUAL(0, left.f());
+		ASSERT_EQUAL(0, topLeft.f());
 	}
 
 	/*
