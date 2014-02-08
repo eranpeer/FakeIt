@@ -15,8 +15,7 @@ struct TypeInfoTests: tpunit::TestFixture {
 			tpunit::TestFixture(
 			//
 					TEST(TypeInfoTests::mock_should_use_same_typeid_as_moked_class), //
-					TEST(TypeInfoTests::simple_inheritance_upcast), //
-					TEST(TypeInfoTests::simple_inheritance_dynamic_down_cast)
+					TEST(TypeInfoTests::simple_inheritance_upcast) //
 					//, TEST(TypeInfoTests::try_type_info)//
 							)  //
 	{
@@ -53,19 +52,6 @@ struct TypeInfoTests: tpunit::TestFixture {
 
 		Left& left= a;
 		TopLeft& topLeft= left;
-
-		ASSERT_EQUAL(0, a.f());
-		ASSERT_EQUAL(0, left.f());
-		ASSERT_EQUAL(0, topLeft.f());
-	}
-
-	void simple_inheritance_dynamic_down_cast() {
-		Mock<A> aMock;
-		Stub(aMock[&A::f]);
-		TopLeft& topLeft= aMock.get();
-
-		Left& left= dynamic_cast<Left&>(topLeft);
-		A& a= dynamic_cast<A&>(topLeft);
 
 		ASSERT_EQUAL(0, a.f());
 		ASSERT_EQUAL(0, left.f());

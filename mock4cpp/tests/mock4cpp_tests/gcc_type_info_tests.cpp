@@ -13,7 +13,6 @@ struct GccTypeInfoTests: tpunit::TestFixture {
 
 	GccTypeInfoTests() :
 			tpunit::TestFixture( //
-					TEST(GccTypeInfoTests::simple_inheritance_upcast), //
 					TEST(GccTypeInfoTests::simple_inheritance_dynamic_down_cast)
 							)  //
 	{
@@ -57,19 +56,6 @@ struct GccTypeInfoTests: tpunit::TestFixture {
 		int a;
 		virtual int f() override = 0;
 	};
-
-	void simple_inheritance_upcast() {
-		Mock<A> aMock;
-		A& a= aMock.get();
-		Stub(aMock[&A::f]);
-
-		Left& left= a;
-		TopLeft& topLeft= left;
-
-		ASSERT_EQUAL(0, a.f());
-		ASSERT_EQUAL(0, left.f());
-		ASSERT_EQUAL(0, topLeft.f());
-	}
 
 	void simple_inheritance_dynamic_down_cast() {
 		Mock<A> aMock;
