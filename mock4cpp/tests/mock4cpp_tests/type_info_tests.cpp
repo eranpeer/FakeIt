@@ -142,5 +142,5 @@ struct TypeInfoTests: tpunit::TestFixture {
 			*((RTTICompleteObjectLocator *)(*((int*)tiVFTPtr[0] - 1)));
 	}
 	*/
-//
+
 } __TypeInfoTests;

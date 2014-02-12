@@ -60,11 +60,11 @@ struct DynamicProxy {
 
 	template<typename DATA_TYPE, typename ... arglist>
 	void stubDataMember(DATA_TYPE C::*member, const arglist&... initargs) {
-		DATA_TYPE C::*realMember = (DATA_TYPE C::*) member;
+		DATA_TYPE C::*theMember = (DATA_TYPE C::*) member;
 		C& mock = get();
-		DATA_TYPE *realRealMember = &(mock.*realMember);
+		DATA_TYPE *memberPtr = &(mock.*theMember);
 		members.push_back(
-				std::shared_ptr<DataMemeberWrapper<DATA_TYPE, arglist...>> { new DataMemeberWrapper<DATA_TYPE, arglist...>(realRealMember,
+				std::shared_ptr<DataMemeberWrapper<DATA_TYPE, arglist...>> { new DataMemeberWrapper<DATA_TYPE, arglist...>(memberPtr,
 						initargs...) });
 	}
 
