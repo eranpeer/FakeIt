@@ -1,7 +1,7 @@
 #include "tpunit++.hpp"
-#include "mock4cpp.h"
+#include "fakeit.h"
 #include <string>
-#include "mock4cpp/Exceptions.h"
+#include "fakeit/Exceptions.h"
 #include <queue>
 
 struct BasicStubbing: tpunit::TestFixture {
@@ -178,10 +178,10 @@ struct BasicStubbing: tpunit::TestFixture {
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(0, i.func(1));
-		ASSERT_THROW(i.func(2), mock4cpp::UnmockedMethodCallException);
+		ASSERT_THROW(i.func(2), fakeit::UnmockedMethodCallException);
 
 		i.proc(1);
-		ASSERT_THROW(i.proc(2), mock4cpp::UnmockedMethodCallException);
+		ASSERT_THROW(i.proc(2), fakeit::UnmockedMethodCallException);
 	}
 
 	void change_method_behavior_with_filter() {
@@ -196,10 +196,10 @@ struct BasicStubbing: tpunit::TestFixture {
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(1, i.func(1));
-		ASSERT_THROW(i.func(2), mock4cpp::UnmockedMethodCallException);
+		ASSERT_THROW(i.func(2), fakeit::UnmockedMethodCallException);
 
 		ASSERT_THROW(i.proc(1), Exc);
-		ASSERT_THROW(i.proc(2), mock4cpp::UnmockedMethodCallException);
+		ASSERT_THROW(i.proc(2), fakeit::UnmockedMethodCallException);
 	}
 
 	void change_method_behavior_with_functor_filter() {
@@ -214,10 +214,10 @@ struct BasicStubbing: tpunit::TestFixture {
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(1, i.func(1));
-		ASSERT_THROW(i.func(2), mock4cpp::UnmockedMethodCallException);
+		ASSERT_THROW(i.func(2), fakeit::UnmockedMethodCallException);
 
 		ASSERT_THROW(i.proc(1), Exc);
-		ASSERT_THROW(i.proc(2), mock4cpp::UnmockedMethodCallException);
+		ASSERT_THROW(i.proc(2), fakeit::UnmockedMethodCallException);
 	}
 
 	void change_method_behavior_with_matcher() {
@@ -232,10 +232,10 @@ struct BasicStubbing: tpunit::TestFixture {
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(1, i.func(1));
-		ASSERT_THROW(i.func(2), mock4cpp::UnmockedMethodCallException);
+		ASSERT_THROW(i.func(2), fakeit::UnmockedMethodCallException);
 
 		ASSERT_THROW(i.proc(1), Exc);
-		ASSERT_THROW(i.proc(2), mock4cpp::UnmockedMethodCallException);
+		ASSERT_THROW(i.proc(2), fakeit::UnmockedMethodCallException);
 	}
 
 	void change_method_behavior_with_functor_matcher() {
@@ -250,10 +250,10 @@ struct BasicStubbing: tpunit::TestFixture {
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(1, i.func(1));
-		ASSERT_THROW(i.func(2), mock4cpp::UnmockedMethodCallException);
+		ASSERT_THROW(i.func(2), fakeit::UnmockedMethodCallException);
 
 		ASSERT_THROW(i.proc(1), Exc);
-		ASSERT_THROW(i.proc(2), mock4cpp::UnmockedMethodCallException);
+		ASSERT_THROW(i.proc(2), fakeit::UnmockedMethodCallException);
 	}
 
 

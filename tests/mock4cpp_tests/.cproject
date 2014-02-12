@@ -52,7 +52,6 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry excluding="mock4cpp_include|tpunitpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="mock4cpp_include"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

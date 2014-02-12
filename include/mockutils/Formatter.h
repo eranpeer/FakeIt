@@ -5,7 +5,7 @@
 #include <type_traits>
 #include <string>
 
-namespace mock4cpp {
+namespace fakeit {
 
 //template<class T>
 //std::ostream & operator<<(std::ostream &strm, const T& t) {

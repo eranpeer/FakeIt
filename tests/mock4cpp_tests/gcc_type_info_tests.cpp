@@ -6,7 +6,7 @@
 #include <type_traits>
 
 #include "tpunit++.hpp"
-#include "mock4cpp.h"
+#include "fakeit.h"
 #include "mockutils/Formatter.h"
 
 struct GccTypeInfoTests: tpunit::TestFixture {
