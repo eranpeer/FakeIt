@@ -13,11 +13,12 @@ struct GccTypeInfoTests: tpunit::TestFixture {
 
 	GccTypeInfoTests() :
 			tpunit::TestFixture( //
-					TEST(GccTypeInfoTests::simple_inheritance_dynamic_down_cast)
-							)  //
+					TEST(GccTypeInfoTests::simple_inheritance_dynamic_down_cast),
+					TEST(GccTypeInfoTests::mutiple_inheritance_upcast)
+			)
 	{
 	}
-
+//
 	//Aclass* aPtr=new Bclass;
 //		A* cPtr = new Cclass;
 //		int ** aVFTPtr = (int**) (aPtr);
@@ -31,7 +32,6 @@ struct GccTypeInfoTests: tpunit::TestFixture {
 //
 //		unsigned long l1 = (unsigned long) aVFTPtr;
 //		unsigned long l2 = (unsigned long) aPtr;
-
 
 //	class Dclass {
 //	public:
@@ -60,14 +60,34 @@ struct GccTypeInfoTests: tpunit::TestFixture {
 	void simple_inheritance_dynamic_down_cast() {
 		Mock<A> aMock;
 		Stub(aMock[&A::f]);
-		TopLeft& topLeft= aMock.get();
+		TopLeft& topLeft = aMock.get();
 
-		Left& left= dynamic_cast<Left&>(topLeft);
-		A& a= dynamic_cast<A&>(topLeft);
+		Left& left = dynamic_cast<Left&>(topLeft);
+		A& a = dynamic_cast<A&>(topLeft);
 
 		ASSERT_EQUAL(0, a.f());
 		ASSERT_EQUAL(0, left.f());
 		ASSERT_EQUAL(0, topLeft.f());
+	}
+
+	struct TopRight {
+		int topRight;
+		virtual int f()=0;
+	};
+
+	struct Right: public TopRight {
+		int right;
+		virtual int f() override = 0;
+	};
+
+	struct B: public Left, public Right {
+		int b;
+		virtual int f() override = 0;
+	};
+
+
+	void mutiple_inheritance_upcast() {
+		Mock<B> bMock; // should not compile
 	}
 
 } __GccTypeInfoTests;

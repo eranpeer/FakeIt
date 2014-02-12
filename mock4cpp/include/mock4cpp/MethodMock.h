@@ -4,6 +4,7 @@
 #include <vector>
 #include <functional>
 #include <atomic>
+#include <tuple>
 
 #include "mockutils/TupleDispatcher.h"
 #include "mock4cpp/InvocationMatcher.h"
