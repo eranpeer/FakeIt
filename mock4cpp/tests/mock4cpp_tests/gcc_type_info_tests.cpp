@@ -87,7 +87,7 @@ struct GccTypeInfoTests: tpunit::TestFixture {
 
 
 	void mutiple_inheritance_upcast() {
-		Mock<B> bMock; // should not compile
+		//Mock<B> bMock; // should not compile
 	}
-
+//
 } __GccTypeInfoTests;
