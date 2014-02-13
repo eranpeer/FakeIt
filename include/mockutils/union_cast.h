@@ -1,6 +1,8 @@
 #ifndef union_cast_h__
 #define union_cast_h__
 
+namespace fakeit {
+
 template <typename TARGET, typename SOURCE>
 TARGET union_cast(SOURCE source)
 {
@@ -12,6 +14,8 @@ TARGET union_cast(SOURCE source)
 	} u;
 	u.source = source;
 	return u.target;
+}
+
 }
 #endif // union_cast_h__
 

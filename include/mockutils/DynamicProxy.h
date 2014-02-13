@@ -18,7 +18,8 @@
 #include "mockutils/union_cast.h"
 #include "mockutils/MethodInvocationHandler.h"
 
-template <typename C>
+namespace fakeit {
+template<typename C>
 struct DynamicProxy {
 	static_assert(std::is_polymorphic<C>::value, "DynamicProxy requires a polymorphic type");
 
@@ -70,7 +71,7 @@ struct DynamicProxy {
 
 	template<typename DATA_TYPE>
 	void getMethodMocks(std::vector<DATA_TYPE>& into) const {
-		for (std::shared_ptr<Destructable> ptr :methodMocks){
+		for (std::shared_ptr<Destructable> ptr : methodMocks) {
 			DATA_TYPE p = dynamic_cast<DATA_TYPE>(ptr.get());
 			if (p)
 				into.push_back(p);
@@ -126,7 +127,7 @@ private:
 		}
 	};
 
-	VirtualTable<30,C> vtable;
+	VirtualTable<30, C> vtable;
 
 	// Here we alloc too many bytes since sizeof(C) includes the pointer to the virtual table.
 	// Should be sizeof(C) - ptr_size.
@@ -171,4 +172,5 @@ private:
 	}
 
 };
+}
 #endif // DynamicProxy_h__

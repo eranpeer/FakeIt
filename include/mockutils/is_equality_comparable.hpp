@@ -3,6 +3,9 @@
 
 #include <type_traits>
 
+namespace fakeit {
+
+}
 template<typename T, typename = void>
 struct is_equality_comparable : std::false_type
 { };
@@ -17,5 +20,6 @@ struct is_equality_comparable < T,
 {
 };
 
+}
 #endif // is_equality_comparable_h__
 

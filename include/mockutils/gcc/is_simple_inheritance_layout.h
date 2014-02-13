@@ -8,15 +8,16 @@
 #ifndef IS_SIMPLE_INHERITANCE_LAYOUT_H_
 #define IS_SIMPLE_INHERITANCE_LAYOUT_H_
 
-
 #include <type_traits>
 #include <tr2/type_traits>
 
-template<typename... T1>
-class has_one_base {};
+namespace fakeit {
+template<typename ... T1>
+class has_one_base {
+};
 
 template<typename T1, typename T2, typename ... types>
-class has_one_base<std::tr2::__reflection_typelist<T1, T2,  types...>> : public std::false_type {
+class has_one_base<std::tr2::__reflection_typelist<T1, T2, types...>> : public std::false_type {
 };
 
 template<typename T1>
@@ -27,10 +28,8 @@ template<>
 class has_one_base<std::tr2::__reflection_typelist<>> : public std::true_type {
 };
 
-
-
 template<typename T>
-class is_simple_inheritance_layout : public has_one_base<typename std::tr2::direct_bases<T>::type> {
+class is_simple_inheritance_layout: public has_one_base<typename std::tr2::direct_bases<T>::type> {
 };
-
+}
 #endif /* IS_SIMPLE_INHERITANCE_LAYOUT_H_ */

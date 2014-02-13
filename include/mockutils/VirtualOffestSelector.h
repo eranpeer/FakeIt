@@ -1,6 +1,8 @@
 #ifndef VirtualOffestSelector_h__
 #define VirtualOffestSelector_h__
 
+namespace fakeit {
+
 template < template <unsigned int> class OFFSET_CONSUMER>
 struct VirtualOffsetSelector {
 
@@ -44,4 +46,5 @@ struct VirtualOffsetSelector {
 
 };
 
+}
 #endif // VirtualOffestSelector_h__

@@ -3,6 +3,7 @@
 
 #include "mockutils/gcc/is_simple_inheritance_layout.h"
 
+namespace fakeit {
 template<int SIZE, class C>
 struct VirtualTable {
 
@@ -44,4 +45,5 @@ struct VirtualTable {
 private:
 	void** firstMethod;
 };
+}
 #endif // VirtualTable_h__

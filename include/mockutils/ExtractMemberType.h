@@ -3,16 +3,19 @@
 
 #include <typeinfo>
 
-template< typename T > struct ExtractMemberTypeHelper;
-template< typename R, typename T >
-struct ExtractMemberTypeHelper< R(T::*) >
-{
+namespace fakeit {
+
+template<typename T> struct ExtractMemberTypeHelper;
+template<typename R, typename T>
+struct ExtractMemberTypeHelper<R (T::*)> {
 	typedef R Type;
 	typedef T ParentType;
 };
 
-template< typename T >
-struct ExtractMemberType : public ExtractMemberTypeHelper< T > {};
-#endif // ExtractMemberType_h__
+template<typename T>
+struct ExtractMemberType: public ExtractMemberTypeHelper<T> {
+};
 
+}
+#endif // ExtractMemberType_h__
 
