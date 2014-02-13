@@ -20,7 +20,6 @@ namespace fakeit {
 //	return strm;
 //}
 
-
 template<class T> struct Formatter {
 	static std::string format(const T& val) {
 		if (std::is_const < T > ::value)

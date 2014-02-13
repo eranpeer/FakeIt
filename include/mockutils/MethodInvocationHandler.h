@@ -5,16 +5,12 @@
 
 namespace fakeit {
 
-
-template <typename R, typename... arglist>
-struct MethodInvocationHandler : public Destructable
-{
+template<typename R, typename ... arglist>
+struct MethodInvocationHandler: public Destructable {
 	virtual ~MethodInvocationHandler() = default;
 	virtual R handleMethodInvocation(const arglist&... args) = 0;
 };
 
 }
 #endif // MethodInvocationHandler_h__
-
-
 

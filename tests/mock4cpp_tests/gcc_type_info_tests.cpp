@@ -13,10 +13,7 @@ struct GccTypeInfoTests: tpunit::TestFixture {
 
 	GccTypeInfoTests() :
 			tpunit::TestFixture( //
-					TEST(GccTypeInfoTests::simple_inheritance_dynamic_down_cast),
-					TEST(GccTypeInfoTests::mutiple_inheritance_upcast)
-			)
-	{
+					TEST(GccTypeInfoTests::simple_inheritance_dynamic_down_cast), TEST(GccTypeInfoTests::mutiple_inheritance_upcast)) {
 	}
 //
 	//Aclass* aPtr=new Bclass;
@@ -84,7 +81,6 @@ struct GccTypeInfoTests: tpunit::TestFixture {
 		int b;
 		virtual int f() override = 0;
 	};
-
 
 	void mutiple_inheritance_upcast() {
 		//Mock<B> bMock; // should not compile

@@ -135,11 +135,9 @@ private:
 };
 
 template<typename C, typename R, typename ... arglist>
-struct MethodMock: public virtual Method, public virtual MethodInvocationHandler<R, arglist...>
-, public virtual ActualInvocationsSource
-{
-	MethodMock(MockObject& mock, R(C::*vMethod)(arglist...)) :
-			mock(mock),vMethod(vMethod) {
+struct MethodMock: public virtual Method, public virtual MethodInvocationHandler<R, arglist...>, public virtual ActualInvocationsSource {
+	MethodMock(MockObject& mock, R (C::*vMethod)(arglist...)) :
+			mock(mock), vMethod(vMethod) {
 	}
 
 	virtual ~MethodMock() override {
@@ -147,72 +145,73 @@ struct MethodMock: public virtual Method, public virtual MethodInvocationHandler
 
 	std::string getMethodName() const override {
 		return typeid(vMethod).name();
-	}
-
-	virtual MockObject& getMockObject() override {
-		return mock;
-	}
-
-	void stubMethodInvocation(std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher,
-			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {
-		auto mock = buildMethodInvocationMock(invocationMatcher, invocationHandler);
-		methodInvocationMocks.push_back(mock);
-	}
-
-	void clear() {
-		methodInvocationMocks.clear();
-	}
-
-	R handleMethodInvocation(const arglist&... args) override {
-		int ordinal = invocationOrdinal++;
-		auto actualInvoaction = std::shared_ptr<ActualInvocation<arglist...>> { new ActualInvocation<arglist...>(ordinal, *this, args...) };
-		actualInvocations.push_back(actualInvoaction);
-		auto methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
-		if (!methodInvocationMock) {
-			throw UnmockedMethodCallException();
-		}
-		return methodInvocationMock->handleMethodInvocation(args...);
-	}
-
-	std::vector<std::shared_ptr<ActualInvocation<arglist...>> > getActualInvocations(InvocationMatcher<arglist...>& matcher) {
-		std::vector < std::shared_ptr<ActualInvocation<arglist...>> > result;
-		for (auto actualInvocation : actualInvocations) {
-			if (matcher.matches(*actualInvocation)) {
-				result.push_back(actualInvocation);
 			}
-		}
-		return result;
-	}
 
-	void getActualInvocations(std::unordered_set<AnyInvocation*>& into) const {
-		for (auto invocation : actualInvocations){
-			into.insert(invocation.get());
-		}
-	}
-private:
-
-	MockObject& mock;
-	R(C::*vMethod)(arglist...);
-	std::vector<std::shared_ptr<MethodInvocationMock<R, arglist...>>>methodInvocationMocks;
-	std::vector<std::shared_ptr<ActualInvocation<arglist...>>> actualInvocations;
-
-	std::shared_ptr<MethodInvocationMockBase<R, arglist...>> buildMethodInvocationMock(
-			std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher,
-			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {
-		return std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {new MethodInvocationMockBase<R, arglist...>(*this, invocationMatcher,
-					invocationHandler)};
-	}
-
-	std::shared_ptr<MethodInvocationMock<R, arglist...>> getMethodInvocationMockForActualArgs(ActualInvocation<arglist...>& invocation) {
-		for (auto i = methodInvocationMocks.rbegin(); i != methodInvocationMocks.rend(); ++i) {
-			if ((*i)->matches(invocation)) {
-				return (*i);
+			virtual MockObject& getMockObject() override {
+				return mock;
 			}
-		}
-		return nullptr;
+
+			void stubMethodInvocation(std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher,
+					std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {
+				auto mock = buildMethodInvocationMock(invocationMatcher, invocationHandler);
+				methodInvocationMocks.push_back(mock);
+			}
+
+			void clear() {
+				methodInvocationMocks.clear();
+			}
+
+			R handleMethodInvocation(const arglist&... args) override {
+				int ordinal = invocationOrdinal++;
+				auto actualInvoaction = std::shared_ptr<ActualInvocation<arglist...>> { new ActualInvocation<arglist...>(ordinal, *this,
+						args...) };
+				actualInvocations.push_back(actualInvoaction);
+				auto methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
+				if (!methodInvocationMock) {
+					throw UnmockedMethodCallException();
+				}
+				return methodInvocationMock->handleMethodInvocation(args...);
+			}
+
+			std::vector<std::shared_ptr<ActualInvocation<arglist...>> > getActualInvocations(InvocationMatcher<arglist...>& matcher) {
+				std::vector < std::shared_ptr<ActualInvocation<arglist...>> > result;
+				for (auto actualInvocation : actualInvocations) {
+					if (matcher.matches(*actualInvocation)) {
+						result.push_back(actualInvocation);
+					}
+				}
+				return result;
+			}
+
+			void getActualInvocations(std::unordered_set<AnyInvocation*>& into) const {
+				for (auto invocation : actualInvocations) {
+					into.insert(invocation.get());
+				}
+			}
+		private:
+
+			MockObject& mock;
+			R (C::*vMethod)(arglist...);
+			std::vector<std::shared_ptr<MethodInvocationMock<R, arglist...>>>methodInvocationMocks;
+			std::vector<std::shared_ptr<ActualInvocation<arglist...>>> actualInvocations;
+
+			std::shared_ptr<MethodInvocationMockBase<R, arglist...>> buildMethodInvocationMock(
+					std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher,
+					std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {
+				return std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {new MethodInvocationMockBase<R, arglist...>(*this, invocationMatcher,
+							invocationHandler)};
+			}
+
+			std::shared_ptr<MethodInvocationMock<R, arglist...>> getMethodInvocationMockForActualArgs(ActualInvocation<arglist...>& invocation) {
+				for (auto i = methodInvocationMocks.rbegin(); i != methodInvocationMocks.rend(); ++i) {
+					if ((*i)->matches(invocation)) {
+						return (*i);
+					}
+				}
+				return nullptr;
+			}
+
+		};
+
 	}
-
-};
-
-}
 #endif // MethodMock_h__

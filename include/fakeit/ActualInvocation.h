@@ -12,7 +12,6 @@
 
 namespace fakeit {
 
-
 struct AnyInvocation {
 
 	AnyInvocation(const int ordinal, const Method & method) :
@@ -50,7 +49,7 @@ struct ActualInvocation: public virtual AnyInvocation {
 
 	ActualInvocation(const int ordinal, const Method & method, const arglist&... args) :
 
-	AnyInvocation(ordinal, method), actualArguments { args... } {
+			AnyInvocation(ordinal, method), actualArguments { args... } {
 	}
 
 	const std::tuple<arglist...>& getActualArguments() const {

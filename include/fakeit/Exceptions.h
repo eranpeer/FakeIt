@@ -5,8 +5,7 @@
 namespace fakeit {
 
 struct UnmockedMethodCallException: public std::exception {
-	UnmockedMethodCallException()
-	{
+	UnmockedMethodCallException() {
 	}
 
 	const char* what() const throw () override {

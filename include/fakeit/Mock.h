@@ -73,7 +73,7 @@ public:
 	void getActualInvocations(std::unordered_set<AnyInvocation*>& into) const override {
 		std::vector<ActualInvocationsSource*> vec;
 		instance.getMethodMocks(vec);
-		for (ActualInvocationsSource * s : vec){
+		for (ActualInvocationsSource * s : vec) {
 			s->getActualInvocations(into);
 		}
 	}

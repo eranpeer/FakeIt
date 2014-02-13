@@ -256,7 +256,6 @@ struct BasicStubbing: tpunit::TestFixture {
 		ASSERT_THROW(i.proc(2), fakeit::UnmockedMethodCallException);
 	}
 
-
 	void stub_multiple_return_values() {
 		Mock<SomeInterface> mock;
 

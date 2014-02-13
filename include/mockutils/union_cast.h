@@ -3,12 +3,10 @@
 
 namespace fakeit {
 
-template <typename TARGET, typename SOURCE>
-TARGET union_cast(SOURCE source)
-{
+template<typename TARGET, typename SOURCE>
+TARGET union_cast(SOURCE source) {
 	//static_assert(sizeof(TARGET) == sizeof(SOURCE), "can't convert");
-	union
-	{
+	union {
 		SOURCE source;
 		TARGET target;
 	} u;
