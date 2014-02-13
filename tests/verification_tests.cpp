@@ -305,50 +305,38 @@ struct BasicVerification: tpunit::TestFixture {
 				mock[&SomeInterface::func])  //
 		.Times(1);
 
-		Verify(  //
-				mock[&SomeInterface::func],  //
+		Verify(mock[&SomeInterface::func],  //
 				mock[&SomeInterface::func],  //
 				mock[&SomeInterface::func],  //
 				mock[&SomeInterface::func])  //
 		.Times(1);
 
-		Verify(  //
-				mock[&SomeInterface::func],  //
+		Verify(mock[&SomeInterface::func],  //
 				mock[&SomeInterface::func],  //
 				mock[&SomeInterface::func])  //
 		.Times(2);
 
-		Verify(  //
-				mock[&SomeInterface::func],  //
+		Verify(mock[&SomeInterface::func],  //
 				mock[&SomeInterface::func])  //
 		.Times(3);
 
-		Verify(  //
-				mock[&SomeInterface::func])  //
+		Verify(mock[&SomeInterface::func])  //
 		.Times(6);
 
-		Verify(  //
-				mock[&SomeInterface::func].Using(1) +  //
-						mock[&SomeInterface::func].Using(2) + //
-						mock[&SomeInterface::func].Using(3))  //
+		Verify(mock[&SomeInterface::func].Using(1) +  //
+				mock[&SomeInterface::func].Using(2) + //
+				mock[&SomeInterface::func].Using(3))  //
 		.Times(2);
 
-		Verify(  //
-				mock[&SomeInterface::func].Using(1) +  //
-						mock[&SomeInterface::func].Using(2))  //
+		Verify(mock[&SomeInterface::func].Using(1) + mock[&SomeInterface::func].Using(2))  //
 		.Times(2);
 
-		Verify(  //
-				mock[&SomeInterface::func].Using(2) +  //
-						mock[&SomeInterface::func].Using(3))  //
+		Verify(mock[&SomeInterface::func].Using(2) + mock[&SomeInterface::func].Using(3))  //
 		.Times(2);
 
-		Verify(  //
-				mock[&SomeInterface::func].Using(1))  //
-		.Times(2);
+		Verify(mock[&SomeInterface::func].Using(1)).Times(2);
 
-		Verify(mock[&SomeInterface::func].Using(2) +  //
-				mock[&SomeInterface::func].Using(1)).Never();
+		Verify(mock[&SomeInterface::func].Using(2) + mock[&SomeInterface::func].Using(1)).Never();
 	}
 
 	void verify_no_other_invocations_for_mock() {
@@ -397,6 +385,16 @@ struct BasicVerification: tpunit::TestFixture {
 
 		Verify(mock[&SomeInterface::func] * 4);
 		VerifyNoOtherInvocations(mock[&SomeInterface::func].Using(1));
+	}
+
+	void use_same_filter_for_both_stubbing_and_verification() {
+		Mock<SomeInterface> mock;
+		auto any_func_invocation = mock[&SomeInterface::func];
+		Stub(any_func_invocation);
+		SomeInterface &i = mock.get();
+		VerifyNoOtherInvocations(any_func_invocation);
+		i.func(1);
+		Verify(any_func_invocation);
 	}
 
 } __BasicVerification;

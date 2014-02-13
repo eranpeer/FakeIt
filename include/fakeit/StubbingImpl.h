@@ -35,8 +35,8 @@ struct FunctionStubbingProgress: protected virtual FirstFunctionStubbingProgress
 		protected virtual NextFunctionStubbingProgress<R, arglist...> {
 
 	FunctionStubbingProgress() = default;
-	virtual ~FunctionStubbingProgress() override = default;
-
+	virtual ~FunctionStubbingProgress() {
+	}
 	NextFunctionStubbingProgress<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
 		recordedMethodBody().appendDo(method);
 		return *this;
@@ -55,11 +55,12 @@ private:
 };
 
 template<typename R, typename ... arglist>
-struct ProcedureStubbingProgress: protected virtual FirstProcedureStubbingProgress<R, arglist...>, //
+struct ProcedureStubbingProgress: //
+		protected virtual FirstProcedureStubbingProgress<R, arglist...>, //
 		protected virtual NextProcedureStubbingProgress<R, arglist...> {
 
 	ProcedureStubbingProgress() = default;
-	~ProcedureStubbingProgress() override = default;
+	virtual ~ProcedureStubbingProgress() override = default;
 
 	NextProcedureStubbingProgress<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
 		recordedMethodBody().appendDo(method);
@@ -209,7 +210,7 @@ public:
 
 	FunctionStubbingRoot(const FunctionStubbingRoot& other) = default;
 
-	~FunctionStubbingRoot() THROWS {
+	virtual ~FunctionStubbingRoot() THROWS {
 	}
 
 	virtual void operator=(std::function<R(arglist...)> method) override {
@@ -274,7 +275,7 @@ public:
 					R, arglist...>() {
 	}
 
-	~ProcedureStubbingRoot() THROWS {
+	virtual ~ProcedureStubbingRoot() THROWS {
 	}
 
 	ProcedureStubbingRoot(const ProcedureStubbingRoot& other) = default;

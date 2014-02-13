@@ -18,10 +18,11 @@ namespace fakeit {
 
 struct MethodVerificationProgress {
 
+
 	MethodVerificationProgress() {
 	}
 
-	~MethodVerificationProgress() THROWS {
+	virtual ~MethodVerificationProgress() THROWS {
 	}
 
 	void Never() {
@@ -187,6 +188,8 @@ protected:
 	Sequence() {
 	}
 
+	virtual ~Sequence() THROWS {}
+
 public:
 	virtual void getActualInvocations(std::unordered_set<AnyInvocation*>& into) const = 0;
 
@@ -209,7 +212,7 @@ protected:
 
 public:
 
-	~ConcatenatedSequence() {
+	virtual ~ConcatenatedSequence() {
 	}
 
 	unsigned int size() const override {
