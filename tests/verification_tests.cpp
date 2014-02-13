@@ -34,6 +34,7 @@ struct BasicVerification: tpunit::TestFixture {
 					TEST(BasicVerification::verify_with_filter), //
 					TEST(BasicVerification::verify_concatenated_sequence), //
 					TEST(BasicVerification::verify_repeated_sequence), //
+					TEST(BasicVerification::verify_repeated_sequence_2), //
 					TEST(BasicVerification::verify_multi_sequences_in_order), TEST(BasicVerification::verify_no_other_invocations_for_mock), //
 					TEST(BasicVerification::verify_no_other_invocations_for_method_filter) //
 							)  //
@@ -250,6 +251,29 @@ struct BasicVerification: tpunit::TestFixture {
 		Verify(mock[&SomeInterface::func].Using(1) * 2).Never();
 
 		ASSERT_THROW(Verify(mock[&SomeInterface::func].Using(1) * 2), fakeit::VerificationException);
+	}
+
+	void verify_repeated_sequence_2() {
+		Mock<SomeInterface> mock;
+		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
+		SomeInterface &i = mock.get();
+
+		i.func(1);
+		i.func(2);
+		i.func(3);
+		i.func(1);
+		i.func(2);
+		i.func(3);
+
+		Verify(1 * mock[&SomeInterface::func]).Times(6);
+		Verify(2 * mock[&SomeInterface::func]).Times(3);
+		Verify(3 * mock[&SomeInterface::func]).Times(2);
+		Verify(4 * mock[&SomeInterface::func]).Times(1);
+		Verify(5 * mock[&SomeInterface::func]).Times(1);
+		Verify(6 * mock[&SomeInterface::func]).Times(1);
+
+		Verify(2 * mock[&SomeInterface::func].Using(1)).Never();
+		ASSERT_THROW(Verify(2 * mock[&SomeInterface::func].Using(1)), fakeit::VerificationException);
 	}
 
 	void verify_multi_sequences_in_order() {

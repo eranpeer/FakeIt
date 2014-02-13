@@ -248,7 +248,8 @@ public:
 		return s1.size() * times;
 	}
 
-	friend inline RepeatedSequence operator*(const Sequence &s1, int times);
+	friend inline RepeatedSequence operator*(const Sequence &s, int times);
+	friend inline RepeatedSequence operator*(int times, const Sequence &s);
 
 	void getActualInvocations(std::unordered_set<AnyInvocation*>& into) const override {
 		s1.getActualInvocations(into);
@@ -264,8 +265,12 @@ inline ConcatenatedSequence operator+(const Sequence &s1, const Sequence &s2) {
 	return ConcatenatedSequence(s1, s2);
 }
 
-inline RepeatedSequence operator*(const Sequence &s1, int times) {
-	return RepeatedSequence(s1, times);
+inline RepeatedSequence operator*(const Sequence &s, int times) {
+	return RepeatedSequence(s, times);
+}
+
+inline RepeatedSequence operator*(int times, const Sequence &s) {
+	return RepeatedSequence(s, times);
 }
 
 }
