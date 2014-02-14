@@ -36,8 +36,9 @@ struct BasicVerification: tpunit::TestFixture {
 					TEST(BasicVerification::verify_repeated_sequence), //
 					TEST(BasicVerification::verify_repeated_sequence_2), //
 					TEST(BasicVerification::verify_multi_sequences_in_order), TEST(BasicVerification::verify_no_other_invocations_for_mock), //
-					TEST(BasicVerification::verify_no_other_invocations_for_method_filter) //
-							)  //
+					TEST(BasicVerification::verify_no_other_invocations_for_method_filter), //
+					TEST(BasicVerification::use_same_filter_for_both_stubbing_and_verification) //
+					)  //
 	{
 	}
 
@@ -390,11 +391,11 @@ struct BasicVerification: tpunit::TestFixture {
 	void use_same_filter_for_both_stubbing_and_verification() {
 		Mock<SomeInterface> mock;
 		auto any_func_invocation = mock[&SomeInterface::func];
-		Stub(any_func_invocation);
+		When(any_func_invocation).Return(1);
 		SomeInterface &i = mock.get();
-		VerifyNoOtherInvocations(any_func_invocation);
 		i.func(1);
-		Verify(any_func_invocation);
+		i.func(1);
+		Verify(2 * any_func_invocation);
 	}
-
+//
 } __BasicVerification;
