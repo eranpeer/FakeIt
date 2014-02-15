@@ -10,15 +10,10 @@
 
 #include "mockutils/Macros.h"
 
-#include <functional>
-#include <type_traits>
 #include <unordered_set>
 #include <vector>
 #include <stdexcept>
 
-#include "mockutils/traits.h"
-#include "mockutils/DefaultValue.hpp"
-#include "fakeit/Exceptions.h"
 #include "fakeit/InvocationMatcher.h"
 #include "fakeit/ActualInvocation.h"
 

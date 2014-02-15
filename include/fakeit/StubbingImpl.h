@@ -1,5 +1,5 @@
-#ifndef ClousesImpl_h__
-#define ClousesImpl_h__
+#ifndef StubbingImpl_h__
+#define StubbingImpl_h__
 
 #include <functional>
 #include <type_traits>
@@ -38,6 +38,7 @@ struct FunctionStubbingProgress: protected virtual FirstFunctionStubbingProgress
 	FunctionStubbingProgress() = default;
 	virtual ~FunctionStubbingProgress() {
 	}
+
 	NextFunctionStubbingProgress<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
 		recordedMethodBody().appendDo(method);
 		return *this;
@@ -96,6 +97,7 @@ private:
 	ErrorFormatter& errorFormatter;
 }static Mock4cpp(defaultErrorFormatter);
 
+
 template<typename C, typename R, typename ... arglist>
 class MethodStubbingBase: //
 protected virtual MethodStubbingInternal,
@@ -143,9 +145,13 @@ protected:
 		}
 
 		if (progressType == ProgressType::STUBBING) {
-			stubbingContext->getMethodMock().stubMethodInvocation(invocationMatcher, recordedMethodBody);
+			apply();
 			return;
 		}
+	}
+
+	void apply(){
+		stubbingContext->getMethodMock().stubMethodInvocation(invocationMatcher, recordedMethodBody);
 	}
 
 	virtual void startStubbing() {
@@ -198,6 +204,15 @@ public:
 	void operator()(std::function<bool(arglist...)> matcher) {
 		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
 				new UserDefinedInvocationMatcher<arglist...>(matcher) });
+	}
+
+	void FirstAction(std::function<R(arglist...)> method) {
+		recordedMethodBody.clear();
+		recordedMethodBody.appendDo(method);
+	}
+
+	void AnotherAction(std::function<R(arglist...)> method) {
+		recordedMethodBody.appendDo(method);
 	}
 
 };
@@ -259,11 +274,11 @@ public:
 		return *this;
 	}
 
-	NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-		// Must override since the implementation in base class is privately inherited
-		MethodStubbingBase<C, R, arglist...>::startStubbing();
-		return FunctionStubbingProgress<R, arglist...>::Do(method);
-	}
+//	NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
+//		// Must override since the implementation in base class is privately inherited
+//		MethodStubbingBase<C, R, arglist...>::startStubbing();
+//		return FunctionStubbingProgress<R, arglist...>::Do(method);
+//	}
 };
 
 template<typename C, typename R, typename ... arglist>
@@ -322,11 +337,11 @@ public:
 		return *this;
 	}
 
-	NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-		// Must override since the implementation in base class is privately inherited
-		MethodStubbingBase<C, R, arglist...>::startStubbing();
-		return ProcedureStubbingProgress<R, arglist...>::Do(method);
-	}
+//	NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
+//		// Must override since the implementation in base class is privately inherited
+//		MethodStubbingBase<C, R, arglist...>::startStubbing();
+//		return ProcedureStubbingProgress<R, arglist...>::Do(method);
+//	}
 };
 
 template<typename C, typename DATA_TYPE>
@@ -342,4 +357,4 @@ public:
 };
 
 }
-#endif // ClousesImpl_h__
+#endif // StubbingImpl_h__
