@@ -4,7 +4,7 @@
 #include <functional>
 #include <tuple>
 
-#include "mock4cpp.h"
+#include "fakeit.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

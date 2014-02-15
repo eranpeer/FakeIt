@@ -9,7 +9,6 @@
 #include "fakeit/WhenFunctor.hpp"
 #include "fakeit/StubFunctor.hpp"
 #include "fakeit/VerifyFunctor.hpp"
-
 #include "fakeit/DomainObjects.h"
 
 using namespace fakeit;
@@ -52,7 +51,7 @@ private:
 	template<typename R, typename ... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
 	ProcedureStubbingRoot<C, R, arglist...> StubImpl(R (C::*vMethod)(arglist...)) {
 		return ProcedureStubbingRoot<C, R, arglist...>(
-				std::shared_ptr<StubbingContext<C, R, arglist...>>(new StubbingContextImpl<R, arglist...>(*this, vMethod)));
+			std::shared_ptr<StubbingContext<C, R, arglist...>>(new StubbingContextImpl<R, arglist...>(*this, vMethod)));
 	}
 
 	void Stub() {

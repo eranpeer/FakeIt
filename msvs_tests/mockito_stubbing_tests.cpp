@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include <iostream>
-#include "mock4cpp.h"
+#include "fakeit.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

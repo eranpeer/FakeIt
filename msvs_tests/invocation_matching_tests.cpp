@@ -2,7 +2,7 @@
 #include "CppUnitTest.h"
 #include <string>
 
-#include "mock4cpp.h"
+#include "fakeit.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
-#include "mock4cpp.h"
+#include "fakeit.h"
 #include <iostream>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -42,7 +42,7 @@ namespace stubbing_tests
 			Stub(mock[&ConstVolatileFunctions::proc1]);
 			Stub(mock[&ConstVolatileFunctions::proc2]);
 			Stub(mock[&ConstVolatileFunctions::proc3]);
-			Stub(mock[&ConstVolatileFunctions::proc4]);
+//			Stub(mock[&ConstVolatileFunctions::proc4]);
 // 			Stub(mock[&ConstVolatileFunctions::proc5));
 // 			Stub(mock[&ConstVolatileFunctions::proc6));
 // 			Stub(mock[&ConstVolatileFunctions::proc7));
@@ -57,7 +57,7 @@ namespace stubbing_tests
 			i.proc1();
 			i.proc2();
 			i.proc3();
-			i.proc4();
+//			i.proc4();
 // 			i.proc5();
 // 			i.proc6();
 // 			i.proc7();

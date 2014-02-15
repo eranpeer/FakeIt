@@ -319,7 +319,7 @@ public:
 	}
 
 	NextProcedureStubbingProgress<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
-		MethodStubbingBase<C, R, arglist...>::FirstAction(method);
+		MethodStubbingBase<C, R, arglist...>::AnotherAction(method);
 		return *this;
 	}
 
