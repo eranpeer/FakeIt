@@ -39,19 +39,6 @@ struct FunctionStubbingProgress: protected virtual FirstFunctionStubbingProgress
 	virtual ~FunctionStubbingProgress() {
 	}
 
-	NextFunctionStubbingProgress<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
-		recordedMethodBody().appendDo(method);
-		return *this;
-	}
-
-	NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-		recordedMethodBody().clear();
-		recordedMethodBody().appendDo(method);
-		return *this;
-	}
-
-protected:
-	virtual RecordedMethodBody<R, arglist...>& recordedMethodBody() = 0;
 private:
 	FunctionStubbingProgress & operator=(const FunctionStubbingProgress & other) = delete;
 };
@@ -64,19 +51,6 @@ struct ProcedureStubbingProgress: //
 	ProcedureStubbingProgress() = default;
 	virtual ~ProcedureStubbingProgress() override = default;
 
-	NextProcedureStubbingProgress<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
-		recordedMethodBody().appendDo(method);
-		return *this;
-	}
-
-	NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-		recordedMethodBody().clear();
-		recordedMethodBody().appendDo(method);
-		return *this;
-	}
-
-protected:
-	virtual RecordedMethodBody<R, arglist...>& recordedMethodBody() = 0;
 private:
 	ProcedureStubbingProgress & operator=(const ProcedureStubbingProgress & other) = delete;
 };
@@ -207,12 +181,12 @@ public:
 	}
 
 	void FirstAction(std::function<R(arglist...)> method) {
-		recordedMethodBody.clear();
-		recordedMethodBody.appendDo(method);
+		recordedMethodBody->clear();
+		recordedMethodBody->appendDo(method);
 	}
 
 	void AnotherAction(std::function<R(arglist...)> method) {
-		recordedMethodBody.appendDo(method);
+		recordedMethodBody->appendDo(method);
 	}
 
 };
@@ -228,10 +202,6 @@ private:
 	friend class StubFunctor;
 	friend class WhenFunctor;
 protected:
-
-	virtual RecordedMethodBody<R, arglist...>& recordedMethodBody() override {
-		return *MethodStubbingBase<C, R, arglist...>::recordedMethodBody;
-	}
 
 	virtual void startStubbing() override {
 		MethodStubbingBase<C, R, arglist...>::startStubbing();
@@ -277,8 +247,15 @@ public:
 	NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 		// Must override since the implementation in base class is privately inherited
 		MethodStubbingBase<C, R, arglist...>::startStubbing();
-		return FunctionStubbingProgress<R, arglist...>::Do(method);
+		MethodStubbingBase<C, R, arglist...>::FirstAction(method);
+		return *this;
 	}
+
+	NextFunctionStubbingProgress<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
+		MethodStubbingBase<C, R, arglist...>::AnotherAction(method);
+		return *this;
+	}
+
 };
 
 template<typename C, typename R, typename ... arglist>
@@ -293,9 +270,6 @@ private:
 	friend class WhenFunctor;
 
 protected:
-	virtual RecordedMethodBody<R, arglist...>& recordedMethodBody() override {
-		return *MethodStubbingBase<C, R, arglist...>::recordedMethodBody;
-	}
 
 	virtual void startStubbing() override {
 		MethodStubbingBase<C, R, arglist...>::startStubbing();
@@ -340,8 +314,15 @@ public:
 	NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 		// Must override since the implementation in base class is privately inherited
 		MethodStubbingBase<C, R, arglist...>::startStubbing();
-		return ProcedureStubbingProgress<R, arglist...>::Do(method);
+		MethodStubbingBase<C, R, arglist...>::FirstAction(method);
+		return *this;
 	}
+
+	NextProcedureStubbingProgress<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
+		MethodStubbingBase<C, R, arglist...>::FirstAction(method);
+		return *this;
+	}
+
 };
 
 template<typename C, typename DATA_TYPE>
