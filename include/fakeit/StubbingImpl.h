@@ -110,6 +110,10 @@ private:
 		return recordedMethodBody;
 	}
 
+	void setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher) {
+		MethodStubbingBase<C, R, arglist...>::invocationMatcher = invocationMatcher;
+	}
+
 protected:
 	friend class VerifyFunctor;
 	friend class StubFunctor;
@@ -126,10 +130,6 @@ protected:
 			stubbingContext(stubbingContext), invocationMatcher { new DefaultInvocationMatcher<arglist...>() }, progressType(
 					ProgressType::NONE), expectedInvocationCount(-1) {
 		recordedMethodBody = buildInitialMethodBody();
-	}
-
-	void setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher) {
-		MethodStubbingBase<C, R, arglist...>::invocationMatcher = invocationMatcher;
 	}
 
 	virtual ~MethodStubbingBase() THROWS {
