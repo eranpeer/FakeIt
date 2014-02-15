@@ -71,6 +71,7 @@ public:
 			MockObject { }, instance { [] {throw UnmockedMethodCallException {};} } {
 	}
 
+
 	/**
 	 * Return all actual invocations of this mock.
 	 */
@@ -82,7 +83,7 @@ public:
 		}
 	}
 
-	~Mock() {
+	virtual ~Mock() {
 	}
 
 	C& get() {

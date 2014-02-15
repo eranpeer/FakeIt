@@ -15,6 +15,37 @@ namespace fakeit {
 
 class WhenFunctor {
 public:
+
+	struct StubbingProgress: public virtual MethodVerificationProgress {
+
+		friend class VerifyFunctor;
+
+		~StubbingProgress() THROWS {
+
+			if (std::uncaught_exception()) {
+				return;
+			}
+
+			if (!_isActive) {
+				return;
+			}
+
+		}
+
+	private:
+
+		bool _isActive;
+
+		StubbingProgress(StubbingProgress& other) :
+				_isActive(other._isActive) {
+			other._isActive = false; // all other ctors should init _isActive to true;
+		}
+	};
+
+
+	//===
+	//===
+
 	WhenFunctor() {
 	}
 

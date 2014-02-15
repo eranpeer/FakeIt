@@ -179,6 +179,26 @@ public:
 		return 1;
 	}
 
+	void Using(const arglist&... args) {
+		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
+				new ExpectedArgumentsInvocationMatcher<arglist...>(args...) });
+	}
+
+	void Matching(std::function<bool(arglist...)> matcher) {
+		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
+				new UserDefinedInvocationMatcher<arglist...>(matcher) });
+	}
+
+	void operator()(const arglist&... args) {
+		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
+				new ExpectedArgumentsInvocationMatcher<arglist...>(args...) });
+	}
+
+	void operator()(std::function<bool(arglist...)> matcher) {
+		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
+				new UserDefinedInvocationMatcher<arglist...>(matcher) });
+	}
+
 };
 
 template<typename C, typename R, typename ... arglist>
@@ -219,26 +239,22 @@ public:
 	}
 
 	FunctionStubbingRoot<C, R, arglist...>& Using(const arglist&... args) {
-		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
-				new ExpectedArgumentsInvocationMatcher<arglist...>(args...) });
+		MethodStubbingBase<C, R, arglist...>::Using(args...);
 		return *this;
 	}
 
 	FunctionStubbingRoot<C, R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
-		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
-				new UserDefinedInvocationMatcher<arglist...>(matcher) });
+		MethodStubbingBase<C, R, arglist...>::Matching(matcher);
 		return *this;
 	}
 
 	FunctionStubbingRoot<C, R, arglist...>& operator()(const arglist&... args) {
-		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
-				new ExpectedArgumentsInvocationMatcher<arglist...>(args...) });
+		MethodStubbingBase<C, R, arglist...>::operator()(args...);
 		return *this;
 	}
 
 	FunctionStubbingRoot<C, R, arglist...>& operator()(std::function<bool(arglist...)> matcher) {
-		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
-				new UserDefinedInvocationMatcher<arglist...>(matcher) });
+		MethodStubbingBase<C, R, arglist...>::operator()(matcher);
 		return *this;
 	}
 
@@ -286,26 +302,22 @@ public:
 	}
 
 	ProcedureStubbingRoot<C, R, arglist...>& Using(const arglist&... args) {
-		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
-				new ExpectedArgumentsInvocationMatcher<arglist...>(args...) });
+		MethodStubbingBase<C, R, arglist...>::Using(args...);
 		return *this;
 	}
 
 	ProcedureStubbingRoot<C, R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
-		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
-				new UserDefinedInvocationMatcher<arglist...>(matcher) });
+		MethodStubbingBase<C, R, arglist...>::Matching(matcher);
 		return *this;
 	}
 
 	ProcedureStubbingRoot<C, R, arglist...>& operator()(const arglist&... args) {
-		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
-				new ExpectedArgumentsInvocationMatcher<arglist...>(args...) });
+		MethodStubbingBase<C, R, arglist...>::operator()(args...);
 		return *this;
 	}
 
 	ProcedureStubbingRoot<C, R, arglist...>& operator()(std::function<bool(arglist...)> matcher) {
-		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
-				new UserDefinedInvocationMatcher<arglist...>(matcher) });
+		MethodStubbingBase<C, R, arglist...>::operator()(matcher);
 		return *this;
 	}
 

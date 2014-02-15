@@ -4,11 +4,11 @@
 #include <functional>
 
 #include "fakeit/ActualInvocation.h"
+#include "mockutils/Macros.h"
 
 namespace fakeit {
 
 struct AnyInvocationMatcher {
-	//virtual ~AnyInvocationMatcher() = default;
 	virtual bool matches(AnyInvocation& invocation) = 0;
 };
 
