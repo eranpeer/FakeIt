@@ -11,6 +11,7 @@
 
 #include "fakeit/MethodMock.h"
 #include "fakeit/Stubbing.h"
+#include "fakeit/Sequence.hpp"
 #include "fakeit/ActualInvocation.h"
 #include "fakeit/InvocationMatcher.h"
 #include "fakeit/ErrorFormatter.h"

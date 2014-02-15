@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "fakeit/ActualInvocation.h"
+#include "fakeit/Sequence.hpp"
 
 namespace fakeit {
 struct ErrorFormatter {
