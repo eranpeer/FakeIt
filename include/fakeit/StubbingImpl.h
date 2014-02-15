@@ -274,11 +274,11 @@ public:
 		return *this;
 	}
 
-//	NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-//		// Must override since the implementation in base class is privately inherited
-//		MethodStubbingBase<C, R, arglist...>::startStubbing();
-//		return FunctionStubbingProgress<R, arglist...>::Do(method);
-//	}
+	NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
+		// Must override since the implementation in base class is privately inherited
+		MethodStubbingBase<C, R, arglist...>::startStubbing();
+		return FunctionStubbingProgress<R, arglist...>::Do(method);
+	}
 };
 
 template<typename C, typename R, typename ... arglist>
@@ -337,11 +337,11 @@ public:
 		return *this;
 	}
 
-//	NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-//		// Must override since the implementation in base class is privately inherited
-//		MethodStubbingBase<C, R, arglist...>::startStubbing();
-//		return ProcedureStubbingProgress<R, arglist...>::Do(method);
-//	}
+	NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
+		// Must override since the implementation in base class is privately inherited
+		MethodStubbingBase<C, R, arglist...>::startStubbing();
+		return ProcedureStubbingProgress<R, arglist...>::Do(method);
+	}
 };
 
 template<typename C, typename DATA_TYPE>

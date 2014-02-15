@@ -397,5 +397,5 @@ struct BasicVerification: tpunit::TestFixture {
 		i.func(1);
 		Verify(2 * any_func_invocation);
 	}
-
+//
 } __BasicVerification;
