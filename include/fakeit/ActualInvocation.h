@@ -70,6 +70,10 @@ struct ActualInvocation: public virtual AnyInvocation {
 		return strm.str();
 	}
 
+	struct Matcher: public virtual Destructable {
+		virtual bool matches(ActualInvocation<arglist...>& actualInvocation) = 0;
+	};
+
 private:
 	std::tuple<arglist...> actualArguments;
 };

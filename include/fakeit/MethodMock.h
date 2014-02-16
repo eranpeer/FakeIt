@@ -7,7 +7,6 @@
 #include <tuple>
 
 #include "mockutils/TupleDispatcher.h"
-#include "fakeit/InvocationMatcher.h"
 #include "fakeit/DomainObjects.h"
 #include "fakeit/ActualInvocation.h"
 #include "fakeit/Exceptions.h"
@@ -34,7 +33,7 @@ private:
 };
 
 template<typename R, typename ... arglist>
-struct MethodInvocationMock: public InvocationMatcher<arglist...>, public MethodInvocationHandler<R, arglist...> {
+struct MethodInvocationMock: public ActualInvocation<arglist...>::Matcher, public MethodInvocationHandler<R, arglist...> {
 
 };
 
@@ -68,7 +67,7 @@ private:
 template<typename R, typename ... arglist>
 struct MethodInvocationMockBase: public virtual MethodInvocationMock<R, arglist...> {
 
-	MethodInvocationMockBase(const Method& method, std::shared_ptr<InvocationMatcher<arglist...>> matcher,
+	MethodInvocationMockBase(const Method& method, std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> matcher,
 			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) :
 			method(method), matcher { matcher }, invocationHandler { invocationHandler } {
 	}
@@ -83,12 +82,12 @@ struct MethodInvocationMockBase: public virtual MethodInvocationMock<R, arglist.
 
 private:
 	const Method& method;
-	std::shared_ptr<InvocationMatcher<arglist...>> matcher;
+	std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> matcher;
 	std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler;
 };
 
 template<typename ... arglist>
-struct ExpectedArgumentsInvocationMatcher: public InvocationMatcher<arglist...> {
+struct ExpectedArgumentsInvocationMatcher: public ActualInvocation<arglist...>::Matcher {
 	ExpectedArgumentsInvocationMatcher(const arglist&... args) :
 			expectedArguments(args...) {
 	}
@@ -104,7 +103,7 @@ private:
 };
 
 template<typename ... arglist>
-struct UserDefinedInvocationMatcher: public InvocationMatcher<arglist...> {
+struct UserDefinedInvocationMatcher: public ActualInvocation<arglist...>::Matcher {
 	UserDefinedInvocationMatcher(std::function<bool(arglist...)> matcher) :
 			matcher { matcher } {
 	}
@@ -120,7 +119,7 @@ private:
 };
 
 template<typename ... arglist>
-struct DefaultInvocationMatcher: public InvocationMatcher<arglist...> {
+struct DefaultInvocationMatcher: public ActualInvocation<arglist...>::Matcher {
 	DefaultInvocationMatcher() {
 	}
 
@@ -151,7 +150,7 @@ struct MethodMock: public virtual Method, public virtual MethodInvocationHandler
 				return mock;
 			}
 
-			void stubMethodInvocation(std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher,
+			void stubMethodInvocation(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> invocationMatcher,
 					std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {
 				auto mock = buildMethodInvocationMock(invocationMatcher, invocationHandler);
 				methodInvocationMocks.push_back(mock);
@@ -173,7 +172,7 @@ struct MethodMock: public virtual Method, public virtual MethodInvocationHandler
 				return methodInvocationMock->handleMethodInvocation(args...);
 			}
 
-			std::vector<std::shared_ptr<ActualInvocation<arglist...>> > getActualInvocations(InvocationMatcher<arglist...>& matcher) {
+			std::vector<std::shared_ptr<ActualInvocation<arglist...>> > getActualInvocations(typename ActualInvocation<arglist...>::Matcher& matcher) {
 				std::vector < std::shared_ptr<ActualInvocation<arglist...>> > result;
 				for (auto actualInvocation : actualInvocations) {
 					if (matcher.matches(*actualInvocation)) {
@@ -196,7 +195,7 @@ struct MethodMock: public virtual Method, public virtual MethodInvocationHandler
 			std::vector<std::shared_ptr<ActualInvocation<arglist...>>> actualInvocations;
 
 			std::shared_ptr<MethodInvocationMockBase<R, arglist...>> buildMethodInvocationMock(
-					std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher,
+					std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> invocationMatcher,
 					std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {
 				return std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {new MethodInvocationMockBase<R, arglist...>(*this, invocationMatcher,
 							invocationHandler)};

@@ -13,7 +13,6 @@
 #include "fakeit/Stubbing.h"
 #include "fakeit/Sequence.hpp"
 #include "fakeit/ActualInvocation.h"
-#include "fakeit/InvocationMatcher.h"
 #include "fakeit/ErrorFormatter.h"
 #include "fakeit/DefaultErrorFormatter.h"
 #include "mockutils/ExtractMemberType.h"
@@ -67,7 +66,7 @@ private:
 		return recordedMethodBody;
 	}
 
-	void setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher) {
+	void setInvocationMatcher(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> invocationMatcher) {
 		MethodStubbingBase<C, R, arglist...>::invocationMatcher = invocationMatcher;
 	}
 
@@ -77,7 +76,7 @@ protected:
 	friend class WhenFunctor;
 
 	std::shared_ptr<StubbingContext<C, R, arglist...>> stubbingContext;
-	std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher;
+	std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> invocationMatcher;
 	std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody;
 
 	int expectedInvocationCount;
@@ -123,22 +122,22 @@ public:
 	}
 
 	void Using(const arglist&... args) {
-		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
+		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> {
 				new ExpectedArgumentsInvocationMatcher<arglist...>(args...) });
 	}
 
 	void Matching(std::function<bool(arglist...)> matcher) {
-		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
+		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> {
 				new UserDefinedInvocationMatcher<arglist...>(matcher) });
 	}
 
 	void operator()(const arglist&... args) {
-		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
+		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> {
 				new ExpectedArgumentsInvocationMatcher<arglist...>(args...) });
 	}
 
 	void operator()(std::function<bool(arglist...)> matcher) {
-		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<InvocationMatcher<arglist...>> {
+		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> {
 				new UserDefinedInvocationMatcher<arglist...>(matcher) });
 	}
 

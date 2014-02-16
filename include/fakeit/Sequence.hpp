@@ -14,7 +14,6 @@
 #include <vector>
 #include <stdexcept>
 
-#include "fakeit/InvocationMatcher.h"
 #include "fakeit/ActualInvocation.h"
 
 

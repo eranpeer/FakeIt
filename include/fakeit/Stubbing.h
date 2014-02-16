@@ -11,7 +11,6 @@
 #include "mockutils/traits.h"
 #include "mockutils/DefaultValue.hpp"
 #include "fakeit/Exceptions.h"
-#include "fakeit/InvocationMatcher.h"
 #include "fakeit/ActualInvocation.h"
 
 namespace fakeit {
