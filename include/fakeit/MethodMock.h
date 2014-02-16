@@ -35,6 +35,8 @@ private:
 template<typename R, typename ... arglist>
 struct MethodInvocationMock: public ActualInvocation<arglist...>::Matcher, public MethodInvocationHandler<R, arglist...> {
 
+	virtual std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> getMatcher()= 0;
+
 };
 
 template<typename R, typename ... arglist>
@@ -80,6 +82,10 @@ struct MethodInvocationMockBase: public virtual MethodInvocationMock<R, arglist.
 		return matcher->matches(actualInvocation);
 	}
 
+	std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> getMatcher() override {
+		return matcher;
+	}
+
 private:
 	const Method& method;
 	std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> matcher;
@@ -93,6 +99,8 @@ struct ExpectedArgumentsInvocationMatcher: public ActualInvocation<arglist...>::
 	}
 
 	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
+		if (invocation.getActualMatcher().get() == this)
+			return true;
 		return matches(invocation.getActualArguments());
 	}
 private:
@@ -109,6 +117,8 @@ struct UserDefinedInvocationMatcher: public ActualInvocation<arglist...>::Matche
 	}
 
 	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
+		if (invocation.getActualMatcher().get() == this)
+			return true;
 		return matches(invocation.getActualArguments());
 	}
 private:
@@ -168,6 +178,8 @@ struct MethodMock: public virtual Method, public virtual MethodInvocationHandler
 				if (!methodInvocationMock) {
 					throw UnmockedMethodCallException();
 				}
+				auto matcher = methodInvocationMock->getMatcher();
+				actualInvoaction->setActualMatcher(matcher);
 				actualInvocations.push_back(actualInvoaction);
 				return methodInvocationMock->handleMethodInvocation(args...);
 			}

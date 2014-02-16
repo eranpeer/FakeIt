@@ -74,7 +74,19 @@ struct ActualInvocation: public virtual AnyInvocation {
 		virtual bool matches(ActualInvocation<arglist...>& actualInvocation) = 0;
 	};
 
+	/**
+	 * The Matcher that was use to match this ActualInvocation.
+	 */
+	void setActualMatcher(std::shared_ptr<Matcher> matcher){
+		this->matcher = matcher;
+	}
+
+	std::shared_ptr<Matcher> getActualMatcher(){
+		return matcher;
+	}
+
 private:
+	std::shared_ptr<Matcher> matcher;
 	std::tuple<arglist...> actualArguments;
 };
 
