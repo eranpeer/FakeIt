@@ -57,7 +57,7 @@ class MethodStubbingBase: public Xaction,//
 protected virtual MethodStubbingInternal,
 		public virtual Sequence,
 		public virtual ActualInvocationsSource,
-		public virtual AnyInvocationMatcher {
+		public virtual AnyInvocation::Matcher {
 private:
 
 	std::shared_ptr<RecordedMethodBody<R, arglist...>> buildInitialMethodBody() {
@@ -112,9 +112,9 @@ public:
 		}
 	}
 
-	void getExpectedSequence(std::vector<AnyInvocationMatcher*>& into) const override {
-		const AnyInvocationMatcher* b = this;
-		AnyInvocationMatcher* c = const_cast<AnyInvocationMatcher*>(b);
+	void getExpectedSequence(std::vector<AnyInvocation::Matcher*>& into) const override {
+		const AnyInvocation::Matcher* b = this;
+		AnyInvocation::Matcher* c = const_cast<AnyInvocation::Matcher*>(b);
 		into.push_back(c);
 	}
 

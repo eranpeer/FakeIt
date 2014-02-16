@@ -8,6 +8,8 @@
 #include <iostream>
 #include <sstream>
 #include "mockutils/TuplePrinter.h"
+#include "mockutils/Macros.h"
+
 #include "fakeit/DomainObjects.h"
 
 namespace fakeit {
@@ -37,6 +39,11 @@ struct AnyInvocation {
 	}
 
 	virtual std::string format() = 0;
+
+	struct Matcher {
+		virtual ~Matcher() THROWS {}
+		virtual bool matches(AnyInvocation& invocation) = 0;
+	};
 
 private:
 	const int ordinal;

@@ -149,11 +149,11 @@ public:
 			return true;
 		}
 
-		bool isMatch(std::vector<AnyInvocation*>& actualSequence, std::vector<AnyInvocationMatcher*>& expectedSequence, int start) {
+		bool isMatch(std::vector<AnyInvocation*>& actualSequence, std::vector<AnyInvocation::Matcher*>& expectedSequence, int start) {
 			bool found = true;
 			for (unsigned int j = 0; found && j < expectedSequence.size(); j++) {
 				AnyInvocation* actual = actualSequence[start + j];
-				AnyInvocationMatcher* expected = expectedSequence[j];
+				AnyInvocation::Matcher* expected = expectedSequence[j];
 				if (j >= 1) {
 					AnyInvocation* prevActual = actualSequence[start + j - 1];
 					found = actual->getOrdinal() - prevActual->getOrdinal() == 1;
@@ -164,7 +164,7 @@ public:
 		}
 
 		int findNextMatch(Sequence* &pattern, std::vector<AnyInvocation*>& actualSequence, int startSearchIndex) {
-			std::vector<AnyInvocationMatcher*> expectedSequence;
+			std::vector<AnyInvocation::Matcher*> expectedSequence;
 			pattern->getExpectedSequence(expectedSequence);
 			for (int i = startSearchIndex; i < ((int) actualSequence.size() - (int) expectedSequence.size() + 1); i++) {
 				if (isMatch(actualSequence, expectedSequence, i)) {

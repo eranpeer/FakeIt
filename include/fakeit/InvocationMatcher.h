@@ -8,10 +8,6 @@
 
 namespace fakeit {
 
-struct AnyInvocationMatcher {
-	virtual bool matches(AnyInvocation& invocation) = 0;
-};
-
 template<typename ... arglist>
 struct InvocationMatcher: public virtual Destructable {
 	virtual bool matches(ActualInvocation<arglist...>& actualInvocation) = 0;
@@ -19,4 +15,3 @@ struct InvocationMatcher: public virtual Destructable {
 
 }
 #endif // InvocationMatcher_h__
-
