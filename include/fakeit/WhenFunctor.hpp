@@ -16,11 +16,11 @@ namespace fakeit {
 class WhenFunctor {
 public:
 
-	struct StubbingProgress: public virtual MethodVerificationProgress {
+	struct StubbingProgress {
 
-		friend class VerifyFunctor;
+		friend class WhenFunctor;
 
-		~StubbingProgress() THROWS {
+		virtual ~StubbingProgress() THROWS {
 
 			if (std::uncaught_exception()) {
 				return;
@@ -30,36 +30,123 @@ public:
 				return;
 			}
 
+			_xaction.apply();
 		}
+
+
+		StubbingProgress(StubbingProgress& other) :
+				_isActive(other._isActive), _xaction(other._xaction) {
+			other._isActive = false; // all other ctors should init _isActive to true;
+		}
+
+		StubbingProgress(Xaction& xaction) :
+				_isActive(true), _xaction(xaction) {
+		}
+
+	protected:
 
 	private:
 
 		bool _isActive;
-
-		StubbingProgress(StubbingProgress& other) :
-				_isActive(other._isActive) {
-			other._isActive = false; // all other ctors should init _isActive to true;
-		}
+		Xaction& _xaction;
 	};
 
+	template<typename C, typename R, typename ... arglist>
+	struct FunctionProgress: public virtual StubbingProgress, public virtual FunctionStubbingProgress<R, arglist...> //
+	{
+		friend class WhenFunctor;
 
-	//===
-	//===
+		virtual ~FunctionProgress() = default;
+
+		NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
+			root.FirstAction(method);
+			return *this;
+		}
+
+		NextFunctionStubbingProgress<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
+			root.AnotherAction(method);
+			return *this;
+		}
+
+
+		FunctionProgress(FunctionProgress& other) :
+				StubbingProgress(other), root(other.root) {
+		}
+
+		FunctionProgress(FunctionStubbingRoot<C, R, arglist...>& xaction) :
+				StubbingProgress(xaction), root(xaction) {
+		}
+
+	private:
+
+		FunctionStubbingRoot<C, R, arglist...>& root;
+//		FunctionProgress & operator=(const FunctionProgress & other) = delete;
+	};
+
+	template<typename C, typename R, typename ... arglist>
+	struct ProcedureProgress: public StubbingProgress,
+	public virtual ProcedureStubbingProgress<R, arglist...> {
+
+		friend class WhenFunctor;
+
+		virtual ~ProcedureProgress() override = default;
+
+		NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
+			root.FirstAction(method);
+			return *this;
+		}
+
+		NextProcedureStubbingProgress<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
+			root.AnotherAction(method);
+			return *this;
+		}
+
+
+		ProcedureProgress(ProcedureProgress& other) :
+				StubbingProgress(other) , root(other.root){
+		}
+
+		ProcedureProgress(ProcedureStubbingRoot<C, R, arglist...>& xaction) :
+				StubbingProgress(xaction), root(xaction) {
+		}
+
+	private:
+		ProcedureStubbingRoot<C, R, arglist...>& root;
+//		ProcedureProgress & operator=(const ProcedureProgress & other) = delete;
+	};
 
 	WhenFunctor() {
 	}
 
 	template<typename C, typename R, typename ... arglist>
-	FirstProcedureStubbingProgress<R, arglist...>& operator()(const ProcedureStubbingRoot<C, R, arglist...>& stubbingProgress) {
+	ProcedureProgress<C, R, arglist...> operator()(const ProcedureStubbingRoot<C, R, arglist...>& stubbingProgress) {
 		ProcedureStubbingRoot<C, R, arglist...>& rootWithoutConst = const_cast<ProcedureStubbingRoot<C, R, arglist...>&>(stubbingProgress);
-		return dynamic_cast<FirstProcedureStubbingProgress<R, arglist...>&>(rootWithoutConst);
+		//return dynamic_cast<FirstProcedureStubbingProgress<R, arglist...>&>(rootWithoutConst);
+		ProcedureProgress<C,R,arglist...> a(rootWithoutConst);
+		return a;
 	}
 
 	template<typename C, typename R, typename ... arglist>
-	FirstFunctionStubbingProgress<R, arglist...>& operator()(const FunctionStubbingRoot<C, R, arglist...>& stubbingProgress) {
+	FunctionProgress<C, R, arglist...> operator()(const FunctionStubbingRoot<C, R, arglist...>& stubbingProgress) {
 		FunctionStubbingRoot<C, R, arglist...>& rootWithoutConst = const_cast<FunctionStubbingRoot<C, R, arglist...>&>(stubbingProgress);
-		return dynamic_cast<FirstFunctionStubbingProgress<R, arglist...>&>(rootWithoutConst);
+		//return dynamic_cast<FirstFunctionStubbingProgress<R, arglist...>&>(rootWithoutConst);
+		FunctionProgress<C,R,arglist...> a(rootWithoutConst);
+		return a;
 	}
+
+
+//	template<typename C, typename R, typename ... arglist>
+//	FirstProcedureStubbingProgress<R, arglist...>& operator()(const ProcedureStubbingRoot<C, R, arglist...>& stubbingProgress) {
+//		ProcedureStubbingRoot<C, R, arglist...>& rootWithoutConst = const_cast<ProcedureStubbingRoot<C, R, arglist...>&>(stubbingProgress);
+//		return dynamic_cast<FirstProcedureStubbingProgress<R, arglist...>&>(rootWithoutConst);
+//		//return ProcedureProgress(rootWithoutConst);
+//	}
+//
+//	template<typename C, typename R, typename ... arglist>
+//	FirstFunctionStubbingProgress<R, arglist...>& operator()(const FunctionStubbingRoot<C, R, arglist...>& stubbingProgress) {
+//		FunctionStubbingRoot<C, R, arglist...>& rootWithoutConst = const_cast<FunctionStubbingRoot<C, R, arglist...>&>(stubbingProgress);
+//		return dynamic_cast<FirstFunctionStubbingProgress<R, arglist...>&>(rootWithoutConst);
+//	}
 
 }static When;
 

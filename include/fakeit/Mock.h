@@ -151,7 +151,7 @@ public:
 	>
 	void Stub(H head, M... tail)
 	{
-		((MethodStubbingInternal&)When(head)).startStubbing();
+		((MethodStubbingInternal&)When(head));
 		Stub(tail...);
 	}
 

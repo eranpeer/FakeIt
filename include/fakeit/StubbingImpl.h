@@ -31,29 +31,6 @@ struct StubbingContext {
 	virtual MethodMock<C, R, arglist...>& getMethodMock() = 0;
 };
 
-template<typename R, typename ... arglist>
-struct FunctionStubbingProgress: protected virtual FirstFunctionStubbingProgress<R, arglist...>, //
-		protected virtual NextFunctionStubbingProgress<R, arglist...> {
-
-	FunctionStubbingProgress() = default;
-	virtual ~FunctionStubbingProgress() {
-	}
-
-private:
-	FunctionStubbingProgress & operator=(const FunctionStubbingProgress & other) = delete;
-};
-
-template<typename R, typename ... arglist>
-struct ProcedureStubbingProgress: //
-		protected virtual FirstProcedureStubbingProgress<R, arglist...>, //
-		protected virtual NextProcedureStubbingProgress<R, arglist...> {
-
-	ProcedureStubbingProgress() = default;
-	virtual ~ProcedureStubbingProgress() override = default;
-
-private:
-	ProcedureStubbingProgress & operator=(const ProcedureStubbingProgress & other) = delete;
-};
 
 struct Mock4cppRoot {
 	Mock4cppRoot(ErrorFormatter& errorFormatter) :
@@ -71,9 +48,12 @@ private:
 	ErrorFormatter& errorFormatter;
 }static Mock4cpp(defaultErrorFormatter);
 
+struct Xaction {
+	virtual void apply() = 0;
+};
 
 template<typename C, typename R, typename ... arglist>
-class MethodStubbingBase: //
+class MethodStubbingBase: public Xaction,//
 protected virtual MethodStubbingInternal,
 		public virtual Sequence,
 		public virtual ActualInvocationsSource,
@@ -100,36 +80,18 @@ protected:
 	std::shared_ptr<InvocationMatcher<arglist...>> invocationMatcher;
 	std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody;
 
-	ProgressType progressType;
 	int expectedInvocationCount;
 
 	MethodStubbingBase(std::shared_ptr<StubbingContext<C, R, arglist...>> stubbingContext) :
-			stubbingContext(stubbingContext), invocationMatcher { new DefaultInvocationMatcher<arglist...>() }, progressType(
-					ProgressType::NONE), expectedInvocationCount(-1) {
+			stubbingContext(stubbingContext), invocationMatcher { new DefaultInvocationMatcher<arglist...>() }, expectedInvocationCount(-1) {
 		recordedMethodBody = buildInitialMethodBody();
 	}
 
 	virtual ~MethodStubbingBase() THROWS {
-		if (std::uncaught_exception()) {
-			return;
-		}
-
-		if (progressType == ProgressType::NONE) {
-			return;
-		}
-
-		if (progressType == ProgressType::STUBBING) {
-			apply();
-			return;
-		}
 	}
 
-	void apply(){
+	virtual void apply() override {
 		stubbingContext->getMethodMock().stubMethodInvocation(invocationMatcher, recordedMethodBody);
-	}
-
-	virtual void startStubbing() {
-		progressType = ProgressType::STUBBING;
 	}
 
 public:
@@ -203,10 +165,6 @@ private:
 	friend class WhenFunctor;
 protected:
 
-	virtual void startStubbing() override {
-		MethodStubbingBase<C, R, arglist...>::startStubbing();
-	}
-
 public:
 
 	FunctionStubbingRoot(std::shared_ptr<StubbingContext<C, R, arglist...>> stubbingContext) :
@@ -222,6 +180,7 @@ public:
 	virtual void operator=(std::function<R(arglist...)> method) override {
 		// Must override since the implementation in base class is privately inherited
 		FirstFunctionStubbingProgress<R, arglist...>::operator =(method);
+		MethodStubbingBase<C, R, arglist...>::apply();
 	}
 
 	FunctionStubbingRoot<C, R, arglist...>& Using(const arglist&... args) {
@@ -246,7 +205,6 @@ public:
 
 	NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 		// Must override since the implementation in base class is privately inherited
-		MethodStubbingBase<C, R, arglist...>::startStubbing();
 		MethodStubbingBase<C, R, arglist...>::FirstAction(method);
 		return *this;
 	}
@@ -271,10 +229,6 @@ private:
 
 protected:
 
-	virtual void startStubbing() override {
-		MethodStubbingBase<C, R, arglist...>::startStubbing();
-	}
-
 public:
 	ProcedureStubbingRoot(std::shared_ptr<StubbingContext<C, R, arglist...>> stubbingContext) :
 			MethodStubbingBase<C, R, arglist...>(stubbingContext), FirstProcedureStubbingProgress<R, arglist...>(), ProcedureStubbingProgress<
@@ -289,6 +243,7 @@ public:
 	virtual void operator=(std::function<R(arglist...)> method) override {
 		// Must override since the implementation in base class is privately inherited
 		FirstProcedureStubbingProgress<R, arglist...>::operator=(method);
+		MethodStubbingBase<C, R, arglist...>::apply();
 	}
 
 	ProcedureStubbingRoot<C, R, arglist...>& Using(const arglist&... args) {
@@ -313,7 +268,6 @@ public:
 
 	NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 		// Must override since the implementation in base class is privately inherited
-		MethodStubbingBase<C, R, arglist...>::startStubbing();
 		MethodStubbingBase<C, R, arglist...>::FirstAction(method);
 		return *this;
 	}

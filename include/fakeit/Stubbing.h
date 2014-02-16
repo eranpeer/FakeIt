@@ -167,6 +167,31 @@ private:
 	FirstProcedureStubbingProgress & operator=(const FirstProcedureStubbingProgress & other) = delete;
 };
 
+
+template<typename R, typename ... arglist>
+struct FunctionStubbingProgress: public virtual FirstFunctionStubbingProgress<R, arglist...>, //
+		protected virtual NextFunctionStubbingProgress<R, arglist...> {
+
+	FunctionStubbingProgress() = default;
+	virtual ~FunctionStubbingProgress() {
+	}
+
+private:
+	FunctionStubbingProgress & operator=(const FunctionStubbingProgress & other) = delete;
+};
+
+template<typename R, typename ... arglist>
+struct ProcedureStubbingProgress: //
+		public virtual FirstProcedureStubbingProgress<R, arglist...>, //
+		protected virtual NextProcedureStubbingProgress<R, arglist...> {
+
+	ProcedureStubbingProgress() = default;
+	virtual ~ProcedureStubbingProgress() override {};
+
+private:
+	ProcedureStubbingProgress & operator=(const ProcedureStubbingProgress & other) = delete;
+};
+
 class MethodStubbingInternal {
 public:
 
@@ -175,8 +200,6 @@ public:
 protected:
 
 	~MethodStubbingInternal() = default;
-
-	virtual void startStubbing() = 0;
 
 };
 }

@@ -8,6 +8,8 @@
 #include "mockutils/Formatter.h"
 
 struct A {
+	int state;
+	A():state(0){}
 };
 
 namespace fakeit {
@@ -37,7 +39,8 @@ struct BasicVerification: tpunit::TestFixture {
 					TEST(BasicVerification::verify_repeated_sequence_2), //
 					TEST(BasicVerification::verify_multi_sequences_in_order), TEST(BasicVerification::verify_no_other_invocations_for_mock), //
 					TEST(BasicVerification::verify_no_other_invocations_for_method_filter), //
-					TEST(BasicVerification::use_same_filter_for_both_stubbing_and_verification) //
+					TEST(BasicVerification::use_same_filter_for_both_stubbing_and_verification), //
+					TEST(BasicVerification::use_same_filter_for_both_stubbing_and_verification_2)
 					)  //
 	{
 	}
@@ -45,8 +48,7 @@ struct BasicVerification: tpunit::TestFixture {
 	struct SomeInterface {
 		virtual int func(int) = 0;
 		virtual void proc(int) = 0;
-		virtual void proc2(int, SomeInterface&) = 0;
-		virtual void proc3(int, const A&) = 0;
+		virtual void proc2(const A&) = 0;
 	};
 
 	void verify_should_throw_VerificationException_if_method_was_not_called() {
@@ -54,9 +56,6 @@ struct BasicVerification: tpunit::TestFixture {
 		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
 		ASSERT_THROW(Verify(mock[&SomeInterface::func]), fakeit::VerificationException);
 		ASSERT_THROW(Verify(mock[&SomeInterface::proc]), fakeit::VerificationException);
-		//std::cout<<PrintType<int>(1);
-		//std::cout<<PrintType<decltype(&SomeInterface::proc2)>()<<'\n';
-		//std::cout<<PrintType<SomeInterface>()<<'\n';
 	}
 
 	void verify_should_throw_VerificationException_if_method_was_not_stubbed() {
@@ -342,7 +341,7 @@ struct BasicVerification: tpunit::TestFixture {
 
 	void verify_no_other_invocations_for_mock() {
 		Mock<SomeInterface> mock;
-		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc3]);
+		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc2]);
 		SomeInterface &i = mock.get();
 		VerifyNoOtherInvocations(mock);
 
@@ -366,13 +365,13 @@ struct BasicVerification: tpunit::TestFixture {
 
 	void verify_no_other_invocations_for_method_filter() {
 		Mock<SomeInterface> mock;
-		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc3]);
+		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc2]);
 		SomeInterface &i = mock.get();
 		VerifyNoOtherInvocations(mock[&SomeInterface::func]);
 
 		i.func(1);
 		i.func(1);
-		ASSERT_THROW(VerifyNoOtherInvocations(mock[&SomeInterface::func], mock[&SomeInterface::proc3]), fakeit::VerificationException);
+		ASSERT_THROW(VerifyNoOtherInvocations(mock[&SomeInterface::func], mock[&SomeInterface::proc2]), fakeit::VerificationException);
 
 		Verify(mock[&SomeInterface::func]).AtLeastOnce();
 		VerifyNoOtherInvocations(mock[&SomeInterface::func]);
@@ -396,6 +395,24 @@ struct BasicVerification: tpunit::TestFixture {
 		i.func(1);
 		i.func(1);
 		Verify(2 * any_func_invocation);
+	}
+
+	void use_same_filter_for_both_stubbing_and_verification_2() {
+		Mock<SomeInterface> mock;
+		auto any_A_with_state_1 = mock[&SomeInterface::proc2].Matching([](const A& a)->bool{
+			return a.state == 1;
+		});
+		Stub(any_A_with_state_1);
+		SomeInterface &i = mock.get();
+		{
+			A a;
+			a.state = 1;
+			i.proc2(a);
+			i.proc2(a);
+			a.state = 2;
+		}
+
+		Verify(2 * any_A_with_state_1);
 	}
 //
 } __BasicVerification;

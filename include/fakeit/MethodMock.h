@@ -165,11 +165,11 @@ struct MethodMock: public virtual Method, public virtual MethodInvocationHandler
 				int ordinal = invocationOrdinal++;
 				auto actualInvoaction = std::shared_ptr<ActualInvocation<arglist...>> { new ActualInvocation<arglist...>(ordinal, *this,
 						args...) };
-				actualInvocations.push_back(actualInvoaction);
 				auto methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
 				if (!methodInvocationMock) {
 					throw UnmockedMethodCallException();
 				}
+				actualInvocations.push_back(actualInvoaction);
 				return methodInvocationMock->handleMethodInvocation(args...);
 			}
 
