@@ -191,16 +191,6 @@ private:
 	ProcedureStubbingProgress & operator=(const ProcedureStubbingProgress & other) = delete;
 };
 
-class MethodStubbingInternal {
-public:
-
-	MethodStubbingInternal() = default;
-
-protected:
-
-	~MethodStubbingInternal() = default;
-
-};
 }
 
 #endif // Clouses_h__

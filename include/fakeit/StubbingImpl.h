@@ -30,7 +30,6 @@ struct StubbingContext {
 	virtual MethodMock<C, R, arglist...>& getMethodMock() = 0;
 };
 
-
 struct Mock4cppRoot {
 	Mock4cppRoot(ErrorFormatter& errorFormatter) :
 			errorFormatter(errorFormatter) {
@@ -52,8 +51,7 @@ struct Xaction {
 };
 
 template<typename C, typename R, typename ... arglist>
-class MethodStubbingBase: public Xaction,//
-protected virtual MethodStubbingInternal,
+class MethodStubbingBase: public Xaction, //
 		public virtual Sequence,
 		public virtual ActualInvocationsSource,
 		public virtual AnyInvocation::Matcher {
@@ -123,22 +121,22 @@ public:
 
 	void Using(const arglist&... args) {
 		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> {
-				new ExpectedArgumentsInvocationMatcher<arglist...>(args...) });
+					new ExpectedArgumentsInvocationMatcher<arglist...>(args...)});
 	}
 
 	void Matching(std::function<bool(arglist...)> matcher) {
 		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> {
-				new UserDefinedInvocationMatcher<arglist...>(matcher) });
+					new UserDefinedInvocationMatcher<arglist...>(matcher)});
 	}
 
 	void operator()(const arglist&... args) {
 		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> {
-				new ExpectedArgumentsInvocationMatcher<arglist...>(args...) });
+					new ExpectedArgumentsInvocationMatcher<arglist...>(args...)});
 	}
 
 	void operator()(std::function<bool(arglist...)> matcher) {
 		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> {
-				new UserDefinedInvocationMatcher<arglist...>(matcher) });
+					new UserDefinedInvocationMatcher<arglist...>(matcher)});
 	}
 
 	void FirstAction(std::function<R(arglist...)> method) {
@@ -172,8 +170,7 @@ protected:
 public:
 
 	FunctionStubbingRoot(std::shared_ptr<StubbingContext<C, R, arglist...>> stubbingContext) :
-			MethodStubbingBase<C, R, arglist...>(stubbingContext)
-			{
+			MethodStubbingBase<C, R, arglist...>(stubbingContext) {
 	}
 
 	FunctionStubbingRoot(const FunctionStubbingRoot& other) = default;
@@ -209,8 +206,7 @@ public:
 
 template<typename C, typename R, typename ... arglist>
 class ProcedureStubbingRoot: //
-public virtual MethodStubbingBase<C, R, arglist...>
-{
+public virtual MethodStubbingBase<C, R, arglist...> {
 private:
 	ProcedureStubbingRoot & operator=(const ProcedureStubbingRoot & other) = delete;
 
@@ -222,8 +218,7 @@ protected:
 
 public:
 	ProcedureStubbingRoot(std::shared_ptr<StubbingContext<C, R, arglist...>> stubbingContext) :
-			MethodStubbingBase<C, R, arglist...>(stubbingContext)
-			{
+			MethodStubbingBase<C, R, arglist...>(stubbingContext) {
 	}
 
 	virtual ~ProcedureStubbingRoot() THROWS {
