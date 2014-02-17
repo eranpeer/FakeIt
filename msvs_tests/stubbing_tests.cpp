@@ -76,8 +76,8 @@ namespace mock4cpp_tests
 		TEST_METHOD(StubDefaultBehaviorWithStaticMethod)
 		{
 			Mock<SomeInterface> mock;
-			mock.When(&SomeInterface::func).Do(&defaultFuncBehavior);
-			mock.When(&SomeInterface::proc).Do(&defaultProcBehavior);
+			When(mock[&SomeInterface::func]).Do(&defaultFuncBehavior);
+			When(mock[&SomeInterface::proc]).Do(&defaultProcBehavior);
 
 			SomeInterface &i = mock.get();
 
@@ -101,8 +101,8 @@ namespace mock4cpp_tests
 		TEST_METHOD(StubDefaultBehaviorWithLambda)
 		{
 			Mock<SomeInterface> mock;
-			mock.When(&SomeInterface::func).Do([](int a){return a; });
-			mock.When(&SomeInterface::proc).Do([](int a){throw a; });
+			When(mock[&SomeInterface::func]).Do([](int a){return a; });
+			When(mock[&SomeInterface::proc]).Do([](int a){throw a; });
 
 			SomeInterface &i = mock.get();
 
