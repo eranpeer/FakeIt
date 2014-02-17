@@ -154,8 +154,8 @@ public:
 
 template<typename C, typename R, typename ... arglist>
 class FunctionStubbingRoot: //
-public virtual MethodStubbingBase<C, R, arglist...>, //
-		private virtual FunctionStubbingProgress<R, arglist...> {
+public virtual MethodStubbingBase<C, R, arglist...> //
+{
 private:
 	FunctionStubbingRoot & operator=(const FunctionStubbingRoot & other) = delete;
 
@@ -167,8 +167,8 @@ protected:
 public:
 
 	FunctionStubbingRoot(std::shared_ptr<StubbingContext<C, R, arglist...>> stubbingContext) :
-			MethodStubbingBase<C, R, arglist...>(stubbingContext), FirstFunctionStubbingProgress<R, arglist...>(), FunctionStubbingProgress<
-					R, arglist...>() {
+			MethodStubbingBase<C, R, arglist...>(stubbingContext)
+			{
 	}
 
 	FunctionStubbingRoot(const FunctionStubbingRoot& other) = default;
@@ -176,9 +176,9 @@ public:
 	virtual ~FunctionStubbingRoot() THROWS {
 	}
 
-	virtual void operator=(std::function<R(arglist...)> method) override {
+	virtual void operator=(std::function<R(arglist...)> method) {
 		// Must override since the implementation in base class is privately inherited
-		FirstFunctionStubbingProgress<R, arglist...>::operator =(method);
+		MethodStubbingBase<C, R, arglist...>::FirstAction(method);
 		MethodStubbingBase<C, R, arglist...>::apply();
 	}
 
@@ -202,23 +202,12 @@ public:
 		return *this;
 	}
 
-	NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-		// Must override since the implementation in base class is privately inherited
-		MethodStubbingBase<C, R, arglist...>::FirstAction(method);
-		return *this;
-	}
-
-	NextFunctionStubbingProgress<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
-		MethodStubbingBase<C, R, arglist...>::AnotherAction(method);
-		return *this;
-	}
-
 };
 
 template<typename C, typename R, typename ... arglist>
 class ProcedureStubbingRoot: //
-public virtual MethodStubbingBase<C, R, arglist...>,
-		private virtual ProcedureStubbingProgress<R, arglist...> {
+public virtual MethodStubbingBase<C, R, arglist...>
+{
 private:
 	ProcedureStubbingRoot & operator=(const ProcedureStubbingRoot & other) = delete;
 
@@ -230,8 +219,8 @@ protected:
 
 public:
 	ProcedureStubbingRoot(std::shared_ptr<StubbingContext<C, R, arglist...>> stubbingContext) :
-			MethodStubbingBase<C, R, arglist...>(stubbingContext), FirstProcedureStubbingProgress<R, arglist...>(), ProcedureStubbingProgress<
-					R, arglist...>() {
+			MethodStubbingBase<C, R, arglist...>(stubbingContext)
+			{
 	}
 
 	virtual ~ProcedureStubbingRoot() THROWS {
@@ -239,9 +228,10 @@ public:
 
 	ProcedureStubbingRoot(const ProcedureStubbingRoot& other) = default;
 
-	virtual void operator=(std::function<R(arglist...)> method) override {
+	virtual void operator=(std::function<R(arglist...)> method) {
 		// Must override since the implementation in base class is privately inherited
-		FirstProcedureStubbingProgress<R, arglist...>::operator=(method);
+		//FirstProcedureStubbingProgress<R, arglist...>::operator=(method);
+		MethodStubbingBase<C, R, arglist...>::FirstAction(method);
 		MethodStubbingBase<C, R, arglist...>::apply();
 	}
 
@@ -264,18 +254,6 @@ public:
 		MethodStubbingBase<C, R, arglist...>::operator()(matcher);
 		return *this;
 	}
-
-	NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-		// Must override since the implementation in base class is privately inherited
-		MethodStubbingBase<C, R, arglist...>::FirstAction(method);
-		return *this;
-	}
-
-	NextProcedureStubbingProgress<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
-		MethodStubbingBase<C, R, arglist...>::AnotherAction(method);
-		return *this;
-	}
-
 };
 
 template<typename C, typename DATA_TYPE>
