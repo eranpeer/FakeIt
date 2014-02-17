@@ -150,6 +150,11 @@ public:
 		recordedMethodBody->appendDo(method);
 	}
 
+	void operator=(std::function<R(arglist...)> method) {
+		MethodStubbingBase<C, R, arglist...>::FirstAction(method);
+		MethodStubbingBase<C, R, arglist...>::apply();
+	}
+
 };
 
 template<typename C, typename R, typename ... arglist>
@@ -176,10 +181,8 @@ public:
 	virtual ~FunctionStubbingRoot() THROWS {
 	}
 
-	virtual void operator=(std::function<R(arglist...)> method) {
-		// Must override since the implementation in base class is privately inherited
-		MethodStubbingBase<C, R, arglist...>::FirstAction(method);
-		MethodStubbingBase<C, R, arglist...>::apply();
+	void operator=(std::function<R(arglist...)> method) {
+		MethodStubbingBase<C, R, arglist...>::operator=(method);
 	}
 
 	FunctionStubbingRoot<C, R, arglist...>& Using(const arglist&... args) {
@@ -228,11 +231,8 @@ public:
 
 	ProcedureStubbingRoot(const ProcedureStubbingRoot& other) = default;
 
-	virtual void operator=(std::function<R(arglist...)> method) {
-		// Must override since the implementation in base class is privately inherited
-		//FirstProcedureStubbingProgress<R, arglist...>::operator=(method);
-		MethodStubbingBase<C, R, arglist...>::FirstAction(method);
-		MethodStubbingBase<C, R, arglist...>::apply();
+	void operator=(std::function<R(arglist...)> method) {
+		MethodStubbingBase<C, R, arglist...>::operator=(method);
 	}
 
 	ProcedureStubbingRoot<C, R, arglist...>& Using(const arglist&... args) {

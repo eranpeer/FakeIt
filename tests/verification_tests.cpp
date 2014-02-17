@@ -414,5 +414,5 @@ struct BasicVerification: tpunit::TestFixture {
 
 		Verify(2 * any_A_with_state_1);
 	}
-
+//
 } __BasicVerification;
