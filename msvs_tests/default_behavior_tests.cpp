@@ -264,8 +264,8 @@ namespace stubbing_tests
 		TEST_METHOD(OverideDefualtBehaviorMatchAllInvocations_WithDo)
 		{
 			Mock<SomeInterface> mock;
-			mock.When(&SomeInterface::proc).Do([](...){throw std::string(); });
-			mock.When(&SomeInterface::func).Do([](...){return 1; });
+			When(mock[&SomeInterface::proc]).Do([](...){throw std::string(); });
+			When(mock[&SomeInterface::func]).Do([](...){return 1; });
 			SomeInterface& i = mock.get();
 
 			Assert::ExpectException<std::string>([&](){i.proc(1); });
