@@ -9,7 +9,13 @@
 
 struct A {
 	int state;
-	A():state(0){}
+	A() :
+			state(0) {
+	}
+
+	bool operator==(const A& other) const {
+		return other.state == state;
+	}
 };
 
 namespace fakeit {
@@ -40,8 +46,8 @@ struct BasicVerification: tpunit::TestFixture {
 					TEST(BasicVerification::verify_multi_sequences_in_order), TEST(BasicVerification::verify_no_other_invocations_for_mock), //
 					TEST(BasicVerification::verify_no_other_invocations_for_method_filter), //
 					TEST(BasicVerification::use_same_filter_for_both_stubbing_and_verification), //
-					TEST(BasicVerification::use_same_filter_for_both_stubbing_and_verification_2)
-					)  //
+					TEST(BasicVerification::verify_after_paramter_was_changed),  //
+					TEST(BasicVerification::verify_after_paramter_was_deleted))  //
 	{
 	}
 
@@ -49,6 +55,7 @@ struct BasicVerification: tpunit::TestFixture {
 		virtual int func(int) = 0;
 		virtual void proc(int) = 0;
 		virtual void proc2(const A&) = 0;
+		virtual void proc3(const A*) = 0;
 	};
 
 	void verify_should_throw_VerificationException_if_method_was_not_called() {
@@ -397,9 +404,9 @@ struct BasicVerification: tpunit::TestFixture {
 		Verify(2 * any_func_invocation);
 	}
 
-	void use_same_filter_for_both_stubbing_and_verification_2() {
+	void verify_after_paramter_was_changed() {
 		Mock<SomeInterface> mock;
-		auto any_A_with_state_1 = mock[&SomeInterface::proc2].Matching([](const A& a)->bool{
+		auto any_A_with_state_1 = mock[&SomeInterface::proc2].Matching([](const A& a)->bool {
 			return a.state == 1;
 		});
 		Stub(any_A_with_state_1);
@@ -414,5 +421,23 @@ struct BasicVerification: tpunit::TestFixture {
 
 		Verify(2 * any_A_with_state_1);
 	}
-//
+
+	void verify_after_paramter_was_deleted() {
+		Mock<SomeInterface> mock;
+		A a1;
+		a1.state = 1;
+
+		auto call_to_proc2_with_state_1 = mock[&SomeInterface::proc2].Using(a1);
+		Stub(call_to_proc2_with_state_1);
+		SomeInterface &i = mock.get();
+
+		A a2;
+		a2.state = 1;
+		i.proc2(a2);
+		i.proc2(a2);
+		a2.state = 2;
+
+		Verify(2 * call_to_proc2_with_state_1);
+	}
+
 } __BasicVerification;

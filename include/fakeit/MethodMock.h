@@ -149,7 +149,7 @@ struct MethodMock: public virtual Method, public virtual MethodInvocationHandler
 			mock(mock), vMethod(vMethod) {
 	}
 
-	virtual ~MethodMock() override {
+	virtual ~MethodMock() {
 	}
 
 	std::string getMethodName() const override {

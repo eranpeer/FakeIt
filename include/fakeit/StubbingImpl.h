@@ -84,7 +84,7 @@ protected:
 		recordedMethodBody = buildInitialMethodBody();
 	}
 
-	virtual ~MethodStubbingBase() THROWS {
+	virtual ~MethodStubbingBase() {
 	}
 
 	virtual void apply() override {

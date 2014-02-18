@@ -5,6 +5,7 @@ namespace fakeit {
 
 template<typename R, typename ... arglist>
 struct MethodProxy {
+	virtual ~MethodProxy() = default;
 	virtual unsigned int getOffset() = 0;
 	virtual void * getProxy() = 0;
 };
