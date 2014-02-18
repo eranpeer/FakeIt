@@ -46,8 +46,8 @@ struct BasicVerification: tpunit::TestFixture {
 					TEST(BasicVerification::verify_multi_sequences_in_order), TEST(BasicVerification::verify_no_other_invocations_for_mock), //
 					TEST(BasicVerification::verify_no_other_invocations_for_method_filter), //
 					TEST(BasicVerification::use_same_filter_for_both_stubbing_and_verification), //
-					TEST(BasicVerification::verify_after_paramter_was_changed),  //
-					TEST(BasicVerification::verify_after_paramter_was_deleted))  //
+					TEST(BasicVerification::verify_after_paramter_was_changed__with_Matching),  //
+					TEST(BasicVerification::verify_after_paramter_was_changed_with_Using))  //
 	{
 	}
 
@@ -404,7 +404,7 @@ struct BasicVerification: tpunit::TestFixture {
 		Verify(2 * any_func_invocation);
 	}
 
-	void verify_after_paramter_was_changed() {
+	void verify_after_paramter_was_changed__with_Matching() {
 		Mock<SomeInterface> mock;
 		auto any_A_with_state_1 = mock[&SomeInterface::proc2].Matching([](const A& a)->bool {
 			return a.state == 1;
@@ -422,7 +422,7 @@ struct BasicVerification: tpunit::TestFixture {
 		Verify(2 * any_A_with_state_1);
 	}
 
-	void verify_after_paramter_was_deleted() {
+	void verify_after_paramter_was_changed_with_Using() {
 		Mock<SomeInterface> mock;
 		A a1;
 		a1.state = 1;
@@ -433,8 +433,10 @@ struct BasicVerification: tpunit::TestFixture {
 
 		A a2;
 		a2.state = 1;
+
 		i.proc2(a2);
 		i.proc2(a2);
+
 		a2.state = 2;
 
 		Verify(2 * call_to_proc2_with_state_1);
