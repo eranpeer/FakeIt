@@ -68,9 +68,8 @@ public:
 			return *this;
 		}
 
-		NextFunctionStubbingProgress<R, arglist...>& AlwaysDo(std::function<R(arglist...)> method) override {
+		void AlwaysDo(std::function<R(arglist...)> method) override {
 			root.LastAction(method);
-			return *this;
 		}
 
 
@@ -106,9 +105,8 @@ public:
 			return *this;
 		}
 
-		NextProcedureStubbingProgress<R, arglist...>& AlwaysDo(std::function<R(arglist...)> method) override {
+		void AlwaysDo(std::function<R(arglist...)> method) override {
 			root.LastAction(method);
-			return *this;
 		}
 
 

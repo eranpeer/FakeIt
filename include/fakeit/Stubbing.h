@@ -17,7 +17,6 @@ namespace fakeit {
 
 struct MethodVerificationProgress {
 
-
 	MethodVerificationProgress() {
 	}
 
@@ -102,8 +101,7 @@ struct FirstFunctionStubbingProgress {
 		return Do([&r](...)->R {return r;});
 	}
 
-	NextFunctionStubbingProgress<R, arglist...>&
-	AlwaysReturn(const R& r) {
+	void AlwaysReturn(const R& r) {
 		return AlwaysDo([&r](...)->R {return r;});
 	}
 
@@ -112,8 +110,7 @@ struct FirstFunctionStubbingProgress {
 		return Do([](...)->R {DefaultValue::value<R>();});
 	}
 
-	NextFunctionStubbingProgress<R, arglist...>&
-	AlwaysReturn() {
+	void AlwaysReturn() {
 		return AlwaysDo([](...)->R {DefaultValue::value<R>();});
 	}
 
@@ -123,7 +120,7 @@ struct FirstFunctionStubbingProgress {
 	}
 
 	template<typename E>
-	NextFunctionStubbingProgress<R, arglist...>& AlwaysThrow(const E& e) {
+	void AlwaysThrow(const E& e) {
 		return AlwaysDo([e](...)->R {throw e;});
 	}
 
@@ -133,7 +130,7 @@ struct FirstFunctionStubbingProgress {
 
 	virtual auto Do(std::function<R(arglist...)> method) -> NextFunctionStubbingProgress<R, arglist...>& = 0;
 
-	virtual auto AlwaysDo(std::function<R(arglist...)> method) -> NextFunctionStubbingProgress<R, arglist...>& = 0;
+	virtual auto AlwaysDo(std::function<R(arglist...)> method) -> void = 0;
 
 private:
 	FirstFunctionStubbingProgress & operator=(const FirstFunctionStubbingProgress & other) = delete;
@@ -168,7 +165,7 @@ struct FirstProcedureStubbingProgress {
 		return Do([](...)->R {return DefaultValue::value<R>();});
 	}
 
-	NextProcedureStubbingProgress<R, arglist...>& AlwaysReturn() {
+	void AlwaysReturn() {
 		return AlwaysDo([](...)->R {return DefaultValue::value<R>();});
 	}
 
@@ -178,7 +175,7 @@ struct FirstProcedureStubbingProgress {
 	}
 
 	template<typename E>
-	NextProcedureStubbingProgress<R, arglist...>& AlwaysThrow(const E e) {
+	void AlwaysThrow(const E e) {
 		return AlwaysDo([e](...)->R {throw e;});
 	}
 
@@ -188,12 +185,11 @@ struct FirstProcedureStubbingProgress {
 
 	virtual NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) = 0;
 
-	virtual auto AlwaysDo(std::function<R(arglist...)> method) -> NextProcedureStubbingProgress<R, arglist...>& = 0;
+	virtual auto AlwaysDo(std::function<R(arglist...)> method) -> void = 0;
 
 private:
 	FirstProcedureStubbingProgress & operator=(const FirstProcedureStubbingProgress & other) = delete;
 };
-
 
 template<typename R, typename ... arglist>
 struct FunctionStubbingProgress: public virtual FirstFunctionStubbingProgress<R, arglist...>, //
@@ -209,11 +205,13 @@ private:
 
 template<typename R, typename ... arglist>
 struct ProcedureStubbingProgress: //
-		public virtual FirstProcedureStubbingProgress<R, arglist...>, //
+public virtual FirstProcedureStubbingProgress<R, arglist...>, //
 		protected virtual NextProcedureStubbingProgress<R, arglist...> {
 
 	ProcedureStubbingProgress() = default;
-	virtual ~ProcedureStubbingProgress() override {};
+	virtual ~ProcedureStubbingProgress() override {
+	}
+	;
 
 private:
 	ProcedureStubbingProgress & operator=(const ProcedureStubbingProgress & other) = delete;
