@@ -58,9 +58,7 @@ class MethodStubbingBase: public Xaction, //
 private:
 
 	std::shared_ptr<RecordedMethodBody<R, arglist...>> buildInitialMethodBody() {
-		auto initialMethodBehavior = [](const arglist&... args)->R {return DefaultValue::value<R>();};
 		std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody { new RecordedMethodBody<R, arglist...>() };
-		recordedMethodBody->appendDo(initialMethodBehavior);
 		return recordedMethodBody;
 	}
 
@@ -139,17 +137,16 @@ public:
 					new UserDefinedInvocationMatcher<arglist...>(matcher)});
 	}
 
-	void FirstAction(std::function<R(arglist...)> method) {
-		recordedMethodBody->clear();
+	void AppendAction(std::function<R(arglist...)> method) {
 		recordedMethodBody->appendDo(method);
 	}
 
-	void AnotherAction(std::function<R(arglist...)> method) {
-		recordedMethodBody->appendDo(method);
+	void LastAction(std::function<R(arglist...)> method) {
+		recordedMethodBody->LastDo(method);
 	}
 
 	void operator=(std::function<R(arglist...)> method) {
-		MethodStubbingBase<C, R, arglist...>::FirstAction(method);
+		MethodStubbingBase<C, R, arglist...>::AppendAction(method);
 		MethodStubbingBase<C, R, arglist...>::apply();
 	}
 

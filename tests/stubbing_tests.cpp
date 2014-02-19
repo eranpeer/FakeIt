@@ -94,7 +94,7 @@ struct BasicStubbing: tpunit::TestFixture {
 			ASSERT_EQUAL(std::string("proc exception"), e);
 		}
 	}
-
+//
 	void stub_a_method_with_lambda_delegate() {
 		Mock<SomeInterface> mock;
 
@@ -271,14 +271,14 @@ struct BasicStubbing: tpunit::TestFixture {
 		Mock<SomeInterface> mock;
 		std::queue<int> q( { 1, 2 });
 
-		When(mock[&SomeInterface::func]).Do([&](...) {int rv = q.front(); q.pop(); return rv;});
+		When(mock[&SomeInterface::func]).AlwaysDo([&](...) {int rv = q.front(); q.pop(); return rv;});
 
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(1, i.func(0));
 		ASSERT_EQUAL(2, i.func(0));
 	}
-
+//
 	void stub_multiple_throws() {
 
 		Mock<SomeInterface> mock;

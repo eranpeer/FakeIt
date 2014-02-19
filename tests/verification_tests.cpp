@@ -397,7 +397,7 @@ struct BasicVerification: tpunit::TestFixture {
 	void use_same_filter_for_both_stubbing_and_verification() {
 		Mock<SomeInterface> mock;
 		auto any_func_invocation = mock[&SomeInterface::func];
-		When(any_func_invocation).Return(1);
+		When(any_func_invocation).AlwaysReturn(1);
 		SomeInterface &i = mock.get();
 		i.func(1);
 		i.func(1);
