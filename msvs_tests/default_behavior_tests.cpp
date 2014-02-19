@@ -215,7 +215,7 @@ namespace stubbing_tests
 		TEST_METHOD(OverrideDefualtBehavior_NotDefaultConstructible)
 		{
 			Mock<NonDefaultConstructibleFunctions> mock;
-			When(mock[&NonDefaultConstructibleFunctions::notDefaultConstructibleFunc]).Return(NotDefaultConstructible(1));
+			When(mock[&NonDefaultConstructibleFunctions::notDefaultConstructibleFunc]).AlwaysReturn(NotDefaultConstructible(1));
 			NonDefaultConstructibleFunctions& i = mock.get();
 			Assert::IsTrue(NotDefaultConstructible(1) == i.notDefaultConstructibleFunc());
 			Assert::IsFalse(NotDefaultConstructible(2) == i.notDefaultConstructibleFunc());
@@ -251,8 +251,8 @@ namespace stubbing_tests
 		TEST_METHOD(OverideDefualtBehaviorMatchAllInvocations)
 		{
 			Mock<SomeInterface> mock;
-			When(mock[&SomeInterface::proc]).Throw(std::string());
-			When(mock[&SomeInterface::func]).Return(1);
+			When(mock[&SomeInterface::proc]).AlwaysThrow(std::string());
+			When(mock[&SomeInterface::func]).AlwaysReturn(1);
 			SomeInterface& i = mock.get();
 			
  			Assert::ExpectException<std::string>([&](){i.proc(1); });
@@ -264,8 +264,8 @@ namespace stubbing_tests
 		TEST_METHOD(OverideDefualtBehaviorMatchAllInvocations_WithDo)
 		{
 			Mock<SomeInterface> mock;
-			When(mock[&SomeInterface::proc]).Do([](...){throw std::string(); });
-			When(mock[&SomeInterface::func]).Do([](...){return 1; });
+			When(mock[&SomeInterface::proc]).AlwaysDo([](...){throw std::string(); });
+			When(mock[&SomeInterface::func]).AlwaysDo([](...){return 1; });
 			SomeInterface& i = mock.get();
 
 			Assert::ExpectException<std::string>([&](){i.proc(1); });

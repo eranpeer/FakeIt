@@ -146,7 +146,7 @@ public:
 	}
 
 	void operator=(std::function<R(arglist...)> method) {
-		MethodStubbingBase<C, R, arglist...>::AppendAction(method);
+		MethodStubbingBase<C, R, arglist...>::LastAction(method);
 		MethodStubbingBase<C, R, arglist...>::apply();
 	}
 
