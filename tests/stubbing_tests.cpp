@@ -259,7 +259,7 @@ struct BasicStubbing: tpunit::TestFixture {
 	void stub_multiple_return_values() {
 		Mock<SomeInterface> mock;
 
-		When(mock[&SomeInterface::func]).Return(1).ThenReturn(2);
+		When(mock[&SomeInterface::func]).Return(1).Return(2);
 
 		SomeInterface &i = mock.get();
 
@@ -283,8 +283,8 @@ struct BasicStubbing: tpunit::TestFixture {
 
 		Mock<SomeInterface> mock;
 
-		When(mock[&SomeInterface::func]).Throw(std::string("A")).ThenThrow(std::string("B"));
-		When(mock[&SomeInterface::proc]).Throw(std::string("A")).ThenThrow(std::string("B"));
+		When(mock[&SomeInterface::func]).Throw(std::string("A")).Throw(std::string("B"));
+		When(mock[&SomeInterface::proc]).Throw(std::string("A")).Throw(std::string("B"));
 
 		SomeInterface &i = mock.get();
 

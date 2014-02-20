@@ -58,12 +58,7 @@ public:
 
 		virtual ~FunctionProgress() = default;
 
-		NextFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-			root.AppendAction(method);
-			return *this;
-		}
-
-		NextFunctionStubbingProgress<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
+		FirstFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 			root.AppendAction(method);
 			return *this;
 		}
@@ -95,12 +90,7 @@ public:
 
 		virtual ~ProcedureProgress() override = default;
 
-		NextProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-			root.AppendAction(method);
-			return *this;
-		}
-
-		NextProcedureStubbingProgress<R, arglist...>& ThenDo(std::function<R(arglist...)> method) override {
+		FirstProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 			root.AppendAction(method);
 			return *this;
 		}

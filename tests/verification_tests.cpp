@@ -403,7 +403,7 @@ struct BasicVerification: tpunit::TestFixture {
 		i.func(1);
 		Verify(2 * any_func_invocation);
 	}
-//
+
 	void verify_after_paramter_was_changed__with_Matching() {
 		Mock<SomeInterface> mock;
 		auto any_A_with_state_1 = mock[&SomeInterface::proc2].Matching([](const A& a)->bool {
