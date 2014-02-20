@@ -251,14 +251,14 @@ namespace mock4cpp_tests
 			Mock<SomeInterface> mock;
 			When(mock[&SomeInterface::func])
 				.Return(1)
-				.ThenReturn(2)
-				.ThenDo([](...){return 3; })
-				.ThenDo(&defaultFuncBehavior);
+				.Return(2)
+				.Do([](...){return 3; })
+				.Do(&defaultFuncBehavior);
 			When(mock[&SomeInterface::proc]).Return()
-				.ThenThrow(std::string("error"))
-				.ThenReturn()
-				.ThenDo([](...){})
-				.ThenDo(&defaultProcBehavior);
+				.Throw(std::string("error"))
+				.Return()
+				.Do([](...){})
+				.Do(&defaultProcBehavior);
 
 			SomeInterface &i = mock.get();
 
