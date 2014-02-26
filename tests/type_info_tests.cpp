@@ -32,7 +32,7 @@ struct TypeInfoTests : tpunit::TestFixture {
 		ASSERT_EQUAL(typeid(mock.get()), typeid(SomeInterface));
 	}
 
-	struct Demo {
+	struct ConcreteType {
 		int demo;
 		virtual int f() { return 0; };
 	};
@@ -94,9 +94,9 @@ struct TypeInfoTests : tpunit::TestFixture {
 
 	void dynamic_cast_to_same_type__with_concrete_type()
 	{
-		Mock<Demo> mockDemo;
-		Demo* mockDemoPtr = &mockDemo.get();
-		Demo* mockDemoPtr2 = dynamic_cast<Demo*>(mockDemoPtr);
+		Mock<ConcreteType> mockDemo;
+		ConcreteType* mockDemoPtr = &mockDemo.get();
+		ConcreteType* mockDemoPtr2 = dynamic_cast<ConcreteType*>(mockDemoPtr);
 		ASSERT_EQUAL(mockDemoPtr, mockDemoPtr2);
 	}
 
