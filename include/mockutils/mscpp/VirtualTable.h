@@ -12,7 +12,7 @@ typedef unsigned long DWORD;
 struct TypeDescriptor {
 	TypeDescriptor() :
 			ptrToVTable(0), spare(0) {
-		// ptrToVTable should ontain the pointer to the virtual table of the type type_info!!!
+		// ptrToVTable should contain the pointer to the virtual table of the type type_info!!!
 		int ** tiVFTPtr = (int**) (&typeid(void));
 		int * i = (int*) tiVFTPtr[0];
 		int type_info_vft_ptr = (int) i;
