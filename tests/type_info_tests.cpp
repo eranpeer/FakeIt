@@ -57,17 +57,18 @@ struct TypeInfoTests : tpunit::TestFixture {
 		virtual int r() override = 0;
 	};
 
-	struct A : public Left, public Right 
+	struct A : public Left
+	//, public Right
 	{
 		int a;
 		virtual int l() override { return 0; };
-		virtual int r() override { return 0; };
+		//virtual int r() override { return 0; };
 	};
 
 	void simple_inheritance_upcast() {
 
 		Mock<A> aMock;
-		aMock.enableRtti<Right>();
+		aMock.enableRtti<Left>();
 		A& a = aMock.get();
 		Stub(aMock[&A::l]);
 
