@@ -25,33 +25,21 @@ struct DynamicProxy {
 
 	DynamicProxy(std::function<void()> unmockedMethodCallHandler) :
 			vtable(), methodMocks(), unmockedMethodCallHandler { unmockedMethodCallHandler } {
-		initVirtualTable(vtable);
+		initVirtualTable(&vtable);
 		initializeDataMembersArea();
-	}
-
-	template <typename T>
-	void initVirtualTable(VirtualTable<30, T>& vtable)
-	{
-		auto mptr = union_cast<void*>(&DynamicProxy::unmocked);
-		for (unsigned int i = 0; i < vtable.getSize(); i++) {
-			vtable.setMethod(i, mptr);
-		}
 	}
 
 	template <typename BaseClass>
 	void enableRtti(){
 		C* ptr = (C*)(unsigned int)1;
 		BaseClass* basePtr = ptr;
-		unsigned long delta = (unsigned long)basePtr - (unsigned long)ptr;
+		int delta = (unsigned long)basePtr - (unsigned long)ptr;
 		if (delta > 0){
 			// base class does not start on same position as derived class.
 			// this is multiple inheritance.
 			// need to create a new virtual table for base class.
-			auto virtTablePtr = instanceArea + delta;
-			VirtualTable<30, BaseClass>* baseVirtualTable = new VirtualTable<30, BaseClass>();
-			initVirtualTable(*baseVirtualTable);
-			VirtualTable<30, BaseClass>* virtualTablePtrInObjectData = (VirtualTable<30, BaseClass>*)virtTablePtr;
-			*virtualTablePtrInObjectData = *baseVirtualTable;
+			// addVirtualTable<BaseClass>(delta);
+			throw std::invalid_argument(std::string("multiple inheritance is not supported"));
 		}
 		this->vtable.enableRtti<BaseClass>();
 	}
@@ -193,6 +181,25 @@ private:
 	DATA_TYPE getMethodMock(unsigned int offset) {
 		std::shared_ptr<Destructable> ptr = methodMocks[offset];
 		return dynamic_cast<DATA_TYPE>(ptr.get());
+	}
+
+	template <typename T>
+	void initVirtualTable(VirtualTable<30, T>* vtable)
+	{
+		auto mptr = union_cast<void*>(&DynamicProxy::unmocked);
+		for (unsigned int i = 0; i < vtable->getSize(); i++) {
+			vtable->setMethod(i, mptr);
+		}
+	}
+
+	template <typename T>
+	void addVirtualTable(int delta)
+	{
+		auto virtTablePtr = (char *)&get() + delta;
+		VirtualTable<30, T>* baseVirtualTable = new VirtualTable<30, T>();
+		addVirtualTable(*baseVirtualTable);
+		VirtualTable<30, T>* virtualTablePtrInObjectData = (VirtualTable<30, T>*)virtTablePtr;
+		*virtualTablePtrInObjectData = *baseVirtualTable;
 	}
 
 };

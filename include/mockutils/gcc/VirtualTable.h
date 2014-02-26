@@ -7,7 +7,7 @@ namespace fakeit {
 template<int SIZE, class C>
 struct VirtualTable {
 
-	//static_assert(is_simple_inheritance_layout<C>::value, "Can't mock a type with multiple inheritance");
+	static_assert(is_simple_inheritance_layout<C>::value, "Can't mock a type with multiple inheritance");
 
 	VirtualTable() {
 
