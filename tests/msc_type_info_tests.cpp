@@ -1,3 +1,5 @@
+#ifdef _WIN32
+
 #include <string>
 #include <iostream>
 #include <stdexcept>
@@ -124,3 +126,5 @@ struct MscTypeInfoTests : tpunit::TestFixture {
 	}
 
 } __MscTypeInfoTests;
+
+#endif
