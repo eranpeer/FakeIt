@@ -315,6 +315,9 @@ struct BasicStubbing: tpunit::TestFixture {
 
 		ASSERT_EQUAL(1, i.func(0));
 		ASSERT_EQUAL(2, i.func(0));
+
+		ASSERT_THROW(i.func(0), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.func(0), fakeit::UnmockedMethodCallException);
 	}
 
 	void stub_multiple_return_values_using_quque() {
