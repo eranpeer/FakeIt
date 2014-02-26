@@ -19,7 +19,10 @@ struct TypeInfoTests : tpunit::TestFixture {
 	TEST(TypeInfoTests::dynamic_cast_to_same_type__with_concrete_type),
 	TEST(TypeInfoTests::dynamic_cast_to_same_type__with_abstract_type),
 	TEST(TypeInfoTests::simple_inheritance_dynamic_down_cast) //
+<<<<<<< HEAD
 	//TEST(TypeInfoTests::try_type_info)//
+=======
+>>>>>>> dfa783b6a8fecadace3c6da353ca52570dcf80c1
 	)  //
 	{
 	}
@@ -109,6 +112,7 @@ struct TypeInfoTests : tpunit::TestFixture {
 		ASSERT_EQUAL(ptr, ptr2);
 	}
 
+<<<<<<< HEAD
 //	template <typename C>
 //	std::string to_string(struct RTTICompleteObjectLocator<C>* pObjectLocator){
 //		return to_string(pObjectLocator->pClassDescriptor);
@@ -217,4 +221,6 @@ struct TypeInfoTests : tpunit::TestFixture {
 //	}
 
 
+=======
+>>>>>>> dfa783b6a8fecadace3c6da353ca52570dcf80c1
 } __TypeInfoTests;
