@@ -18,8 +18,8 @@ struct TypeInfoTests : tpunit::TestFixture {
 	TEST(TypeInfoTests::simple_inheritance_upcast), //
 	TEST(TypeInfoTests::dynamic_cast_to_same_type__with_concrete_type),
 	TEST(TypeInfoTests::dynamic_cast_to_same_type__with_abstract_type),
-	TEST(TypeInfoTests::simple_inheritance_dynamic_down_cast), //
-	TEST(TypeInfoTests::try_type_info)//
+	TEST(TypeInfoTests::simple_inheritance_dynamic_down_cast) //
+	//TEST(TypeInfoTests::try_type_info)//
 	)  //
 	{
 	}
@@ -109,22 +109,22 @@ struct TypeInfoTests : tpunit::TestFixture {
 		ASSERT_EQUAL(ptr, ptr2);
 	}
 
-	template <typename C>
-	std::string to_string(struct RTTICompleteObjectLocator<C>* pObjectLocator){
-		return to_string(pObjectLocator->pClassDescriptor);
-	}
-
-	template <typename C>
-	std::string to_string(struct RTTIClassHierarchyDescriptor<C>* pClassDescriptor){
-		std::string result;
-		result += "RTTIClassHierarchyDescriptor {\nnumBaseClasses:"+ std::to_string(pClassDescriptor->numBaseClasses);
-		for (unsigned long i = 0; i < pClassDescriptor->numBaseClasses; i++){
-			RTTIBaseClassDescriptor * baseClassDesc = pClassDescriptor->pBaseClassArray[i];
-			result += "\n";
-			result += "RTTIBaseClassDescriptor {numContainedBases:" + std::to_string(baseClassDesc->numContainedBases) + "}";
-		}
-		return result;
-	}
+//	template <typename C>
+//	std::string to_string(struct RTTICompleteObjectLocator<C>* pObjectLocator){
+//		return to_string(pObjectLocator->pClassDescriptor);
+//	}
+//
+//	template <typename C>
+//	std::string to_string(struct RTTIClassHierarchyDescriptor<C>* pClassDescriptor){
+//		std::string result;
+//		result += "RTTIClassHierarchyDescriptor {\nnumBaseClasses:"+ std::to_string(pClassDescriptor->numBaseClasses);
+//		for (unsigned long i = 0; i < pClassDescriptor->numBaseClasses; i++){
+//			RTTIBaseClassDescriptor * baseClassDesc = pClassDescriptor->pBaseClassArray[i];
+//			result += "\n";
+//			result += "RTTIBaseClassDescriptor {numContainedBases:" + std::to_string(baseClassDesc->numContainedBases) + "}";
+//		}
+//		return result;
+//	}
 
 	class Dclass
 	{
@@ -167,54 +167,54 @@ struct TypeInfoTests : tpunit::TestFixture {
 	{
 	};
 
-	void try_type_info()
-	{
-		Demo * demo = new Demo();
-		Mock<Demo> mockDemo;
-		Demo* mockDemoPtr = &mockDemo.get();
-		Demo* mockDemoPtr2 = dynamic_cast<Demo*>(mockDemoPtr);
-
-		A* aPtr = new A;
-		Dclass* dPtr = new Dclass;
-		//Aclass* aPtr=new Bclass;
-		Aclass* cPtr = new Cclass;
-		int ** aVFTPtr = (int**)(aPtr);
-		RTTICompleteObjectLocator<A>  aObjectLocatorPtr =
-			*((RTTICompleteObjectLocator<A> *)(*((int*)aVFTPtr[0] - 1)));
-
-		std::string aStr = to_string(&aObjectLocatorPtr);
-
-		int ** cVFTPtr = (int**)(cPtr);
-		RTTICompleteObjectLocator<Cclass>  cObjectLocatorPtr =
-			*((RTTICompleteObjectLocator<Cclass> *)(*((int*)cVFTPtr[0] - 1)));
-
-		int ** dVFTPtr = (int**)(dPtr);
-		RTTICompleteObjectLocator<Dclass>  dObjectLocatorPtr =
-			*((RTTICompleteObjectLocator<Dclass> *)(*((int*)dVFTPtr[0] - 1)));
-
-
-		unsigned long l1 = (unsigned long)aVFTPtr;
-		unsigned long l2 = (unsigned long)aPtr;
-
-		std::string classname(aObjectLocatorPtr.pTypeDescriptor->name());
-		classname = classname.substr(4, classname.find("@@") - 4);
-		std::cout << classname << std::endl;
-		const type_info& ti_aPtr = typeid(aPtr);
-		const type_info& ti_Aclass = typeid(Aclass);
-		const type_info& ti_Bclass = typeid(Bclass);
-		const type_info& ti_Cclass = typeid(Cclass);
-		const type_info& ti_Cclass2 = typeid(Cclass);
-
-		const type_info* ti_Cclassptr = &ti_Cclass;
-		const type_info* ti_Cclass2ptr = &ti_Cclass2;
-
-		int ** tiVFTPtr = (int**)(&typeid(void));
-		int * i = (int*)tiVFTPtr[0];
-		int type_info_vft_ptr = (int)i;
-
-		RTTICompleteObjectLocator<void>  tiObjectLocatorPtr =
-			*((RTTICompleteObjectLocator<void> *)(*((int*)tiVFTPtr[0] - 1)));
-	}
+//	void try_type_info()
+//	{
+//		Demo * demo = new Demo();
+//		Mock<Demo> mockDemo;
+//		Demo* mockDemoPtr = &mockDemo.get();
+//		Demo* mockDemoPtr2 = dynamic_cast<Demo*>(mockDemoPtr);
+//
+//		A* aPtr = new A;
+//		Dclass* dPtr = new Dclass;
+//		//Aclass* aPtr=new Bclass;
+//		Aclass* cPtr = new Cclass;
+//		int ** aVFTPtr = (int**)(aPtr);
+//		RTTICompleteObjectLocator<A>  aObjectLocatorPtr =
+//			*((RTTICompleteObjectLocator<A> *)(*((int*)aVFTPtr[0] - 1)));
+//
+//		std::string aStr = to_string(&aObjectLocatorPtr);
+//
+//		int ** cVFTPtr = (int**)(cPtr);
+//		RTTICompleteObjectLocator<Cclass>  cObjectLocatorPtr =
+//			*((RTTICompleteObjectLocator<Cclass> *)(*((int*)cVFTPtr[0] - 1)));
+//
+//		int ** dVFTPtr = (int**)(dPtr);
+//		RTTICompleteObjectLocator<Dclass>  dObjectLocatorPtr =
+//			*((RTTICompleteObjectLocator<Dclass> *)(*((int*)dVFTPtr[0] - 1)));
+//
+//
+//		unsigned long l1 = (unsigned long)aVFTPtr;
+//		unsigned long l2 = (unsigned long)aPtr;
+//
+//		std::string classname(aObjectLocatorPtr.pTypeDescriptor->name());
+//		classname = classname.substr(4, classname.find("@@") - 4);
+//		std::cout << classname << std::endl;
+//		const type_info& ti_aPtr = typeid(aPtr);
+//		const type_info& ti_Aclass = typeid(Aclass);
+//		const type_info& ti_Bclass = typeid(Bclass);
+//		const type_info& ti_Cclass = typeid(Cclass);
+//		const type_info& ti_Cclass2 = typeid(Cclass);
+//
+//		const type_info* ti_Cclassptr = &ti_Cclass;
+//		const type_info* ti_Cclass2ptr = &ti_Cclass2;
+//
+//		int ** tiVFTPtr = (int**)(&typeid(void));
+//		int * i = (int*)tiVFTPtr[0];
+//		int type_info_vft_ptr = (int)i;
+//
+//		RTTICompleteObjectLocator<void>  tiObjectLocatorPtr =
+//			*((RTTICompleteObjectLocator<void> *)(*((int*)tiVFTPtr[0] - 1)));
+//	}
 
 
 } __TypeInfoTests;
