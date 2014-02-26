@@ -68,7 +68,6 @@ struct TypeInfoTests : tpunit::TestFixture {
 	void simple_inheritance_upcast() {
 
 		Mock<A> aMock;
-		aMock.enableRtti<Left>();
 		A& a = aMock.get();
 		Stub(aMock[&A::l]);
 
