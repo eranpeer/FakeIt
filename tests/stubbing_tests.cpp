@@ -26,7 +26,8 @@ struct BasicStubbing: tpunit::TestFixture {
 					TEST(BasicStubbing::change_method_behavior_with_functor_matcher),  //
 					TEST(BasicStubbing::stub_multiple_return_values), //
 					TEST(BasicStubbing::stub_multiple_return_values_using_quque), //
-					TEST(BasicStubbing::stub_multiple_throws)
+					TEST(BasicStubbing::stub_multiple_throws),
+					TEST(BasicStubbing::stub_overloaded_methods)
 					//
 							) {
 	}
@@ -363,6 +364,30 @@ struct BasicStubbing: tpunit::TestFixture {
 		} catch (std::string & e) {
 			ASSERT_EQUAL(std::string("B"), e);
 		}
+	}
+
+	struct OverloadedInterface {
+		virtual int func() = 0;
+		virtual int func(int) = 0;
+		virtual int func(bool) = 0;
+	};
+
+	void stub_overloaded_methods() {
+		Mock<OverloadedInterface> mock;
+
+		int (OverloadedInterface::*void_method_ptr)() = &OverloadedInterface::func;
+		int (OverloadedInterface::*int_method_ptr)(int) = &OverloadedInterface::func;
+		int (OverloadedInterface::*bool_method_ptr)(bool) = &OverloadedInterface::func;
+
+		Stub(mock[void_method_ptr]);
+		Stub(mock[int_method_ptr]);
+		Stub(mock[bool_method_ptr]);
+
+		OverloadedInterface &i = mock.get();
+
+		ASSERT_EQUAL(0, i.func());
+		ASSERT_EQUAL(0, i.func(1));
+		ASSERT_EQUAL(0, i.func(true));
 	}
 
 } __BasicStubbing;

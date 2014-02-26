@@ -25,11 +25,35 @@ struct DynamicProxy {
 
 	DynamicProxy(std::function<void()> unmockedMethodCallHandler) :
 			vtable(), methodMocks(), unmockedMethodCallHandler { unmockedMethodCallHandler } {
+		initVirtualTable(vtable);
+		initializeDataMembersArea();
+	}
+
+	template <typename T>
+	void initVirtualTable(VirtualTable<30, T>& vtable)
+	{
 		auto mptr = union_cast<void*>(&DynamicProxy::unmocked);
 		for (unsigned int i = 0; i < vtable.getSize(); i++) {
 			vtable.setMethod(i, mptr);
 		}
-		initializeDataMembersArea();
+	}
+
+	template <typename BaseClass>
+	void enableRtti(){
+		C* ptr = (C*)(unsigned int)1;
+		BaseClass* basePtr = ptr;
+		unsigned long delta = (unsigned long)basePtr - (unsigned long)ptr;
+		if (delta > 0){
+			// base class does not start on same position as derived class.
+			// this is multiple inheritance.
+			// need to create a new virtual table for base class.
+			auto virtTablePtr = instanceArea + delta;
+			VirtualTable<30, BaseClass>* baseVirtualTable = new VirtualTable<30, BaseClass>();
+			initVirtualTable(*baseVirtualTable);
+			VirtualTable<30, BaseClass>* virtualTablePtrInObjectData = (VirtualTable<30, BaseClass>*)virtTablePtr;
+			*virtualTablePtrInObjectData = *baseVirtualTable;
+		}
+		this->vtable.enableRtti<BaseClass>();
 	}
 
 	~DynamicProxy() {
@@ -132,7 +156,7 @@ private:
 	// Here we alloc too many bytes since sizeof(C) includes the pointer to the virtual table.
 	// Should be sizeof(C) - ptr_size.
 	// No harm is done if we alloc more space for data but don't use it.
-	char instanceMembersArea[sizeof(C)];
+	char instanceArea[sizeof(C)];
 
 	std::array<std::shared_ptr<Destructable>, 30> methodMocks;
 	std::vector<std::shared_ptr<Destructable>> members;
@@ -161,8 +185,8 @@ private:
 	}
 
 	void initializeDataMembersArea() {
-		for (int i = 0; i < sizeof(instanceMembersArea); i++)
-			instanceMembersArea[i] = (char) 0;
+		for (int i = 0; i < sizeof(instanceArea); i++)
+			instanceArea[i] = (char) 0;
 	}
 
 	template<typename DATA_TYPE>

@@ -99,7 +99,8 @@ struct VirtualOffsetSelector {
 
 	template<typename M>
 	void * create(const M vMethod) {
-		auto sMethod = reinterpret_cast<void * (VirtualOffsetSelector::*)()>(vMethod);
+		auto sMethod = union_cast<void * (VirtualOffsetSelector::*)()>(vMethod);
+		//auto sMethod = reinterpret_cast<void * (VirtualOffsetSelector::*)()>(vMethod);
 		auto selectMethod = std::bind(sMethod, this);
 		return selectMethod();
 	}
