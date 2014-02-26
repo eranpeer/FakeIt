@@ -27,6 +27,10 @@ struct VirtualTable {
 		delete[] firstMethod;
 	}
 
+	template <typename BaseClass>
+	void enableRtti(){
+	}
+
 	void setMethod(unsigned int index, void *method) {
 		if (index >= SIZE) {
 			throw "error";

@@ -70,6 +70,11 @@ public:
 			MockObject { }, instance { [] {throw UnmockedMethodCallException {};} } {
 	}
 
+	template <typename BaseClass>
+	void enableRtti(){
+		this->instance.enableRtti<BaseClass>();
+	}
+
 	/**
 	 * Return all actual invocations of this mock.
 	 */
