@@ -168,7 +168,7 @@ private:
 		return dynamic_cast<DATA_TYPE>(ptr.get());
 	}
 
-	template <typename T, typename... baseclasses>
+	template <typename T>
 	void initVirtualTable(VirtualTable<30, T, baseclasses...>* vtable)
 	{
 		auto mptr = union_cast<void*>(&DynamicProxy::unmocked);
@@ -177,15 +177,15 @@ private:
 		}
 	}
 
-	template <typename T, typename... baseclasses>
-	void addVirtualTable(int delta)
-	{
-		auto virtTablePtr = (char *)&get() + delta;
-		VirtualTable<30, T>* baseVirtualTable = new VirtualTable<30, T, baseclasses...>();
-		initVirtualTable(*baseVirtualTable);
-		VirtualTable<30, T>* virtualTablePtrInObjectData = (VirtualTable<30, T, baseclasses...>*)virtTablePtr;
-		*virtualTablePtrInObjectData = *baseVirtualTable;
-	}
+//	template <typename T, typename... baseclasses>
+//	void addVirtualTable(int delta)
+//	{
+//		auto virtTablePtr = (char *)&get() + delta;
+//		VirtualTable<30, T>* baseVirtualTable = new VirtualTable<30, T, baseclasses...>();
+//		initVirtualTable(*baseVirtualTable);
+//		VirtualTable<30, T>* virtualTablePtrInObjectData = (VirtualTable<30, T, baseclasses...>*)virtTablePtr;
+//		*virtualTablePtrInObjectData = *baseVirtualTable;
+//	}
 
 
 	template <typename BaseClass>
