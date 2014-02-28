@@ -25,7 +25,7 @@ struct DynamicProxy {
 
 	DynamicProxy(std::function<void()> unmockedMethodCallHandler) :
 		vtable(), methodMocks(), unmockedMethodCallHandler{ unmockedMethodCallHandler } {
-		initVirtualTable(&vtable);
+		initVirtualTable<C>(&vtable);
 		initializeDataMembersArea();
 	}
 
