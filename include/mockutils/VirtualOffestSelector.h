@@ -97,11 +97,72 @@ struct VirtualOffsetSelector {
 	virtual OFFSET_CONSUMER<29> * offset29() {
 		return new OFFSET_CONSUMER<29>();
 	}
+	virtual OFFSET_CONSUMER<30> * offset30() {
+		return new OFFSET_CONSUMER<30>();
+	}
+	virtual OFFSET_CONSUMER<31> * offset31() {
+		return new OFFSET_CONSUMER<31>();
+	}
+	virtual OFFSET_CONSUMER<32> * offset32() {
+		return new OFFSET_CONSUMER<32>();
+	}
+	virtual OFFSET_CONSUMER<33> * offset33() {
+		return new OFFSET_CONSUMER<33>();
+	}
+	virtual OFFSET_CONSUMER<34> * offset34() {
+		return new OFFSET_CONSUMER<34>();
+	}
+	virtual OFFSET_CONSUMER<35> * offset35() {
+		return new OFFSET_CONSUMER<35>();
+	}
+	virtual OFFSET_CONSUMER<36> * offset36() {
+		return new OFFSET_CONSUMER<36>();
+	}
+	virtual OFFSET_CONSUMER<37> * offset37() {
+		return new OFFSET_CONSUMER<37>();
+	}
+	virtual OFFSET_CONSUMER<38> * offset38() {
+		return new OFFSET_CONSUMER<38>();
+	}
+	virtual OFFSET_CONSUMER<39> * offset39() {
+		return new OFFSET_CONSUMER<39>();
+	}
+	virtual OFFSET_CONSUMER<40> * offset40() {
+		return new OFFSET_CONSUMER<40>();
+	}
+	virtual OFFSET_CONSUMER<41> * offset41() {
+		return new OFFSET_CONSUMER<41>();
+	}
+	virtual OFFSET_CONSUMER<42> * offset42() {
+		return new OFFSET_CONSUMER<42>();
+	}
+	virtual OFFSET_CONSUMER<43> * offset43() {
+		return new OFFSET_CONSUMER<43>();
+	}
+	virtual OFFSET_CONSUMER<44> * offset44() {
+		return new OFFSET_CONSUMER<44>();
+	}
+	virtual OFFSET_CONSUMER<45> * offset45() {
+		return new OFFSET_CONSUMER<45>();
+	}
+	virtual OFFSET_CONSUMER<46> * offset46() {
+		return new OFFSET_CONSUMER<46>();
+	}
+	virtual OFFSET_CONSUMER<47> * offset47() {
+		return new OFFSET_CONSUMER<47>();
+	}
+	virtual OFFSET_CONSUMER<48> * offset48() {
+		return new OFFSET_CONSUMER<48>();
+	}
+	virtual OFFSET_CONSUMER<49> * offset49() {
+		return new OFFSET_CONSUMER<49>();
+	}
+
 
 	template<typename M>
 	void * create(const M vMethod) {
-		auto sMethod = union_cast<void * (VirtualOffsetSelector::*)()>(vMethod);
-		//auto sMethod = reinterpret_cast<void * (VirtualOffsetSelector::*)()>(vMethod);
+		//auto sMethod = union_cast<void * (VirtualOffsetSelector::*)()>(vMethod);
+		auto sMethod = reinterpret_cast<void * (VirtualOffsetSelector::*)()>(vMethod);
 		auto selectMethod = std::bind(sMethod, this);
 		return selectMethod();
 	}

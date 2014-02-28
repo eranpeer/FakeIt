@@ -124,14 +124,14 @@ private:
 		}
 	};
 
-	VirtualTable<30, C, baseclasses...> vtable;
+	VirtualTable<50, C, baseclasses...> vtable;
 
 	// Here we alloc too many bytes since sizeof(C) includes the pointer to the virtual table.
 	// Should be sizeof(C) - ptr_size.
 	// No harm is done if we alloc more space for data but don't use it.
 	char instanceArea[sizeof(C)];
 
-	std::array<std::shared_ptr<Destructable>, 30> methodMocks;
+	std::array<std::shared_ptr<Destructable>, 50> methodMocks;
 	std::vector<std::shared_ptr<Destructable>> members;
 	std::function<void()> unmockedMethodCallHandler;
 
@@ -169,7 +169,7 @@ private:
 	}
 
 	template <typename T>
-	void initVirtualTable(VirtualTable<30, T, baseclasses...>* vtable)
+	void initVirtualTable(VirtualTable<50, T, baseclasses...>* vtable)
 	{
 		auto mptr = union_cast<void*>(&DynamicProxy::unmocked);
 		for (unsigned int i = 0; i < vtable->getSize(); i++) {
@@ -181,9 +181,9 @@ private:
 //	void addVirtualTable(int delta)
 //	{
 //		auto virtTablePtr = (char *)&get() + delta;
-//		VirtualTable<30, T>* baseVirtualTable = new VirtualTable<30, T, baseclasses...>();
+//		VirtualTable<50, T>* baseVirtualTable = new VirtualTable<50, T, baseclasses...>();
 //		initVirtualTable(*baseVirtualTable);
-//		VirtualTable<30, T>* virtualTablePtrInObjectData = (VirtualTable<30, T, baseclasses...>*)virtTablePtr;
+//		VirtualTable<50, T>* virtualTablePtrInObjectData = (VirtualTable<50, T, baseclasses...>*)virtTablePtr;
 //		*virtualTablePtrInObjectData = *baseVirtualTable;
 //	}
 
