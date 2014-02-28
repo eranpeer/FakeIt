@@ -81,8 +81,7 @@ struct TypeInfoTests : tpunit::TestFixture {
 
 	void simple_inheritance_dynamic_down_cast() {
 		
-		Mock<A> aMock;
-		aMock.enableRtti<Left>();
+		Mock<A, Left, TopLeft> aMock;
 		Stub(aMock[&A::l]);
 		A& a = aMock.get();
 		Left* left = &a;
@@ -91,11 +90,11 @@ struct TypeInfoTests : tpunit::TestFixture {
 		A* aPtr = dynamic_cast<A*>(left);
  		ASSERT_EQUAL(0, aPtr->l());
 
-		aPtr = dynamic_cast<A*>(topLeft);
- 		ASSERT_EQUAL(0, aPtr->l());
-
- 		left = dynamic_cast<Left*>(topLeft);
- 		ASSERT_EQUAL(0, left->l());
+ 		aPtr = dynamic_cast<A*>(topLeft);
+  		ASSERT_EQUAL(0, aPtr->l());
+ 
+  		left = dynamic_cast<Left*>(topLeft);
+  		ASSERT_EQUAL(0, left->l());
 	}
 
 	void dynamic_cast_to_same_type__with_concrete_type()

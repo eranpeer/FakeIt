@@ -13,13 +13,13 @@
 
 using namespace fakeit;
 
-template<typename C>
+template<typename C, typename... baseclasses>
 class Mock: private MockObject, public virtual ActualInvocationsSource {
 private:
-	DynamicProxy<C> instance;
+	DynamicProxy<C, baseclasses...> instance;
 
 	template<typename R, typename ... arglist>
-	MethodMock<C, R, arglist...>& stubMethodIfNotStubbed(DynamicProxy<C> &instance, R (C::*vMethod)(arglist...)) {
+	MethodMock<C, R, arglist...>& stubMethodIfNotStubbed(DynamicProxy<C, baseclasses...> &instance, R(C::*vMethod)(arglist...)) {
 		if (!instance.isStubbed(vMethod)) {
 			auto methodMock = std::shared_ptr<MethodInvocationHandler<R, arglist...>> { new MethodMock<C, R, arglist...>(*this, vMethod) };
 			instance.stubMethod(vMethod, methodMock);
@@ -31,10 +31,10 @@ private:
 
 	template<typename R, typename ... arglist>
 	class StubbingContextImpl: public StubbingContext<C, R, arglist...> {
-		Mock<C>& mock;
+		Mock<C, baseclasses...>& mock;
 		R (C::*vMethod)(arglist...);
 	public:
-		StubbingContextImpl(Mock<C>& mock, R (C::*vMethod)(arglist...)) :
+		StubbingContextImpl(Mock<C, baseclasses...>& mock, R (C::*vMethod)(arglist...)) :
 				mock(mock), vMethod(vMethod) {
 		}
 		virtual MethodMock<C, R, arglist...>& getMethodMock() override {
@@ -68,11 +68,6 @@ public:
 
 	Mock() :
 			MockObject { }, instance { [] {throw UnmockedMethodCallException {};} } {
-	}
-
-	template <typename BaseClass>
-	void enableRtti(){
-		this->instance.enableRtti<BaseClass>();
 	}
 
 	/**

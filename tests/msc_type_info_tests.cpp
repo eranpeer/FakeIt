@@ -24,13 +24,13 @@ struct MscTypeInfoTests : tpunit::TestFixture {
 		virtual int func(int) = 0;
 	};
 
-	template <typename C>
-	std::string to_string(struct RTTICompleteObjectLocator<C>* pObjectLocator){
+	template <typename C, typename... baseclasses>
+	std::string to_string(struct RTTICompleteObjectLocator<C, baseclasses...>* pObjectLocator){
 		return to_string(pObjectLocator->pClassDescriptor);
 	}
 
-	template <typename C>
-	std::string to_string(struct RTTIClassHierarchyDescriptor<C>* pClassDescriptor){
+	template <typename C, typename... baseclasses>
+	std::string to_string(struct RTTIClassHierarchyDescriptor<C, baseclasses...>* pClassDescriptor){
 		std::string result;
 		result += "RTTIClassHierarchyDescriptor {\nnumBaseClasses:" + std::to_string(pClassDescriptor->numBaseClasses);
 		for (unsigned long i = 0; i < pClassDescriptor->numBaseClasses; i++){

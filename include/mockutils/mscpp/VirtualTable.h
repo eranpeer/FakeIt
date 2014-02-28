@@ -52,19 +52,19 @@ struct RTTIBaseClassDescriptor {
 	DWORD attributes;        //flags, usually 0
 };
 
-template <typename C>
+template <typename C, typename... baseclasses>
 struct RTTIClassHierarchyDescriptor {
 	RTTIClassHierarchyDescriptor() :
-			signature(0), attributes(0), numBaseClasses(0), pBaseClassArray(nullptr) {
-		RTTIBaseClassDescriptor* desc = new RTTIBaseClassDescriptor();
-		pBaseClassArray = new RTTIBaseClassDescriptor*[2]{};
-		addBaseClass<C>();
+	signature(0), attributes(0), numBaseClasses(0),pBaseClassArray(nullptr){
+		//RTTIBaseClassDescriptor* desc = new RTTIBaseClassDescriptor();
+		pBaseClassArray = new RTTIBaseClassDescriptor*[1 + sizeof...(baseclasses)];
+		addBaseClass<C, baseclasses...>();
 	}
 
 	DWORD signature;      //always zero?
 	DWORD attributes;     //bit 0 set = multiple inheritance, bit 1 set = virtual inheritance
 	DWORD numBaseClasses; //number of classes in pBaseClassArray
-	RTTIBaseClassDescriptor **pBaseClassArray;
+	RTTIBaseClassDescriptor** pBaseClassArray;
 	
 	template<typename BaseType>
 	void addBaseClass(){
@@ -77,29 +77,37 @@ struct RTTIClassHierarchyDescriptor {
 		}
 		numBaseClasses++;
 	}
+
+	template<typename head,typename B1, typename... tail>
+	void addBaseClass(){
+		static_assert(std::is_base_of<B1, head>::value, "invalid inheritance list");
+		addBaseClass<head>();
+		addBaseClass<B1, tail...>();
+	}
+
 };
 
-template<typename C>
+template<typename C, typename... baseclasses>
 struct RTTICompleteObjectLocator {
 	RTTICompleteObjectLocator(const std::type_info& info) :
-	signature(0), offset(0), cdOffset(0), pTypeDescriptor(&info), pClassDescriptor(new RTTIClassHierarchyDescriptor<C>()) {
+	signature(0), offset(0), cdOffset(0), pTypeDescriptor(&info), pClassDescriptor(new RTTIClassHierarchyDescriptor<C,baseclasses...>()) {
 	}
 	DWORD signature; //always zero ?
 	DWORD offset;    //offset of this vtable in the complete class
 	DWORD cdOffset;  //constructor displacement offset
 	const std::type_info* pTypeDescriptor; //TypeDescriptor of the complete class
-	struct RTTIClassHierarchyDescriptor<C>* pClassDescriptor; //describes inheritance hierarchy
+	struct RTTIClassHierarchyDescriptor<C, baseclasses...>* pClassDescriptor; //describes inheritance hierarchy
 };
 
-template<int SIZE, class C>
+template<int SIZE, class C, class... baseclasses>
 struct VirtualTable {
-
+	
 	VirtualTable() {
 		auto array = new void*[SIZE + 1];
 		for (unsigned int i = 0; i < SIZE + 1; i++) {
 			array[i] = 0;
 		}
-		RTTICompleteObjectLocator<C> * objectLocator = new RTTICompleteObjectLocator<C>(typeid(C));
+		RTTICompleteObjectLocator<C, baseclasses...> * objectLocator = new RTTICompleteObjectLocator<C, baseclasses...>(typeid(C));
 		
 		//TypeDescriptor* typeDescriptorPtr = (TypeDescriptor*) &typeid(C);
 		//RTTIClassHierarchyDescriptor* classDescriptorPtr = new RTTIClassHierarchyDescriptor();
@@ -119,12 +127,6 @@ struct VirtualTable {
 		RTTICompleteObjectLocator<C> * objectLocator = (RTTICompleteObjectLocator<C> *) firstMethod[0];
 		delete objectLocator;
 		delete[] firstMethod;
-	}
-
-	template <typename BaseClass>
-	void enableRtti(){
-		RTTICompleteObjectLocator<C> * objectLocator = (RTTICompleteObjectLocator<C> *) firstMethod[-1];
-		objectLocator->pClassDescriptor->addBaseClass<BaseClass>();
 	}
 
 	void setMethod(unsigned int index, void *method) {

@@ -19,29 +19,14 @@
 #include "mockutils/MethodInvocationHandler.h"
 
 namespace fakeit {
-template<typename C>
+	template<typename C, typename... baseclasses>
 struct DynamicProxy {
 	static_assert(std::is_polymorphic<C>::value, "DynamicProxy requires a polymorphic type");
 
 	DynamicProxy(std::function<void()> unmockedMethodCallHandler) :
-			vtable(), methodMocks(), unmockedMethodCallHandler { unmockedMethodCallHandler } {
+		vtable(), methodMocks(), unmockedMethodCallHandler{ unmockedMethodCallHandler } {
 		initVirtualTable(&vtable);
 		initializeDataMembersArea();
-	}
-
-	template <typename BaseClass>
-	void enableRtti(){
-		C* ptr = (C*)(unsigned int)1;
-		BaseClass* basePtr = ptr;
-		int delta = (unsigned long)basePtr - (unsigned long)ptr;
-		if (delta > 0){
-			// base class does not start on same position as derived class.
-			// this is multiple inheritance.
-			// need to create a new virtual table for base class.
-			// addVirtualTable<BaseClass>(delta);
-			throw std::invalid_argument(std::string("multiple inheritance is not supported"));
-		}
-		this->vtable.enableRtti<BaseClass>();
 	}
 
 	~DynamicProxy() {
@@ -107,7 +92,7 @@ private:
 			}
 		private:
 			R methodProxy(arglist ... args) {
-				DynamicProxy<C> * dynamicProxy = union_cast<DynamicProxy<C> *>(this);
+				DynamicProxy<C, baseclasses...> * dynamicProxy = union_cast<DynamicProxy<C, baseclasses...> *>(this);
 				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(
 						OFFSET);
 				return methodMock->handleMethodInvocation(args...);
@@ -139,7 +124,7 @@ private:
 		}
 	};
 
-	VirtualTable<30, C> vtable;
+	VirtualTable<30, C, baseclasses...> vtable;
 
 	// Here we alloc too many bytes since sizeof(C) includes the pointer to the virtual table.
 	// Should be sizeof(C) - ptr_size.
@@ -183,8 +168,8 @@ private:
 		return dynamic_cast<DATA_TYPE>(ptr.get());
 	}
 
-	template <typename T>
-	void initVirtualTable(VirtualTable<30, T>* vtable)
+	template <typename T, typename... baseclasses>
+	void initVirtualTable(VirtualTable<30, T, baseclasses...>* vtable)
 	{
 		auto mptr = union_cast<void*>(&DynamicProxy::unmocked);
 		for (unsigned int i = 0; i < vtable->getSize(); i++) {
@@ -192,16 +177,30 @@ private:
 		}
 	}
 
-	template <typename T>
+	template <typename T, typename... baseclasses>
 	void addVirtualTable(int delta)
 	{
 		auto virtTablePtr = (char *)&get() + delta;
-		VirtualTable<30, T>* baseVirtualTable = new VirtualTable<30, T>();
-		addVirtualTable(*baseVirtualTable);
-		VirtualTable<30, T>* virtualTablePtrInObjectData = (VirtualTable<30, T>*)virtTablePtr;
+		VirtualTable<30, T>* baseVirtualTable = new VirtualTable<30, T, baseclasses...>();
+		initVirtualTable(*baseVirtualTable);
+		VirtualTable<30, T>* virtualTablePtrInObjectData = (VirtualTable<30, T, baseclasses...>*)virtTablePtr;
 		*virtualTablePtrInObjectData = *baseVirtualTable;
 	}
 
+
+	template <typename BaseClass>
+	void checkMultipleInheritance(){
+		C* ptr = (C*)(unsigned int)1;
+		BaseClass* basePtr = ptr;
+		int delta = (unsigned long)basePtr - (unsigned long)ptr;
+		if (delta > 0){
+			// base class does not start on same position as derived class.
+			// this is multiple inheritance.
+			// need to create a new virtual table for base class.
+			// addVirtualTable<BaseClass>(delta);
+			throw std::invalid_argument(std::string("multiple inheritance is not supported"));
+		}
+	}
 };
 }
 #endif // DynamicProxy_h__

@@ -4,13 +4,12 @@
 #include "mockutils/gcc/is_simple_inheritance_layout.h"
 
 namespace fakeit {
-template<int SIZE, class C>
+	template<int SIZE, class C, class... baseclasses>
 struct VirtualTable {
 
 	static_assert(is_simple_inheritance_layout<C>::value, "Can't mock a type with multiple inheritance");
 
 	VirtualTable() {
-
 		auto array = new void*[SIZE + 2];
 		for (unsigned int i = 0; i < SIZE + 2; i++) {
 			array[i] = 0;
@@ -25,10 +24,6 @@ struct VirtualTable {
 		firstMethod--;
 		firstMethod--;
 		delete[] firstMethod;
-	}
-
-	template <typename BaseClass>
-	void enableRtti(){
 	}
 
 	void setMethod(unsigned int index, void *method) {
