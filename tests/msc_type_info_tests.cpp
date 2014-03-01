@@ -15,7 +15,7 @@ struct MscTypeInfoTests : tpunit::TestFixture {
 
 	MscTypeInfoTests() :
 	tpunit::TestFixture(
-	TEST(MscTypeInfoTests::try_type_info)//
+		TEST(MscTypeInfoTests::try_type_info)//
 	)  //
 	{
 	}
@@ -100,7 +100,6 @@ struct MscTypeInfoTests : tpunit::TestFixture {
 		int ** dVFTPtr = (int**)(dPtr);
 		RTTICompleteObjectLocator<Dclass>*  dObjectLocatorPtr =
 			((RTTICompleteObjectLocator<Dclass> *)(*((int*)dVFTPtr[0] - 1)));
-
 
 		unsigned long l1 = (unsigned long)aVFTPtr;
 		unsigned long l2 = (unsigned long)aPtr;
