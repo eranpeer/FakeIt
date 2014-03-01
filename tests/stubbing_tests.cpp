@@ -1,8 +1,11 @@
+#include <string>
+#include <queue>
+
 #include "tpunit++.hpp"
 #include "fakeit.h"
-#include <string>
 #include "fakeit/Exceptions.h"
-#include <queue>
+
+using namespace fakeit;
 
 struct BasicStubbing: tpunit::TestFixture {
 	BasicStubbing() :

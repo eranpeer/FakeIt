@@ -9,6 +9,8 @@
 #include "fakeit.h"
 #include "mockutils/Formatter.h"
 
+using namespace fakeit;
+
 struct TypeInfoTests : tpunit::TestFixture {
 
 	TypeInfoTests() :

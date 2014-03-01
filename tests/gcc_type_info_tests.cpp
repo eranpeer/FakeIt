@@ -6,10 +6,13 @@
 #include <tuple>
 #include <iostream>
 #include <type_traits>
+#include <unistd.h>
 
 #include "tpunit++.hpp"
 #include "fakeit.h"
 #include "mockutils/Formatter.h"
+
+using namespace fakeit;
 
 struct GccTypeInfoTests: tpunit::TestFixture {
 
@@ -41,13 +44,13 @@ struct GccTypeInfoTests: tpunit::TestFixture {
 		TopLeft* topLeft = &a;
 
 		A* aPtr = dynamic_cast<A*>(left);
- 		ASSERT_EQUAL(0, aPtr->f());
+		ASSERT_EQUAL(0, aPtr->f());
 
- 		aPtr = dynamic_cast<A*>(topLeft);
-  		ASSERT_EQUAL(0, aPtr->f());
+		aPtr = dynamic_cast<A*>(topLeft);
+		ASSERT_EQUAL(0, aPtr->f());
 
-  		left = dynamic_cast<Left*>(topLeft);
-  		ASSERT_EQUAL(0, left->f());
+		left = dynamic_cast<Left*>(topLeft);
+		ASSERT_EQUAL(0, left->f());
 	}
 
 	struct TopRight {
