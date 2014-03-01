@@ -1,9 +1,9 @@
 #ifndef Macros_h__
 #define Macros_h__
 
-#ifdef _WIN32
+#if defined (_WIN32)
 #define THROWS throw(...)
-#else
+#elif defined (__GNUG__)
 #define THROWS noexcept(false)
 #endif
 
