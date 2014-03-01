@@ -88,24 +88,24 @@ struct MscTypeInfoTests : tpunit::TestFixture {
 		Aclass* aPtr=new Bclass;
 		Aclass* cPtr = new Cclass;
 		int ** aVFTPtr = (int**)(aPtr);
-		RTTICompleteObjectLocator<Aclass>  aObjectLocatorPtr =
-			*((RTTICompleteObjectLocator<Aclass> *)(*((int*)aVFTPtr[0] - 1)));
+		RTTICompleteObjectLocator<Aclass>*  aObjectLocatorPtr =
+			((RTTICompleteObjectLocator<Aclass> *)(*((int*)aVFTPtr[0] - 1)));
 
-		std::string aStr = to_string(&aObjectLocatorPtr);
+		std::string aStr = to_string(aObjectLocatorPtr);
 
 		int ** cVFTPtr = (int**)(cPtr);
-		RTTICompleteObjectLocator<Cclass>  cObjectLocatorPtr =
-			*((RTTICompleteObjectLocator<Cclass> *)(*((int*)cVFTPtr[0] - 1)));
+		RTTICompleteObjectLocator<Cclass>*  cObjectLocatorPtr =
+			((RTTICompleteObjectLocator<Cclass> *)(*((int*)cVFTPtr[0] - 1)));
 
 		int ** dVFTPtr = (int**)(dPtr);
-		RTTICompleteObjectLocator<Dclass>  dObjectLocatorPtr =
-			*((RTTICompleteObjectLocator<Dclass> *)(*((int*)dVFTPtr[0] - 1)));
+		RTTICompleteObjectLocator<Dclass>*  dObjectLocatorPtr =
+			((RTTICompleteObjectLocator<Dclass> *)(*((int*)dVFTPtr[0] - 1)));
 
 
 		unsigned long l1 = (unsigned long)aVFTPtr;
 		unsigned long l2 = (unsigned long)aPtr;
 
-		std::string classname(aObjectLocatorPtr.pTypeDescriptor->name());
+		std::string classname(aObjectLocatorPtr->pTypeDescriptor->name());
 		classname = classname.substr(4, classname.find("@@") - 4);
 		std::cout << classname << std::endl;
 		const type_info& ti_aPtr = typeid(aPtr);
@@ -121,8 +121,8 @@ struct MscTypeInfoTests : tpunit::TestFixture {
 		int * i = (int*)tiVFTPtr[0];
 		int type_info_vft_ptr = (int)i;
 
-		RTTICompleteObjectLocator<void>  tiObjectLocatorPtr =
-			*((RTTICompleteObjectLocator<void> *)(*((int*)tiVFTPtr[0] - 1)));
+		RTTICompleteObjectLocator<void>*  tiObjectLocatorPtr =
+			((RTTICompleteObjectLocator<void> *)(*((int*)tiVFTPtr[0] - 1)));
 	}
 
 } __MscTypeInfoTests;
