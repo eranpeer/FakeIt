@@ -1,14 +1,13 @@
 /*
  * VirtualTable.h
- *
- *  Created on: Feb 2, 2014
- *      Author: eran
  */
 
 #ifndef VIRTUALTABLE_H_
 #define VIRTUALTABLE_H_
 namespace fakeit {
+
 typedef unsigned long DWORD;
+
 struct TypeDescriptor {
 	TypeDescriptor() :
 			ptrToVTable(0), spare(0) {
@@ -56,11 +55,18 @@ template <typename C, typename... baseclasses>
 struct RTTIClassHierarchyDescriptor {
 	RTTIClassHierarchyDescriptor() :
 	signature(0), attributes(0), numBaseClasses(0),pBaseClassArray(nullptr){
-		//RTTIBaseClassDescriptor* desc = new RTTIBaseClassDescriptor();
 		pBaseClassArray = new RTTIBaseClassDescriptor*[1 + sizeof...(baseclasses)];
 		addBaseClass<C, baseclasses...>();
 	}
 
+	~RTTIClassHierarchyDescriptor(){
+		for (int i = 0; i < 1 + sizeof...(baseclasses); i++){
+			RTTIBaseClassDescriptor * desc = pBaseClassArray[i];
+			delete desc;
+		}
+		delete[] pBaseClassArray;
+	}
+	
 	DWORD signature;      //always zero?
 	DWORD attributes;     //bit 0 set = multiple inheritance, bit 1 set = virtual inheritance
 	DWORD numBaseClasses; //number of classes in pBaseClassArray
@@ -92,6 +98,11 @@ struct RTTICompleteObjectLocator {
 	RTTICompleteObjectLocator(const std::type_info& info) :
 	signature(0), offset(0), cdOffset(0), pTypeDescriptor(&info), pClassDescriptor(new RTTIClassHierarchyDescriptor<C,baseclasses...>()) {
 	}
+
+	~RTTICompleteObjectLocator(){
+		delete pClassDescriptor;
+	}
+
 	DWORD signature; //always zero ?
 	DWORD offset;    //offset of this vtable in the complete class
 	DWORD cdOffset;  //constructor displacement offset
@@ -108,15 +119,6 @@ struct VirtualTable {
 			array[i] = 0;
 		}
 		RTTICompleteObjectLocator<C, baseclasses...> * objectLocator = new RTTICompleteObjectLocator<C, baseclasses...>(typeid(C));
-		
-		//TypeDescriptor* typeDescriptorPtr = (TypeDescriptor*) &typeid(C);
-		//RTTIClassHierarchyDescriptor* classDescriptorPtr = new RTTIClassHierarchyDescriptor();
-		//classDescriptorPtr->numBaseClasses = 1;
-		//RTTIBaseClassDescriptor * baseClassDescriptor = new RTTIBaseClassDescriptor();
-		//RTTIBaseClassDescriptor ** baseClassDescriptorArr = new RTTIBaseClassDescriptor*[1];
-		//baseClassDescriptorArr[0] = baseClassDescriptor;
-		//objectLocator->pClassDescriptor = classDescriptorPtr;
-
 		array[0] = objectLocator; // initialize RTTICompleteObjectLocator pointer
 		firstMethod = array;
 		firstMethod++; // skip objectLocator
