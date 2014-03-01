@@ -1,3 +1,5 @@
+#if defined (__GNUG__)
+
 #include <string>
 #include <iostream>
 #include <stdexcept>
@@ -68,3 +70,5 @@ struct GccTypeInfoTests: tpunit::TestFixture {
 	}
 //
 } __GccTypeInfoTests;
+
+#endif
