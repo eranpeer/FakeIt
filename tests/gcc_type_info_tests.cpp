@@ -6,7 +6,6 @@
 #include <tuple>
 #include <iostream>
 #include <type_traits>
-#include <unistd.h>
 
 #include "tpunit++.hpp"
 #include "fakeit.h"
