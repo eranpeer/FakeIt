@@ -114,10 +114,7 @@ template<int SIZE, class C, class... baseclasses>
 struct VirtualTable {
 	
 	VirtualTable() {
-		auto array = new void*[SIZE + 1];
-		for (unsigned int i = 0; i < SIZE + 1; i++) {
-			array[i] = 0;
-		}
+		auto array = new void*[SIZE + 1] {};
 		RTTICompleteObjectLocator<C, baseclasses...> * objectLocator = new RTTICompleteObjectLocator<C, baseclasses...>(typeid(C));
 		array[0] = objectLocator; // initialize RTTICompleteObjectLocator pointer
 		firstMethod = array;
