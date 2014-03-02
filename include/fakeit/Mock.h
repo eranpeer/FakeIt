@@ -11,9 +11,9 @@
 #include "fakeit/VerifyFunctor.hpp"
 #include "fakeit/DomainObjects.h"
 
-using namespace fakeit;
-
 namespace fakeit {
+
+using namespace fakeit;
 
 template<typename C, typename ... baseclasses>
 class Mock: private MockObject, public virtual ActualInvocationsSource {
@@ -66,6 +66,7 @@ private:
 	}
 
 public:
+
 	static_assert(std::is_polymorphic<C>::value, "Can only mock a polymorphic type");
 
 	Mock() :
