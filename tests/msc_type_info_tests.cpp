@@ -11,6 +11,8 @@
 #include "fakeit.h"
 #include "mockutils/Formatter.h"
 
+using namespace fakeit;
+
 struct MscTypeInfoTests : tpunit::TestFixture {
 
 	MscTypeInfoTests() :
@@ -91,7 +93,7 @@ struct MscTypeInfoTests : tpunit::TestFixture {
 		RTTICompleteObjectLocator<Aclass>*  aObjectLocatorPtr =
 			((RTTICompleteObjectLocator<Aclass> *)(*((int*)aVFTPtr[0] - 1)));
 
-		std::string aStr = to_string(aObjectLocatorPtr);
+		//std::string aStr = to_string(aObjectLocatorPtr);
 
 		int ** cVFTPtr = (int**)(cPtr);
 		RTTICompleteObjectLocator<Cclass>*  cObjectLocatorPtr =

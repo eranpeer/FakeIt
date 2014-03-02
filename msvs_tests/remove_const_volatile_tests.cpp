@@ -4,6 +4,7 @@
 #include <iostream>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+using namespace fakeit;
 
 namespace stubbing_tests
 {

@@ -26,6 +26,8 @@ template<> struct Formatter<A> {
 };
 }
 
+using namespace fakeit;
+
 struct BasicVerification: tpunit::TestFixture {
 	BasicVerification() :
 			tpunit::TestFixture(

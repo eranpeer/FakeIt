@@ -7,6 +7,7 @@
 #include "fakeit.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+using namespace fakeit;
 
 namespace mock4cpp_tests
 {
