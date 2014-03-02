@@ -10,10 +10,7 @@ struct VirtualTable {
 	static_assert(is_simple_inheritance_layout<C>::value, "Can't mock a type with multiple inheritance");
 
 	VirtualTable() {
-		auto array = new void*[SIZE + 2];
-		for (unsigned int i = 0; i < SIZE + 2; i++) {
-			array[i] = 0;
-		}
+		auto array = new void*[SIZE + 2]{};
 		array[1] = (void*) &typeid(C); // initialize type_info pointer
 		firstMethod = array;
 		firstMethod++; // top_offset
