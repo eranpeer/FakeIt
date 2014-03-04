@@ -48,12 +48,12 @@ namespace mock4cpp_tests
 		TEST_METHOD(VerifyAtLeastOnceIsTheDefaultBehavior)
 		{
 			Mock<SomeInterface> mock;
-			Stub(mock[&SomeInterface::func1]);
-			Stub(mock[&SomeInterface::func2]);
-			Stub(mock[&SomeInterface::func3]);
-			Stub(mock[&SomeInterface::proc1]);
-			Stub(mock[&SomeInterface::proc2]);
-			Stub(mock[&SomeInterface::proc3]);
+			Fake(mock[&SomeInterface::func1]);
+			Fake(mock[&SomeInterface::func2]);
+			Fake(mock[&SomeInterface::func3]);
+			Fake(mock[&SomeInterface::proc1]);
+			Fake(mock[&SomeInterface::proc2]);
+			Fake(mock[&SomeInterface::proc3]);
 
 			SomeInterface &i = mock.get();
 
@@ -78,7 +78,7 @@ namespace mock4cpp_tests
 		TEST_METHOD(VerifyMethodInvocationCount)
 		{
 			Mock<SomeInterface> mock;
-			Stub(mock[&SomeInterface::func1], mock[&SomeInterface::proc1]);
+			Fake(mock[&SomeInterface::func1], mock[&SomeInterface::proc1]);
 
 			SomeInterface &i = mock.get();
 
@@ -105,7 +105,7 @@ namespace mock4cpp_tests
 		TEST_METHOD(NewVerify)
 		{
 			Mock<SomeInterface> mock;
-			Stub(mock[&SomeInterface::func1]);
+			Fake(mock[&SomeInterface::func1]);
 			SomeInterface &i = mock.get();
 			i.func1(1);
 			i.func1(2);
@@ -115,7 +115,7 @@ namespace mock4cpp_tests
 
 		TEST_METHOD(verify_concatenated_sequence) {
 			Mock<SomeInterface> mock;
-			Stub(mock[&SomeInterface::func1], mock[&SomeInterface::proc1]);
+			Fake(mock[&SomeInterface::func1], mock[&SomeInterface::proc1]);
 			SomeInterface &i = mock.get();
 
 			i.func1(1);
@@ -135,7 +135,7 @@ namespace mock4cpp_tests
 
 		TEST_METHOD(verify_repeated_sequence) {
 			Mock<SomeInterface> mock;
-			Stub(mock[&SomeInterface::func1], mock[&SomeInterface::proc1]);
+			Fake(mock[&SomeInterface::func1], mock[&SomeInterface::proc1]);
 			SomeInterface &i = mock.get();
 
 			i.func1(1);
@@ -162,7 +162,7 @@ namespace mock4cpp_tests
 
 		TEST_METHOD(verify_no_other_invocations_for_mock) {
 			Mock<SomeInterface> mock;
-			Stub(mock[&SomeInterface::func1]);
+			Fake(mock[&SomeInterface::func1]);
 			SomeInterface &i = mock.get();
 			VerifyNoOtherInvocations(mock);
 
@@ -186,7 +186,7 @@ namespace mock4cpp_tests
 
 		TEST_METHOD(verify_no_other_invocations_for_method_filter) {
 			Mock<SomeInterface> mock;
-			Stub(mock[&SomeInterface::func1]);
+			Fake(mock[&SomeInterface::func1]);
 			SomeInterface &i = mock.get();
 			VerifyNoOtherInvocations(mock[&SomeInterface::func1]);
 
