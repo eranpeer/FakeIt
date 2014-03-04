@@ -67,30 +67,30 @@ struct FirstFunctionStubbingProgress {
 
 	FirstFunctionStubbingProgress<R, arglist...>&
 	Return(const R& r) {
-		return Do([&r](...)->R {return r;});
+		return Do([&r](const arglist&...)->R {return r;});
 	}
 
 	void AlwaysReturn(const R& r) {
-		return AlwaysDo([&r](...)->R {return r;});
+		return AlwaysDo([&r](const arglist&...)->R {return r;});
 	}
 
 	FirstFunctionStubbingProgress<R, arglist...>&
 	Return() {
-		return Do([](...)->R {DefaultValue::value<R>();});
+		return Do([](const arglist&...)->R {DefaultValue::value<R>();});
 	}
 
 	void AlwaysReturn() {
-		return AlwaysDo([](...)->R {DefaultValue::value<R>();});
+		return AlwaysDo([](const arglist&...)->R {DefaultValue::value<R>();});
 	}
 
 	template<typename E>
 	FirstFunctionStubbingProgress<R, arglist...>& Throw(const E& e) {
-		return Do([e](...)->R {throw e;});
+		return Do([e](const arglist&...)->R {throw e;});
 	}
 
 	template<typename E>
 	void AlwaysThrow(const E& e) {
-		return AlwaysDo([e](...)->R {throw e;});
+		return AlwaysDo([e](const arglist&...)->R {throw e;});
 	}
 
 	virtual void operator=(std::function<R(arglist...)> method) {
@@ -112,21 +112,21 @@ struct FirstProcedureStubbingProgress {
 	}
 
 	FirstProcedureStubbingProgress<R, arglist...>& Return() {
-		return Do([](...)->R {return DefaultValue::value<R>();});
+		return Do([](const arglist&...)->R {return DefaultValue::value<R>();});
 	}
 
 	void AlwaysReturn() {
-		return AlwaysDo([](...)->R {return DefaultValue::value<R>();});
+		return AlwaysDo([](const arglist&...)->R {return DefaultValue::value<R>();});
 	}
 
 	template<typename E>
 	FirstProcedureStubbingProgress<R, arglist...>& Throw(const E e) {
-		return Do([e](...)->R {throw e;});
+		return Do([e](const arglist&...)->R {throw e;});
 	}
 
 	template<typename E>
 	void AlwaysThrow(const E e) {
-		return AlwaysDo([e](...)->R {throw e;});
+		return AlwaysDo([e](const arglist&...)->R {throw e;});
 	}
 
 	virtual void operator=(std::function<R(arglist...)> method) {
