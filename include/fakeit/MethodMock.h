@@ -19,7 +19,7 @@ static std::atomic_int invocationOrdinal;
 
 template<typename R, typename ... arglist>
 struct BehaviorMock {
-	virtual R invoke(const arglist&... args) = 0;
+	virtual R invoke(arglist&... args) = 0;
 };
 
 template<typename R, typename ... arglist>
@@ -27,7 +27,7 @@ struct DoMock: public BehaviorMock<R, arglist...> {
 	DoMock(std::function<R(const arglist&...)> f) :
 			f(f) {
 	}
-	virtual R invoke(const arglist&... args) override {
+	virtual R invoke(arglist&... args) override {
 		return f(args...);
 	}
 private:
@@ -36,14 +36,14 @@ private:
 
 template<typename R, typename ... arglist>
 struct EndMock: public BehaviorMock<R, arglist...> {
-	virtual R invoke(const arglist&... args) override {
+	virtual R invoke(arglist&... args) override {
 		throw UnmockedMethodCallException();
 	}
 };
 
 template<typename R, typename ... arglist>
 struct InitialMock: public BehaviorMock<R, arglist...> {
-	virtual R invoke(const arglist&... args) override {
+	virtual R invoke(arglist&... args) override {
 		return DefaultValue::value<R>();
 	}
 };
