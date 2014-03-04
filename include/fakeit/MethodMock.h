@@ -24,14 +24,14 @@ struct BehaviorMock {
 
 template<typename R, typename ... arglist>
 struct DoMock: public BehaviorMock<R, arglist...> {
-	DoMock(std::function<R(arglist...)> f) :
+	DoMock(std::function<R(const arglist&...)> f) :
 			f(f) {
 	}
 	virtual R invoke(const arglist&... args) override {
 		return f(args...);
 	}
 private:
-	std::function<R(arglist...)> f;
+	std::function<R(const arglist&...)> f;
 };
 
 template<typename R, typename ... arglist>
@@ -78,7 +78,7 @@ struct RecordedMethodBody: public MethodInvocationHandler<R, arglist...> {
 		behaviorMocks.pop_back();
 	}
 
-	R handleMethodInvocation(const arglist&... args) override {
+	R handleMethodInvocation(arglist&... args) override {
 		std::shared_ptr<BehaviorMock<R, arglist...>> behavior = behaviorMocks.front();
 		if (behaviorMocks.size() > 1)
 			behaviorMocks.erase(behaviorMocks.begin());
@@ -111,7 +111,7 @@ struct MethodInvocationMockBase: public virtual MethodInvocationMock<R, arglist.
 			method(method), matcher { matcher }, invocationHandler { invocationHandler } {
 	}
 
-	R handleMethodInvocation(const arglist&... args) override {
+	R handleMethodInvocation(arglist&... args) override {
 		return invocationHandler->handleMethodInvocation(args...);
 	}
 
@@ -207,7 +207,7 @@ struct MethodMock: public virtual Method, public virtual MethodInvocationHandler
 				methodInvocationMocks.clear();
 			}
 
-			R handleMethodInvocation(const arglist&... args) override {
+			R handleMethodInvocation(arglist&... args) override {
 				int ordinal = invocationOrdinal++;
 				auto actualInvoaction = std::shared_ptr<ActualInvocation<arglist...>> { new ActualInvocation<arglist...>(ordinal, *this,
 						args...) };
