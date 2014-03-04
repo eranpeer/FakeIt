@@ -13,12 +13,12 @@
 
 namespace fakeit {
 
-class StubFunctor {
+class FakeFunctor {
 private:
 	void operator()() {
 	}
 public:
-	StubFunctor() {
+	FakeFunctor() {
 	}
 
 	template<typename H>
@@ -34,7 +34,7 @@ public:
 		this->operator()(tail...);
 	}
 
-}static Stub;
+}static Fake;
 
 }
 

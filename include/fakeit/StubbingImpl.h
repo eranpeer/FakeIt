@@ -68,7 +68,7 @@ private:
 
 protected:
 	friend class VerifyFunctor;
-	friend class StubFunctor;
+	friend class FakeFunctor;
 	friend class WhenFunctor;
 
 	std::shared_ptr<StubbingContext<C, R, arglist...>> stubbingContext;
@@ -160,7 +160,7 @@ private:
 	FunctionStubbingRoot & operator=(const FunctionStubbingRoot & other) = delete;
 
 	friend class VerifyFunctor;
-	friend class StubFunctor;
+	friend class FakeFunctor;
 	friend class WhenFunctor;
 protected:
 
@@ -208,7 +208,7 @@ private:
 	ProcedureStubbingRoot & operator=(const ProcedureStubbingRoot & other) = delete;
 
 	friend class VerifyFunctor;
-	friend class StubFunctor;
+	friend class FakeFunctor;
 	friend class WhenFunctor;
 
 protected:

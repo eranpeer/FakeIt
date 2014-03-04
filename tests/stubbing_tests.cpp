@@ -50,8 +50,8 @@ struct BasicStubbing: tpunit::TestFixture {
 	void stub_method_to_default_behaviore_will_always_return_do_the_default_behaviore() {
 		Mock<SomeInterface> mock;
 
-		Stub(mock[&SomeInterface::func]);
-		Stub(mock[&SomeInterface::proc]);
+		Fake(mock[&SomeInterface::func]);
+		Fake(mock[&SomeInterface::proc]);
 
 		SomeInterface &i = mock.get();
 
@@ -65,7 +65,7 @@ struct BasicStubbing: tpunit::TestFixture {
 	void stub_multiple_methods_to_default_behaviore() {
 		Mock<SomeInterface> mock;
 
-		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
+		Fake(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
 
 		SomeInterface &i = mock.get();
 
@@ -225,8 +225,8 @@ struct BasicStubbing: tpunit::TestFixture {
 	void stub_to_default_behavior_with_filter() {
 		Mock<SomeInterface> mock;
 
-		Stub(mock[&SomeInterface::func].Using(1));
-		Stub(mock[&SomeInterface::proc].Using(1));
+		Fake(mock[&SomeInterface::func].Using(1));
+		Fake(mock[&SomeInterface::proc].Using(1));
 
 		SomeInterface &i = mock.get();
 
@@ -382,9 +382,9 @@ struct BasicStubbing: tpunit::TestFixture {
 		int (OverloadedInterface::*int_method_ptr)(int) = &OverloadedInterface::func;
 		int (OverloadedInterface::*bool_method_ptr)(bool) = &OverloadedInterface::func;
 
-		Stub(mock[void_method_ptr]);
-		Stub(mock[int_method_ptr]);
-		Stub(mock[bool_method_ptr]);
+		Fake(mock[void_method_ptr]);
+		Fake(mock[int_method_ptr]);
+		Fake(mock[bool_method_ptr]);
 
 		OverloadedInterface &i = mock.get();
 

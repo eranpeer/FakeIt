@@ -7,7 +7,7 @@
 #include "mockutils/DynamicProxy.h"
 #include "fakeit/StubbingImpl.h"
 #include "fakeit/WhenFunctor.hpp"
-#include "fakeit/StubFunctor.hpp"
+#include "fakeit/FakeFunctor.hpp"
 #include "fakeit/VerifyFunctor.hpp"
 #include "fakeit/DomainObjects.h"
 

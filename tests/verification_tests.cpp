@@ -62,7 +62,7 @@ struct BasicVerification: tpunit::TestFixture {
 
 	void verify_should_throw_VerificationException_if_method_was_not_called() {
 		Mock<SomeInterface> mock;
-		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
+		Fake(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
 		ASSERT_THROW(Verify(mock[&SomeInterface::func]), fakeit::VerificationException);
 		ASSERT_THROW(Verify(mock[&SomeInterface::proc]), fakeit::VerificationException);
 	}
@@ -75,7 +75,7 @@ struct BasicVerification: tpunit::TestFixture {
 
 	void verify_should_not_throw_exception_if_method_was_called() {
 		Mock<SomeInterface> mock;
-		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
+		Fake(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
 		SomeInterface &i = mock.get();
 		i.func(1);
 		i.proc(1);
@@ -89,7 +89,7 @@ struct BasicVerification: tpunit::TestFixture {
 		ASSERT_THROW(Verify(mock[&SomeInterface::func]), fakeit::VerificationException);
 		ASSERT_THROW(Verify(mock[&SomeInterface::proc]), fakeit::VerificationException);
 
-		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
+		Fake(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
 		SomeInterface &i = mock.get();
 		i.func(1);
 		i.proc(2);
@@ -110,7 +110,7 @@ struct BasicVerification: tpunit::TestFixture {
 		ASSERT_THROW(Verify(mock[&SomeInterface::func]).AtLeast(2), fakeit::VerificationException);
 		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).AtLeast(2), fakeit::VerificationException);
 
-		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
+		Fake(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
 		SomeInterface &i = mock.get();
 		i.func(1);
 		i.proc(2);
@@ -137,7 +137,7 @@ struct BasicVerification: tpunit::TestFixture {
 		ASSERT_THROW(Verify(mock[&SomeInterface::func]).Once(), fakeit::VerificationException);
 		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).Once(), fakeit::VerificationException);
 
-		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
+		Fake(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
 		SomeInterface &i = mock.get();
 
 		ASSERT_THROW(Verify(mock[&SomeInterface::func]).Once(), fakeit::VerificationException);
@@ -162,7 +162,7 @@ struct BasicVerification: tpunit::TestFixture {
 		Verify(mock[&SomeInterface::func]).Never();
 		Verify(mock[&SomeInterface::proc]).Never();
 
-		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
+		Fake(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
 		SomeInterface &i = mock.get();
 
 		Verify(mock[&SomeInterface::func]).Never();
@@ -181,7 +181,7 @@ struct BasicVerification: tpunit::TestFixture {
 		ASSERT_THROW(Verify(mock[&SomeInterface::func]).Times(2), fakeit::VerificationException);
 		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).Times(2), fakeit::VerificationException);
 
-		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
+		Fake(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
 		SomeInterface &i = mock.get();
 
 		ASSERT_THROW(Verify(mock[&SomeInterface::func]).Times(2), fakeit::VerificationException);
@@ -210,7 +210,7 @@ struct BasicVerification: tpunit::TestFixture {
 
 	void verify_with_filter() {
 		Mock<SomeInterface> mock;
-		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
+		Fake(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
 		SomeInterface &i = mock.get();
 		i.func(1);
 		Verify(mock[&SomeInterface::func].Using(1));
@@ -219,7 +219,7 @@ struct BasicVerification: tpunit::TestFixture {
 
 	void verify_concatenated_sequence() {
 		Mock<SomeInterface> mock;
-		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
+		Fake(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
 		SomeInterface &i = mock.get();
 
 		i.func(1);
@@ -238,7 +238,7 @@ struct BasicVerification: tpunit::TestFixture {
 
 	void verify_repeated_sequence() {
 		Mock<SomeInterface> mock;
-		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
+		Fake(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
 		SomeInterface &i = mock.get();
 
 		i.func(1);
@@ -264,7 +264,7 @@ struct BasicVerification: tpunit::TestFixture {
 
 	void verify_repeated_sequence_2() {
 		Mock<SomeInterface> mock;
-		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
+		Fake(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
 		SomeInterface &i = mock.get();
 
 		i.func(1);
@@ -287,7 +287,7 @@ struct BasicVerification: tpunit::TestFixture {
 
 	void verify_multi_sequences_in_order() {
 		Mock<SomeInterface> mock;
-		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
+		Fake(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
 		SomeInterface &i = mock.get();
 
 		i.func(1);
@@ -350,7 +350,7 @@ struct BasicVerification: tpunit::TestFixture {
 
 	void verify_no_other_invocations_for_mock() {
 		Mock<SomeInterface> mock;
-		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc2]);
+		Fake(mock[&SomeInterface::func], mock[&SomeInterface::proc2]);
 		SomeInterface &i = mock.get();
 		VerifyNoOtherInvocations(mock);
 
@@ -374,7 +374,7 @@ struct BasicVerification: tpunit::TestFixture {
 
 	void verify_no_other_invocations_for_method_filter() {
 		Mock<SomeInterface> mock;
-		Stub(mock[&SomeInterface::func], mock[&SomeInterface::proc2]);
+		Fake(mock[&SomeInterface::func], mock[&SomeInterface::proc2]);
 		SomeInterface &i = mock.get();
 		VerifyNoOtherInvocations(mock[&SomeInterface::func]);
 
@@ -411,7 +411,7 @@ struct BasicVerification: tpunit::TestFixture {
 		auto any_A_with_state_1 = mock[&SomeInterface::proc2].Matching([](const A& a)->bool {
 			return a.state == 1;
 		});
-		Stub(any_A_with_state_1);
+		Fake(any_A_with_state_1);
 		SomeInterface &i = mock.get();
 		{
 			A a;
@@ -430,7 +430,7 @@ struct BasicVerification: tpunit::TestFixture {
 		a1.state = 1;
 
 		auto call_to_proc2_with_state_1 = mock[&SomeInterface::proc2].Using(a1);
-		Stub(call_to_proc2_with_state_1);
+		Fake(call_to_proc2_with_state_1);
 		SomeInterface &i = mock.get();
 
 		A a2;
