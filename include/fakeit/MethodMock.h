@@ -24,14 +24,14 @@ struct BehaviorMock {
 
 template<typename R, typename ... arglist>
 struct DoMock: public BehaviorMock<R, arglist...> {
-	DoMock(std::function<R(const arglist&...)> f) :
+	DoMock(std::function<R(arglist&...)> f) :
 			f(f) {
 	}
 	virtual R invoke(arglist&... args) override {
 		return f(args...);
 	}
 private:
-	std::function<R(const arglist&...)> f;
+	std::function<R(arglist&...)> f;
 };
 
 template<typename R, typename ... arglist>
