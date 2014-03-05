@@ -64,6 +64,21 @@ struct Quantifier {
 	Quantifier(const int quantity, const R& value) :quantity(quantity), value(value){}
 	const int quantity;
 	const R& value;
+
+	Quantifier<R> & operator()(const R& value){
+		this->value = value;
+		return *this;
+	}
+};
+
+struct QuantifierFunctor {
+	QuantifierFunctor(const int quantity) :quantity(quantity){}
+	const int quantity;
+
+	template<typename R>
+	Quantifier<R> operator()(const R& value){
+		return Quantifier<R>(quantity,value);
+	}
 };
 
 template<int q>
@@ -74,11 +89,15 @@ struct Times {
 	}
 };
 
-// template<typename R>
-// Quantifier<R> operator"" _times(unsigned long long n)
-// {
-// 	return Quantifier<R>(0,n);
-// }
+#if defined (__GNUG__)
+// Only supported by GCC
+
+inline QuantifierFunctor operator"" _Times(unsigned long long n)
+ {
+     return QuantifierFunctor((int)n);
+ }
+
+#endif
 
 template<typename R, typename ... arglist>
 struct FirstFunctionStubbingProgress {

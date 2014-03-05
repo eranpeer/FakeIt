@@ -100,6 +100,7 @@ struct DemoTests : tpunit::TestFixture {
 		When(mock[&SomeInterface::bar]).AlwaysReturn(0);
 
 		When(mock[&SomeInterface::foo]).Return(0, Times<4>::of(3), 2, 3);
+		When(mock[&SomeInterface::foo]).Return(0, 2_Times(3), 2, 3);
 
 		SomeInterface &i = mock.get();
 		
