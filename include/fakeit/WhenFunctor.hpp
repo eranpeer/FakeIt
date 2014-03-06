@@ -60,13 +60,12 @@ public:
 
 		FirstFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 			std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoMock<R, arglist...>(method) };
-			root.AppendAction(ptr);
-			return *this;
+			return Do(ptr);
 		}
 
 		void AlwaysDo(std::function<R(arglist...)> method) override {
 			std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoMock<R, arglist...>(method) };
-			root.LastAction(ptr);
+			AlwaysDo(ptr);
 		}
 
 
@@ -82,6 +81,15 @@ public:
 
 		FunctionStubbingRoot<C, R, arglist...>& root;
 //		FunctionProgress & operator=(const FunctionProgress & other) = delete;
+
+		FirstFunctionStubbingProgress<R, arglist...>& Do(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) {
+			root.AppendAction(ptr);
+			return *this;
+		}
+
+		void AlwaysDo(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) {
+			root.LastAction(ptr);
+		}
 	};
 
 	template<typename C, typename R, typename ... arglist>
@@ -94,13 +102,12 @@ public:
 
 		FirstProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
 			std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoMock<R, arglist...>(method) };
-			root.AppendAction(ptr);
-			return *this;
+			return Do(ptr);
 		}
 
 		void AlwaysDo(std::function<R(arglist...)> method) override {
 			std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoMock<R, arglist...>(method) };
-			root.LastAction(ptr);
+			AlwaysDo(ptr);
 		}
 
 
@@ -115,6 +122,15 @@ public:
 	private:
 		ProcedureStubbingRoot<C, R, arglist...>& root;
 //		ProcedureProgress & operator=(const ProcedureProgress & other) = delete;
+
+		FirstProcedureStubbingProgress<R, arglist...>& Do(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) {
+			root.AppendAction(ptr);
+			return *this;
+		}
+
+		void AlwaysDo(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) {
+			root.LastAction(ptr);
+		}
 	};
 
 	WhenFunctor() {
