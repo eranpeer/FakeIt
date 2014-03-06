@@ -137,16 +137,6 @@ public:
 					new UserDefinedInvocationMatcher<arglist...>(matcher)});
 	}
 
-	void AppendAction(std::function<R(arglist...)> method) {
-		std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoMock<R, arglist...>(method) };
-		AppendAction(ptr);
-	}
-
-	void LastAction(std::function<R(arglist...)> method) {
-		std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoMock<R, arglist...>(method) };
-		LastAction(ptr);
-	}
-
 	void AppendAction(std::shared_ptr<BehaviorMock<R, arglist...>> method) {
 		recordedMethodBody->AppendDo(method);
 	}
@@ -156,7 +146,8 @@ public:
 	}
 
 	void operator=(std::function<R(arglist...)> method) {
-		MethodStubbingBase<C, R, arglist...>::LastAction(method);
+		std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoMock<R, arglist...>(method) };
+		MethodStubbingBase<C, R, arglist...>::LastAction(ptr);
 		MethodStubbingBase<C, R, arglist...>::apply();
 	}
 
