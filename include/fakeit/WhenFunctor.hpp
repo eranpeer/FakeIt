@@ -33,7 +33,6 @@ public:
 			_xaction.apply();
 		}
 
-
 		StubbingProgress(StubbingProgress& other) :
 				_isActive(other._isActive), _xaction(other._xaction) {
 			other._isActive = false; // all other ctors should init _isActive to true;
@@ -52,22 +51,22 @@ public:
 	};
 
 	template<typename C, typename R, typename ... arglist>
-	struct FunctionProgress: public virtual StubbingProgress, public virtual FunctionStubbingProgress<R, arglist...> //
+	struct FunctionProgress: public StubbingProgress, public FunctionStubbingProgress<R, arglist...> //
 	{
 		friend class WhenFunctor;
 
 		virtual ~FunctionProgress() = default;
 
+		// TODO:remove these 2 methods, they are in base class
 		FirstFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-			std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoMock<R, arglist...>(method) };
+			std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoMock<R, arglist...>(method) };
 			return Do(ptr);
 		}
 
 		void AlwaysDo(std::function<R(arglist...)> method) override {
-			std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoMock<R, arglist...>(method) };
+			std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoMock<R, arglist...>(method) };
 			AlwaysDo(ptr);
 		}
-
 
 		FunctionProgress(FunctionProgress& other) :
 				StubbingProgress(other), root(other.root) {
@@ -94,26 +93,25 @@ public:
 	};
 
 	template<typename C, typename R, typename ... arglist>
-	struct ProcedureProgress: public StubbingProgress,
-	public virtual ProcedureStubbingProgress<R, arglist...> {
+	struct ProcedureProgress: public StubbingProgress, public ProcedureStubbingProgress<R, arglist...> {
 
 		friend class WhenFunctor;
 
 		virtual ~ProcedureProgress() override = default;
 
+		// TODO:remove these 2 methods, they are in base class
 		FirstProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-			std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoMock<R, arglist...>(method) };
+			std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoMock<R, arglist...>(method) };
 			return Do(ptr);
 		}
 
 		void AlwaysDo(std::function<R(arglist...)> method) override {
-			std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoMock<R, arglist...>(method) };
+			std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoMock<R, arglist...>(method) };
 			AlwaysDo(ptr);
 		}
 
-
 		ProcedureProgress(ProcedureProgress& other) :
-				StubbingProgress(other) , root(other.root){
+				StubbingProgress(other), root(other.root) {
 		}
 
 		ProcedureProgress(ProcedureStubbingRoot<C, R, arglist...>& xaction) :
@@ -143,7 +141,7 @@ public:
 	ProcedureProgress<C, R, arglist...> operator()(const ProcedureStubbingRoot<C, R, arglist...>& stubbingProgress) {
 		ProcedureStubbingRoot<C, R, arglist...>& rootWithoutConst = const_cast<ProcedureStubbingRoot<C, R, arglist...>&>(stubbingProgress);
 		//return dynamic_cast<FirstProcedureStubbingProgress<R, arglist...>&>(rootWithoutConst);
-		ProcedureProgress<C,R,arglist...> a(rootWithoutConst);
+		ProcedureProgress<C, R, arglist...> a(rootWithoutConst);
 		return a;
 	}
 
@@ -151,7 +149,7 @@ public:
 	FunctionProgress<C, R, arglist...> operator()(const FunctionStubbingRoot<C, R, arglist...>& stubbingProgress) {
 		FunctionStubbingRoot<C, R, arglist...>& rootWithoutConst = const_cast<FunctionStubbingRoot<C, R, arglist...>&>(stubbingProgress);
 		//return dynamic_cast<FirstFunctionStubbingProgress<R, arglist...>&>(rootWithoutConst);
-		FunctionProgress<C,R,arglist...> a(rootWithoutConst);
+		FunctionProgress<C, R, arglist...> a(rootWithoutConst);
 		return a;
 	}
 
