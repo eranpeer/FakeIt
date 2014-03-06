@@ -61,23 +61,27 @@ private:
 
 template<typename R>
 struct Quantifier {
-	Quantifier(const int quantity, const R& value) :quantity(quantity), value(value){}
+	Quantifier(const int quantity, const R& value) :
+			quantity(quantity), value(value) {
+	}
 	const int quantity;
 	const R& value;
 
-	Quantifier<R> & operator()(const R& value){
+	Quantifier<R> & operator()(const R& value) {
 		this->value = value;
 		return *this;
 	}
 };
 
 struct QuantifierFunctor {
-	QuantifierFunctor(const int quantity) :quantity(quantity){}
+	QuantifierFunctor(const int quantity) :
+			quantity(quantity) {
+	}
 	const int quantity;
 
 	template<typename R>
-	Quantifier<R> operator()(const R& value){
-		return Quantifier<R>(quantity,value);
+	Quantifier<R> operator()(const R& value) {
+		return Quantifier<R>(quantity, value);
 	}
 };
 
@@ -86,7 +90,7 @@ struct Times {
 
 	template<typename R>
 	static Quantifier<R> of(const R& value) {
-		return Quantifier<R>(q,value);
+		return Quantifier<R>(q, value);
 	}
 
 };
@@ -95,9 +99,9 @@ struct Times {
 // Only supported by GCC
 
 inline QuantifierFunctor operator"" _Times(unsigned long long n)
- {
-     return QuantifierFunctor((int)n);
- }
+{
+	return QuantifierFunctor((int)n);
+}
 
 #endif
 
@@ -109,51 +113,57 @@ struct FirstFunctionStubbingProgress {
 
 	FirstFunctionStubbingProgress<R, arglist...>&
 	Return(const R& r) {
-		return Do([&r](const arglist&...)->R {return r; });
+		return Do([&r](const arglist&...)->R {return r;});
 	}
 
 	FirstFunctionStubbingProgress<R, arglist...>&
-		Return(const Quantifier<R>& q) {
-			return Do([&q](const arglist&...)->R {return q.value; });
-		}
+	Return(const Quantifier<R>& q) {
+		return Do([&q](const arglist&...)->R {return q.value;});
+	}
 
-	template <typename first, typename second, typename... tail>
+	template<typename first, typename second, typename ... tail>
 	FirstFunctionStubbingProgress<R, arglist...>&
-		Return(const first& f, const second& s, const tail&... t) {
-			Return(f);
-			return Return(s,t...);
-		}
+	Return(const first& f, const second& s, const tail&... t) {
+		Return(f);
+		return Return(s, t...);
+	}
 
 	void AlwaysReturn(const R& r) {
-		return AlwaysDo([&r](const arglist&...)->R {return r; });
+		return AlwaysDo([&r](const arglist&...)->R {return r;});
 	}
 
 	FirstFunctionStubbingProgress<R, arglist...>&
 	Return() {
-		return Do([](const arglist&...)->R {DefaultValue::value<R>(); });
+		return Do([](const arglist&...)->R {DefaultValue::value<R>();});
 	}
 
 	void AlwaysReturn() {
-		return AlwaysDo([](const arglist&...)->R {DefaultValue::value<R>(); });
+		return AlwaysDo([](const arglist&...)->R {DefaultValue::value<R>();});
 	}
 
 	template<typename E>
 	FirstFunctionStubbingProgress<R, arglist...>& Throw(const E& e) {
-		return Do([e](const arglist&...)->R {throw e; });
+		return Do([e](const arglist&...)->R {throw e;});
 	}
 
 	template<typename E>
 	void AlwaysThrow(const E& e) {
-		return AlwaysDo([e](const arglist&...)->R {throw e; });
+		return AlwaysDo([e](const arglist&...)->R {throw e;});
 	}
 
 	virtual void operator=(std::function<R(arglist...)> method) {
 		AlwaysDo(method);
 	}
 
-	virtual FirstFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) = 0;
+	virtual FirstFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) {
+		std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoMock<R, arglist...>(method) };
+		return Do(ptr);
+	}
 
-	virtual void AlwaysDo(std::function<R(arglist...)> method) = 0;
+	virtual void AlwaysDo(std::function<R(arglist...)> method) {
+		std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoMock<R, arglist...>(method) };
+		AlwaysDo(ptr);
+	}
 
 protected:
 
@@ -172,30 +182,37 @@ struct FirstProcedureStubbingProgress {
 	}
 
 	FirstProcedureStubbingProgress<R, arglist...>& Return() {
-		return Do([](const arglist&...)->R {return DefaultValue::value<R>(); });
+		return Do([](const arglist&...)->R {return DefaultValue::value<R>();});
 	}
 
 	void AlwaysReturn() {
-		return AlwaysDo([](const arglist&...)->R {return DefaultValue::value<R>(); });
+		return AlwaysDo([](const arglist&...)->R {return DefaultValue::value<R>();});
 	}
 
 	template<typename E>
 	FirstProcedureStubbingProgress<R, arglist...>& Throw(const E e) {
-		return Do([e](const arglist&...)->R {throw e; });
+		return Do([e](const arglist&...)->R {throw e;});
 	}
 
 	template<typename E>
 	void AlwaysThrow(const E e) {
-		return AlwaysDo([e](const arglist&...)->R {throw e; });
+		return AlwaysDo([e](const arglist&...)->R {throw e;});
 	}
 
 	virtual void operator=(std::function<R(arglist...)> method) {
 		AlwaysDo(method);
 	}
 
-	virtual FirstProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) = 0;
+	virtual FirstProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) {
+		std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoMock<R, arglist...>(method) };
+		return Do(ptr);
+	}
 
-	virtual auto AlwaysDo(std::function<R(arglist...)> method) -> void = 0;
+	virtual void AlwaysDo(std::function<R(arglist...)> method)
+	{
+		std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoMock<R, arglist...>(method) };
+		AlwaysDo(ptr);
+	}
 
 protected:
 
