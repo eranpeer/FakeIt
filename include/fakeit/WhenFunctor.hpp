@@ -59,12 +59,14 @@ public:
 		virtual ~FunctionProgress() = default;
 
 		FirstFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-			root.AppendAction(method);
+			std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoMock<R, arglist...>(method) };
+			root.AppendAction(ptr);
 			return *this;
 		}
 
 		void AlwaysDo(std::function<R(arglist...)> method) override {
-			root.LastAction(method);
+			std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoMock<R, arglist...>(method) };
+			root.LastAction(ptr);
 		}
 
 
@@ -91,12 +93,14 @@ public:
 		virtual ~ProcedureProgress() override = default;
 
 		FirstProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-			root.AppendAction(method);
+			std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoMock<R, arglist...>(method) };
+			root.AppendAction(ptr);
 			return *this;
 		}
 
 		void AlwaysDo(std::function<R(arglist...)> method) override {
-			root.LastAction(method);
+			std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoMock<R, arglist...>(method) };
+			root.LastAction(ptr);
 		}
 
 

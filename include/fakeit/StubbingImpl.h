@@ -138,10 +138,20 @@ public:
 	}
 
 	void AppendAction(std::function<R(arglist...)> method) {
-		recordedMethodBody->AppendDo(method);
+		std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoMock<R, arglist...>(method) };
+		AppendAction(ptr);
 	}
 
 	void LastAction(std::function<R(arglist...)> method) {
+		std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoMock<R, arglist...>(method) };
+		LastAction(ptr);
+	}
+
+	void AppendAction(std::shared_ptr<BehaviorMock<R, arglist...>> method) {
+		recordedMethodBody->AppendDo(method);
+	}
+
+	void LastAction(std::shared_ptr<BehaviorMock<R, arglist...>> method) {
 		recordedMethodBody->LastDo(method);
 	}
 
