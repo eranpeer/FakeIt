@@ -76,20 +76,21 @@ public:
 		FunctionProgress(FunctionStubbingRoot<C, R, arglist...>& xaction) :
 				StubbingProgress(xaction), root(xaction) {
 		}
+	protected:
+
+		virtual FirstFunctionStubbingProgress<R, arglist...>& Do(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) override {
+			root.AppendAction(ptr);
+			return *this;
+		}
+
+		virtual void AlwaysDo(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) override {
+			root.LastAction(ptr);
+		}
 
 	private:
 
 		FunctionStubbingRoot<C, R, arglist...>& root;
 //		FunctionProgress & operator=(const FunctionProgress & other) = delete;
-
-		FirstFunctionStubbingProgress<R, arglist...>& Do(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) {
-			root.AppendAction(ptr);
-			return *this;
-		}
-
-		void AlwaysDo(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) {
-			root.LastAction(ptr);
-		}
 	};
 
 	template<typename C, typename R, typename ... arglist>
@@ -119,18 +120,20 @@ public:
 				StubbingProgress(xaction), root(xaction) {
 		}
 
-	private:
-		ProcedureStubbingRoot<C, R, arglist...>& root;
-//		ProcedureProgress & operator=(const ProcedureProgress & other) = delete;
+	protected:
 
-		FirstProcedureStubbingProgress<R, arglist...>& Do(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) {
+		virtual FirstProcedureStubbingProgress<R, arglist...>& Do(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) override {
 			root.AppendAction(ptr);
 			return *this;
 		}
 
-		void AlwaysDo(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) {
+		virtual void AlwaysDo(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) override {
 			root.LastAction(ptr);
 		}
+
+	private:
+		ProcedureStubbingRoot<C, R, arglist...>& root;
+//		ProcedureProgress & operator=(const ProcedureProgress & other) = delete;
 	};
 
 	WhenFunctor() {
