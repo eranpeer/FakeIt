@@ -64,16 +64,24 @@ struct RecordedMethodBody: public MethodInvocationHandler<R, arglist...> {
 		behaviorMocks.push_back(initialMock);
 	}
 
-	void appendDo(std::function<R(arglist...)> method) {
-		if (isFirstAppend()) {
-			clear();
-		}
-		auto doMock = std::shared_ptr<BehaviorMock<R, arglist...>> { new DoMock<R, arglist...>(method) };
-		append(doMock);
+	void AppendDo(std::function<R(arglist...)> method) {
+		std::shared_ptr<BehaviorMock<R, arglist...>> doMock = std::shared_ptr<BehaviorMock<R, arglist...>> { new DoMock<R, arglist...>(method) };
+		AppendDo(doMock);
 	}
 
 	void LastDo(std::function<R(arglist...)> method) {
-		auto doMock = std::shared_ptr<BehaviorMock<R, arglist...>> { new DoMock<R, arglist...>(method) };
+		std::shared_ptr<BehaviorMock<R, arglist...>> doMock = std::shared_ptr<BehaviorMock<R, arglist...>> { new DoMock<R, arglist...>(method) };
+		LastDo(doMock);
+	}
+
+	void AppendDo(std::shared_ptr<BehaviorMock<R, arglist...> > doMock) {
+		if (isFirstAppend()) {
+			clear();
+		}
+		append(doMock);
+	}
+
+	void LastDo(std::shared_ptr<BehaviorMock<R, arglist...> > doMock) {
 		append(doMock);
 		behaviorMocks.pop_back();
 	}

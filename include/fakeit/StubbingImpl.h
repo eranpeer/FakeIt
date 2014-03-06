@@ -138,7 +138,7 @@ public:
 	}
 
 	void AppendAction(std::function<R(arglist...)> method) {
-		recordedMethodBody->appendDo(method);
+		recordedMethodBody->AppendDo(method);
 	}
 
 	void LastAction(std::function<R(arglist...)> method) {

@@ -83,10 +83,12 @@ struct QuantifierFunctor {
 
 template<int q>
 struct Times {
+
 	template<typename R>
 	static Quantifier<R> of(const R& value) {
 		return Quantifier<R>(q,value);
 	}
+
 };
 
 #if defined (__GNUG__)
