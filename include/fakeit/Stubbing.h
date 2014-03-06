@@ -151,9 +151,9 @@ struct FirstFunctionStubbingProgress {
 		AlwaysDo(method);
 	}
 
-	virtual auto Do(std::function<R(arglist...)> method) -> FirstFunctionStubbingProgress<R, arglist...>& = 0;
+	virtual FirstFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) = 0;
 
-	virtual auto AlwaysDo(std::function<R(arglist...)> method) -> void = 0;
+	virtual void AlwaysDo(std::function<R(arglist...)> method) = 0;
 
 private:
 	FirstFunctionStubbingProgress & operator=(const FirstFunctionStubbingProgress & other) = delete;
