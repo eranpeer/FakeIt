@@ -64,6 +64,7 @@ struct Quantifier {
 	Quantifier(const int quantity, const R& value) :
 			quantity(quantity), value(value) {
 	}
+
 	const int quantity;
 	const R& value;
 
@@ -73,11 +74,18 @@ struct Quantifier {
 	}
 };
 
-struct QuantifierFunctor {
-	QuantifierFunctor(const int quantity) :
+template<>
+struct Quantifier<void> {
+	Quantifier(const int quantity) :
 			quantity(quantity) {
 	}
 	const int quantity;
+};
+
+struct QuantifierFunctor: public Quantifier<void> {
+	QuantifierFunctor(const int quantity) :
+			Quantifier<void>(quantity) {
+	}
 
 	template<typename R>
 	Quantifier<R> operator()(const R& value) {
@@ -91,6 +99,10 @@ struct Times {
 	template<typename R>
 	static Quantifier<R> of(const R& value) {
 		return Quantifier<R>(q, value);
+	}
+
+	static Quantifier<void> Void() {
+		return Quantifier<void>(q);
 	}
 
 };
@@ -118,8 +130,8 @@ struct FirstFunctionStubbingProgress {
 
 	FirstFunctionStubbingProgress<R, arglist...>&
 	Return(const Quantifier<R>& q) {
-		auto method = [&q](const arglist&...)->R {return q.value; };
-		std::shared_ptr<BehaviorMock<R, arglist...>> doMock{ new DoMock<R, arglist...>(method,q.quantity) };
+		auto method = [&q](const arglist&...)->R {return q.value;};
+		std::shared_ptr<BehaviorMock<R, arglist...>> doMock { new DoMock<R, arglist...>(method, q.quantity) };
 		return DoImpl(doMock);
 	}
 
@@ -148,6 +160,20 @@ struct FirstFunctionStubbingProgress {
 		return Do([e](const arglist&...)->R {throw e;});
 	}
 
+	FirstFunctionStubbingProgress<R, arglist...>&
+	Throw(const Quantifier<R>& q) {
+		auto method = [&q](const arglist&...)->R {throw q.value;};
+		std::shared_ptr<BehaviorMock<R, arglist...>> doMock { new DoMock<R, arglist...>(method, q.quantity) };
+		return DoImpl(doMock);
+	}
+
+	template<typename first, typename second, typename ... tail>
+	FirstFunctionStubbingProgress<R, arglist...>&
+	Throw(const first& f, const second& s, const tail&... t) {
+		Throw(f);
+		return Throw(s, t...);
+	}
+
 	template<typename E>
 	void AlwaysThrow(const E& e) {
 		return AlwaysDo([e](const arglist&...)->R {throw e;});
@@ -163,7 +189,7 @@ struct FirstFunctionStubbingProgress {
 	}
 
 	virtual void AlwaysDo(std::function<R(arglist...)> method) {
-		std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoForeverMock<R, arglist...>(method) };
+		std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoForeverMock<R, arglist...>(method) };
 		AlwaysDoImpl(ptr);
 	}
 
@@ -192,15 +218,30 @@ struct FirstProcedureStubbingProgress {
 	}
 
 	FirstProcedureStubbingProgress<R, arglist...>&
-		Return(const Quantifier<R>& q) {
-			auto method = [&q](const arglist&...)->R {return; };
-			std::shared_ptr<BehaviorMock<R, arglist...>> doMock{ new DoMock<R, arglist...>(method, q.quantity) };
-			return DoImpl(doMock);
-		}
+	Return(const Quantifier<R>& q) {
+		auto method = [&q](const arglist&...)->R {return DefaultValue::value<R>();};
+		std::shared_ptr<BehaviorMock<R, arglist...>> doMock { new DoMock<R, arglist...>(method, q.quantity) };
+		return DoImpl(doMock);
+	}
 
 	template<typename E>
 	FirstProcedureStubbingProgress<R, arglist...>& Throw(const E e) {
 		return Do([e](const arglist&...)->R {throw e;});
+	}
+
+	template<typename E>
+	FirstProcedureStubbingProgress<R, arglist...>&
+	Throw(const Quantifier<E>& q) {
+		auto method = [&q](const arglist&...)->R {throw q.value;};
+		std::shared_ptr<BehaviorMock<R, arglist...>> doMock { new DoMock<R, arglist...>(method, q.quantity) };
+		return DoImpl(doMock);
+	}
+
+	template<typename first, typename second, typename ... tail>
+	FirstProcedureStubbingProgress<R, arglist...>&
+	Throw(const first& f, const second& s, const tail&... t) {
+		Throw(f);
+		return Throw(s, t...);
 	}
 
 	template<typename E>
@@ -213,13 +254,12 @@ struct FirstProcedureStubbingProgress {
 	}
 
 	virtual FirstProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) {
-		std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoMock<R, arglist...>(method) };
+		std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoMock<R, arglist...>(method) };
 		return DoImpl(ptr);
 	}
 
-	virtual void AlwaysDo(std::function<R(arglist...)> method)
-	{
-		std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoForeverMock<R, arglist...>(method) };
+	virtual void AlwaysDo(std::function<R(arglist...)> method) {
+		std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoForeverMock<R, arglist...>(method) };
 		AlwaysDoImpl(ptr);
 	}
 
