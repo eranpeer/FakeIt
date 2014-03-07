@@ -57,15 +57,6 @@ public:
 
 		virtual ~FunctionProgress() = default;
 
-		// TODO:remove these 2 methods, they are in base class
-		FirstFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-			return FirstFunctionStubbingProgress<R, arglist...>::Do(method);
-		}
-
-		void AlwaysDo(std::function<R(arglist...)> method) override {
-			FirstFunctionStubbingProgress<R, arglist...>::AlwaysDo(method);
-		}
-
 		FunctionProgress(FunctionProgress& other) :
 				StubbingProgress(other), root(other.root) {
 		}
@@ -96,15 +87,6 @@ public:
 		friend class WhenFunctor;
 
 		virtual ~ProcedureProgress() override = default;
-
-		// TODO:remove these 2 methods, they are in base class
-		FirstProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-			return ProcedureStubbingProgress<R, arglist...>::Do(method);
-		}
-
-		void AlwaysDo(std::function<R(arglist...)> method) override {
-			ProcedureStubbingProgress<R, arglist...>::AlwaysDo(method);
-		}
 
 		ProcedureProgress(ProcedureProgress& other) :
 				StubbingProgress(other), root(other.root) {
