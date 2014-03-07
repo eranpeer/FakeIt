@@ -20,15 +20,43 @@ static std::atomic_int invocationOrdinal;
 template<typename R, typename ... arglist>
 struct BehaviorMock {
 	virtual R invoke(arglist&... args) = 0;
+	virtual bool isDone() = 0;
 };
 
 template<typename R, typename ... arglist>
 struct DoMock: public BehaviorMock<R, arglist...> {
 	DoMock(std::function<R(arglist&...)> f) :
-			f(f) {
+			f(f),times(1) {
+	}
+
+	DoMock(std::function<R(arglist&...)> f, long times) :
+		f(f), times(times) {
+	}
+
+	virtual R invoke(arglist&... args) override {
+		times--;
+		return f(args...);
+	}
+
+	virtual bool isDone() override {
+		return times == 0;
+	}
+private:
+	std::function<R(arglist&...)> f;
+	long times;
+};
+
+template<typename R, typename ... arglist>
+struct DoForeverMock : public BehaviorMock<R, arglist...> {
+	DoForeverMock(std::function<R(arglist&...)> f) :
+	f(f) {
 	}
 	virtual R invoke(arglist&... args) override {
 		return f(args...);
+	}
+
+	virtual bool isDone() override {
+		return false;
 	}
 private:
 	std::function<R(arglist&...)> f;
@@ -39,12 +67,20 @@ struct EndMock: public BehaviorMock<R, arglist...> {
 	virtual R invoke(arglist&... args) override {
 		throw UnmockedMethodCallException();
 	}
+
+	virtual bool isDone() override {
+		return false;
+	}
 };
 
 template<typename R, typename ... arglist>
 struct InitialMock: public BehaviorMock<R, arglist...> {
 	virtual R invoke(arglist&... args) override {
 		return DefaultValue::value<R>();
+	}
+
+	virtual bool isDone() override {
+		return false;
 	}
 };
 

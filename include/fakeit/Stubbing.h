@@ -119,7 +119,7 @@ struct FirstFunctionStubbingProgress {
 	FirstFunctionStubbingProgress<R, arglist...>&
 	Return(const Quantifier<R>& q) {
 		auto method = [&q](const arglist&...)->R {return q.value; };
-		std::shared_ptr<BehaviorMock<R, arglist...>> doMock{ new DoMock<R, arglist...>(method) };
+		std::shared_ptr<BehaviorMock<R, arglist...>> doMock{ new DoMock<R, arglist...>(method,q.quantity) };
 		return DoImpl(doMock);
 	}
 
@@ -163,7 +163,7 @@ struct FirstFunctionStubbingProgress {
 	}
 
 	virtual void AlwaysDo(std::function<R(arglist...)> method) {
-		std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoMock<R, arglist...>(method) };
+		std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoForeverMock<R, arglist...>(method) };
 		AlwaysDoImpl(ptr);
 	}
 
@@ -194,7 +194,7 @@ struct FirstProcedureStubbingProgress {
 	FirstProcedureStubbingProgress<R, arglist...>&
 		Return(const Quantifier<R>& q) {
 			auto method = [&q](const arglist&...)->R {return; };
-			std::shared_ptr<BehaviorMock<R, arglist...>> doMock{ new DoMock<R, arglist...>(method) };
+			std::shared_ptr<BehaviorMock<R, arglist...>> doMock{ new DoMock<R, arglist...>(method, q.quantity) };
 			return DoImpl(doMock);
 		}
 
@@ -219,7 +219,7 @@ struct FirstProcedureStubbingProgress {
 
 	virtual void AlwaysDo(std::function<R(arglist...)> method)
 	{
-		std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoMock<R, arglist...>(method) };
+		std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoForeverMock<R, arglist...>(method) };
 		AlwaysDoImpl(ptr);
 	}
 
