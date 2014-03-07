@@ -59,13 +59,11 @@ public:
 
 		// TODO:remove these 2 methods, they are in base class
 		FirstFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-			std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoMock<R, arglist...>(method) };
-			return Do(ptr);
+			return FirstFunctionStubbingProgress<R, arglist...>::Do(method);
 		}
 
 		void AlwaysDo(std::function<R(arglist...)> method) override {
-			std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoMock<R, arglist...>(method) };
-			AlwaysDo(ptr);
+			FirstFunctionStubbingProgress<R, arglist...>::AlwaysDo(method);
 		}
 
 		FunctionProgress(FunctionProgress& other) :
@@ -101,13 +99,11 @@ public:
 
 		// TODO:remove these 2 methods, they are in base class
 		FirstProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) override {
-			std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoMock<R, arglist...>(method) };
-			return Do(ptr);
+			return ProcedureStubbingProgress<R, arglist...>::Do(method);
 		}
 
 		void AlwaysDo(std::function<R(arglist...)> method) override {
-			std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoMock<R, arglist...>(method) };
-			AlwaysDo(ptr);
+			ProcedureStubbingProgress<R, arglist...>::AlwaysDo(method);
 		}
 
 		ProcedureProgress(ProcedureProgress& other) :
