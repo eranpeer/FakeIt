@@ -66,7 +66,7 @@ struct Quantifier {
 	}
 
 	const int quantity;
-	const R& value;
+	const R value;
 
 	Quantifier<R> & operator()(const R& value) {
 		this->value = value;
@@ -125,12 +125,13 @@ struct FirstFunctionStubbingProgress {
 
 	FirstFunctionStubbingProgress<R, arglist...>&
 	Return(const R& r) {
-		return Do([&r](const arglist&...)->R {return r;});
+		return Do([r](const arglist&...)->R {return r;});
 	}
 
 	FirstFunctionStubbingProgress<R, arglist...>&
 	Return(const Quantifier<R>& q) {
-		auto method = [&q](const arglist&...)->R {return q.value;};
+		const R& value = q.value;
+		auto method = [value](const arglist&...)->R {return value;};
 		std::shared_ptr<BehaviorMock<R, arglist...>> doMock { new DoMock<R, arglist...>(method, q.quantity) };
 		return DoImpl(doMock);
 	}
@@ -143,7 +144,7 @@ struct FirstFunctionStubbingProgress {
 	}
 
 	void AlwaysReturn(const R& r) {
-		return AlwaysDo([&r](const arglist&...)->R {return r;});
+		return AlwaysDo([r](const arglist&...)->R {return r;});
 	}
 
 	FirstFunctionStubbingProgress<R, arglist...>&
@@ -163,7 +164,8 @@ struct FirstFunctionStubbingProgress {
 	template<typename E>
 	FirstFunctionStubbingProgress<R, arglist...>&
 	Throw(const Quantifier<E>& q) {
-		auto method = [&q](const arglist&...)->R {throw q.value;};
+		const E& value = q.value;
+		auto method = [value](const arglist&...)->R {throw value;};
 		std::shared_ptr<BehaviorMock<R, arglist...>> doMock { new DoMock<R, arglist...>(method, q.quantity) };
 		return DoImpl(doMock);
 	}
@@ -193,8 +195,7 @@ struct FirstFunctionStubbingProgress {
 	template<typename F>
 	FirstFunctionStubbingProgress<R, arglist...>&
 	Do(const Quantifier<F>& q) {
-		auto method = [&q](const arglist&...)->R {return q.value();};
-		std::shared_ptr<BehaviorMock<R, arglist...>> doMock { new DoMock<R, arglist...>(method, q.quantity) };
+		std::shared_ptr<BehaviorMock<R, arglist...>> doMock { new DoMock<R, arglist...>(q.value, q.quantity) };
 		return DoImpl(doMock);
 	}
 
@@ -236,20 +237,21 @@ struct FirstProcedureStubbingProgress {
 
 	FirstProcedureStubbingProgress<R, arglist...>&
 	Return(const Quantifier<R>& q) {
-		auto method = [&q](const arglist&...)->R {return DefaultValue::value<R>();};
+		auto method = [](const arglist&...)->R {return DefaultValue::value<R>();};
 		std::shared_ptr<BehaviorMock<R, arglist...>> doMock { new DoMock<R, arglist...>(method, q.quantity) };
 		return DoImpl(doMock);
 	}
 
 	template<typename E>
-	FirstProcedureStubbingProgress<R, arglist...>& Throw(const E e) {
+	FirstProcedureStubbingProgress<R, arglist...>& Throw(const E& e) {
 		return Do([e](const arglist&...)->R {throw e;});
 	}
 
 	template<typename E>
 	FirstProcedureStubbingProgress<R, arglist...>&
 	Throw(const Quantifier<E>& q) {
-		auto method = [&q](const arglist&...)->R {throw q.value;};
+		const E& value = q.value;
+		auto method = [value](const arglist&...)->R {throw value;};
 		std::shared_ptr<BehaviorMock<R, arglist...>> doMock { new DoMock<R, arglist...>(method, q.quantity) };
 		return DoImpl(doMock);
 	}
@@ -278,8 +280,7 @@ struct FirstProcedureStubbingProgress {
 	template<typename F>
 	FirstProcedureStubbingProgress<R, arglist...>&
 	Do(const Quantifier<F>& q) {
-		auto method = [&q](const arglist&...)->R {return q.value();};
-		std::shared_ptr<BehaviorMock<R, arglist...>> doMock { new DoMock<R, arglist...>(method, q.quantity) };
+		std::shared_ptr<BehaviorMock<R, arglist...>> doMock { new DoMock<R, arglist...>(q.value, q.quantity) };
 		return DoImpl(doMock);
 	}
 
