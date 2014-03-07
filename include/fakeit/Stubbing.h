@@ -160,8 +160,9 @@ struct FirstFunctionStubbingProgress {
 		return Do([e](const arglist&...)->R {throw e;});
 	}
 
+	template<typename E>
 	FirstFunctionStubbingProgress<R, arglist...>&
-	Throw(const Quantifier<R>& q) {
+	Throw(const Quantifier<E>& q) {
 		auto method = [&q](const arglist&...)->R {throw q.value;};
 		std::shared_ptr<BehaviorMock<R, arglist...>> doMock { new DoMock<R, arglist...>(method, q.quantity) };
 		return DoImpl(doMock);
@@ -183,9 +184,25 @@ struct FirstFunctionStubbingProgress {
 		AlwaysDo(method);
 	}
 
-	virtual FirstFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) {
+	virtual FirstFunctionStubbingProgress<R, arglist...>&
+	Do(std::function<R(arglist...)> method) {
 		std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoMock<R, arglist...>(method) };
 		return DoImpl(ptr);
+	}
+
+	template<typename F>
+	FirstFunctionStubbingProgress<R, arglist...>&
+	Do(const Quantifier<F>& q) {
+		auto method = [&q](const arglist&...)->R {return q.value();};
+		std::shared_ptr<BehaviorMock<R, arglist...>> doMock { new DoMock<R, arglist...>(method, q.quantity) };
+		return DoImpl(doMock);
+	}
+
+	template<typename first, typename second, typename ... tail>
+	FirstFunctionStubbingProgress<R, arglist...>&
+	Do(const first& f, const second& s, const tail&... t) {
+		Do(f);
+		return Do(s, t...);
 	}
 
 	virtual void AlwaysDo(std::function<R(arglist...)> method) {
@@ -256,6 +273,21 @@ struct FirstProcedureStubbingProgress {
 	virtual FirstProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) {
 		std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoMock<R, arglist...>(method) };
 		return DoImpl(ptr);
+	}
+
+	template<typename F>
+	FirstProcedureStubbingProgress<R, arglist...>&
+	Do(const Quantifier<F>& q) {
+		auto method = [&q](const arglist&...)->R {return q.value();};
+		std::shared_ptr<BehaviorMock<R, arglist...>> doMock { new DoMock<R, arglist...>(method, q.quantity) };
+		return DoImpl(doMock);
+	}
+
+	template<typename first, typename second, typename ... tail>
+	FirstProcedureStubbingProgress<R, arglist...>&
+	Do(const first& f, const second& s, const tail&... t) {
+		Do(f);
+		return Do(s, t...);
 	}
 
 	virtual void AlwaysDo(std::function<R(arglist...)> method) {
