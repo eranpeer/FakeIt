@@ -157,19 +157,19 @@ struct FirstFunctionStubbingProgress {
 
 	virtual FirstFunctionStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) {
 		std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoMock<R, arglist...>(method) };
-		return Do(ptr);
+		return DoImpl(ptr);
 	}
 
 	virtual void AlwaysDo(std::function<R(arglist...)> method) {
 		std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoMock<R, arglist...>(method) };
-		AlwaysDo(ptr);
+		AlwaysDoImpl(ptr);
 	}
 
 protected:
 
-	virtual FirstFunctionStubbingProgress<R, arglist...>& Do(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) = 0;
+	virtual FirstFunctionStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) = 0;
 
-	virtual void AlwaysDo(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) = 0;
+	virtual void AlwaysDoImpl(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) = 0;
 
 private:
 	FirstFunctionStubbingProgress & operator=(const FirstFunctionStubbingProgress & other) = delete;
@@ -205,20 +205,20 @@ struct FirstProcedureStubbingProgress {
 
 	virtual FirstProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) {
 		std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoMock<R, arglist...>(method) };
-		return Do(ptr);
+		return DoImpl(ptr);
 	}
 
 	virtual void AlwaysDo(std::function<R(arglist...)> method)
 	{
 		std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoMock<R, arglist...>(method) };
-		AlwaysDo(ptr);
+		AlwaysDoImpl(ptr);
 	}
 
 protected:
 
-	virtual FirstProcedureStubbingProgress<R, arglist...>& Do(std::shared_ptr<BehaviorMock<R, arglist...> > ptr)=0;
+	virtual FirstProcedureStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<BehaviorMock<R, arglist...> > ptr)=0;
 
-	virtual void AlwaysDo(std::shared_ptr<BehaviorMock<R, arglist...> > ptr)= 0;
+	virtual void AlwaysDoImpl(std::shared_ptr<BehaviorMock<R, arglist...> > ptr)= 0;
 
 private:
 	FirstProcedureStubbingProgress & operator=(const FirstProcedureStubbingProgress & other) = delete;

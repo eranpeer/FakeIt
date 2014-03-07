@@ -75,12 +75,12 @@ public:
 		}
 	protected:
 
-		virtual FirstFunctionStubbingProgress<R, arglist...>& Do(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) override {
+		virtual FirstFunctionStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) override {
 			root.AppendAction(ptr);
 			return *this;
 		}
 
-		virtual void AlwaysDo(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) override {
+		virtual void AlwaysDoImpl(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) override {
 			root.LastAction(ptr);
 		}
 
@@ -116,12 +116,12 @@ public:
 
 	protected:
 
-		virtual FirstProcedureStubbingProgress<R, arglist...>& Do(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) override {
+		virtual FirstProcedureStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) override {
 			root.AppendAction(ptr);
 			return *this;
 		}
 
-		virtual void AlwaysDo(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) override {
+		virtual void AlwaysDoImpl(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) override {
 			root.LastAction(ptr);
 		}
 
