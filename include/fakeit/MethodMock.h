@@ -12,7 +12,6 @@
 #include "fakeit/ActualInvocation.h"
 #include "fakeit/Exceptions.h"
 
-
 namespace fakeit {
 
 static std::atomic_int invocationOrdinal;
@@ -26,11 +25,11 @@ struct BehaviorMock {
 template<typename R, typename ... arglist>
 struct DoMock: public BehaviorMock<R, arglist...> {
 	DoMock(std::function<R(arglist&...)> f) :
-			f(f),times(1) {
+			f(f), times(1) {
 	}
 
 	DoMock(std::function<R(arglist&...)> f, long times) :
-		f(f), times(times) {
+			f(f), times(times) {
 	}
 
 	virtual R invoke(arglist&... args) override {
@@ -47,9 +46,9 @@ private:
 };
 
 template<typename R, typename ... arglist>
-struct DoForeverMock : public BehaviorMock<R, arglist...> {
+struct DoForeverMock: public BehaviorMock<R, arglist...> {
 	DoForeverMock(std::function<R(arglist&...)> f) :
-	f(f) {
+			f(f) {
 	}
 	virtual R invoke(arglist&... args) override {
 		return f(args...);
@@ -84,7 +83,6 @@ struct InitialMock: public BehaviorMock<R, arglist...> {
 	}
 };
 
-
 template<typename R, typename ... arglist>
 struct MethodInvocationMock: public ActualInvocation<arglist...>::Matcher, public MethodInvocationHandler<R, arglist...> {
 
@@ -92,21 +90,38 @@ struct MethodInvocationMock: public ActualInvocation<arglist...>::Matcher, publi
 
 };
 
+class finally {
+private:
+	std::function<void()> finallyClause;
+	finally(const finally &);
+	finally& operator=(const finally &);
+public:
+	explicit finally(std::function<void()> f) :
+			finallyClause(f) {
+	}
+
+	~finally() {
+		finallyClause();
+	}
+};
+
 template<typename R, typename ... arglist>
 struct RecordedMethodBody: public MethodInvocationHandler<R, arglist...> {
 
-	RecordedMethodBody(){
+	RecordedMethodBody() {
 		auto initialMock = std::shared_ptr<BehaviorMock<R, arglist...>> { new InitialMock<R, arglist...>() };
 		behaviorMocks.push_back(initialMock);
 	}
 
 	void AppendDo(std::function<R(arglist...)> method) {
-		std::shared_ptr<BehaviorMock<R, arglist...>> doMock = std::shared_ptr<BehaviorMock<R, arglist...>> { new DoMock<R, arglist...>(method) };
+		std::shared_ptr<BehaviorMock<R, arglist...>> doMock = std::shared_ptr<BehaviorMock<R, arglist...>> { new DoMock<R, arglist...>(
+				method) };
 		AppendDo(doMock);
 	}
 
 	void LastDo(std::function<R(arglist...)> method) {
-		std::shared_ptr<BehaviorMock<R, arglist...>> doMock = std::shared_ptr<BehaviorMock<R, arglist...>> { new DoMock<R, arglist...>(method) };
+		std::shared_ptr<BehaviorMock<R, arglist...>> doMock = std::shared_ptr<BehaviorMock<R, arglist...>> { new DoMock<R, arglist...>(
+				method) };
 		LastDo(doMock);
 	}
 
@@ -124,14 +139,16 @@ struct RecordedMethodBody: public MethodInvocationHandler<R, arglist...> {
 
 	R handleMethodInvocation(arglist&... args) override {
 		std::shared_ptr<BehaviorMock<R, arglist...>> behavior = behaviorMocks.front();
-		if (behaviorMocks.size() > 1)
-			behaviorMocks.erase(behaviorMocks.begin());
+		finally onExit([&](){
+			if (behavior->isDone())
+				behaviorMocks.erase(behaviorMocks.begin());
+		});
 		return behavior->invoke(args...);
 	}
 
 private:
 	void append(std::shared_ptr<BehaviorMock<R, arglist...>> mock) {
-		behaviorMocks.insert(behaviorMocks.end()-1, mock);
+		behaviorMocks.insert(behaviorMocks.end() - 1, mock);
 	}
 
 	void clear() {
@@ -265,7 +282,8 @@ struct MethodMock: public virtual Method, public virtual MethodInvocationHandler
 				return methodInvocationMock->handleMethodInvocation(args...);
 			}
 
-			std::vector<std::shared_ptr<ActualInvocation<arglist...>> > getActualInvocations(typename ActualInvocation<arglist...>::Matcher& matcher) {
+			std::vector<std::shared_ptr<ActualInvocation<arglist...>> > getActualInvocations(
+					typename ActualInvocation<arglist...>::Matcher& matcher) {
 				std::vector < std::shared_ptr<ActualInvocation<arglist...>> > result;
 				for (auto actualInvocation : actualInvocations) {
 					if (matcher.matches(*actualInvocation)) {
