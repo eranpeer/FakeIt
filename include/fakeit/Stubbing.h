@@ -118,7 +118,9 @@ struct FirstFunctionStubbingProgress {
 
 	FirstFunctionStubbingProgress<R, arglist...>&
 	Return(const Quantifier<R>& q) {
-		return Do([&q](const arglist&...)->R {return q.value;});
+		auto method = [&q](const arglist&...)->R {return q.value; };
+		std::shared_ptr<BehaviorMock<R, arglist...>> doMock{ new DoMock<R, arglist...>(method) };
+		return DoImpl(doMock);
 	}
 
 	template<typename first, typename second, typename ... tail>
@@ -188,6 +190,13 @@ struct FirstProcedureStubbingProgress {
 	void AlwaysReturn() {
 		return AlwaysDo([](const arglist&...)->R {return DefaultValue::value<R>();});
 	}
+
+	FirstProcedureStubbingProgress<R, arglist...>&
+		Return(const Quantifier<R>& q) {
+			auto method = [&q](const arglist&...)->R {return; };
+			std::shared_ptr<BehaviorMock<R, arglist...>> doMock{ new DoMock<R, arglist...>(method) };
+			return DoImpl(doMock);
+		}
 
 	template<typename E>
 	FirstProcedureStubbingProgress<R, arglist...>& Throw(const E e) {
