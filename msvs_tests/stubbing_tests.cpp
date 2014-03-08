@@ -113,7 +113,6 @@ namespace mock4cpp_tests
 
 		TEST_METHOD(StubDefaultBehaviorWithLambda_ByAssignment)
 		{
-
 			Mock<SomeInterface> mock;
 			mock[&SomeInterface::func] = [](int a){return a; };
 			mock[&SomeInterface::proc] = [](int a){throw a; };
@@ -121,6 +120,9 @@ namespace mock4cpp_tests
 			SomeInterface &i = mock.get();
 
 			Assert::AreEqual(1, i.func(1));
+			Assert::AreEqual(1, i.func(1));
+
+			Assert::ExpectException<int>([&i]{ i.proc(1); });
 			Assert::ExpectException<int>([&i]{ i.proc(1); });
 		}
 

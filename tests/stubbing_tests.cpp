@@ -22,6 +22,7 @@ struct BasicStubbing: tpunit::TestFixture {
 			TEST(BasicStubbing::stub_a_method_with_static_method_delegate),//
 			TEST(BasicStubbing::stub_by_assignment_with_lambda_delegate),//
 			TEST(BasicStubbing::stub_by_assignment_with_static_method_delegate),//
+			TEST(BasicStubbing::stub_only_specified_calls_by_assignment),
 			TEST(BasicStubbing::stub_to_default_behavior_with_filter),//
 			TEST(BasicStubbing::change_method_behavior_with_filter),//
 			TEST(BasicStubbing::change_method_behavior_with_functor_filter),//
@@ -183,12 +184,14 @@ struct BasicStubbing: tpunit::TestFixture {
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(3, i.func(3));
+		ASSERT_THROW(i.func(3), fakeit::UnmockedMethodCallException);
 
 		try {
 			i.proc(1);
 		} catch (int e) {
 			ASSERT_EQUAL(1, e);
 		}
+		ASSERT_THROW(i.proc(1), fakeit::UnmockedMethodCallException);
 	}
 
 	void stub_by_assignment_with_lambda_delegate() {
@@ -202,9 +205,33 @@ struct BasicStubbing: tpunit::TestFixture {
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(3, i.func(3));
+		ASSERT_EQUAL(4, i.func(4));
 
 		i.proc(3);
+		i.proc(3);
 		ASSERT_EQUAL(3, a);
+	}
+
+	void stub_only_specified_calls_by_assignment()
+	{
+		Mock<SomeInterface> mock;
+
+		Fake(mock[&SomeInterface::func]);
+		Fake(mock[&SomeInterface::proc]);
+
+		mock[&SomeInterface::func].Using(1) = [](...){return 1; };
+		mock[&SomeInterface::proc].Using(1) = [](...){throw std::string("error"); };
+
+		SomeInterface &i = mock.get();
+
+		ASSERT_EQUAL(1, i.func(1));
+		ASSERT_EQUAL(1, i.func(1));
+		ASSERT_EQUAL(0, i.func(2), L"default behavior");
+
+		ASSERT_THROW(i.proc(1), std::string);
+		ASSERT_THROW(i.proc(1), std::string);
+		
+		i.proc(2);
 	}
 
 	void stub_by_assignment_with_static_method_delegate() {
@@ -216,10 +243,18 @@ struct BasicStubbing: tpunit::TestFixture {
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(3, i.func(3));
+		ASSERT_EQUAL(4, i.func(4));
 
 		try {
 			i.proc(1);
 		} catch (int e) {
+			ASSERT_EQUAL(1, e);
+		}
+
+		try {
+			i.proc(1);
+		}
+		catch (int e) {
 			ASSERT_EQUAL(1, e);
 		}
 	}

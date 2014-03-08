@@ -66,6 +66,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="demo_dests.cpp" />
+    <ClCompile Include="msc_stubbing_multiple_values_tests.cpp" />
     <ClCompile Include="msc_type_info_tests.cpp" />
     <ClCompile Include="stubbing_tests.cpp" />
     <ClCompile Include="tpunit++main.cpp" />

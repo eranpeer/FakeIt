@@ -146,11 +146,10 @@ public:
 	}
 
 	void operator=(std::function<R(arglist...)> method) {
-		std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoMock<R, arglist...>(method) };
+		std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoForeverMock<R, arglist...>(method) };
 		MethodStubbingBase<C, R, arglist...>::LastAction(ptr);
 		MethodStubbingBase<C, R, arglist...>::apply();
 	}
-
 };
 
 template<typename C, typename R, typename ... arglist>

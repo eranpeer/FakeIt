@@ -139,10 +139,11 @@ struct RecordedMethodBody: public MethodInvocationHandler<R, arglist...> {
 
 	R handleMethodInvocation(arglist&... args) override {
 		std::shared_ptr<BehaviorMock<R, arglist...>> behavior = behaviorMocks.front();
-		finally onExit([&](){
+		std::function<void()> finallyClause = [&]()->void {
 			if (behavior->isDone())
 				behaviorMocks.erase(behaviorMocks.begin());
-		});
+		};
+		finally onExit(finallyClause);
 		return behavior->invoke(args...);
 	}
 

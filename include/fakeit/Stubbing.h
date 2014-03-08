@@ -122,10 +122,17 @@ struct FirstFunctionStubbingProgress {
 
 	virtual ~FirstFunctionStubbingProgress() THROWS {
 	}
-
-	FirstFunctionStubbingProgress<R, arglist...>&
+	
+	template <typename U = R>
+	typename std::enable_if<!std::is_reference<U>::value, FirstFunctionStubbingProgress<R, arglist...>&>::type
 	Return(const R& r) {
 		return Do([r](const arglist&...)->R {return r;});
+	}
+	
+	template <typename U = R>
+	typename std::enable_if<std::is_reference<U>::value, FirstFunctionStubbingProgress<R, arglist...>&>::type
+	Return(const R& r) {
+		return Do([&r](const arglist&...)->R {return r; });
 	}
 
 	FirstFunctionStubbingProgress<R, arglist...>&
