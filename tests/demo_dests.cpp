@@ -103,7 +103,7 @@ struct DemoTests : tpunit::TestFixture {
 		When(mock[&SomeInterface::foo]).Return(0, Times<4>::of(3), 3);
 		When(mock[&SomeInterface::foo]).Return(0, 3_Times(3), 2, 3);
 
-		When(mock[&SomeInterface::foo]).Throw(0, Times<4>::of("A"), 3).Return(2,3,4,5_Times(9));
+		When(mock[&SomeInterface::foo]).Throw(0, Times<4>::of("A"), 3).Return(2,3,4,5_Times((int)9));
 		When(mock[&SomeInterface::proc]).Return(4_Times);
 		When(mock[&SomeInterface::proc]).Return(Times<4>::Void());
 		When(mock[&SomeInterface::proc]).Throw(4_Times(3),3_Times(2));

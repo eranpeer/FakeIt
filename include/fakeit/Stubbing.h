@@ -66,7 +66,7 @@ struct Quantifier {
 	}
 
 	const int quantity;
-	const R value;
+	const R& value;
 
 	Quantifier<R> & operator()(const R& value) {
 		this->value = value;
