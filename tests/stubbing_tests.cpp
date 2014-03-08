@@ -9,30 +9,33 @@ using namespace fakeit;
 
 struct BasicStubbing: tpunit::TestFixture {
 	BasicStubbing() :
-			tpunit::TestFixture(
-					//
-					TEST(BasicStubbing::calling_an_unstubbed_method_should_raise_UnmockedMethodCallException), //
-					TEST(BasicStubbing::stub_method_to_default_behaviore_will_always_return_do_the_default_behaviore), //
-					TEST(BasicStubbing::stub_multiple_methods_to_default_behaviore),
-					TEST(BasicStubbing::stub_a_function_to_return_a_specified_value_once),
-					TEST(BasicStubbing::stub_a_function_to_return_a_specified_value_always),
-					TEST(BasicStubbing::stub_a_method_to_throw_a_specified_exception_once), //
-					TEST(BasicStubbing::stub_a_method_with_lambda_delegate_once), //
-					TEST(BasicStubbing::stub_a_method_with_lambda_delegate_always), //
-					TEST(BasicStubbing::stub_a_method_with_static_method_delegate), //
-					TEST(BasicStubbing::stub_by_assignment_with_lambda_delegate), //
-					TEST(BasicStubbing::stub_by_assignment_with_static_method_delegate), //
-					TEST(BasicStubbing::stub_to_default_behavior_with_filter), //
-					TEST(BasicStubbing::change_method_behavior_with_filter), //
-					TEST(BasicStubbing::change_method_behavior_with_functor_filter), //
-					TEST(BasicStubbing::change_method_behavior_with_matcher),  //
-					TEST(BasicStubbing::change_method_behavior_with_functor_matcher),  //
-					TEST(BasicStubbing::stub_multiple_return_values), //
-					TEST(BasicStubbing::stub_multiple_return_values_using_quque), //
-					TEST(BasicStubbing::stub_multiple_throws),
-					TEST(BasicStubbing::stub_overloaded_methods)
-					//
-							) {
+	tpunit::TestFixture(
+			//
+			TEST(BasicStubbing::calling_an_unstubbed_method_should_raise_UnmockedMethodCallException),//
+			TEST(BasicStubbing::stub_method_to_default_behaviore_will_always_return_do_the_default_behaviore),//
+			TEST(BasicStubbing::stub_multiple_methods_to_default_behaviore),
+			TEST(BasicStubbing::stub_a_function_to_return_a_specified_value_once),
+			TEST(BasicStubbing::stub_a_function_to_return_a_specified_value_always),
+			TEST(BasicStubbing::stub_a_method_to_throw_a_specified_exception_once),//
+			TEST(BasicStubbing::stub_a_method_with_lambda_delegate_once),//
+			TEST(BasicStubbing::stub_a_method_with_lambda_delegate_always),//
+			TEST(BasicStubbing::stub_a_method_with_static_method_delegate),//
+			TEST(BasicStubbing::stub_by_assignment_with_lambda_delegate),//
+			TEST(BasicStubbing::stub_by_assignment_with_static_method_delegate),//
+			TEST(BasicStubbing::stub_to_default_behavior_with_filter),//
+			TEST(BasicStubbing::change_method_behavior_with_filter),//
+			TEST(BasicStubbing::change_method_behavior_with_functor_filter),//
+			TEST(BasicStubbing::change_method_behavior_with_matcher),//
+			TEST(BasicStubbing::change_method_behavior_with_functor_matcher),//
+			TEST(BasicStubbing::stub_multiple_return_values),//
+			TEST(BasicStubbing::stub_multiple_return_values_using_quque),//
+			TEST(BasicStubbing::stub_multiple_throws),
+			TEST(BasicStubbing::stub_overloaded_methods),
+			TEST(BasicStubbing::stub_multiple_return_values_with_list),
+			TEST(BasicStubbing::stub_multiple_throws_with_list),
+			TEST(BasicStubbing::stub_multiple_do_with_list)
+			//
+	) {
 	}
 
 	struct SomeInterface {
@@ -98,7 +101,6 @@ struct BasicStubbing: tpunit::TestFixture {
 		ASSERT_EQUAL(1, i.func(1));
 		ASSERT_EQUAL(1, i.func(1));
 	}
-
 
 	void stub_a_method_to_throw_a_specified_exception_once() {
 		Mock<SomeInterface> mock;
@@ -391,6 +393,46 @@ struct BasicStubbing: tpunit::TestFixture {
 		ASSERT_EQUAL(0, i.func());
 		ASSERT_EQUAL(0, i.func(1));
 		ASSERT_EQUAL(0, i.func(true));
+	}
+
+	void stub_multiple_return_values_with_list() {
+		Mock<SomeInterface> mock;
+		When(mock[&SomeInterface::func]).Return(1, 2);
+		SomeInterface &i = mock.get();
+
+		ASSERT_EQUAL(1, i.func(1));
+		ASSERT_EQUAL(2, i.func(1));
+		ASSERT_THROW(i.func(1), fakeit::UnmockedMethodCallException);
+	}
+
+	void stub_multiple_throws_with_list() {
+		Mock<SomeInterface> mock;
+		When(mock[&SomeInterface::func]).Throw(std::string("1"), std::string("2"));
+		When(mock[&SomeInterface::proc]).Throw(std::string("1"), std::string("2"));
+		SomeInterface &i = mock.get();
+
+		ASSERT_THROW(i.func(1), std::string);
+		ASSERT_THROW(i.func(1), std::string);
+		ASSERT_THROW(i.func(1), fakeit::UnmockedMethodCallException);
+
+		ASSERT_THROW(i.proc(1), std::string);
+		ASSERT_THROW(i.proc(1), std::string);
+		ASSERT_THROW(i.proc(1), fakeit::UnmockedMethodCallException);
+	}
+
+	void stub_multiple_do_with_list() {
+		Mock<SomeInterface> mock;
+		When(mock[&SomeInterface::func]).Do([](...) {return 1;}, [](...) {return 2;});
+		When(mock[&SomeInterface::proc]).Do([](...) {}, [](...) {});
+		SomeInterface &i = mock.get();
+
+		ASSERT_EQUAL(1, i.func(1));
+		ASSERT_EQUAL(2, i.func(1));
+		ASSERT_THROW(i.func(1), fakeit::UnmockedMethodCallException);
+
+		i.proc(1);
+		i.proc(1);
+		ASSERT_THROW(i.proc(1), fakeit::UnmockedMethodCallException);
 	}
 
 } __BasicStubbing;
