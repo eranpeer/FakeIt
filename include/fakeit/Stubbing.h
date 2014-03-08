@@ -215,14 +215,12 @@ struct FirstFunctionStubbingProgress {
 
 	virtual void AlwaysDo(std::function<R(arglist...)> method) {
 		std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoForeverMock<R, arglist...>(method) };
-		AlwaysDoImpl(ptr);
+		DoImpl(ptr);
 	}
 
 protected:
 
 	virtual FirstFunctionStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) = 0;
-
-	virtual void AlwaysDoImpl(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) = 0;
 
 private:
 	FirstFunctionStubbingProgress & operator=(const FirstFunctionStubbingProgress & other) = delete;
@@ -300,14 +298,12 @@ struct FirstProcedureStubbingProgress {
 
 	virtual void AlwaysDo(std::function<R(arglist...)> method) {
 		std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoForeverMock<R, arglist...>(method) };
-		AlwaysDoImpl(ptr);
+		DoImpl(ptr);
 	}
 
 protected:
 
 	virtual FirstProcedureStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<BehaviorMock<R, arglist...> > ptr)=0;
-
-	virtual void AlwaysDoImpl(std::shared_ptr<BehaviorMock<R, arglist...> > ptr)= 0;
 
 private:
 	FirstProcedureStubbingProgress & operator=(const FirstProcedureStubbingProgress & other) = delete;

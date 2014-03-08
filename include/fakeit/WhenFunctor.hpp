@@ -71,10 +71,6 @@ public:
 			return *this;
 		}
 
-		virtual void AlwaysDoImpl(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) override {
-			root.LastAction(ptr);
-		}
-
 	private:
 
 		FunctionStubbingRoot<C, R, arglist...>& root;
@@ -101,10 +97,6 @@ public:
 		virtual FirstProcedureStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) override {
 			root.AppendAction(ptr);
 			return *this;
-		}
-
-		virtual void AlwaysDoImpl(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) override {
-			root.LastAction(ptr);
 		}
 
 	private:
