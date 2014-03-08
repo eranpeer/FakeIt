@@ -226,12 +226,14 @@ struct BasicStubbing: tpunit::TestFixture {
 
 		ASSERT_EQUAL(1, i.func(1));
 		ASSERT_EQUAL(1, i.func(1));
-		ASSERT_EQUAL(0, i.func(2), L"default behavior");
+		ASSERT_EQUAL(0, i.func(2)); // default behavior
+		ASSERT_EQUAL(0, i.func(2)); // default behavior
 
 		ASSERT_THROW(i.proc(1), std::string);
 		ASSERT_THROW(i.proc(1), std::string);
 		
-		i.proc(2);
+		i.proc(2); // default behavior
+		i.proc(2); // default behavior
 	}
 
 	void stub_by_assignment_with_static_method_delegate() {
