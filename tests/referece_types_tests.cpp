@@ -41,14 +41,15 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 	ReferenceTypesTests() :
 			tpunit::TestFixture(
 			//
-					TEST(ReferenceTypesTests::defaultValuesOfReferenceTypes),
-					TEST(ReferenceTypesTests::explicitStubbingDefualtReturnValuesOfReferenceTypes)
+					TEST(ReferenceTypesTests::implicitStubbingDefaultReturnValues),
+					TEST(ReferenceTypesTests::explicitStubbingDefualtReturnValues),
+					TEST(ReferenceTypesTests::explicitStubbingDefualtReturnValues_with_AlwaysReturn)
 					//
 							) //
 	{
 	}
 
-	void defaultValuesOfReferenceTypes() {
+	void implicitStubbingDefaultReturnValues() {
 		Mock<ReferenceInterface> mock;
 		Fake( //
 				mock[&ReferenceInterface::returnIntByRef], //
@@ -70,12 +71,32 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 		ASSERT_EQUAL(nullptr, &i.returnAbstractTypeByRef());
 	}
 
-	void explicitStubbingDefualtReturnValuesOfReferenceTypes() {
+	void explicitStubbingDefualtReturnValues() {
 		Mock<ReferenceInterface> mock;
 		When(mock[&ReferenceInterface::returnIntByRef]).Return(); //
 		When(mock[&ReferenceInterface::returnAbstractTypeByRef]).Return(); //
 		When(mock[&ReferenceInterface::returnConcreteTypeByRef]).Return(); //
 
+
+		ReferenceInterface & i = mock.get();
+
+		// Fundamental types are initiated to 0.
+		// Return a reference to the default value.
+		ASSERT_EQUAL(0, i.returnIntByRef());
+
+		// Concrete types types are initiated by default ctor.
+		// Return a reference to the default value.
+		ASSERT_EQUAL(ConcreteType(), i.returnConcreteTypeByRef());
+
+		// For abstract types return a reference to nullptr.
+		ASSERT_EQUAL(nullptr, &i.returnAbstractTypeByRef());
+	}
+
+	void explicitStubbingDefualtReturnValues_with_AlwaysReturn() {
+		Mock<ReferenceInterface> mock;
+		When(mock[&ReferenceInterface::returnIntByRef]).AlwaysReturn(); //
+		When(mock[&ReferenceInterface::returnAbstractTypeByRef]).AlwaysReturn(); //
+		When(mock[&ReferenceInterface::returnConcreteTypeByRef]).AlwaysReturn(); //
 
 		ReferenceInterface & i = mock.get();
 
