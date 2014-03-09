@@ -40,7 +40,7 @@ struct DefaultValue {
 
 	template<typename REF>
 	static typename std::enable_if<std::is_reference<REF>::value, REF>::type value() {
-		return DefaultValue::value<std::remove_reference<REF>::type>();
+		return DefaultValue::value<typename std::remove_reference<REF>::type>();
 	}
 
 };
