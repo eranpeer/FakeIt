@@ -156,11 +156,11 @@ struct FirstFunctionStubbingProgress {
 
 	FirstFunctionStubbingProgress<R, arglist...>&
 	Return() {
-		return Do([](const arglist&...)->R {DefaultValue::value<R>();});
+		return Do([](const arglist&...)->R {return DefaultValue::value<R>();});
 	}
 
 	void AlwaysReturn() {
-		return AlwaysDo([](const arglist&...)->R {DefaultValue::value<R>();});
+		return AlwaysDo([](const arglist&...)->R {return DefaultValue::value<R>();});
 	}
 
 	template<typename E>
