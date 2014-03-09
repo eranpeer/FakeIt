@@ -12,22 +12,9 @@ using namespace fakeit;
 namespace mock4cpp_tests
 {
 
-	struct ReferenceInterface {
-		virtual int& func1() = 0;
-		virtual ReferenceInterface& func2() = 0;
-		virtual void proc1(int&) = 0;
-		virtual void proc2(ReferenceInterface &) = 0;
-	};
-
-	static bool operator==(const ReferenceInterface& a, const ReferenceInterface& b)
-	{
-		return (&a == &b);
-	}
-
 	struct PointerInterface {
 		virtual int* func1() = 0;
 		virtual PointerInterface* func2() = 0;
-
 		virtual void proc1(int*) = 0;
 		virtual void proc2(PointerInterface *) = 0;
 	};
@@ -328,22 +315,6 @@ namespace mock4cpp_tests
 
 			Assert::ExpectException<int>([&i]{ i.proc(0); });
 			i.proc(1);
-		}
-
-		TEST_METHOD(StubProcWithReferenceParams){
-			Mock<ReferenceInterface> mock;
-			Fake(mock[&ReferenceInterface::proc1], mock[&ReferenceInterface::proc2]);
-			Fake(mock[&ReferenceInterface::func1], mock[&ReferenceInterface::func2]);
-
-			ReferenceInterface & i = mock.get();
-			ReferenceInterface* pReferenceInterface{ nullptr };
-			ReferenceInterface& ref = *pReferenceInterface;
-			int a{ 0 };
-			i.proc1(a);
-			i.proc2(ref);
-			int& rInt = i.func1();
-			Assert::AreEqual(0, rInt, L"fundamental types are initiated to 0");
-			Assert::ExpectException<std::string>([&i]{ i.func2(); }, L"should fail to create default value");
 		}
 
 		TEST_METHOD(StubProcWithPointerParams){
