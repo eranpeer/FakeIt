@@ -1,6 +1,5 @@
 #ifndef Clouses_h__
 #define Clouses_h__
-#include "fakeit/quantifier.hpp"
 
 #include <functional>
 #include <type_traits>
@@ -9,10 +8,12 @@
 #include <stdexcept>
 #include <utility>
 
-#include "mockutils/traits.h"
-#include "mockutils/DefaultValue.hpp"
 #include "fakeit/Exceptions.h"
 #include "fakeit/ActualInvocation.h"
+#include "fakeit/quantifier.hpp"
+
+#include "mockutils/traits.h"
+#include "mockutils/DefaultValue.hpp"
 #include "mockutils/Macros.h"
 
 namespace fakeit {
