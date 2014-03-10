@@ -7,37 +7,35 @@
 
 using namespace fakeit;
 
-class AbstractType {
-public:
-	virtual void foo() = 0;
-};
-
-class ConcreteType: public AbstractType {
-public:
-	int state;
-	ConcreteType() :
-			state(10) {
-	}
-	virtual void foo() override {
-	}
-
-	bool operator==(const ConcreteType& other) {
-		return (other.state == this->state);
-	}
-
-};
-
-struct ReferenceInterface {
-	virtual int& returnIntByRef() = 0;
-	virtual AbstractType& returnAbstractTypeByRef() = 0;
-	virtual ConcreteType& returnConcreteTypeByRef() = 0;
-};
-
-//static bool operator==(const ReferenceInterface& a, const ReferenceInterface& b) {
-//	return (&a == &b);
-//}
 
 struct ReferenceTypesTests: tpunit::TestFixture {
+
+	class AbstractType {
+	public:
+		virtual void foo() = 0;
+	};
+
+	class ConcreteType: public AbstractType {
+	public:
+		int state;
+		ConcreteType() :
+				state(10) {
+		}
+		virtual void foo() override {
+		}
+
+		bool operator==(const ConcreteType& other) {
+			return (other.state == this->state);
+		}
+
+	};
+
+	struct ReferenceInterface {
+		virtual int& returnIntByRef() = 0;
+		virtual AbstractType& returnAbstractTypeByRef() = 0;
+		virtual ConcreteType& returnConcreteTypeByRef() = 0;
+	};
+
 	ReferenceTypesTests() :
 			tpunit::TestFixture(
 			//
