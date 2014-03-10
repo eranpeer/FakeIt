@@ -1,6 +1,6 @@
 #ifndef Clouses_h__
 #define Clouses_h__
-#include "mockutils/Macros.h"
+#include "fakeit/quantifier.hpp"
 
 #include <functional>
 #include <type_traits>
@@ -13,7 +13,7 @@
 #include "mockutils/DefaultValue.hpp"
 #include "fakeit/Exceptions.h"
 #include "fakeit/ActualInvocation.h"
-#include "fakeit/quantifier.hpp"
+#include "mockutils/Macros.h"
 
 namespace fakeit {
 

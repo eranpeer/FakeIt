@@ -8,20 +8,9 @@
 #ifndef QUANTIFIER_HPP_
 #define QUANTIFIER_HPP_
 
-#include "mockutils/Macros.h"
-
 #include <functional>
 #include <type_traits>
-#include <unordered_set>
-#include <vector>
-#include <stdexcept>
-#include <utility>
-
-#include "mockutils/traits.h"
 #include "mockutils/DefaultValue.hpp"
-#include "fakeit/Exceptions.h"
-#include "fakeit/ActualInvocation.h"
-
 
 namespace fakeit {
 
