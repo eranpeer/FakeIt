@@ -69,12 +69,14 @@ struct FirstFunctionStubbingProgress {
 	}
 
 	template<typename U = R>
-	typename std::enable_if<!std::is_reference<U>::value, FirstFunctionStubbingProgress<R, arglist...>&>::type Return(const R& r) {
+	typename std::enable_if<!std::is_reference<U>::value, FirstFunctionStubbingProgress<R, arglist...>&>::type 
+	Return(const R& r) {
 		return Do([r](const arglist&...)->R {return r;});
 	}
 
 	template<typename U = R>
-	typename std::enable_if<std::is_reference<U>::value, FirstFunctionStubbingProgress<R, arglist...>&>::type Return(const R& r) {
+	typename std::enable_if<std::is_reference<U>::value, FirstFunctionStubbingProgress<R, arglist...>&>::type 
+	Return(const R& r) {
 		return Do([&r](const arglist&...)->R {return r;});
 	}
 
