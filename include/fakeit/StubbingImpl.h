@@ -9,13 +9,14 @@
 #include <set>
 #include <iostream>
 
+#include "mockutils/ExtractMemberType.h"
+
 #include "fakeit/MethodMock.h"
 #include "fakeit/Stubbing.h"
 #include "fakeit/Sequence.hpp"
 #include "fakeit/ActualInvocation.h"
 #include "fakeit/ErrorFormatter.h"
 #include "fakeit/DefaultErrorFormatter.h"
-#include "mockutils/ExtractMemberType.h"
 
 namespace fakeit {
 

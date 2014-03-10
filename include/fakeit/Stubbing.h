@@ -1,5 +1,5 @@
-#ifndef Clouses_h__
-#define Clouses_h__
+#ifndef stubbing_h__
+#define stubbing_h__
 
 #include <functional>
 #include <type_traits>
@@ -280,4 +280,4 @@ private:
 
 }
 
-#endif // Clouses_h__
+#endif // stubbing_h__

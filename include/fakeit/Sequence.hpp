@@ -8,12 +8,12 @@
 #ifndef SEQUENCE_HPP_
 #define SEQUENCE_HPP_
 
-#include "mockutils/Macros.h"
 
 #include <unordered_set>
 #include <vector>
 #include <stdexcept>
 
+#include "mockutils/Macros.h"
 #include "fakeit/ActualInvocation.h"
 
 

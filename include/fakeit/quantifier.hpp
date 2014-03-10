@@ -71,7 +71,7 @@ inline QuantifierFunctor operator"" _Times(unsigned long long n)
 }
 
 #endif
-}
 
+}
 
 #endif /* QUANTIFIER_HPP_ */

@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "mockutils/DynamicProxy.h"
+
 #include "fakeit/StubbingImpl.h"
 #include "fakeit/WhenFunctor.hpp"
 #include "fakeit/FakeFunctor.hpp"

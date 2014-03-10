@@ -6,6 +6,7 @@
 #include "fakeit/Sequence.hpp"
 
 namespace fakeit {
+
 struct ErrorFormatter {
 	virtual ~ErrorFormatter() = default;
 
@@ -19,6 +20,7 @@ struct ErrorFormatter {
 	virtual std::string buildAtLeastVerificationErrorMsg(std::vector<Sequence*>& expectedPattern,
 			std::vector<AnyInvocation*>& actualSequence, int expectedInvocationCount, int count)= 0;
 };
+
 }
 
 #endif //ErrorFormatter_h__

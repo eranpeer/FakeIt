@@ -5,11 +5,11 @@
  *      Author: eran
  */
 
-#ifndef STUBFUNCTOR_HPP_
-#define STUBFUNCTOR_HPP_
+#ifndef FakeFunctor_hpp_
+#define FakeFunctor_hpp_
 
-#include "fakeit/StubbingImpl.h"
 #include "fakeit/Stubbing.h"
+#include "fakeit/StubbingImpl.h"
 
 namespace fakeit {
 
@@ -38,4 +38,4 @@ public:
 
 }
 
-#endif /* STUBFUNCTOR_HPP_ */
+#endif /* FakeFunctor_hpp_ */
