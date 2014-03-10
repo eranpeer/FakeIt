@@ -326,7 +326,6 @@ public virtual FirstProcedureStubbingProgress<R, arglist...> {
 	ProcedureStubbingProgress() = default;
 	virtual ~ProcedureStubbingProgress() override {
 	}
-	;
 
 private:
 	ProcedureStubbingProgress & operator=(const ProcedureStubbingProgress & other) = delete;
