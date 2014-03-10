@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include <vector>
 #include <stdexcept>
+#include <utility>
 
 #include "mockutils/traits.h"
 #include "mockutils/DefaultValue.hpp"
@@ -122,17 +123,15 @@ struct FirstFunctionStubbingProgress {
 
 	virtual ~FirstFunctionStubbingProgress() THROWS {
 	}
-	
-	template <typename U = R>
-	typename std::enable_if<!std::is_reference<U>::value, FirstFunctionStubbingProgress<R, arglist...>&>::type
-	Return(const R& r) {
+
+	template<typename U = R>
+	typename std::enable_if<!std::is_reference<U>::value, FirstFunctionStubbingProgress<R, arglist...>&>::type Return(const R& r) {
 		return Do([r](const arglist&...)->R {return r;});
 	}
-	
-	template <typename U = R>
-	typename std::enable_if<std::is_reference<U>::value, FirstFunctionStubbingProgress<R, arglist...>&>::type
-	Return(const R& r) {
-		return Do([&r](const arglist&...)->R {return r; });
+
+	template<typename U = R>
+	typename std::enable_if<std::is_reference<U>::value, FirstFunctionStubbingProgress<R, arglist...>&>::type Return(const R& r) {
+		return Do([&r](const arglist&...)->R {return r;});
 	}
 
 	FirstFunctionStubbingProgress<R, arglist...>&
