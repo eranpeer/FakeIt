@@ -11,7 +11,7 @@
 
 #include "fakeit/DomainObjects.h"
 #include "fakeit/ActualInvocation.h"
-#include "fakeit/Exceptions.h"
+#include "fakeit/FakeitExceptions.h"
 
 namespace fakeit {
 

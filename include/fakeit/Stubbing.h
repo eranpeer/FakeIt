@@ -8,7 +8,7 @@
 #include <stdexcept>
 #include <utility>
 
-#include "fakeit/Exceptions.h"
+#include "fakeit/FakeitExceptions.h"
 #include "fakeit/ActualInvocation.h"
 #include "fakeit/quantifier.hpp"
 

@@ -3,7 +3,7 @@
 
 #include "tpunit++.hpp"
 #include "fakeit.h"
-#include "fakeit/Exceptions.h"
+#include "fakeit/FakeitExceptions.h"
 
 using namespace fakeit;
 
