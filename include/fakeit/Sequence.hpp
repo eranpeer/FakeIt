@@ -108,10 +108,14 @@ inline ConcatenatedSequence operator+(const Sequence &s1, const Sequence &s2) {
 }
 
 inline RepeatedSequence operator*(const Sequence &s, int times) {
+	if (times <= 0)
+		throw std::invalid_argument("times");
 	return RepeatedSequence(s, times);
 }
 
 inline RepeatedSequence operator*(int times, const Sequence &s) {
+	if (times <= 0)
+		throw std::invalid_argument("times");
 	return RepeatedSequence(s, times);
 }
 

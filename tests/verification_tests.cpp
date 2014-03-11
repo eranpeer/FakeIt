@@ -30,26 +30,28 @@ using namespace fakeit;
 
 struct BasicVerification: tpunit::TestFixture {
 	BasicVerification() :
-			tpunit::TestFixture(
+	tpunit::TestFixture(
 			//
-					TEST(BasicVerification::verify_should_not_throw_exception_if_method_was_called), //
-					TEST(BasicVerification::verify_should_throw_VerificationException_if_method_was_not_called), //
-					TEST(BasicVerification::verify_should_throw_VerificationException_if_method_was_not_stubbed), //
-					TEST(BasicVerification::verify_method_was_called_at_least_once), //
-					TEST(BasicVerification::verify_method_was_called_at_least_twice), //
-					TEST(BasicVerification::verify_method_was_called_exactly_once), //
-					TEST(BasicVerification::verify_method_was_never_called), //
-					TEST(BasicVerification::verify_method_was_called_exactly_x_times), //
-					TEST(BasicVerification::should_throw_IllegalArgumentException_on_negative_times_argument), //
-					TEST(BasicVerification::verify_with_filter), //
-					TEST(BasicVerification::verify_concatenated_sequence), //
-					TEST(BasicVerification::verify_repeated_sequence), //
-					TEST(BasicVerification::verify_repeated_sequence_2), //
-					TEST(BasicVerification::verify_multi_sequences_in_order), TEST(BasicVerification::verify_no_other_invocations_for_mock), //
-					TEST(BasicVerification::verify_no_other_invocations_for_method_filter), //
-					TEST(BasicVerification::use_same_filter_for_both_stubbing_and_verification), //
-					TEST(BasicVerification::verify_after_paramter_was_changed__with_Matching),  //
-					TEST(BasicVerification::verify_after_paramter_was_changed_with_Using))  //
+			TEST(BasicVerification::verify_should_not_throw_exception_if_method_was_called),//
+			TEST(BasicVerification::verify_should_throw_VerificationException_if_method_was_not_called),//
+			TEST(BasicVerification::verify_should_throw_VerificationException_if_method_was_not_stubbed),//
+			TEST(BasicVerification::verify_method_was_called_at_least_once),//
+			TEST(BasicVerification::verify_method_was_called_at_least_twice),//
+			TEST(BasicVerification::verify_method_was_called_exactly_once),//
+			TEST(BasicVerification::verify_method_was_never_called),//
+			TEST(BasicVerification::verify_method_was_called_exactly_x_times),//
+			TEST(BasicVerification::should_throw_IllegalArgumentException_on_negative_times_argument),//
+			TEST(BasicVerification::verify_with_filter),//
+			TEST(BasicVerification::verify_concatenated_sequence),//
+			TEST(BasicVerification::verify_repeated_sequence),//
+			TEST(BasicVerification::verify_repeated_sequence_2),//
+			TEST(BasicVerification::verify_multi_sequences_in_order), TEST(BasicVerification::verify_no_other_invocations_for_mock),//
+			TEST(BasicVerification::verify_no_other_invocations_for_method_filter),//
+			TEST(BasicVerification::use_same_filter_for_both_stubbing_and_verification),//
+			TEST(BasicVerification::verify_after_paramter_was_changed__with_Matching),//
+			TEST(BasicVerification::verify_after_paramter_was_changed_with_Using),//
+			TEST(BasicVerification::should_throw_argument_exception_on_invalid_repetiotions_number)
+	)//
 	{
 	}
 
@@ -442,6 +444,15 @@ struct BasicVerification: tpunit::TestFixture {
 		a2.state = 2;
 
 		Verify(2 * call_to_proc2_with_state_1);
+	}
+
+	void should_throw_argument_exception_on_invalid_repetiotions_number() {
+		Mock<SomeInterface> mock;
+
+		ASSERT_THROW(Verify(mock[&SomeInterface::func] * 0), std::invalid_argument);
+		ASSERT_THROW(Verify(mock[&SomeInterface::func] * -1), std::invalid_argument);
+		ASSERT_THROW(Verify(0 * mock[&SomeInterface::func]), std::invalid_argument);
+		ASSERT_THROW(Verify(-1 * mock[&SomeInterface::func]), std::invalid_argument);
 	}
 
 } __BasicVerification;
