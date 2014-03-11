@@ -6,10 +6,11 @@ FakeIt is a simple mocking framework for c++11. It supports GCC and MS visual C+
 Stubbing methods
 ```cpp
 struct SomeInterface {
-		virtual int foo(int) = 0;
-		virtual int bar(string) = 0;
+	virtual int foo(int) = 0;
+	virtual int bar(string) = 0;
 };
-
+```
+```cpp
 // Instantiate a mock object.
 Mock<SomeInterface> mock;
 

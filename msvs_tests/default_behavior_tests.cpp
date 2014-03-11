@@ -182,7 +182,7 @@ namespace stubbing_tests
 			Mock<NonDefaultConstructibleFunctions> mock;
 			Fake(mock[&NonDefaultConstructibleFunctions::notDefaultConstructibleFunc]);
 			NonDefaultConstructibleFunctions& i = mock.get();
-			Assert::ExpectException<std::string>([&i]{ i.notDefaultConstructibleFunc(); });
+			Assert::ExpectException<fakeit::DefaultValueInstatiationException&>([&i]{ i.notDefaultConstructibleFunc(); });
 		}
 
 		TEST_METHOD(ReturnByReference_ThrowExceptionIfNotDefaultConstructible)
@@ -190,17 +190,16 @@ namespace stubbing_tests
 			Mock<ReferenceFunctions> mock;
 			Fake(mock[&ReferenceFunctions::notDefaultConstructibleFunc]);
 			ReferenceFunctions& i = mock.get();
-			Assert::ExpectException<std::string>([&i]{ i.notDefaultConstructibleFunc(); }, 
+			Assert::ExpectException<fakeit::DefaultValueInstatiationException&>([&i]{ i.notDefaultConstructibleFunc(); },
 				L"should fail to create default value");
 		}
 
-		TEST_METHOD(ReturnByReference_ThrowExceptionIfAbstract)
+		TEST_METHOD(ReturnByReference_ReturnReferenceToNullIfAbstract)
 		{
 			Mock<ReferenceFunctions> mock;
 			Fake(mock[&ReferenceFunctions::abstractTypeFunc]);
 			ReferenceFunctions& i = mock.get();
-			Assert::ExpectException<std::string>([&i]{ i.abstractTypeFunc(); },
-				L"should fail to create default value");
+			Assert::IsNull(&i.abstractTypeFunc());
 		}
 
 		TEST_METHOD(OverrideDefualtBehavior_Scalar)
