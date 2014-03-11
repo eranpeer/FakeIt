@@ -23,6 +23,7 @@ struct BasicStubbing: tpunit::TestFixture {
 			TEST(BasicStubbing::stub_by_assignment_with_lambda_delegate),//
 			TEST(BasicStubbing::stub_by_assignment_with_static_method_delegate),//
 			TEST(BasicStubbing::stub_only_specified_calls_by_assignment),
+			TEST(BasicStubbing::stub_return_value_by_assignment),
 			TEST(BasicStubbing::stub_to_default_behavior_with_filter),//
 			TEST(BasicStubbing::change_method_behavior_with_filter),//
 			TEST(BasicStubbing::change_method_behavior_with_functor_filter),//
@@ -259,6 +260,17 @@ struct BasicStubbing: tpunit::TestFixture {
 		catch (int e) {
 			ASSERT_EQUAL(1, e);
 		}
+	}
+
+	void stub_return_value_by_assignment() {
+		Mock<SomeInterface> mock;
+
+		mock[&SomeInterface::func] = 1;
+
+		SomeInterface &i = mock.get();
+
+		ASSERT_EQUAL(1, i.func(3));
+		ASSERT_EQUAL(1, i.func(4));
 	}
 
 	void stub_to_default_behavior_with_filter() {

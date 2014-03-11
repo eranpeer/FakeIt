@@ -96,8 +96,17 @@ struct FirstFunctionStubbingProgress {
 		return Return(s, t...);
 	}
 
-	void AlwaysReturn(const R& r) {
+
+	template<typename U = R>
+	typename std::enable_if<!std::is_reference<U>::value, void>::type
+	AlwaysReturn(const R& r) {
 		return AlwaysDo([r](const arglist&...)->R {return r;});
+	}
+
+	template<typename U = R>
+	typename std::enable_if<std::is_reference<U>::value,void>::type
+	AlwaysReturn(const R& r) {
+		return AlwaysDo([&r](const arglist&...)->R {return r;});
 	}
 
 	FirstFunctionStubbingProgress<R, arglist...>&

@@ -142,15 +142,28 @@ public:
 		recordedMethodBody->AppendDo(method);
 	}
 
-	void LastAction(std::shared_ptr<BehaviorMock<R, arglist...>> method) {
-		recordedMethodBody->LastDo(method);
-	}
-
 	void operator=(std::function<R(arglist...)> method) {
-		std::shared_ptr<BehaviorMock<R, arglist...>> ptr{ new DoForeverMock<R, arglist...>(method) };
-		MethodStubbingBase<C, R, arglist...>::LastAction(ptr);
+		std::shared_ptr<BehaviorMock<R, arglist...>> ptr {new DoForeverMock<R, arglist...>(method)};
+		MethodStubbingBase<C, R, arglist...>::AppendAction(ptr);
 		MethodStubbingBase<C, R, arglist...>::apply();
 	}
+
+//	template<typename U = R>
+//	typename std::enable_if<!std::is_reference<U>::value, void>::type
+//	operator=(std::function<R(arglist...)> method) {
+//		std::shared_ptr<BehaviorMock<R, arglist...>> ptr {new DoForeverMock<R, arglist...>(method)};
+//		MethodStubbingBase<C, R, arglist...>::AppendAction(ptr);
+//		MethodStubbingBase<C, R, arglist...>::apply();
+//	}
+//
+//	template<typename U = R>
+//	typename std::enable_if<std::is_reference<U>::value, void>::type
+//	operator=(std::function<R(arglist...)> method) {
+//		std::shared_ptr<BehaviorMock<R, arglist...>> ptr {new DoForeverMock<R, arglist...>(method)};
+//		MethodStubbingBase<C, R, arglist...>::AppendAction(ptr);
+//		MethodStubbingBase<C, R, arglist...>::apply();
+//	}
+
 };
 
 template<typename C, typename R, typename ... arglist>
@@ -198,6 +211,22 @@ public:
 	FunctionStubbingRoot<C, R, arglist...>& operator()(std::function<bool(arglist...)> matcher) {
 		MethodStubbingBase<C, R, arglist...>::operator()(matcher);
 		return *this;
+	}
+
+	template<typename U = R>
+	typename std::enable_if<!std::is_reference<U>::value, void>::type operator=(const R& r) {
+		auto method = [r](arglist&...) -> R {return r;};
+		std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoForeverMock<R, arglist...>(method) };
+		MethodStubbingBase<C, R, arglist...>::AppendAction(ptr);
+		MethodStubbingBase<C, R, arglist...>::apply();
+	}
+
+	template<typename U = R>
+	typename std::enable_if<std::is_reference<U>::value, void>::type operator=(const R& r) {
+		auto method = [&r](arglist&...) -> R {return r;};
+		std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoForeverMock<R, arglist...>(method) };
+		MethodStubbingBase<C, R, arglist...>::AppendAction(ptr);
+		MethodStubbingBase<C, R, arglist...>::apply();
 	}
 
 };
