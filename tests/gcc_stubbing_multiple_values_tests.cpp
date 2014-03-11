@@ -37,11 +37,11 @@ struct GccMultipleStubbing: tpunit::TestFixture {
 		ASSERT_EQUAL(1, i.func(1));
 		ASSERT_EQUAL(2, i.func(1));
 		ASSERT_EQUAL(2, i.func(1));
-		ASSERT_THROW(i.func(1), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.func(1), fakeit::UnexpectedMethodCallException);
 
 		i.proc(1);
 		i.proc(1);
-		ASSERT_THROW(i.proc(1), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.proc(1), fakeit::UnexpectedMethodCallException);
 	}
 
 	void stub_multiple_return_values_with_mixed_values_and_quantifiers() {
@@ -52,7 +52,7 @@ struct GccMultipleStubbing: tpunit::TestFixture {
 		ASSERT_EQUAL(1, i.func(1));
 		ASSERT_EQUAL(1, i.func(1));
 		ASSERT_EQUAL(2, i.func(1));
-		ASSERT_THROW(i.func(1), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.func(1), fakeit::UnexpectedMethodCallException);
 	}
 
 	void stub_multiple_throws_with_quantifier() {
@@ -64,12 +64,12 @@ struct GccMultipleStubbing: tpunit::TestFixture {
 		ASSERT_THROW(i.func(1), std::string);
 		ASSERT_THROW(i.func(1), std::string);
 		ASSERT_THROW(i.func(1), int);
-		ASSERT_THROW(i.func(1), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.func(1), fakeit::UnexpectedMethodCallException);
 
 		ASSERT_THROW(i.proc(1), std::string);
 		ASSERT_THROW(i.proc(1), std::string);
 		ASSERT_THROW(i.proc(1), int);
-		ASSERT_THROW(i.proc(1), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.proc(1), fakeit::UnexpectedMethodCallException);
 	}
 
 	void stub_multiple_throws_and_returns() {
@@ -82,13 +82,13 @@ struct GccMultipleStubbing: tpunit::TestFixture {
 		ASSERT_THROW(i.func(1), int);
 		ASSERT_EQUAL(1, i.func(1));
 		ASSERT_EQUAL(2, i.func(1));
-		ASSERT_THROW(i.func(1), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.func(1), fakeit::UnexpectedMethodCallException);
 
 		ASSERT_THROW(i.proc(1), std::string);
 		ASSERT_THROW(i.proc(1), int);
 		i.proc(1);
 		i.proc(2);
-		ASSERT_THROW(i.proc(1), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.proc(1), fakeit::UnexpectedMethodCallException);
 	}
 
 	void stub_multiple_do_with_list_of_mixed_quatifiers_and_values() {
@@ -99,11 +99,11 @@ struct GccMultipleStubbing: tpunit::TestFixture {
 
 		ASSERT_EQUAL(1, i.func(1));
 		ASSERT_EQUAL(2, i.func(1));
-		ASSERT_THROW(i.func(1), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.func(1), fakeit::UnexpectedMethodCallException);
 
 		i.proc(1);
 		i.proc(1);
-		ASSERT_THROW(i.proc(1), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.proc(1), fakeit::UnexpectedMethodCallException);
 	}
 
 } __GccMultipleStubbing;

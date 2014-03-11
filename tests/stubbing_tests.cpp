@@ -48,8 +48,8 @@ struct BasicStubbing: tpunit::TestFixture {
 	void calling_an_unstubbed_method_should_raise_UnmockedMethodCallException() {
 		Mock<SomeInterface> mock;
 		SomeInterface &i = mock.get();
-		ASSERT_THROW(i.func(1), UnmockedMethodCallException);
-		ASSERT_THROW(i.proc(1), UnmockedMethodCallException);
+		ASSERT_THROW(i.func(1), UnexpectedMethodCallException);
+		ASSERT_THROW(i.proc(1), UnexpectedMethodCallException);
 	}
 
 	void stub_method_to_default_behaviore_will_always_return_do_the_default_behaviore() {
@@ -89,7 +89,7 @@ struct BasicStubbing: tpunit::TestFixture {
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(1, i.func(1));
-		ASSERT_THROW(i.func(1), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.func(1), fakeit::UnexpectedMethodCallException);
 
 	}
 
@@ -124,8 +124,8 @@ struct BasicStubbing: tpunit::TestFixture {
 			ASSERT_EQUAL(std::string("proc exception"), e);
 		}
 
-		ASSERT_THROW(i.func(1), fakeit::UnmockedMethodCallException);
-		ASSERT_THROW(i.proc(1), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.func(1), fakeit::UnexpectedMethodCallException);
+		ASSERT_THROW(i.proc(1), fakeit::UnexpectedMethodCallException);
 	}
 
 	void stub_a_method_with_lambda_delegate_once() {
@@ -143,8 +143,8 @@ struct BasicStubbing: tpunit::TestFixture {
 		i.proc(3);
 		ASSERT_EQUAL(3, a);
 
-		ASSERT_THROW(i.func(3), fakeit::UnmockedMethodCallException);
-		ASSERT_THROW(i.proc(3), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.func(3), fakeit::UnexpectedMethodCallException);
+		ASSERT_THROW(i.proc(3), fakeit::UnexpectedMethodCallException);
 	}
 
 	void stub_a_method_with_lambda_delegate_always() {
@@ -185,14 +185,14 @@ struct BasicStubbing: tpunit::TestFixture {
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(3, i.func(3));
-		ASSERT_THROW(i.func(3), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.func(3), fakeit::UnexpectedMethodCallException);
 
 		try {
 			i.proc(1);
 		} catch (int e) {
 			ASSERT_EQUAL(1, e);
 		}
-		ASSERT_THROW(i.proc(1), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.proc(1), fakeit::UnexpectedMethodCallException);
 	}
 
 	void stub_by_assignment_with_lambda_delegate() {
@@ -284,10 +284,10 @@ struct BasicStubbing: tpunit::TestFixture {
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(0, i.func(1));
-		ASSERT_THROW(i.func(2), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.func(2), fakeit::UnexpectedMethodCallException);
 
 		i.proc(1);
-		ASSERT_THROW(i.proc(2), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.proc(2), fakeit::UnexpectedMethodCallException);
 	}
 
 	void change_method_behavior_with_filter() {
@@ -302,10 +302,10 @@ struct BasicStubbing: tpunit::TestFixture {
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(1, i.func(1));
-		ASSERT_THROW(i.func(2), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.func(2), fakeit::UnexpectedMethodCallException);
 
 		ASSERT_THROW(i.proc(1), Exc);
-		ASSERT_THROW(i.proc(2), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.proc(2), fakeit::UnexpectedMethodCallException);
 	}
 
 	void change_method_behavior_with_functor_filter() {
@@ -320,10 +320,10 @@ struct BasicStubbing: tpunit::TestFixture {
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(1, i.func(1));
-		ASSERT_THROW(i.func(2), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.func(2), fakeit::UnexpectedMethodCallException);
 
 		ASSERT_THROW(i.proc(1), Exc);
-		ASSERT_THROW(i.proc(2), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.proc(2), fakeit::UnexpectedMethodCallException);
 	}
 
 	void change_method_behavior_with_matcher() {
@@ -338,10 +338,10 @@ struct BasicStubbing: tpunit::TestFixture {
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(1, i.func(1));
-		ASSERT_THROW(i.func(2), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.func(2), fakeit::UnexpectedMethodCallException);
 
 		ASSERT_THROW(i.proc(1), Exc);
-		ASSERT_THROW(i.proc(2), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.proc(2), fakeit::UnexpectedMethodCallException);
 	}
 
 	void change_method_behavior_with_functor_matcher() {
@@ -356,10 +356,10 @@ struct BasicStubbing: tpunit::TestFixture {
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(1, i.func(1));
-		ASSERT_THROW(i.func(2), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.func(2), fakeit::UnexpectedMethodCallException);
 
 		ASSERT_THROW(i.proc(1), Exc);
-		ASSERT_THROW(i.proc(2), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.proc(2), fakeit::UnexpectedMethodCallException);
 	}
 
 	void stub_multiple_return_values() {
@@ -372,8 +372,8 @@ struct BasicStubbing: tpunit::TestFixture {
 		ASSERT_EQUAL(1, i.func(0));
 		ASSERT_EQUAL(2, i.func(0));
 
-		ASSERT_THROW(i.func(0), fakeit::UnmockedMethodCallException);
-		ASSERT_THROW(i.func(0), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.func(0), fakeit::UnexpectedMethodCallException);
+		ASSERT_THROW(i.func(0), fakeit::UnexpectedMethodCallException);
 	}
 
 	void stub_multiple_return_values_using_quque() {
@@ -453,7 +453,7 @@ struct BasicStubbing: tpunit::TestFixture {
 
 		ASSERT_EQUAL(1, i.func(1));
 		ASSERT_EQUAL(2, i.func(1));
-		ASSERT_THROW(i.func(1), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.func(1), fakeit::UnexpectedMethodCallException);
 	}
 
 	void stub_multiple_throws_with_list() {
@@ -464,11 +464,11 @@ struct BasicStubbing: tpunit::TestFixture {
 
 		ASSERT_THROW(i.func(1), std::string);
 		ASSERT_THROW(i.func(1), std::string);
-		ASSERT_THROW(i.func(1), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.func(1), fakeit::UnexpectedMethodCallException);
 
 		ASSERT_THROW(i.proc(1), std::string);
 		ASSERT_THROW(i.proc(1), std::string);
-		ASSERT_THROW(i.proc(1), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.proc(1), fakeit::UnexpectedMethodCallException);
 	}
 
 	void stub_multiple_do_with_list() {
@@ -479,11 +479,11 @@ struct BasicStubbing: tpunit::TestFixture {
 
 		ASSERT_EQUAL(1, i.func(1));
 		ASSERT_EQUAL(2, i.func(1));
-		ASSERT_THROW(i.func(1), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.func(1), fakeit::UnexpectedMethodCallException);
 
 		i.proc(1);
 		i.proc(1);
-		ASSERT_THROW(i.proc(1), fakeit::UnmockedMethodCallException);
+		ASSERT_THROW(i.proc(1), fakeit::UnexpectedMethodCallException);
 	}
 
 } __BasicStubbing;

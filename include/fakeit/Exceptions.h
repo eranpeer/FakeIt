@@ -1,11 +1,11 @@
-#ifndef UnmockedMethodCallException_h__
-#define UnmockedMethodCallException_h__
+#ifndef FakeitExceptions_h__
+#define FakeitExceptions_h__
 
 #include <functional>
 namespace fakeit {
 
-struct UnmockedMethodCallException: public std::exception {
-	UnmockedMethodCallException() {
+struct UnexpectedMethodCallException: public std::exception {
+	UnexpectedMethodCallException() {
 	}
 
 	const char* what() const throw () override {
@@ -28,4 +28,4 @@ private:
 
 }
 
-#endif // UnmockedMethodCallException_h__
+#endif // FakeitExceptions_h__

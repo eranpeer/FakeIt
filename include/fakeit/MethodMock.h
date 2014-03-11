@@ -65,7 +65,7 @@ private:
 template<typename R, typename ... arglist>
 struct EndMock: public BehaviorMock<R, arglist...> {
 	virtual R invoke(arglist&... args) override {
-		throw UnmockedMethodCallException();
+		throw UnexpectedMethodCallException();
 	}
 
 	virtual bool isDone() override {
@@ -276,7 +276,7 @@ struct MethodMock: public virtual Method, public virtual MethodInvocationHandler
 				args...) };
 		auto methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
 		if (!methodInvocationMock) {
-			throw UnmockedMethodCallException();
+			throw UnexpectedMethodCallException();
 		}
 		auto matcher = methodInvocationMock->getMatcher();
 		actualInvoaction->setActualMatcher(matcher);
