@@ -266,11 +266,13 @@ struct BasicStubbing: tpunit::TestFixture {
 		Mock<SomeInterface> mock;
 
 		mock[&SomeInterface::func] = 1;
+		mock[&SomeInterface::func].Using(2) = 2;
 
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(1, i.func(3));
 		ASSERT_EQUAL(1, i.func(4));
+		ASSERT_EQUAL(2, i.func(2));
 	}
 
 	void stub_to_default_behavior_with_filter() {
