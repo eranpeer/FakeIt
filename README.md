@@ -41,3 +41,5 @@ Verify(mock[&SomeInterface::foo]);
 // Verify foo was invoked with specific arguments
 Verify(mock[&SomeInterface::foo].Using(1));
 ```
+
+Checkout the [Quickstart](https://github.com/eranpeer/FakeIt/wiki/Quickstart) for many more exmples!
