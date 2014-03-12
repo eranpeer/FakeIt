@@ -19,12 +19,12 @@
 #include "mockutils/MethodInvocationHandler.h"
 
 namespace fakeit {
-	template<typename C, typename... baseclasses>
+template<typename C, typename ... baseclasses>
 struct DynamicProxy {
 	static_assert(std::is_polymorphic<C>::value, "DynamicProxy requires a polymorphic type");
 
 	DynamicProxy(std::function<void()> unmockedMethodCallHandler) :
-		vtable(), methodMocks(), unmockedMethodCallHandler{ unmockedMethodCallHandler } {
+			vtable(), methodMocks(), unmockedMethodCallHandler { unmockedMethodCallHandler } {
 		initVirtualTable<C>(&vtable);
 		initializeDataMembersArea();
 	}
@@ -34,6 +34,13 @@ struct DynamicProxy {
 
 	C& get() {
 		return reinterpret_cast<C&>(*this);
+	}
+
+	void Reset() {
+		methodMocks = {};
+		members = {};
+		initVirtualTable<C>(&vtable);
+		initializeDataMembersArea();
 	}
 
 	template<typename R, typename ... arglist>
@@ -168,9 +175,8 @@ private:
 		return dynamic_cast<DATA_TYPE>(ptr.get());
 	}
 
-	template <typename T>
-	void initVirtualTable(VirtualTable<50, T, baseclasses...>* vtable)
-	{
+	template<typename T>
+	void initVirtualTable(VirtualTable<50, T, baseclasses...>* vtable) {
 		auto mptr = union_cast<void*>(&DynamicProxy::unmocked);
 		for (unsigned int i = 0; i < vtable->getSize(); i++) {
 			vtable->setMethod(i, mptr);
@@ -187,13 +193,12 @@ private:
 //		*virtualTablePtrInObjectData = *baseVirtualTable;
 //	}
 
-
-	template <typename BaseClass>
-	void checkMultipleInheritance(){
-		C* ptr = (C*)(unsigned int)1;
+	template<typename BaseClass>
+	void checkMultipleInheritance() {
+		C* ptr = (C*) (unsigned int) 1;
 		BaseClass* basePtr = ptr;
-		int delta = (unsigned long)basePtr - (unsigned long)ptr;
-		if (delta > 0){
+		int delta = (unsigned long) basePtr - (unsigned long) ptr;
+		if (delta > 0) {
 			// base class does not start on same position as derived class.
 			// this is multiple inheritance.
 			// need to create a new virtual table for base class.

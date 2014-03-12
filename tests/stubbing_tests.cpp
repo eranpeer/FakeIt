@@ -35,7 +35,8 @@ struct BasicStubbing: tpunit::TestFixture {
 			TEST(BasicStubbing::stub_overloaded_methods),
 			TEST(BasicStubbing::stub_multiple_return_values_with_list),
 			TEST(BasicStubbing::stub_multiple_throws_with_list),
-			TEST(BasicStubbing::stub_multiple_do_with_list)
+			TEST(BasicStubbing::stub_multiple_do_with_list),
+			TEST(BasicStubbing::reset_mock_to_initial_state)
 			//
 	) {
 	}
@@ -484,6 +485,45 @@ struct BasicStubbing: tpunit::TestFixture {
 		i.proc(1);
 		i.proc(1);
 		ASSERT_THROW(i.proc(1), fakeit::UnexpectedMethodCallException);
+	}
+
+
+	void reset_mock_to_initial_state() {
+		struct SomeInterface{
+			virtual int func(int) = 0;
+			std::string state;
+		};
+
+		Mock<SomeInterface> mock;
+		When(mock[&SomeInterface::func]).AlwaysReturn(0);
+		When(mock[&SomeInterface::func].Using(1)).AlwaysReturn(1);
+		mock.Stub(&SomeInterface::state, "state");
+
+		SomeInterface& i = mock.get();
+		i.func(0);
+		i.func(1);
+
+		Verify(mock[&SomeInterface::func]);
+		Verify(mock[&SomeInterface::func].Using(1));
+
+		mock.Reset();
+
+		ASSERT_THROW(i.func(0), fakeit::UnexpectedMethodCallException);
+		ASSERT_THROW(i.func(1), fakeit::UnexpectedMethodCallException);
+
+		ASSERT_THROW(Verify(mock[&SomeInterface::func]), fakeit::VerificationException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::func].Using(1)), fakeit::VerificationException);
+
+
+		// stub agin and check it works again.
+		When(mock[&SomeInterface::func]).AlwaysReturn(0);
+		When(mock[&SomeInterface::func].Using(1)).AlwaysReturn(1);
+
+		i.func(0);
+		i.func(1);
+
+		Verify(mock[&SomeInterface::func]);
+		Verify(mock[&SomeInterface::func].Using(1));
 	}
 
 } __BasicStubbing;
