@@ -32,8 +32,16 @@ struct DemoTests: tpunit::TestFixture {
 		// Setup mock behavior.
 		When(mock[&SomeInterface::foo]).AlwaysReturn(1);
 
+		auto agrument_a_is_even = [](int a){return a%2==0;};
+		When(mock[&SomeInterface::foo].Matching(agrument_a_is_even)).Return(0);
+
 		// Fetch the mock instance.
 		SomeInterface &i = mock.get();
+
+		int a = i.foo(1);
+		int a1 = i.foo(2);
+		int a2 = i.foo(3);
+
 
 		// Will print "1". 
 		cout << i.foo(0);

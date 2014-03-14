@@ -27,26 +27,30 @@ struct MethodVerificationProgress {
 	}
 
 	void Never() {
-		Times(0);
+		Exactly(0);
 	}
 
 	virtual void Once() {
-		Times(1);
+		Exactly(1);
 	}
 
 	virtual void Twice() {
-		Times(2);
+		Exactly(2);
 	}
 
 	virtual void AtLeastOnce() {
 		verifyInvocations(-1);
 	}
 
-	virtual void Times(const int times) {
+	virtual void Exactly(const int times) {
 		if (times < 0) {
 			throw std::invalid_argument(std::string("bad argument times:").append(std::to_string(times)));
 		}
 		verifyInvocations(times);
+	}
+
+	virtual void Exactly(const Quantity & q) {
+		Exactly(q.quantity);
 	}
 
 	virtual void AtLeast(const int times) {
@@ -54,6 +58,10 @@ struct MethodVerificationProgress {
 			throw std::invalid_argument(std::string("bad argument times:").append(std::to_string(times)));
 		}
 		verifyInvocations(-times);
+	}
+
+	virtual void AtLeast(const Quantity & q) {
+		AtLeast(q.quantity);
 	}
 
 protected:

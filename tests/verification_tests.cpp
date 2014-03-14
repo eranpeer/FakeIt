@@ -30,28 +30,28 @@ using namespace fakeit;
 
 struct BasicVerification: tpunit::TestFixture {
 	BasicVerification() :
-	tpunit::TestFixture(
+			tpunit::TestFixture(
 			//
-			TEST(BasicVerification::verify_should_not_throw_exception_if_method_was_called),//
-			TEST(BasicVerification::verify_should_throw_VerificationException_if_method_was_not_called),//
-			TEST(BasicVerification::verify_should_throw_VerificationException_if_method_was_not_stubbed),//
-			TEST(BasicVerification::verify_method_was_called_at_least_once),//
-			TEST(BasicVerification::verify_method_was_called_at_least_twice),//
-			TEST(BasicVerification::verify_method_was_called_exactly_once),//
-			TEST(BasicVerification::verify_method_was_never_called),//
-			TEST(BasicVerification::verify_method_was_called_exactly_x_times),//
-			TEST(BasicVerification::should_throw_IllegalArgumentException_on_negative_times_argument),//
-			TEST(BasicVerification::verify_with_filter),//
-			TEST(BasicVerification::verify_concatenated_sequence),//
-			TEST(BasicVerification::verify_repeated_sequence),//
-			TEST(BasicVerification::verify_repeated_sequence_2),//
-			TEST(BasicVerification::verify_multi_sequences_in_order), TEST(BasicVerification::verify_no_other_invocations_for_mock),//
-			TEST(BasicVerification::verify_no_other_invocations_for_method_filter),//
-			TEST(BasicVerification::use_same_filter_for_both_stubbing_and_verification),//
-			TEST(BasicVerification::verify_after_paramter_was_changed__with_Matching),//
-			TEST(BasicVerification::verify_after_paramter_was_changed_with_Using),//
-			TEST(BasicVerification::should_throw_argument_exception_on_invalid_repetiotions_number)
-	)//
+					TEST(BasicVerification::verify_should_not_throw_exception_if_method_was_called), //
+					TEST(BasicVerification::verify_should_throw_VerificationException_if_method_was_not_called), //
+					TEST(BasicVerification::verify_should_throw_VerificationException_if_method_was_not_stubbed), //
+					TEST(BasicVerification::verify_method_was_called_at_least_once), //
+					TEST(BasicVerification::verify_method_was_called_at_least_twice), //
+					TEST(BasicVerification::verify_method_was_called_exactly_once), //
+					TEST(BasicVerification::verify_method_was_never_called), //
+					TEST(BasicVerification::verify_method_was_called_exactly_x_times), //
+					TEST(BasicVerification::verify_method_was_called_exactly_x_times_with_quantifier), //
+					TEST(BasicVerification::should_throw_IllegalArgumentException_on_negative_times_argument), //
+					TEST(BasicVerification::verify_with_filter), //
+					TEST(BasicVerification::verify_concatenated_sequence), //
+					TEST(BasicVerification::verify_repeated_sequence), //
+					TEST(BasicVerification::verify_repeated_sequence_2), //
+					TEST(BasicVerification::verify_multi_sequences_in_order), TEST(BasicVerification::verify_no_other_invocations_for_mock), //
+					TEST(BasicVerification::verify_no_other_invocations_for_method_filter), //
+					TEST(BasicVerification::use_same_filter_for_both_stubbing_and_verification), //
+					TEST(BasicVerification::verify_after_paramter_was_changed__with_Matching), //
+					TEST(BasicVerification::verify_after_paramter_was_changed_with_Using), //
+					TEST(BasicVerification::should_throw_argument_exception_on_invalid_repetiotions_number)) //
 	{
 	}
 
@@ -177,37 +177,84 @@ struct BasicVerification: tpunit::TestFixture {
 		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).Never(), fakeit::VerificationException);
 	}
 
+	void verify_method_was_called_exactly_x_times_with_quantifier() {
+		Mock<SomeInterface> mock;
+		Fake(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
+
+#if defined (__GNUG__)
+// Only supported by GCC
+
+		ASSERT_THROW(Verify(mock[&SomeInterface::func]).Exactly(1_Time), fakeit::VerificationException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).Exactly(1_Time), fakeit::VerificationException);
+
+#endif
+
+		ASSERT_THROW(Verify(mock[&SomeInterface::func]).Exactly(Times<1>()), fakeit::VerificationException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).Exactly(Times<1>()), fakeit::VerificationException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).Exactly(Once), fakeit::VerificationException);
+
+		SomeInterface &i = mock.get();
+		i.func(1);
+		i.proc(1);
+
+#if defined (__GNUG__)
+// Only supported by GCC
+
+		Verify(mock[&SomeInterface::func]).Exactly(1_Time);
+		Verify(mock[&SomeInterface::proc]).Exactly(1_Time);
+
+#endif
+
+		Verify(mock[&SomeInterface::func]).Exactly(Times<1>());
+		Verify(mock[&SomeInterface::proc]).Exactly(Times<1>());
+		Verify(mock[&SomeInterface::proc]).Exactly(Once);
+
+		i.func(1);
+		i.proc(1);
+
+#if defined (__GNUG__)
+// Only supported by GCC
+
+		Verify(mock[&SomeInterface::func]).Exactly(2_Times);
+		Verify(mock[&SomeInterface::proc]).Exactly(2_Times);
+
+#endif
+
+		Verify(mock[&SomeInterface::func]).Exactly(Times<2>());
+		Verify(mock[&SomeInterface::proc]).Exactly(Times<2>());
+	}
+
 	void verify_method_was_called_exactly_x_times() {
 		Mock<SomeInterface> mock;
 
-		ASSERT_THROW(Verify(mock[&SomeInterface::func]).Times(2), fakeit::VerificationException);
-		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).Times(2), fakeit::VerificationException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::func]).Exactly(2), fakeit::VerificationException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).Exactly(2), fakeit::VerificationException);
 
 		Fake(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
 		SomeInterface &i = mock.get();
 
-		ASSERT_THROW(Verify(mock[&SomeInterface::func]).Times(2), fakeit::VerificationException);
-		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).Times(2), fakeit::VerificationException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::func]).Exactly(2), fakeit::VerificationException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).Exactly(2), fakeit::VerificationException);
 
 		i.func(1);
 		i.func(1);
 		i.proc(1);
 		i.proc(1);
 
-		Verify(mock[&SomeInterface::func]).Times(2);
-		Verify(mock[&SomeInterface::proc]).Times(2);
+		Verify(mock[&SomeInterface::func]).Exactly(2);
+		Verify(mock[&SomeInterface::proc]).Exactly(2);
 
 		i.func(1);
 		i.proc(1);
 
-		ASSERT_THROW(Verify(mock[&SomeInterface::func]).Times(2), fakeit::VerificationException);
-		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).Times(2), fakeit::VerificationException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::func]).Exactly(2), fakeit::VerificationException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).Exactly(2), fakeit::VerificationException);
 	}
 
 	void should_throw_IllegalArgumentException_on_negative_times_argument() {
 		Mock<SomeInterface> mock;
-		ASSERT_THROW(Verify(mock[&SomeInterface::func]).Times(-1), std::invalid_argument);
-		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).Times(-1), std::invalid_argument);
+		ASSERT_THROW(Verify(mock[&SomeInterface::func]).Exactly(-1), std::invalid_argument);
+		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).Exactly(-1), std::invalid_argument);
 	}
 
 	void verify_with_filter() {
@@ -250,12 +297,12 @@ struct BasicVerification: tpunit::TestFixture {
 		i.func(2);
 		i.func(3);
 
-		Verify(mock[&SomeInterface::func] * 1).Times(6);
-		Verify(mock[&SomeInterface::func] * 2).Times(3);
-		Verify(mock[&SomeInterface::func] * 3).Times(2);
-		Verify(mock[&SomeInterface::func] * 4).Times(1);
-		Verify(mock[&SomeInterface::func] * 5).Times(1);
-		Verify(mock[&SomeInterface::func] * 6).Times(1);
+		Verify(mock[&SomeInterface::func] * 1).Exactly(6);
+		Verify(mock[&SomeInterface::func] * 2).Exactly(3);
+		Verify(mock[&SomeInterface::func] * 3).Exactly(2);
+		Verify(mock[&SomeInterface::func] * 4).Exactly(1);
+		Verify(mock[&SomeInterface::func] * 5).Exactly(1);
+		Verify(mock[&SomeInterface::func] * 6).Exactly(1);
 
 		Verify(mock[&SomeInterface::func].Using(1) + mock[&SomeInterface::func].Using(2) + mock[&SomeInterface::func].Using(3)).Twice();
 		Verify((mock[&SomeInterface::func].Using(1) + mock[&SomeInterface::func].Using(2) + mock[&SomeInterface::func].Using(3)) * 2).Once();
@@ -276,12 +323,12 @@ struct BasicVerification: tpunit::TestFixture {
 		i.func(2);
 		i.func(3);
 
-		Verify(1 * mock[&SomeInterface::func]).Times(6);
-		Verify(2 * mock[&SomeInterface::func]).Times(3);
-		Verify(3 * mock[&SomeInterface::func]).Times(2);
-		Verify(4 * mock[&SomeInterface::func]).Times(1);
-		Verify(5 * mock[&SomeInterface::func]).Times(1);
-		Verify(6 * mock[&SomeInterface::func]).Times(1);
+		Verify(1 * mock[&SomeInterface::func]).Exactly(6);
+		Verify(2 * mock[&SomeInterface::func]).Exactly(3);
+		Verify(3 * mock[&SomeInterface::func]).Exactly(2);
+		Verify(4 * mock[&SomeInterface::func]).Exactly(1);
+		Verify(5 * mock[&SomeInterface::func]).Exactly(1);
+		Verify(6 * mock[&SomeInterface::func]).Exactly(1);
 
 		Verify(2 * mock[&SomeInterface::func].Using(1)).Never();
 		ASSERT_THROW(Verify(2 * mock[&SomeInterface::func].Using(1)), fakeit::VerificationException);
@@ -306,7 +353,7 @@ struct BasicVerification: tpunit::TestFixture {
 				mock[&SomeInterface::func],  //
 				mock[&SomeInterface::func],  //
 				mock[&SomeInterface::func])  //
-		.Times(1);
+		.Exactly(1);
 
 		Verify(  //
 				mock[&SomeInterface::func],  //
@@ -314,38 +361,38 @@ struct BasicVerification: tpunit::TestFixture {
 				mock[&SomeInterface::func],  //
 				mock[&SomeInterface::func],  //
 				mock[&SomeInterface::func])  //
-		.Times(1);
+		.Exactly(1);
 
 		Verify(mock[&SomeInterface::func],  //
 				mock[&SomeInterface::func],  //
 				mock[&SomeInterface::func],  //
 				mock[&SomeInterface::func])  //
-		.Times(1);
+		.Exactly(1);
 
 		Verify(mock[&SomeInterface::func],  //
 				mock[&SomeInterface::func],  //
 				mock[&SomeInterface::func])  //
-		.Times(2);
+		.Exactly(2);
 
 		Verify(mock[&SomeInterface::func],  //
 				mock[&SomeInterface::func])  //
-		.Times(3);
+		.Exactly(3);
 
 		Verify(mock[&SomeInterface::func])  //
-		.Times(6);
+		.Exactly(6);
 
 		Verify(mock[&SomeInterface::func].Using(1) +  //
 				mock[&SomeInterface::func].Using(2) + //
 				mock[&SomeInterface::func].Using(3))  //
-		.Times(2);
+		.Exactly(2);
 
 		Verify(mock[&SomeInterface::func].Using(1) + mock[&SomeInterface::func].Using(2))  //
-		.Times(2);
+		.Exactly(2);
 
 		Verify(mock[&SomeInterface::func].Using(2) + mock[&SomeInterface::func].Using(3))  //
-		.Times(2);
+		.Exactly(2);
 
-		Verify(mock[&SomeInterface::func].Using(1)).Times(2);
+		Verify(mock[&SomeInterface::func].Using(1)).Exactly(2);
 
 		Verify(mock[&SomeInterface::func].Using(2) + mock[&SomeInterface::func].Using(1)).Never();
 	}

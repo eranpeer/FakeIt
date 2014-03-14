@@ -10,17 +10,23 @@
 
 #include <functional>
 #include <type_traits>
-#include "mockutils/DefaultValue.hpp"
 
 namespace fakeit {
 
-template<typename R>
-struct Quantifier {
-	Quantifier(const int quantity, const R& value) :
-			quantity(quantity), value(value) {
+struct Quantity {
+	Quantity(const int quantity) :
+			quantity(quantity) {
 	}
 
 	const int quantity;
+};
+
+template<typename R>
+struct Quantifier: public Quantity {
+	Quantifier(const int quantity, const R& value) :
+			Quantity(quantity), value(value) {
+	}
+
 	const R& value;
 
 	Quantifier<R> & operator()(const R& value) {
@@ -30,11 +36,10 @@ struct Quantifier {
 };
 
 template<>
-struct Quantifier<void> {
+struct Quantifier<void> : public Quantity {
 	Quantifier(const int quantity) :
-			quantity(quantity) {
+			Quantity(quantity) {
 	}
-	const int quantity;
 };
 
 struct QuantifierFunctor: public Quantifier<void> {
@@ -46,10 +51,12 @@ struct QuantifierFunctor: public Quantifier<void> {
 	Quantifier<R> operator()(const R& value) {
 		return Quantifier<R>(quantity, value);
 	}
-};
+} static Once(1);
 
 template<int q>
-struct Times {
+struct Times :public Quantity{
+
+	Times<q>():Quantity(q){}
 
 	template<typename R>
 	static Quantifier<R> of(const R& value) {
@@ -59,7 +66,6 @@ struct Times {
 	static Quantifier<void> Void() {
 		return Quantifier<void>(q);
 	}
-
 };
 
 #if defined (__GNUG__)
@@ -67,6 +73,13 @@ struct Times {
 
 inline QuantifierFunctor operator"" _Times(unsigned long long n)
 {
+	return QuantifierFunctor((int)n);
+}
+
+inline QuantifierFunctor operator"" _Time(unsigned long long n)
+{
+	if (n != 1)
+		throw std::invalid_argument("Only 1_Time is supported. Use X_Times (with s) if X is bigger than 1");
 	return QuantifierFunctor((int)n);
 }
 
