@@ -37,6 +37,7 @@ struct BasicVerification: tpunit::TestFixture {
 					TEST(BasicVerification::verify_should_throw_VerificationException_if_method_was_not_stubbed), //
 					TEST(BasicVerification::verify_method_was_called_at_least_once), //
 					TEST(BasicVerification::verify_method_was_called_at_least_twice), //
+					TEST(BasicVerification::verify_method_was_called_at_least_X_with_quantifier), //
 					TEST(BasicVerification::verify_method_was_called_exactly_once), //
 					TEST(BasicVerification::verify_method_was_never_called), //
 					TEST(BasicVerification::verify_method_was_called_exactly_x_times), //
@@ -133,6 +134,45 @@ struct BasicVerification: tpunit::TestFixture {
 		Verify(mock[&SomeInterface::proc]).AtLeast(2);
 	}
 
+	void verify_method_was_called_at_least_X_with_quantifier() {
+		Mock<SomeInterface> mock;
+
+#if defined (__GNUG__)
+		ASSERT_THROW(Verify(mock[&SomeInterface::func]).AtLeast(2_Times), fakeit::VerificationException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).AtLeast(2_Times), fakeit::VerificationException);
+#endif
+
+		Fake(mock[&SomeInterface::func], mock[&SomeInterface::proc]);
+		SomeInterface &i = mock.get();
+		i.func(1);
+		i.proc(2);
+
+#if defined (__GNUG__)
+		ASSERT_THROW(Verify(mock[&SomeInterface::func]).AtLeast(2_Times), fakeit::VerificationException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).AtLeast(2), fakeit::VerificationException);
+#endif
+		ASSERT_THROW(Verify(mock[&SomeInterface::func]).AtLeast(Times<2>()), fakeit::VerificationException);
+		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).AtLeast(Times<2>()), fakeit::VerificationException);
+		i.func(1);
+		i.proc(2);
+
+#if defined (__GNUG__)
+		Verify(mock[&SomeInterface::func]).AtLeast(2_Times);
+		Verify(mock[&SomeInterface::proc]).AtLeast(2_Times);
+#endif
+		Verify(mock[&SomeInterface::func]).AtLeast(Times<2>());
+		Verify(mock[&SomeInterface::proc]).AtLeast(Times<2>());
+		i.func(1);
+		i.proc(2);
+
+#if defined (__GNUG__)
+		Verify(mock[&SomeInterface::func]).AtLeast(2_Times);
+		Verify(mock[&SomeInterface::proc]).AtLeast(2_Times);
+#endif
+		Verify(mock[&SomeInterface::func]).AtLeast(Times<2>());
+		Verify(mock[&SomeInterface::proc]).AtLeast(Times<2>());
+	}
+
 	void verify_method_was_called_exactly_once() {
 		Mock<SomeInterface> mock;
 
@@ -184,6 +224,7 @@ struct BasicVerification: tpunit::TestFixture {
 #if defined (__GNUG__)
 // Only supported by GCC
 
+		ASSERT_THROW(Verify(mock[&SomeInterface::func]).Exactly(2_Time), std::invalid_argument);
 		ASSERT_THROW(Verify(mock[&SomeInterface::func]).Exactly(1_Time), fakeit::VerificationException);
 		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).Exactly(1_Time), fakeit::VerificationException);
 
