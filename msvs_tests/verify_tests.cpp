@@ -36,13 +36,13 @@ namespace mock4cpp_tests
 
 			Verify(mock[&SomeInterface::func1]).Never();
 			Verify(mock[&SomeInterface::func1].Using(1)).Never();
-			Verify(mock[&SomeInterface::func1]).Times(0);
-			Verify(mock[&SomeInterface::func1].Using(1)).Times(0);
+			Verify(mock[&SomeInterface::func1]).Exactly(0);
+			Verify(mock[&SomeInterface::func1].Using(1)).Exactly(0);
 
 			Verify(mock[&SomeInterface::proc1]).Never();
 			Verify(mock[&SomeInterface::proc1].Using(1)).Never();
-			Verify(mock[&SomeInterface::proc1]).Times(0);
-			Verify(mock[&SomeInterface::proc1].Using(1)).Times(0);
+			Verify(mock[&SomeInterface::proc1]).Exactly(0);
+			Verify(mock[&SomeInterface::proc1].Using(1)).Exactly(0);
 		}
 
 		TEST_METHOD(VerifyAtLeastOnceIsTheDefaultBehavior)
@@ -98,8 +98,8 @@ namespace mock4cpp_tests
 		{
 			Mock<SomeInterface> mock;
 			SomeInterface &i = mock.get();
-			Assert::ExpectException<std::invalid_argument>([&mock]{ Verify(mock[&SomeInterface::func1]).Times(-1); });
-			Assert::ExpectException<std::invalid_argument>([&mock]{ Verify(mock[&SomeInterface::proc1]).Times(-1); });
+			Assert::ExpectException<std::invalid_argument>([&mock]{ Verify(mock[&SomeInterface::func1]).Exactly(-1); });
+			Assert::ExpectException<std::invalid_argument>([&mock]{ Verify(mock[&SomeInterface::proc1]).Exactly(-1); });
 		}
 
 		TEST_METHOD(NewVerify)
@@ -145,12 +145,12 @@ namespace mock4cpp_tests
 			i.func1(2);
 			i.func1(3);
 
-			Verify(mock[&SomeInterface::func1] * 1).Times(6);
-			Verify(mock[&SomeInterface::func1] * 2).Times(3);
-			Verify(mock[&SomeInterface::func1] * 3).Times(2);
-			Verify(mock[&SomeInterface::func1] * 4).Times(1);
-			Verify(mock[&SomeInterface::func1] * 5).Times(1);
-			Verify(mock[&SomeInterface::func1] * 6).Times(1);
+			Verify(mock[&SomeInterface::func1] * 1).Exactly(6);
+			Verify(mock[&SomeInterface::func1] * 2).Exactly(3);
+			Verify(mock[&SomeInterface::func1] * 3).Exactly(2);
+			Verify(mock[&SomeInterface::func1] * 4).Exactly(1);
+			Verify(mock[&SomeInterface::func1] * 5).Exactly(1);
+			Verify(mock[&SomeInterface::func1] * 6).Exactly(1);
 
 			Verify(mock[&SomeInterface::func1].Using(1) + mock[&SomeInterface::func1].Using(2) + mock[&SomeInterface::func1].Using(3)).Twice();
 			Verify((mock[&SomeInterface::func1].Using(1) + mock[&SomeInterface::func1].Using(2) + mock[&SomeInterface::func1].Using(3)) * 2).Once();

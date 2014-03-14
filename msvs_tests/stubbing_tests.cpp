@@ -34,8 +34,8 @@ namespace mock4cpp_tests
 			Mock<SomeInterface> mock;
 			SomeInterface &i = mock.get();
 
-			Assert::ExpectException<UnmockedMethodCallException>([&i]{ i.func(1); });
-			Assert::ExpectException<UnmockedMethodCallException>([&i]{ i.proc(2); });
+			Assert::ExpectException<UnexpectedMethodCallException>([&i]{ i.func(1); });
+			Assert::ExpectException<UnexpectedMethodCallException>([&i]{ i.proc(2); });
 		}
 
 		TEST_METHOD(StubAllCallsToAlternateBeavior)
