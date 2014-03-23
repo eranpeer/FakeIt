@@ -62,12 +62,14 @@ public:
 			int count = countMatches(expectedPattern, actualSequence, matchedInvocations);
 
 			if (expectedInvocationCount < 0) {
+				// negative number represents an "AtLeast" search;
 				if (count < -expectedInvocationCount) {
 					throw VerificationException(
 							Mock4cpp.getErrorFromatter().buildAtLeastVerificationErrorMsg(expectedPattern, actualSequence,
 									-expectedInvocationCount, count));
 				}
 			} else if (count != expectedInvocationCount) {
+				// "Exact" search.
 				throw VerificationException(
 						Mock4cpp.getErrorFromatter().buildExactVerificationErrorMsg(expectedPattern, actualSequence,
 								expectedInvocationCount, count));

@@ -95,7 +95,7 @@ public:
 		return instance.get();
 	}
 
-	void Reset(){
+	void Reset() {
 		instance.Reset();
 	}
 
@@ -113,8 +113,7 @@ public:
 
 	template<typename R, typename ... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
 	FunctionStubbingRoot<C, R, arglist...> operator [](R (C::*vMethod)(arglist...) const) {
-		auto methodWithoutConstVolatile = reinterpret_cast<R (C::*)(arglist...)>(vMethod);
-		return StubImpl(methodWithoutConstVolatile);
+		auto methodWithoutConstVolatile = reinterpret_cast<R (C::*)(arglist...)>(vMethod);returnStubImpl(methodWithoutConstVolatile);
 	}
 
 	template < typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
