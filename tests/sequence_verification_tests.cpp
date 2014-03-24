@@ -14,13 +14,12 @@ using namespace fakeit;
 struct SequenceVerification: tpunit::TestFixture {
 	SequenceVerification() :
 			tpunit::TestFixture(
-			//
-					TEST(SequenceVerification::verify_concatenated_sequence),
-					TEST(SequenceVerification::verify_repeated_sequence), //
+					//
+					TEST(SequenceVerification::verify_concatenated_sequence), TEST(SequenceVerification::verify_repeated_sequence), //
 					TEST(SequenceVerification::verify_repeated_sequence_2), //
-					TEST(SequenceVerification::verify_multi_sequences_in_order),
-					TEST(SequenceVerification::should_throw_argument_exception_on_invalid_repetiotions_number)
-					)//
+					TEST(SequenceVerification::verify_multi_sequences_in_order), //
+					TEST(SequenceVerification::use_only_mocks_that_are_involved_in_verifed_sequence_for_verification), //
+					TEST(SequenceVerification::should_throw_argument_exception_on_invalid_repetiotions_number)) //
 	{
 	}
 
@@ -167,6 +166,34 @@ struct SequenceVerification: tpunit::TestFixture {
 		ASSERT_THROW(Verify(mock[&SomeInterface::func] * -1), std::invalid_argument);
 		ASSERT_THROW(Verify(0 * mock[&SomeInterface::func]), std::invalid_argument);
 		ASSERT_THROW(Verify(-1 * mock[&SomeInterface::func]), std::invalid_argument);
+	}
+
+	void use_only_mocks_that_are_involved_in_verifed_sequence_for_verification() {
+		Mock<SomeInterface> mock1;
+		Mock<SomeInterface> mock2;//
+
+		Fake(mock1[&SomeInterface::func], mock2[&SomeInterface::func]);
+		mock1.get().func(1);
+		mock2.get().func(2);
+		mock1.get().func(1);
+		mock2.get().func(2);
+		Verify(mock1[&SomeInterface::func]);
+		Verify(mock1[&SomeInterface::func] * 2);
+
+		Verify(mock2[&SomeInterface::func]);
+		Verify(mock2[&SomeInterface::func] * 2);
+
+		Using(mock1,mock2).Verify(mock1[&SomeInterface::func]);
+		Using(mock1,mock2).Verify(mock2[&SomeInterface::func]);
+
+		Using(mock1,mock2).Verify(mock1[&SomeInterface::func] + mock2[&SomeInterface::func]);
+		Using(mock1,mock2).Verify((mock1[&SomeInterface::func] + mock2[&SomeInterface::func]) * 2);
+
+		ASSERT_THROW(Using(mock1,mock2).Verify(mock1[&SomeInterface::func] * 2), fakeit::VerificationException);
+		ASSERT_THROW(Using(mock1,mock2).Verify(mock2[&SomeInterface::func] * 2), fakeit::VerificationException);
+
+		ASSERT_THROW(Using(mock1).Verify(mock2[&SomeInterface::func]), fakeit::VerificationException);
+		ASSERT_THROW(Using(mock2).Verify(mock1[&SomeInterface::func]), fakeit::VerificationException);
 	}
 
 } __SequenceVerification;

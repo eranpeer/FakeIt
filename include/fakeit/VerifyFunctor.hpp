@@ -8,6 +8,8 @@
 #ifndef VERIFYFUNCTOR_HPP_
 #define VERIFYFUNCTOR_HPP_
 
+#include <set>
+
 #include "fakeit/StubbingImpl.h"
 #include "fakeit/Stubbing.h"
 #include "fakeit/Sequence.hpp"
@@ -24,22 +26,24 @@ static void sort(std::unordered_set<AnyInvocation*>& actualIvocations, std::vect
 		actualSequence.push_back(i);
 }
 
-class VerifyFunctor {
+class UsingFunctor {
 
-	std::vector<Sequence*>& concat(std::vector<Sequence*>& vec) {
-		return vec;
+	std::set<ActualInvocationsSource*>& collectMocks(std::set<ActualInvocationsSource*>& into) {
+		return into;
 	}
 
 	template<typename ... list>
-	std::vector<Sequence*>& concat(std::vector<Sequence*>& vec, const Sequence& sequence, const list&... tail) {
-		vec.push_back(&const_cast<Sequence&>(sequence));
-		return concat(vec, tail...);
+	std::set<ActualInvocationsSource*>& collectMocks(std::set<ActualInvocationsSource*>& into, const ActualInvocationsSource& mock,
+			const list&... tail) {
+		into.insert(&const_cast<ActualInvocationsSource&>(mock));
+		return collectMocks(into, tail...);
 	}
 
 public:
 
 	struct VerificationProgress: public virtual MethodVerificationProgress {
 
+		friend class UsingFunctor;
 		friend class VerifyFunctor;
 
 		~VerificationProgress() THROWS {
@@ -78,34 +82,51 @@ public:
 			markAsVerified(matchedInvocations);
 		}
 
+		template<typename ... list>
+		MethodVerificationProgress& Verify(const Sequence& sequence, const list&... tail) {
+			collectSequences(expectedPattern, sequence, tail...);
+			return *this;
+		}
+
 	private:
 
+		std::set<ActualInvocationsSource*> involvedMocks;
 		std::vector<Sequence*> expectedPattern;
-		const Sequence& sequence;
-		int expectedInvocationCount;bool _isActive;
+		int expectedInvocationCount;
+		bool _isActive;
 
 		static inline int AT_LEAST_ONCE() {
 			return -1;
 		}
 
-		VerificationProgress(const Sequence& sequence) :
-				sequence(sequence), expectedInvocationCount(-1), _isActive(true) {
-			expectedPattern.push_back(&const_cast<Sequence&>(sequence));
+		VerificationProgress(std::set<ActualInvocationsSource*> mocks) : //
+				involvedMocks { mocks }, //
+				expectedPattern { }, //
+				expectedInvocationCount(-1), //
+				_isActive(true) {
 		}
 
-		VerificationProgress(const std::vector<Sequence*> expectedPattern) :
-				expectedPattern(expectedPattern), sequence(*expectedPattern[0]), expectedInvocationCount(-1), _isActive(true) {
-		}
-
-		VerificationProgress(VerificationProgress& other) :
-				expectedPattern(other.expectedPattern), sequence(other.sequence), expectedInvocationCount(other.expectedInvocationCount), _isActive(
-						other._isActive) {
+		VerificationProgress(VerificationProgress& other) : //
+				involvedMocks(other.involvedMocks), //
+				expectedPattern(other.expectedPattern), //
+				expectedInvocationCount(other.expectedInvocationCount), //
+				_isActive(other._isActive) {
 			other._isActive = false;
 		}
 
+		std::vector<Sequence*>& collectSequences(std::vector<Sequence*>& vec) {
+			return vec;
+		}
+
+		template<typename ... list>
+		std::vector<Sequence*>& collectSequences(std::vector<Sequence*>& vec, const Sequence& sequence, const list&... tail) {
+			vec.push_back(&const_cast<Sequence&>(sequence));
+			return collectSequences(vec, tail...);
+		}
+
 		void collectActualInvocations(std::vector<Sequence*>& expectedPattern, std::unordered_set<AnyInvocation*>& actualIvocations) {
-			for (auto scenario : expectedPattern) {
-				scenario->getActualInvocations(actualIvocations);
+			for (auto mock : involvedMocks) {
+				mock->getActualInvocations(actualIvocations);
 			}
 		}
 		virtual void verifyInvocations(const int times) override {
@@ -156,10 +177,6 @@ public:
 			for (unsigned int j = 0; found && j < expectedSequence.size(); j++) {
 				AnyInvocation* actual = actualSequence[start + j];
 				AnyInvocation::Matcher* expected = expectedSequence[j];
-				if (j >= 1) {
-					AnyInvocation* prevActual = actualSequence[start + j - 1];
-					found = actual->getOrdinal() - prevActual->getOrdinal() == 1;
-				}
 				found = found && expected->matches(*actual);
 			}
 			return found;
@@ -178,15 +195,52 @@ public:
 
 	};
 
+public:
+
+	UsingFunctor() {
+	}
+
+	template<typename ... list>
+	VerificationProgress operator()(const ActualInvocationsSource& mock, const list&... tail) {
+		std::set<ActualInvocationsSource*> allMocks;
+		collectMocks(allMocks, mock, tail...);
+		VerificationProgress progress(allMocks);
+		return progress;
+	}
+
+}
+static Using;
+
+class VerifyFunctor {
+
+	std::vector<Sequence*>& collectSequences(std::vector<Sequence*>& vec) {
+		return vec;
+	}
+
+	template<typename ... list>
+	std::vector<Sequence*>& collectSequences(std::vector<Sequence*>& vec, const Sequence& sequence, const list&... tail) {
+		vec.push_back(&const_cast<Sequence&>(sequence));
+		return collectSequences(vec, tail...);
+	}
+
+public:
+
 	VerifyFunctor() {
 	}
 
 	template<typename ... list>
-	VerificationProgress operator()(const Sequence& sequence, const list&... tail) {
-		std::vector<Sequence*> vec;
-		concat(vec, sequence, tail...);
-		VerificationProgress progress(vec);
-		return progress;
+	UsingFunctor::VerificationProgress operator()(const Sequence& sequence, const list&... tail) {
+		std::vector<Sequence*> allSequences;
+		collectSequences(allSequences, sequence, tail...);
+
+		std::set<ActualInvocationsSource*> allMocks;
+		for (auto sequence : allSequences) {
+			sequence->getInvolvedMocks(allMocks);
+		}
+
+		UsingFunctor::VerificationProgress rv(allMocks);
+		rv.Verify(sequence, tail...);
+		return rv;
 	}
 
 }

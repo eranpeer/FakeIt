@@ -70,6 +70,6 @@ struct DemoTests: tpunit::TestFixture {
 		// Verify for foo & bar where never invoked with other arguments
 		Verify(mock[&SomeInterface::foo].Using(2)).Never();
 		Verify(mock[&SomeInterface::bar].Using("some other value")).Never();
-	}
+	}//
 
 } __DemoTests;

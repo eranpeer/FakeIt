@@ -25,7 +25,7 @@ enum class ProgressType {
 };
 
 template<typename C, typename R, typename ... arglist>
-struct StubbingContext {
+struct StubbingContext : public ActualInvocationsSource {
 	virtual ~StubbingContext() {
 	}
 	virtual MethodMock<C, R, arglist...>& getMethodMock() = 0;
@@ -106,6 +106,10 @@ public:
 			AnyInvocation* ai = i.get();
 			into.insert(ai);
 		}
+	}
+
+	void getInvolvedMocks(std::set<ActualInvocationsSource*>& into) const override {
+		into.insert(stubbingContext.get());
 	}
 
 	void getExpectedSequence(std::vector<AnyInvocation::Matcher*>& into) const override {

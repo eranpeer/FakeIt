@@ -2,6 +2,8 @@
 #define Mock_h__
 
 #include <type_traits>
+#include <unordered_set>
+
 #include <memory>
 
 #include "mockutils/DynamicProxy.h"
@@ -42,6 +44,10 @@ private:
 		}
 		virtual MethodMock<C, R, arglist...>& getMethodMock() override {
 			return mock.stubMethodIfNotStubbed(mock.instance, vMethod);
+		}
+
+		virtual void getActualInvocations(std::unordered_set<AnyInvocation*>& into) const override {
+			mock.getActualInvocations(into);
 		}
 	};
 

@@ -8,14 +8,12 @@
 #ifndef SEQUENCE_HPP_
 #define SEQUENCE_HPP_
 
-
 #include <unordered_set>
 #include <vector>
 #include <stdexcept>
 
 #include "mockutils/Macros.h"
 #include "fakeit/ActualInvocation.h"
-
 
 namespace fakeit {
 
@@ -27,12 +25,20 @@ protected:
 	Sequence() {
 	}
 
-	virtual ~Sequence() THROWS {}
+	virtual ~Sequence() THROWS {
+	}
 
 public:
-	virtual void getActualInvocations(std::unordered_set<AnyInvocation*>& into) const = 0;
 
+	/**
+	 * Fetch the matchers that make-up this sequence.
+	 */
 	virtual void getExpectedSequence(std::vector<AnyInvocation::Matcher*>& into) const = 0;
+
+	/**
+	 * Collect all mock objects that are involved in this sequence.
+	 */
+	virtual void getInvolvedMocks(std::set<ActualInvocationsSource*>& into) const = 0;
 
 	virtual unsigned int size() const = 0;
 
@@ -58,14 +64,14 @@ public:
 		return s1.size() + s2.size();
 	}
 
-	void getActualInvocations(std::unordered_set<AnyInvocation*>& into) const override {
-		s1.getActualInvocations(into);
-		s2.getActualInvocations(into);
-	}
-
 	void getExpectedSequence(std::vector<AnyInvocation::Matcher*>& into) const override {
 		s1.getExpectedSequence(into);
 		s2.getExpectedSequence(into);
+	}
+
+	virtual void getInvolvedMocks(std::set<ActualInvocationsSource*>& into) const override {
+		s1.getInvolvedMocks(into);
+		s2.getInvolvedMocks(into);
 	}
 
 	friend inline ConcatenatedSequence operator+(const Sequence &s1, const Sequence &s2);
@@ -93,8 +99,8 @@ public:
 	friend inline RepeatedSequence operator*(const Sequence &s, int times);
 	friend inline RepeatedSequence operator*(int times, const Sequence &s);
 
-	void getActualInvocations(std::unordered_set<AnyInvocation*>& into) const override {
-		s1.getActualInvocations(into);
+	void getInvolvedMocks(std::set<ActualInvocationsSource*>& into) const override {
+		s1.getInvolvedMocks(into);
 	}
 
 	void getExpectedSequence(std::vector<AnyInvocation::Matcher*>& into) const override {
@@ -120,6 +126,5 @@ inline RepeatedSequence operator*(int times, const Sequence &s) {
 }
 
 }
-
 
 #endif /* SEQUENCE_HPP_ */
