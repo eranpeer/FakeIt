@@ -43,3 +43,15 @@ Verify(mock[&SomeInterface::foo].Using(1));
 ```
 
 Checkout the [Quickstart](https://github.com/eranpeer/FakeIt/wiki/Quickstart) for many more exmples!
+
+## Features
+* Very simple & API based on the expressiveness of C++11.
+* Supports both GCC and MS C++.
+* No limitation on number of method arguments.
+* Supports dynamic casting.
+
+## Limitations
+* Currently only GCC and MS C++ are supported.
+* Can't mock classes with multiple inheritance.
+* Can't mock classes with virtual inheritance.
+* Currently mocks are not thread safe. 
