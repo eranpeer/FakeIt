@@ -1,1 +1,9 @@
-a
+language: cpp
+compiler:
+  - gcc
+before_install:
+  - sudo pip install cpp-coveralls --use-mirrors
+script:
+  - ./configure --enable-gcov && make && make check
+after_success:
+  - coveralls --exclude lib --exclude tests
