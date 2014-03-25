@@ -42,7 +42,7 @@ Verify(mock[&SomeInterface::foo]);
 Verify(mock[&SomeInterface::foo].Using(1));
 ```
 
-Checkout the [Quickstart](https://github.com/eranpeer/FakeIt/wiki/Quickstart) for many more exmples!
+Checkout the [Quickstart](https://github.com/eranpeer/FakeIt/wiki/Quickstart) for many more examples!
 
 ## Features
 * Very simple & API based on the expressiveness of C++11.
