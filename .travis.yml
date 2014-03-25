@@ -3,6 +3,9 @@ compiler:
   - gcc
 before_install:
   - sudo pip install cpp-coveralls --use-mirrors
+  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+  - sudo apt-get -qq update
+  - sudo apt-get -qq install g++-4.8
 script:
   - ./configure --enable-gcov && make && make check
 after_success:
