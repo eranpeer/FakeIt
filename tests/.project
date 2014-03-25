@@ -3,6 +3,7 @@
 	<name>fakeit_tests</name>
 	<comment></comment>
 	<projects>
+		<project>fakeit</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
