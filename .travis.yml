@@ -13,4 +13,4 @@ script:
   - make
   - ./fakeit_tests.exe
 after_success:
-  - coveralls --verbose --exclude lib --exclude tests
+  - coveralls --verbose
