@@ -13,7 +13,6 @@ CPP_SRCS += \
 ../verification_tests.cpp 
 
 OBJS += \
-./demo_dests.o \
 ./gcc_stubbing_multiple_values_tests.o \
 ./gcc_type_info_tests.o \
 ./msc_stubbing_multiple_values_tests.o \
@@ -26,7 +25,6 @@ OBJS += \
 ./verification_tests.o 
 
 CPP_DEPS += \
-./demo_dests.d \
 ./gcc_stubbing_multiple_values_tests.d \
 ./gcc_type_info_tests.d \
 ./msc_stubbing_multiple_values_tests.d \
