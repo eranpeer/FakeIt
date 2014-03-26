@@ -34,5 +34,13 @@ TestResults/
 .settings/
 .metadata/
 
+# temporary
+*.tmp
+*.d
 
+# gcov
+*.gcno
+
+# Binary
+*.exe
 

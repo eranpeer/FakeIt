@@ -1,6 +1,3 @@
-################################################################################
-# Automatically-generated file. Do not edit!
-################################################################################
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
@@ -47,7 +44,7 @@ CPP_DEPS += \
 %.o: ../%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	g++ -D__GXX_EXPERIMENTAL_CXX0X__ -I"/home/eran/FakeIt/tests/../include" -O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -ftest-coverage -fprofile-arcs -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+	g++ -D__GXX_EXPERIMENTAL_CXX0X__ -I"../../include" -O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -ftest-coverage -fprofile-arcs -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

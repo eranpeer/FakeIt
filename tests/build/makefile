@@ -1,7 +1,3 @@
-################################################################################
-# Automatically-generated file. Do not edit!
-################################################################################
-
 -include ../makefile.init
 
 RM := rm -rf
@@ -39,11 +35,8 @@ endif
 # All Target
 all: fakeit_tests.exe
 
-dependents:
-	-cd /home/eran/FakeIt/include/Debug && $(MAKE) clean all
-
 # Tool invocations
-fakeit_tests.exe: $(OBJS) $(USER_OBJS) /home/eran/FakeIt/include/Debug/fakeit
+fakeit_tests.exe: $(OBJS) $(USER_OBJS) 
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
 	g++ -lgcov -coverage -o "fakeit_tests.exe" $(OBJS) $(USER_OBJS) $(LIBS)
@@ -57,6 +50,6 @@ clean:
 
 .PHONY: all clean dependents
 .SECONDARY:
-/home/eran/FakeIt/include/Debug/fakeit:
+../../include/Debug/fakeit:
 
 -include ../makefile.targets
