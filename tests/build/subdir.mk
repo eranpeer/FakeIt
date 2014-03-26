@@ -1,7 +1,6 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../demo_dests.cpp \
 ../gcc_stubbing_multiple_values_tests.cpp \
 ../gcc_type_info_tests.cpp \
 ../msc_stubbing_multiple_values_tests.cpp \
