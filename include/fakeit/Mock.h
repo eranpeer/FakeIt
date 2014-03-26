@@ -119,7 +119,8 @@ public:
 
 	template<typename R, typename ... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
 	FunctionStubbingRoot<C, R, arglist...> operator [](R (C::*vMethod)(arglist...) const) {
-		auto methodWithoutConstVolatile = reinterpret_cast<R (C::*)(arglist...)>(vMethod);returnStubImpl(methodWithoutConstVolatile);
+		auto methodWithoutConstVolatile = reinterpret_cast<R (C::*)(arglist...)>(vMethod);
+		return StubImpl(methodWithoutConstVolatile);
 	}
 
 	template < typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
