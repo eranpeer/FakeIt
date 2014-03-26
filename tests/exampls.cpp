@@ -9,14 +9,18 @@
 using namespace fakeit;
 using namespace std;
 
-struct DemoTests: tpunit::TestFixture {
-	DemoTests() :
-			tpunit::TestFixture(
+struct DemoTests
+//		: tpunit::TestFixture
+		  {
+	DemoTests()
+//	:
+//			tpunit::TestFixture(
 			//
-					TEST(DemoTests::basic_stubbing), //
-					TEST(DemoTests::basic_verification) //
+					//TEST(DemoTests::basic_stubbing), //
+					//TEST(DemoTests::basic_verification) //
 							//
-							) {
+//							)
+		{
 	}
 
 	struct SomeInterface {
