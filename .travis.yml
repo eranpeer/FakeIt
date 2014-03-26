@@ -11,5 +11,6 @@ script:
   - cd ./tests/build
   - g++ --version
   - make
+  - ./fakeit_tests.exe
 after_success:
-  - coveralls --exclude lib --exclude tests
+  - coveralls --verbose --exclude lib --exclude tests
