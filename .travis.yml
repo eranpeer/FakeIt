@@ -7,6 +7,6 @@ before_install:
   - sudo apt-get -qq update
   - sudo apt-get -qq install g++-4.8
 script:
-  - ./configure --enable-gcov && make && make check
+  - gcc --version
 after_success:
   - coveralls --exclude lib --exclude tests
