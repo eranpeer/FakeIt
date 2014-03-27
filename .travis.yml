@@ -13,6 +13,8 @@ script:
   - make
   - ./fakeit_tests.exe
   - ls
+  - coveralls --verbose
+  - ls
 after_success:
   - coveralls --verbose
   - ls
