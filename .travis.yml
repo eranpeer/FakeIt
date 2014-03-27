@@ -2,15 +2,16 @@ language: cpp
 compiler:
   - gcc
 before_install:
+  - gcov --versioni
   - sudo pip install cpp-coveralls --use-mirrors
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get -qq update
   - sudo apt-get -qq install g++-4.8
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
-  - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/g++-4.8 90
+  - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.8 90
 script:
+  - gcov --version
   - ls /usr/bin
-  - ls /usr/bin/g++-4.8
   - ld --version
   - cd ./tests/build
   - g++ --version
