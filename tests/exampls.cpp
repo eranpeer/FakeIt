@@ -45,7 +45,7 @@ struct DemoTests
 		int a = i.foo(1);
 		int a1 = i.foo(2);
 		int a2 = i.foo(3);
-
+//
 
 		// Will print "1". 
 		cout << i.foo(0);
