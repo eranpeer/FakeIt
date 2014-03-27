@@ -15,6 +15,10 @@ script:
   - ls
   - coveralls --verbose
   - ls
+  - gcov *.o
+  - ls
+  - coveralls --verbose --no-gcov
+  - ls
 after_success:
   - coveralls --verbose
   - ls
