@@ -41,6 +41,7 @@ TestResults/
 # gcov
 *.gcno
 *.gcda
+*.gcov
 
 # Binary
 *.exe
