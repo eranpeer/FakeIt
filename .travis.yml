@@ -16,9 +16,6 @@ script:
   - ls
   - coveralls --verbose
   - ls
-  - gcov --version
-  - gcov *.o
-  - ls
   - coveralls --verbose --no-gcov
   - ls
 after_success:
