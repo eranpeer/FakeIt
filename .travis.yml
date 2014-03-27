@@ -2,7 +2,7 @@ language: cpp
 compiler:
   - gcc
 before_install:
-  - gcov --versioni
+  - gcov --version
   - sudo pip install cpp-coveralls --use-mirrors
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get -qq update
