@@ -12,6 +12,5 @@ script:
   - g++ --version
   - make
   - ./fakeit_tests.exe
-  - ls -la
 after_success:
   - coveralls --verbose
