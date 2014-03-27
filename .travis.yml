@@ -18,10 +18,7 @@ script:
   - make
   - ./fakeit_tests.exe
   - ls
-  - gcov *.o
   - coveralls --verbose
-  - ls
-  - coveralls --verbose --no-gcov
   - ls
 after_success:
   - coveralls --verbose
