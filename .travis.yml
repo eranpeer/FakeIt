@@ -7,6 +7,7 @@ before_install:
   - sudo apt-get -qq update
   - sudo apt-get -qq install g++-4.8
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
+  - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/g++-4.8 90
 script:
   - cd ./tests/build
   - g++ --version
@@ -15,6 +16,7 @@ script:
   - ls
   - coveralls --verbose
   - ls
+  - gcov --version
   - gcov *.o
   - ls
   - coveralls --verbose --no-gcov
