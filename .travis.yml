@@ -11,8 +11,6 @@ before_install:
   - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.8 90
 script:
   - gcov --version
-  - ls /usr/bin
-  - ld --version
   - cd ./tests/build
   - g++ --version
   - make
