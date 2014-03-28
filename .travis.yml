@@ -18,8 +18,6 @@ script:
   - make
   - ./fakeit_tests.exe
   - gcov *.o
-  - ls
-  - cd ../..
-  - coveralls --no-gcov --verbose
+  - coveralls --root ../.. --no-gcov --exclude msvs_tests --verbose
 after_success:
   - ls
