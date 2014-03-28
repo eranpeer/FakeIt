@@ -18,8 +18,8 @@ script:
   - make
   - ./fakeit_tests.exe
   - ls
+  - cd ../..
   - coveralls --verbose
   - ls
 after_success:
-  - coveralls --verbose
   - ls
