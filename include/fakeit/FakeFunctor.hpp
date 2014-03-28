@@ -19,6 +19,9 @@ private:
 	}
 public:
 
+	FakeFunctor() {
+	}
+
 	template<typename H>
 	void operator()(const H& head) {
 		H& headWithoutConst = const_cast<H&>(head);
@@ -32,7 +35,7 @@ public:
 		this->operator()(tail...);
 	}
 
-} static Fake;
+}static Fake;
 
 }
 
