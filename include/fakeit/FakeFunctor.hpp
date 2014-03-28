@@ -18,8 +18,6 @@ private:
 	void operator()() {
 	}
 public:
-	FakeFunctor() {
-	}
 
 	template<typename H>
 	void operator()(const H& head) {
@@ -34,7 +32,7 @@ public:
 		this->operator()(tail...);
 	}
 
-}static Fake;
+} static Fake;
 
 }
 

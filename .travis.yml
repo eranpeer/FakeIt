@@ -17,9 +17,9 @@ script:
   - g++ --version
   - make
   - ./fakeit_tests.exe
+  - gcov *.o
   - ls
   - cd ../..
-  - coveralls --verbose
-  - ls
+  - coveralls --no-gcov --verbose
 after_success:
   - ls
