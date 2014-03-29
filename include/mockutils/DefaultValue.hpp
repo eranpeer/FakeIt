@@ -11,16 +11,13 @@ struct DefaultValueInstatiationException: public std::exception {
 
 struct DefaultValue {
 
-	// Type is default constructible => It can have a default value.
 	template<typename C>
 	static typename std::enable_if<std::is_void<C>::value, C>::type value() {
 	}
 
-	// Type is default constructible => It can have a default value.
-	//template<typename C, class REF = std::add_reference<C>::type>
 	template<typename C>
 	static typename std::enable_if<
-			!std::is_void<C>::value && !std::is_reference<C>::value && !std::is_abstract<C>::value
+			!std::is_void<C>::value && !std::is_reference<C>::value
 					&& std::is_default_constructible<C>::value, C&>::type value() {
 		static C val { };
 		return val;
@@ -29,7 +26,7 @@ struct DefaultValue {
 	// Can't create default value of an a non default constructible type.
 	template<typename C>
 	static typename std::enable_if<
-			!std::is_void<C>::value && !std::is_reference<C>::value && !std::is_abstract<C>::value
+			!std::is_void<C>::value && !std::is_reference<C>::value
 					&& !std::is_default_constructible<C>::value, C&>::type value() {
 
 		class Exception : public DefaultValueInstatiationException {

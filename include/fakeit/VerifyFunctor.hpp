@@ -46,6 +46,14 @@ public:
 		friend class UsingFunctor;
 		friend class VerifyFunctor;
 
+		VerificationProgress(VerificationProgress& other) : //
+			involvedMocks(other.involvedMocks), //
+			expectedPattern(other.expectedPattern), //
+			expectedInvocationCount(other.expectedInvocationCount), //
+			_isActive(other._isActive) {
+			other._isActive = false;
+		}
+
 		~VerificationProgress() THROWS {
 
 			if (std::uncaught_exception()) {
@@ -97,21 +105,6 @@ public:
 
 		static inline int AT_LEAST_ONCE() {
 			return -1;
-		}
-
-		VerificationProgress(std::set<ActualInvocationsSource*> mocks) : //
-				involvedMocks { mocks }, //
-				expectedPattern { }, //
-				expectedInvocationCount(-1), //
-				_isActive(true) {
-		}
-
-		VerificationProgress(VerificationProgress& other) : //
-				involvedMocks(other.involvedMocks), //
-				expectedPattern(other.expectedPattern), //
-				expectedInvocationCount(other.expectedInvocationCount), //
-				_isActive(other._isActive) {
-			other._isActive = false;
 		}
 
 		std::vector<Sequence*>& collectSequences(std::vector<Sequence*>& vec) {
@@ -191,6 +184,13 @@ public:
 				}
 			}
 			return -1;
+		}
+
+		VerificationProgress(std::set<ActualInvocationsSource*> mocks) : //
+				involvedMocks { mocks }, //
+				expectedPattern { }, //
+				expectedInvocationCount(-1), //
+				_isActive(true) {
 		}
 
 	};
