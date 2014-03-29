@@ -4,7 +4,7 @@
 #include <queue>
 
 #include "tpunit++.hpp"
-#include "fakeit.h"
+#include "fakeit.hpp"
 #include "fakeit/FakeitExceptions.h"
 
 using namespace fakeit;

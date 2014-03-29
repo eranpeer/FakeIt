@@ -7,7 +7,7 @@
 #include <string>
 
 #include "tpunit++.hpp"
-#include "fakeit.h"
+#include "fakeit.hpp"
 
 using namespace fakeit;
 

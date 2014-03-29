@@ -8,7 +8,7 @@
 #include <type_traits>
 
 #include "tpunit++.hpp"
-#include "fakeit.h"
+#include "fakeit.hpp"
 #include "mockutils/Formatter.h"
 
 using namespace fakeit;

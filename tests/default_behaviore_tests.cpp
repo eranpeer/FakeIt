@@ -4,7 +4,7 @@
 #include <queue>
 
 #include "tpunit++.hpp"
-#include "fakeit.h"
+#include "fakeit.hpp"
 #include "fakeit/FakeitExceptions.h"
 
 using namespace fakeit;
@@ -14,6 +14,7 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 			tpunit::TestFixture(
 			//
 					TEST(DefaultBehavioreTests::scalar_types_should_return_zero), //
+					TEST(DefaultBehavioreTests::DefaultBeaviorOfVoidFunctionsIsToDoNothing), //
 					TEST(DefaultBehavioreTests::ReturnByValue_ReturnDefaultConstructedObject), //
 					TEST(DefaultBehavioreTests::ReturnByValue_ThrowExceptionIfNotDefaultConstructible), //
 					TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToNullIfAbstract), //
@@ -124,6 +125,22 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 		ASSERT_EQUAL(nullptr, i.pScalarFuctionsfunc());
 		ASSERT_EQUAL(nullptr, i.nullptrFunc());
 		ASSERT_EQUAL(0, union_cast<int>(i.pMemberFunc()));
+	}
+
+	struct VoidFunctions
+	{
+		virtual void proc1() = 0;
+		virtual void proc2(int a) = 0;
+	};
+
+	void DefaultBeaviorOfVoidFunctionsIsToDoNothing()
+	{
+		Mock<VoidFunctions> mock;
+		Fake(mock[&VoidFunctions::proc1]);
+		Fake(mock[&VoidFunctions::proc2]);
+		VoidFunctions& i = mock.get();
+		i.proc1();
+		i.proc2(1);
 	}
 
 	void ReturnByValue_ReturnDefaultConstructedObject() {
