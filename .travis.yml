@@ -11,12 +11,12 @@ before_install:
   - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.8 90
 script:
   - gcov --version
-  - cd ./tests/build
+  - cd ./build
   - g++ --version
   - make
   - ./fakeit_tests.exe
   - gcov *.o
-  - cd ../..
-  - coveralls --no-gcov --exclude msvs_tests --verbose
+  - cd ..
+  - coveralls --no-gcov --exclude msvs_tests --exclude tests --verbose
 after_success:
   - ls
