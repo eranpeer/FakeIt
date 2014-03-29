@@ -18,7 +18,8 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 					TEST(DefaultBehavioreTests::ReturnByValue_ThrowExceptionIfNotDefaultConstructible), //
 					TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToNullIfAbstract), //
 					TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToDefaultConstructedObject), //
-					TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToNullIfNotDefaultConstructible)
+					TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToNullIfNotDefaultConstructible),//
+					TEST(DefaultBehavioreTests::ReturnPtr_NullPtrIfPtrToAbstract)
 					//
 							) {
 	}
@@ -75,6 +76,7 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 		virtual std::string& stringFunc() = 0;
 		virtual NotDefaultConstructible& notDefaultConstructibleFunc() = 0;
 		virtual ReferenceFunctions& abstractTypeFunc() = 0;
+		virtual ReferenceFunctions* abstractTypeFunc2() = 0;
 
 		const bool operator==(const ReferenceFunctions &other) const {
 			return this == &other;
@@ -158,6 +160,13 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 		Fake(mock[&ReferenceFunctions::abstractTypeFunc]);
 		ReferenceFunctions& i = mock.get();
 		ASSERT_EQUAL(nullptr, &i.abstractTypeFunc());
+	}
+
+	void ReturnPtr_NullPtrIfPtrToAbstract() {
+		Mock<ReferenceFunctions> mock;
+		Fake(mock[&ReferenceFunctions::abstractTypeFunc2]);
+		ReferenceFunctions& i = mock.get();
+		ASSERT_EQUAL(nullptr, i.abstractTypeFunc2());
 	}
 
 } __DefaultBehaviore;

@@ -46,17 +46,6 @@ struct DefaultValue {
 		throw Exception();
 	}
 
-	// Can't create default value of an abstract type
-	template<typename AC>
-	static typename std::enable_if<!std::is_reference<AC>::value && std::is_abstract<AC>::value, AC&>::type value() {
-		class Exception : public DefaultValueInstatiationException {
-					const char* what() const throw () override {
-						return (std::string(typeid(AC).name()) + std::string(" is abstract. could not instantiate default value for class")).c_str();
-					}
-				};
-		throw Exception();
-	}
-
 	template<typename REF>
 	static typename std::enable_if<std::is_reference<REF>::value, REF>::type value() {
 		bool isAbstract = std::is_abstract<typename std::remove_reference<REF>::type>::value;
