@@ -38,8 +38,8 @@ struct DefaultValue {
 
 		class Exception : public DefaultValueInstatiationException {
 			const char* what() const throw () override {
-				return (std::string(typeid(C).name())
-				+ std::string(" does not have a default constructor. could not instantiate default value for type")).c_str();
+				return (std::string("Type ") + std::string(typeid(C).name())
+				+ std::string(" is not default constructible. Could not instantiate a default return value")).c_str();
 			}
 		};
 

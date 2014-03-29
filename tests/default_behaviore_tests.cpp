@@ -146,7 +146,15 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 		Mock<NonDefaultConstructibleFunctions> mock;
 		Fake(mock[&NonDefaultConstructibleFunctions::notDefaultConstructibleFunc]);
 		NonDefaultConstructibleFunctions& i = mock.get();
-		ASSERT_THROW(i.notDefaultConstructibleFunc(), fakeit::DefaultValueInstatiationException);
+		try {
+			i.notDefaultConstructibleFunc();
+			FAIL();
+		} catch (fakeit::DefaultValueInstatiationException& e){
+			auto expected = std::string("Type ") +std::string(typeid(NotDefaultConstructible).name())
+			+ std::string(" is not default constructible. Could not instantiate a default return value");
+			std::string actual(e.what());
+			ASSERT_EQUAL(expected, actual);
+		}
 	}
 
 	void ReturnByReference_ReturnReferenceToNullIfNotDefaultConstructible() {
