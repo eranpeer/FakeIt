@@ -65,10 +65,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="default_behaviore_tests.cpp" />
     <ClCompile Include="exampls.cpp" />
     <ClCompile Include="msc_stubbing_multiple_values_tests.cpp" />
     <ClCompile Include="msc_type_info_tests.cpp" />
     <ClCompile Include="referece_types_tests.cpp" />
+    <ClCompile Include="sequence_verification_tests.cpp" />
     <ClCompile Include="stubbing_tests.cpp" />
     <ClCompile Include="tpunit++main.cpp" />
     <ClCompile Include="type_info_tests.cpp" />

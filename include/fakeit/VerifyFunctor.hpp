@@ -2,7 +2,7 @@
  * VerifyFunctor.hpp
  *
  *  Created on: Feb 14, 2014
- *      Author: eran
+ *      Author: Eran
  */
 
 #ifndef VERIFYFUNCTOR_HPP_
@@ -45,14 +45,6 @@ public:
 
 		friend class UsingFunctor;
 		friend class VerifyFunctor;
-
-		VerificationProgress(VerificationProgress& other) : //
-			involvedMocks(other.involvedMocks), //
-			expectedPattern(other.expectedPattern), //
-			expectedInvocationCount(other.expectedInvocationCount), //
-			_isActive(other._isActive) {
-			other._isActive = false;
-		}
 
 		~VerificationProgress() THROWS {
 
@@ -191,6 +183,14 @@ public:
 				expectedPattern { }, //
 				expectedInvocationCount(-1), //
 				_isActive(true) {
+		}
+
+		VerificationProgress(VerificationProgress& other) : //
+			involvedMocks(other.involvedMocks), //
+			expectedPattern(other.expectedPattern), //
+			expectedInvocationCount(other.expectedInvocationCount), //
+			_isActive(other._isActive) {
+			other._isActive = false;
 		}
 
 	};
