@@ -19,6 +19,7 @@ struct SequenceVerification: tpunit::TestFixture {
 					TEST(SequenceVerification::verify_repeated_sequence_2), //
 					TEST(SequenceVerification::verify_multi_sequences_in_order), //
 					TEST(SequenceVerification::use_only_mocks_that_are_involved_in_verifed_sequence_for_verification), //
+					TEST(SequenceVerification::use_only_filters_that_are_involved_in_verifed_sequence_for_verification), //
 					TEST(SequenceVerification::should_throw_argument_exception_on_invalid_repetiotions_number)) //
 	{
 	}
@@ -194,6 +195,20 @@ struct SequenceVerification: tpunit::TestFixture {
 
 		ASSERT_THROW(Using(mock1).Verify(mock2[&SomeInterface::func]), fakeit::VerificationException);
 		ASSERT_THROW(Using(mock2).Verify(mock1[&SomeInterface::func]), fakeit::VerificationException);
+	}
+
+	void use_only_filters_that_are_involved_in_verifed_sequence_for_verification() {
+		Mock<SomeInterface> mock1;
+
+		Fake(mock1[&SomeInterface::func]);
+		mock1.get().func(1);
+		mock1.get().func(2);
+
+		Using(mock1[&SomeInterface::func]).Verify(mock1[&SomeInterface::func] * 2).Exactly(1);
+		Using(mock1[&SomeInterface::func]).Verify(mock1[&SomeInterface::func]).Exactly(2);
+		Using(mock1[&SomeInterface::func].Using(1)).Verify(mock1[&SomeInterface::func]).Exactly(1);
+		ASSERT_THROW(Using(mock1[&SomeInterface::func].Using(1)).Verify(mock1[&SomeInterface::func].Using(2)), fakeit::VerificationException);
+		ASSERT_THROW(Using(mock1[&SomeInterface::func].Using(1)).Verify(mock1[&SomeInterface::func] * 2), fakeit::VerificationException);
 	}
 
 } __SequenceVerification;
