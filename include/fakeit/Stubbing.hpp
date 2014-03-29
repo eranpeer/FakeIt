@@ -8,13 +8,13 @@
 #include <stdexcept>
 #include <utility>
 
-#include "fakeit/FakeitExceptions.h"
-#include "fakeit/ActualInvocation.h"
+#include "fakeit/FakeitExceptions.hpp"
+#include "fakeit/ActualInvocation.hpp"
 #include "fakeit/quantifier.hpp"
 
-#include "mockutils/traits.h"
+#include "mockutils/traits.hpp"
 #include "mockutils/DefaultValue.hpp"
-#include "mockutils/Macros.h"
+#include "mockutils/Macros.hpp"
 
 namespace fakeit {
 

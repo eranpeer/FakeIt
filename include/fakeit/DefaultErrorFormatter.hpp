@@ -1,5 +1,5 @@
 /*
- * DefaultErrorFormatter.h
+ * DefaultErrorFormatter.hpppp
  *
  *  Created on: Jan 29, 2014
  *      Author: eran
@@ -8,7 +8,7 @@
 #define DefaultErrorFormatter_h__
 
 #include <vector>
-#include "fakeit/ErrorFormatter.h"
+#include "fakeit/ErrorFormatter.hpp"
 
 namespace fakeit {
 

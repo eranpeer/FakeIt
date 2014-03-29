@@ -7,7 +7,7 @@
 
 #include "tpunit++.hpp"
 #include "fakeit.hpp"
-#include "mockutils/Formatter.h"
+#include "mockutils/Formatter.hpp"
 
 using namespace fakeit;
 

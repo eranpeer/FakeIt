@@ -8,8 +8,8 @@
 #ifndef WHENFUNCTOR_HPP_
 #define WHENFUNCTOR_HPP_
 
-#include "fakeit/StubbingImpl.h"
-#include "fakeit/Stubbing.h"
+#include "fakeit/StubbingImpl.hpp"
+#include "fakeit/Stubbing.hpp"
 
 namespace fakeit {
 

@@ -1,5 +1,5 @@
 /*
- * is_simple_inheritance_layout.h
+ * is_simple_inheritance_layout.hpp
  *
  *  Created on: Feb 12, 2014
  *      Author: eran

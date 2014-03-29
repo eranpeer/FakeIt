@@ -2,7 +2,7 @@
 #define ErrorFormatter_h__
 
 #include <vector>
-#include "fakeit/ActualInvocation.h"
+#include "fakeit/ActualInvocation.hpp"
 #include "fakeit/Sequence.hpp"
 
 namespace fakeit {

@@ -1,5 +1,5 @@
 /*
- * VirtualTable.h
+ * VirtualTable.hpp
  */
 
 #ifndef VIRTUALTABLE_H_

@@ -6,12 +6,12 @@
 #include <atomic>
 #include <tuple>
 
-#include "mockutils/TupleDispatcher.h"
+#include "mockutils/TupleDispatcher.hpp"
 #include "mockutils/DefaultValue.hpp"
 
-#include "fakeit/DomainObjects.h"
-#include "fakeit/ActualInvocation.h"
-#include "fakeit/FakeitExceptions.h"
+#include "fakeit/DomainObjects.hpp"
+#include "fakeit/ActualInvocation.hpp"
+#include "fakeit/FakeitExceptions.hpp"
 
 namespace fakeit {
 

@@ -1,6 +1,6 @@
 #ifndef fakeit_h__
 #define fakeit_h__
 
-#include "fakeit/Mock.h"
+#include "fakeit/Mock.hpp"
 
 #endif // fakeit_h__

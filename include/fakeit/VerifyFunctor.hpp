@@ -10,8 +10,8 @@
 
 #include <set>
 
-#include "fakeit/StubbingImpl.h"
-#include "fakeit/Stubbing.h"
+#include "fakeit/StubbingImpl.hpp"
+#include "fakeit/Stubbing.hpp"
 #include "fakeit/Sequence.hpp"
 
 namespace fakeit {

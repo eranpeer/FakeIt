@@ -8,10 +8,10 @@
 #include <iostream>
 #include <sstream>
 
-#include "mockutils/TuplePrinter.h"
-#include "mockutils/Macros.h"
+#include "mockutils/TuplePrinter.hpp"
+#include "mockutils/Macros.hpp"
 
-#include "fakeit/DomainObjects.h"
+#include "fakeit/DomainObjects.hpp"
 
 namespace fakeit {
 

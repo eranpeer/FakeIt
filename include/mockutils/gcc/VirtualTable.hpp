@@ -1,7 +1,7 @@
 #ifndef VirtualTable_h__
 #define VirtualTable_h__
 
-#include "mockutils/gcc/is_simple_inheritance_layout.h"
+#include "mockutils/gcc/is_simple_inheritance_layout.hpp"
 
 namespace fakeit {
 	template<int SIZE, class C, class... baseclasses>

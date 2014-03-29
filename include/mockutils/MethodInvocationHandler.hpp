@@ -1,7 +1,7 @@
 #ifndef MethodInvocationHandler_h__
 #define MethodInvocationHandler_h__
 
-#include "mockutils/Destructable.h"
+#include "mockutils/Destructable.hpp"
 
 namespace fakeit {
 

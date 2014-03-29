@@ -5,7 +5,7 @@
 #include <tuple>
 #include <string>
 #include <sstream>
-#include "mockutils/Formatter.h"
+#include "mockutils/Formatter.hpp"
 
 namespace fakeit {
 

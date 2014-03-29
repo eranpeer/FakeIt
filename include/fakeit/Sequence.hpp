@@ -12,8 +12,8 @@
 #include <vector>
 #include <stdexcept>
 
-#include "mockutils/Macros.h"
-#include "fakeit/ActualInvocation.h"
+#include "mockutils/Macros.hpp"
+#include "fakeit/ActualInvocation.hpp"
 
 namespace fakeit {
 

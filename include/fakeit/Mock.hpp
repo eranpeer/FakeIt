@@ -6,13 +6,13 @@
 
 #include <memory>
 
-#include "mockutils/DynamicProxy.h"
+#include "mockutils/DynamicProxy.hpp"
 
-#include "fakeit/StubbingImpl.h"
+#include "fakeit/StubbingImpl.hpp"
 #include "fakeit/WhenFunctor.hpp"
 #include "fakeit/FakeFunctor.hpp"
 #include "fakeit/VerifyFunctor.hpp"
-#include "fakeit/DomainObjects.h"
+#include "fakeit/DomainObjects.hpp"
 
 namespace fakeit {
 

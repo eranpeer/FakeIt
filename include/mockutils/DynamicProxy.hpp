@@ -8,15 +8,15 @@
 #include <new>
 
 #ifdef _WIN32
-#include "mockutils/mscpp/VirtualTable.h"
+#include "mockutils/mscpp/VirtualTable.hpp"
 #else
-#include "mockutils/gcc/VirtualTable.h"
+#include "mockutils/gcc/VirtualTable.hpp"
 #endif
 
-#include "mockutils/MethodProxy.h"
-#include "mockutils/VirtualOffestSelector.h"
-#include "mockutils/union_cast.h"
-#include "mockutils/MethodInvocationHandler.h"
+#include "mockutils/MethodProxy.hpp"
+#include "mockutils/VirtualOffestSelector.hpp"
+#include "mockutils/union_cast.hpp"
+#include "mockutils/MethodInvocationHandler.hpp"
 
 namespace fakeit {
 template<typename C, typename ... baseclasses>

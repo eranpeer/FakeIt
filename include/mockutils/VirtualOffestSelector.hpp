@@ -1,6 +1,6 @@
 #ifndef VirtualOffestSelector_h__
 #define VirtualOffestSelector_h__
-#include "mockutils/union_cast.h"
+#include "mockutils/union_cast.hpp"
 
 namespace fakeit {
 

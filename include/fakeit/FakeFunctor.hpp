@@ -8,8 +8,8 @@
 #ifndef FakeFunctor_hpp_
 #define FakeFunctor_hpp_
 
-#include "fakeit/Stubbing.h"
-#include "fakeit/StubbingImpl.h"
+#include "fakeit/Stubbing.hpp"
+#include "fakeit/StubbingImpl.hpp"
 
 namespace fakeit {
 
