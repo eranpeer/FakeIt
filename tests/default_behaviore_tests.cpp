@@ -72,6 +72,7 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 	};
 
 	struct ReferenceFunctions {
+		ReferenceFunctions() = default;
 		virtual int& scalarFunc() = 0;
 		virtual std::string& stringFunc() = 0;
 		virtual NotDefaultConstructible& notDefaultConstructibleFunc() = 0;

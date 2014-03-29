@@ -58,18 +58,18 @@ struct DefaultValue {
 	}
 
 	template<typename REF>
-	static typename std::enable_if<std::is_reference<REF>::value, REF>::type value() {
-		bool isAbstract = std::is_abstract<typename std::remove_reference<REF>::type>::value;
-		if (isAbstract) {
-			typename std::remove_reference<REF>::type * ptr = nullptr;
-			return *ptr;
-		}
-		bool isDefaultConstructible = std::is_default_constructible<typename std::remove_reference<REF>::type>::value;
-		if (!isDefaultConstructible) {
-			typename std::remove_reference<REF>::type * ptr = nullptr;
-			return *ptr;
-		}
+	static typename std::enable_if<
+		std::is_reference<REF>::value && std::is_default_constructible<typename std::remove_reference<REF>::type>::value,
+		REF>::type value() {
 		return DefaultValue::value<typename std::remove_reference<REF>::type>();
+	}
+
+	template<typename REF>
+	static typename std::enable_if<
+		std::is_reference<REF>::value && !std::is_default_constructible<typename std::remove_reference<REF>::type>::value,
+		REF>::type value() {
+			typename std::remove_reference<REF>::type * ptr = nullptr;
+			return *ptr;
 	}
 
 };
