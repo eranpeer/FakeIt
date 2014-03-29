@@ -18,7 +18,7 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 					TEST(DefaultBehavioreTests::ReturnByValue_ThrowExceptionIfNotDefaultConstructible), //
 					TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToNullIfAbstract), //
 					TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToDefaultConstructedObject), //
-					TEST(DefaultBehavioreTests::ReturnByReference_ThrowExceptionIfNotDefaultConstructible)
+					TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToNullIfNotDefaultConstructible)
 					//
 							) {
 	}
@@ -147,11 +147,11 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 		ASSERT_THROW(i.notDefaultConstructibleFunc(), fakeit::DefaultValueInstatiationException);
 	}
 
-	void ReturnByReference_ThrowExceptionIfNotDefaultConstructible() {
+	void ReturnByReference_ReturnReferenceToNullIfNotDefaultConstructible() {
 		Mock<ReferenceFunctions> mock;
 		Fake(mock[&ReferenceFunctions::notDefaultConstructibleFunc]);
 		ReferenceFunctions& i = mock.get();
-		ASSERT_THROW(i.notDefaultConstructibleFunc(), fakeit::DefaultValueInstatiationException);
+		ASSERT_EQUAL(nullptr, &i.notDefaultConstructibleFunc());
 	}
 
 	void ReturnByReference_ReturnReferenceToNullIfAbstract() {

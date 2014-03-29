@@ -64,6 +64,11 @@ struct DefaultValue {
 			typename std::remove_reference<REF>::type * ptr = nullptr;
 			return *ptr;
 		}
+		bool isDefaultConstructible = std::is_default_constructible<typename std::remove_reference<REF>::type>::value;
+		if (!isDefaultConstructible) {
+			typename std::remove_reference<REF>::type * ptr = nullptr;
+			return *ptr;
+		}
 		return DefaultValue::value<typename std::remove_reference<REF>::type>();
 	}
 
