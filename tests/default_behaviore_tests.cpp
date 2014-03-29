@@ -59,7 +59,6 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 		NotDefaultConstructible(int a) :
 				a(a) {
 		}
-		;
 		const bool operator==(const NotDefaultConstructible &other) const {
 			return a == other.a;
 		}
