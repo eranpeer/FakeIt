@@ -65,7 +65,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="demo_dests.cpp" />
+    <ClCompile Include="exampls.cpp" />
     <ClCompile Include="msc_stubbing_multiple_values_tests.cpp" />
     <ClCompile Include="msc_type_info_tests.cpp" />
     <ClCompile Include="referece_types_tests.cpp" />
