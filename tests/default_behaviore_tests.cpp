@@ -13,7 +13,12 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 	DefaultBehavioreTests() :
 			tpunit::TestFixture(
 			//
-					TEST(DefaultBehavioreTests::scalar_types_should_return_zero)
+					TEST(DefaultBehavioreTests::scalar_types_should_return_zero), //
+					TEST(DefaultBehavioreTests::ReturnByValue_ReturnDefaultConstructedObject), //
+					TEST(DefaultBehavioreTests::ReturnByValue_ThrowExceptionIfNotDefaultConstructible), //
+					TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToNullIfAbstract), //
+					TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToDefaultConstructedObject), //
+					TEST(DefaultBehavioreTests::ReturnByReference_ThrowExceptionIfNotDefaultConstructible)
 					//
 							) {
 	}
@@ -46,6 +51,36 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 		virtual func pMemberFunc() = 0;
 	};
 
+	struct DefaultConstructibleFunctions {
+		virtual std::string stringfunc() = 0;
+	};
+
+	struct NotDefaultConstructible {
+		NotDefaultConstructible(int a) :
+				a(a) {
+		}
+		;
+		const bool operator==(const NotDefaultConstructible &other) const {
+			return a == other.a;
+		}
+	private:
+		int a;
+	};
+
+	struct NonDefaultConstructibleFunctions {
+		virtual NotDefaultConstructible notDefaultConstructibleFunc() = 0;
+	};
+
+	struct ReferenceFunctions {
+		virtual int& scalarFunc() = 0;
+		virtual std::string& stringFunc() = 0;
+		virtual NotDefaultConstructible& notDefaultConstructibleFunc() = 0;
+		virtual ReferenceFunctions& abstractTypeFunc() = 0;
+
+		const bool operator==(const ReferenceFunctions &other) const {
+			return this == &other;
+		}
+	};
 	void scalar_types_should_return_zero() {
 		Mock<ScalarFuctions> mock;
 		Fake(mock[&ScalarFuctions::boolFunc]);
@@ -87,6 +122,43 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 		ASSERT_EQUAL(nullptr, i.pScalarFuctionsfunc());
 		ASSERT_EQUAL(nullptr, i.nullptrFunc());
 		ASSERT_EQUAL(0, union_cast<int>(i.pMemberFunc()));
+	}
+
+	void ReturnByValue_ReturnDefaultConstructedObject() {
+		Mock<DefaultConstructibleFunctions> mock;
+		Fake(mock[&DefaultConstructibleFunctions::stringfunc]);
+		DefaultConstructibleFunctions& i = mock.get();
+		ASSERT_EQUAL(std::string(), i.stringfunc());
+	}
+
+	void ReturnByReference_ReturnReferenceToDefaultConstructedObject() {
+		Mock<ReferenceFunctions> mock;
+		Fake(mock[&ReferenceFunctions::scalarFunc]);
+		Fake(mock[&ReferenceFunctions::stringFunc]);
+		ReferenceFunctions& i = mock.get();
+		ASSERT_EQUAL(0, i.scalarFunc());
+		ASSERT_EQUAL(std::string(), i.stringFunc());
+	}
+
+	void ReturnByValue_ThrowExceptionIfNotDefaultConstructible() {
+		Mock<NonDefaultConstructibleFunctions> mock;
+		Fake(mock[&NonDefaultConstructibleFunctions::notDefaultConstructibleFunc]);
+		NonDefaultConstructibleFunctions& i = mock.get();
+		ASSERT_THROW(i.notDefaultConstructibleFunc(), fakeit::DefaultValueInstatiationException);
+	}
+
+	void ReturnByReference_ThrowExceptionIfNotDefaultConstructible() {
+		Mock<ReferenceFunctions> mock;
+		Fake(mock[&ReferenceFunctions::notDefaultConstructibleFunc]);
+		ReferenceFunctions& i = mock.get();
+		ASSERT_THROW(i.notDefaultConstructibleFunc(), fakeit::DefaultValueInstatiationException);
+	}
+
+	void ReturnByReference_ReturnReferenceToNullIfAbstract() {
+		Mock<ReferenceFunctions> mock;
+		Fake(mock[&ReferenceFunctions::abstractTypeFunc]);
+		ReferenceFunctions& i = mock.get();
+		ASSERT_EQUAL(nullptr, &i.abstractTypeFunc());
 	}
 
 } __DefaultBehaviore;
