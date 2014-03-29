@@ -68,12 +68,12 @@ namespace stubbing_tests
 	{
 	public:
 
-		TEST_METHOD(StabManyMethodsInOneCall)
+		TEST_METHOD(StubManyMethodsInOneCall)
 		{
 			Mock<ScalarFuctions> mock;
-			Fake(mock[&ScalarFuctions::boolFunc]);
-			Fake(mock[&ScalarFuctions::charFunc]);
-			Fake(mock[&ScalarFuctions::intFunc]);
+			Fake(mock[&ScalarFuctions::boolFunc],
+			     mock[&ScalarFuctions::charFunc],
+			     mock[&ScalarFuctions::intFunc]);
 
 			ScalarFuctions &i = mock.get();
 
