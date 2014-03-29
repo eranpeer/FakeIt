@@ -17,7 +17,7 @@ struct DefaultValue {
 
 	template<typename C>
 	static typename std::enable_if<
-			!std::is_void<C>::value && !std::is_reference<C>::value
+		!std::is_void<C>::value && !std::is_reference<C>::value && !std::is_abstract<C>::value
 					&& std::is_default_constructible<C>::value, C&>::type value() {
 		static C val { };
 		return val;
@@ -41,19 +41,22 @@ struct DefaultValue {
 
 	template<typename REF>
 	static typename std::enable_if<
-		std::is_reference<REF>::value && std::is_default_constructible<typename std::remove_reference<REF>::type>::value,
+		std::is_reference<REF>::value && 
+		std::is_default_constructible<typename std::remove_reference<REF>::type>::value &&
+		!std::is_abstract<typename std::remove_reference<REF>::type>::value,
 		REF>::type value() {
 		return DefaultValue::value<typename std::remove_reference<REF>::type>();
 	}
 
 	template<typename REF>
 	static typename std::enable_if<
-		std::is_reference<REF>::value && !std::is_default_constructible<typename std::remove_reference<REF>::type>::value,
+		std::is_reference<REF>::value
+		&& (!std::is_default_constructible<typename std::remove_reference<REF>::type>::value
+		|| std::is_abstract<typename std::remove_reference<REF>::type>::value),
 		REF>::type value() {
 			typename std::remove_reference<REF>::type * ptr = nullptr;
 			return *ptr;
-	}
-
+		}
 };
 
 }
