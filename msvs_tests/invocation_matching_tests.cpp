@@ -2,7 +2,7 @@
 #include "CppUnitTest.h"
 #include <string>
 
-#include "fakeit.h"
+#include "fakeit.hpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace fakeit;
