@@ -31,8 +31,8 @@ struct StubbingContext : public ActualInvocationsSource {
 	virtual MethodMock<C, R, arglist...>& getMethodMock() = 0;
 };
 
-struct Mock4cppRoot {
-	Mock4cppRoot(ErrorFormatter& errorFormatter) :
+struct FakeitRoot {
+	FakeitRoot(ErrorFormatter& errorFormatter) :
 			errorFormatter(errorFormatter) {
 	}
 	void setErrorFormatter(ErrorFormatter& ef) {
@@ -47,12 +47,12 @@ private:
 	ErrorFormatter& errorFormatter;
 }static Mock4cpp(defaultErrorFormatter);
 
-struct Xaction {
+struct RecordedMethodInvocation {
 	virtual void apply() = 0;
 };
 
 template<typename C, typename R, typename ... arglist>
-class MethodStubbingBase: public Xaction, //
+class MethodStubbingBase: public RecordedMethodInvocation, //
 		public virtual Sequence,
 		public virtual ActualInvocationsSource,
 		public virtual AnyInvocation::Matcher {
@@ -151,22 +151,6 @@ public:
 		MethodStubbingBase<C, R, arglist...>::AppendAction(ptr);
 		MethodStubbingBase<C, R, arglist...>::apply();
 	}
-
-//	template<typename U = R>
-//	typename std::enable_if<!std::is_reference<U>::value, void>::type
-//	operator=(std::function<R(arglist...)> method) {
-//		std::shared_ptr<BehaviorMock<R, arglist...>> ptr {new DoForeverMock<R, arglist...>(method)};
-//		MethodStubbingBase<C, R, arglist...>::AppendAction(ptr);
-//		MethodStubbingBase<C, R, arglist...>::apply();
-//	}
-//
-//	template<typename U = R>
-//	typename std::enable_if<std::is_reference<U>::value, void>::type
-//	operator=(std::function<R(arglist...)> method) {
-//		std::shared_ptr<BehaviorMock<R, arglist...>> ptr {new DoForeverMock<R, arglist...>(method)};
-//		MethodStubbingBase<C, R, arglist...>::AppendAction(ptr);
-//		MethodStubbingBase<C, R, arglist...>::apply();
-//	}
 
 };
 

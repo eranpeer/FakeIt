@@ -38,16 +38,14 @@ public:
 			other._isActive = false; // all other ctors should init _isActive to true;
 		}
 
-		StubbingProgress(Xaction& xaction) :
+		StubbingProgress(RecordedMethodInvocation& xaction) :
 				_isActive(true), _xaction(xaction) {
 		}
-
-	protected:
 
 	private:
 
 		bool _isActive;
-		Xaction& _xaction;
+		RecordedMethodInvocation& _xaction;
 	};
 
 	template<typename C, typename R, typename ... arglist>
