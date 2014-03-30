@@ -19,7 +19,6 @@ struct VerificationException: public std::exception {
 	}
 
 	const char* what() const throw () override {
-		std::string str(std::exception::what());
 		return msg.c_str();
 	}
 
