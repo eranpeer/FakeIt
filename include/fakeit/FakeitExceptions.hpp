@@ -9,7 +9,7 @@ struct UnexpectedMethodCallException: public std::exception {
 	}
 
 	const char* what() const throw () override {
-		return "Could not find recorded implementation to support method call";
+		return "Unexpected method call. Could not find recorded implementation to support method call";
 	}
 };
 
@@ -19,6 +19,7 @@ struct VerificationException: public std::exception {
 	}
 
 	const char* what() const throw () override {
+		std::string str(std::exception::what());
 		return msg.c_str();
 	}
 

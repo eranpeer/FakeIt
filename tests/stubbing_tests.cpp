@@ -50,8 +50,15 @@ struct BasicStubbing: tpunit::TestFixture {
 	void calling_an_unstubbed_method_should_raise_UnmockedMethodCallException() {
 		Mock<SomeInterface> mock;
 		SomeInterface &i = mock.get();
-		ASSERT_THROW(i.func(1), UnexpectedMethodCallException);
-		ASSERT_THROW(i.proc(1), UnexpectedMethodCallException);
+		try {
+			i.func(1);
+			FAIL();
+		} catch(UnexpectedMethodCallException& e)
+		{
+			std::string expected("Unexpected method call. Could not find recorded implementation to support method call");
+			std::string actual(e.what());
+			ASSERT_EQUAL(expected,actual);
+		}
 	}
 
 	void stub_method_to_default_behaviore_will_always_return_do_the_default_behaviore() {
