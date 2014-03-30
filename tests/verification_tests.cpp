@@ -292,6 +292,7 @@ struct BasicVerification: tpunit::TestFixture {
 		Mock<SomeInterface> mock;
 		ASSERT_THROW(Verify(mock[&SomeInterface::func]).Exactly(-1), std::invalid_argument);
 		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).Exactly(-1), std::invalid_argument);
+		ASSERT_THROW(Verify(mock[&SomeInterface::proc]).AtLeast(-1), std::invalid_argument);
 	}
 
 	void verify_with_filter() {
