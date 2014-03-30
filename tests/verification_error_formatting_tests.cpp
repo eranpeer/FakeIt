@@ -45,7 +45,7 @@ struct ErrorFormattingTests: tpunit::TestFixture {
 		try {
 			Verify(mock[&ErrorFormattingTests::SomeInterface::foo]);
 		} catch (VerificationException& e) {
-			std::string expected("Expected invocation scenario does not match actual invocation order");
+			std::string expected("Expected invocation sequence does not match actual invocation order");
 			std::string actual(e.what());
 			ASSERT_EQUAL(expected, actual);
 		}

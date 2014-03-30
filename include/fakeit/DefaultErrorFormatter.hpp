@@ -20,11 +20,7 @@ struct DefaultErrorFormatter: public virtual ErrorFormatter {
 			std::vector<AnyInvocation*>& unverifedIvocations) override {
 
 		auto format = std::string("found ") + std::to_string(unverifedIvocations.size()) + " non verified invocations.\n";
-		for (auto invocation : unverifedIvocations) {
-			format += invocation->format();
-			format += '\n';
-		}
-		return format;
+		return format + toString(unverifedIvocations);
 	}
 
 	virtual std::string buildExactVerificationErrorMsg(std::vector<Sequence*>& expectedPattern, std::vector<AnyInvocation*>& actualSequence,
@@ -34,7 +30,17 @@ struct DefaultErrorFormatter: public virtual ErrorFormatter {
 
 	virtual std::string buildAtLeastVerificationErrorMsg(std::vector<Sequence*>& expectedPattern,
 			std::vector<AnyInvocation*>& actualSequence, int expectedInvocationCount, int count) override {
-		return std::string("Expected invocation scenario does not match actual invocation order");
+		return std::string("Expected invocation sequence does not match actual invocation order");
+	}
+private:
+private:
+	std::string toString(std::vector<AnyInvocation*>& unverifedIvocations) {
+		std::string formattedString;
+		for (auto invocation : unverifedIvocations) {
+			formattedString += invocation->format();
+			formattedString += '\n';
+		}
+		return formattedString;
 	}
 }static defaultErrorFormatter;
 
