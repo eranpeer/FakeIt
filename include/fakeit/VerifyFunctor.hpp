@@ -68,15 +68,11 @@ public:
 			if (expectedInvocationCount < 0) {
 				// negative number represents an "AtLeast" search;
 				if (count < -expectedInvocationCount) {
-					throw VerificationException(
-							Mock4cpp.getErrorFromatter().buildAtLeastVerificationErrorMsg(expectedPattern, actualSequence,
-									-expectedInvocationCount, count));
+					throw AtLeastVerificationException(expectedPattern, actualSequence, -expectedInvocationCount, count);
 				}
 			} else if (count != expectedInvocationCount) {
 				// "Exact" search.
-				throw VerificationException(
-						Mock4cpp.getErrorFromatter().buildExactVerificationErrorMsg(expectedPattern, actualSequence,
-								expectedInvocationCount, count));
+				throw ExactVerificationException(expectedPattern, actualSequence, expectedInvocationCount, count);
 			}
 
 			markAsVerified(matchedInvocations);
@@ -92,8 +88,7 @@ public:
 
 		std::set<ActualInvocationsSource*> involvedMocks;
 		std::vector<Sequence*> expectedPattern;
-		int expectedInvocationCount;
-		bool _isActive;
+		int expectedInvocationCount;bool _isActive;
 
 		static inline int AT_LEAST_ONCE() {
 			return -1;
@@ -186,10 +181,10 @@ public:
 		}
 
 		VerificationProgress(VerificationProgress& other) : //
-			involvedMocks(other.involvedMocks), //
-			expectedPattern(other.expectedPattern), //
-			expectedInvocationCount(other.expectedInvocationCount), //
-			_isActive(other._isActive) {
+				involvedMocks(other.involvedMocks), //
+				expectedPattern(other.expectedPattern), //
+				expectedInvocationCount(other.expectedInvocationCount), //
+				_isActive(other._isActive) {
 			other._isActive = false;
 		}
 
@@ -300,9 +295,7 @@ public:
 			std::vector<AnyInvocation*> sortedActualIvocations;
 			sort(actualInvocations, sortedActualIvocations);
 
-			throw VerificationException(
-					Mock4cpp.getErrorFromatter().buildNoOtherInvocationsVerificationErrorMsg(sortedActualIvocations,
-							sortedNonVerifedIvocations));
+			throw NoMoreInvocationsVerificationException(sortedActualIvocations, sortedNonVerifedIvocations);
 		}
 	}
 }

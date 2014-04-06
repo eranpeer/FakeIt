@@ -254,7 +254,7 @@ struct MethodMock: public virtual Method, public virtual MethodInvocationHandler
 
 	std::string getMethodName() const override {
 		return typeid(vMethod).name();
-			}
+	}
 
 	void stubMethodInvocation(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> invocationMatcher,
 			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {

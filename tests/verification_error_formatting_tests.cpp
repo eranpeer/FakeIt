@@ -43,11 +43,17 @@ struct ErrorFormattingTests: tpunit::TestFixture {
 	void format_scalars() {
 		Mock<SomeInterface> mock;
 		try {
-			Verify(mock[&ErrorFormattingTests::SomeInterface::foo]);
-		} catch (VerificationException& e) {
-			std::string expected("Expected invocation sequence does not match actual invocation order");
-			std::string actual(e.what());
-			ASSERT_EQUAL(expected, actual);
+			auto selector = mock[&ErrorFormattingTests::SomeInterface::foo];
+			Verify(selector);
+		} catch (AtLeastVerificationException& e) {
+			ASSERT_EQUAL(VerificationType::AtLeast, e.verificationType());
+//			ASSERT_EQUAL(0, e.actualCount());
+//			ASSERT_EQUAL(1, e.expectedCount());
+//			ASSERT_EQUAL(0, e.actualSequence().size());
+//			ASSERT_EQUAL(1, e.expectedPattern().size());
+//			std::string expected("Expected invocation sequence could not be found in actual invocation order");
+//			std::string actual(e.what());
+//			ASSERT_EQUAL(expected, actual);
 		}
 	}
 

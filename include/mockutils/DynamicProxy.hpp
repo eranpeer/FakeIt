@@ -15,6 +15,7 @@
 
 #include "mockutils/MethodProxy.hpp"
 #include "mockutils/VirtualOffestSelector.hpp"
+#include "mockutils/VirtualOffestSelector2.hpp"
 #include "mockutils/union_cast.hpp"
 #include "mockutils/MethodInvocationHandler.hpp"
 
@@ -51,15 +52,15 @@ struct DynamicProxy {
 
 	template<typename R, typename ... arglist>
 	bool isStubbed(R (C::*vMethod)(arglist...)) {
-		std::shared_ptr<MethodProxy<R, arglist...>> methodProxy = MethodProxyCreator<R, arglist...>::createMethodProxy(vMethod);
-		std::shared_ptr<Destructable> ptr = methodMocks[methodProxy->getOffset()];
+		auto offset = MethodProxyCreator<R, arglist...>::getOffset(vMethod);
+		std::shared_ptr<Destructable> ptr = methodMocks[offset];
 		return ptr.get() != nullptr;
 	}
 
 	template<typename R, typename ... arglist>
 	Destructable * getMethodMock(R (C::*vMethod)(arglist...)) {
-		std::shared_ptr<MethodProxy<R, arglist...>> methodProxy = MethodProxyCreator<R, arglist...>::createMethodProxy(vMethod);
-		std::shared_ptr<Destructable> ptr = methodMocks[methodProxy->getOffset()];
+		auto offset = MethodProxyCreator<R, arglist...>::getOffset(vMethod);
+		std::shared_ptr<Destructable> ptr = methodMocks[offset];
 		return ptr.get();
 	}
 
@@ -110,9 +111,17 @@ private:
 
 		static std::shared_ptr<MethodProxy<R, arglist...>> createMethodProxy(R (C::*vMethod)(arglist...)) {
 			static VirtualOffsetSelector<VirtualMethodProxy> offsetSelctor;
-			auto* obj = offsetSelctor.create(vMethod);
-			auto rv = reinterpret_cast<MethodProxy<R, arglist...>*>(obj);
-			return std::shared_ptr<MethodProxy<R, arglist...>> { rv };
+			void * obj = offsetSelctor.create(vMethod);
+			auto methodProxy = reinterpret_cast<MethodProxy<R, arglist...>*>(obj);
+			return std::shared_ptr<MethodProxy<R, arglist...>> { methodProxy };
+		}
+
+		static unsigned int getOffset(R (C::*vMethod)(arglist...)) {
+			static VirtualOffsetSelector2 offsetSelctor2;
+			auto sMethod = reinterpret_cast<unsigned int (VirtualOffsetSelector2::*)()>(vMethod);
+			auto selectMethod = std::bind(sMethod, &offsetSelctor2);
+			unsigned int offset = (unsigned int)selectMethod();
+			return offset;
 		}
 
 	};

@@ -23,14 +23,18 @@ struct DefaultErrorFormatter: public virtual ErrorFormatter {
 		return format + toString(unverifedIvocations);
 	}
 
-	virtual std::string buildExactVerificationErrorMsg(std::vector<Sequence*>& expectedPattern, std::vector<AnyInvocation*>& actualSequence,
+	virtual std::string buildExactVerificationErrorMsg(
+			std::vector<Sequence*>& expectedPattern,
+			std::vector<AnyInvocation*>& actualSequence,
 			int expectedInvocationCount, int count) override {
 		return std::string("expected ") + std::to_string(expectedInvocationCount) + " but was " + std::to_string(count);
 	}
 
-	virtual std::string buildAtLeastVerificationErrorMsg(std::vector<Sequence*>& expectedPattern,
-			std::vector<AnyInvocation*>& actualSequence, int expectedInvocationCount, int count) override {
-		return std::string("Expected invocation sequence does not match actual invocation order");
+	virtual std::string buildAtLeastVerificationErrorMsg(
+			std::vector<Sequence*>& expectedPattern,
+			std::vector<AnyInvocation*>& actualSequence,
+			int expectedInvocationCount, int count) override {
+		return std::string("Expected invocation sequence could not be found in actual invocation order");
 	}
 private:
 private:
