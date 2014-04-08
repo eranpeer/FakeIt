@@ -11,7 +11,8 @@ CPP_SRCS += \
 ../tests/stubbing_tests.cpp \
 ../tests/tpunit++main.cpp \
 ../tests/type_info_tests.cpp \
-../tests/verification_tests.cpp 
+../tests/verification_tests.cpp \
+../tests/verification_error_formatting_tests.cpp 
 
 OBJS += \
 ./default_behaviore_tests.o \
@@ -24,7 +25,8 @@ OBJS += \
 ./stubbing_tests.o \
 ./tpunit++main.o \
 ./type_info_tests.o \
-./verification_tests.o 
+./verification_tests.o \
+./verification_error_formatting_tests.o
 
 CPP_DEPS += \
 ./default_behaviore_tests.d \
@@ -37,7 +39,8 @@ CPP_DEPS += \
 ./stubbing_tests.d \
 ./tpunit++main.d \
 ./type_info_tests.d \
-./verification_tests.d 
+./verification_tests.d \
+./verification_error_formatting_tests.d
 
 
 # Each subdirectory must supply rules for building sources it contributes
