@@ -52,7 +52,7 @@ struct ErrorFormattingTests: tpunit::TestFixture {
 			ASSERT_EQUAL(0, e.actualCount());
 			ASSERT_EQUAL(1, e.expectedCount());
 			ASSERT_EQUAL(0, e.actualSequence().size());
-//			ASSERT_EQUAL(1, e.expectedPattern().size());
+			ASSERT_EQUAL(1, e.expectedPattern().size());
 //			std::string expected("Expected invocation sequence could not be found in actual invocation order");
 //			std::string actual(e.what());
 //			ASSERT_EQUAL(expected, actual);
