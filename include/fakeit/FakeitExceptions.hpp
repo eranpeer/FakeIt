@@ -48,8 +48,8 @@ struct NoMoreInvocationsVerificationException: public VerificationException {
 	}
 
 private:
-	const std::vector<AnyInvocation*>& _allIvocations;
-	const std::vector<AnyInvocation*>& _unverifedIvocations;
+	const std::vector<AnyInvocation*> _allIvocations;
+	const std::vector<AnyInvocation*> _unverifedIvocations;
 };
 
 struct SequenceVerificationException: public VerificationException {
@@ -83,8 +83,8 @@ struct SequenceVerificationException: public VerificationException {
 	}
 
 private:
-	const std::vector<Sequence*>& _expectedPattern;
-	const std::vector<AnyInvocation*>& _actualSequence;
+	const std::vector<Sequence*> _expectedPattern;
+	const std::vector<AnyInvocation*> _actualSequence;
 	const int _expectedCount;
 	const int _actualCount;
 };

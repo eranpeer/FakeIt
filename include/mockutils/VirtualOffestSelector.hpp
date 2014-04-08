@@ -4,169 +4,158 @@
 
 namespace fakeit {
 
-template<template<unsigned int> class OFFSET_CONSUMER>
 struct VirtualOffsetSelector {
 
-	virtual OFFSET_CONSUMER<0> * offset0() {
-		return new OFFSET_CONSUMER<0>();
+	virtual unsigned int offset0() {
+		return 0;
 	}
-	virtual OFFSET_CONSUMER<1> * offset1() {
-		return new OFFSET_CONSUMER<1>();
+	virtual unsigned int offset1() {
+		return 1;
 	}
-	virtual OFFSET_CONSUMER<2> * offset2() {
-		return new OFFSET_CONSUMER<2>();
+	virtual unsigned int offset2() {
+		return 2;
 	}
-	virtual OFFSET_CONSUMER<3> * offset3() {
-		return new OFFSET_CONSUMER<3>();
+	virtual unsigned int offset3() {
+		return 3;
 	}
-	virtual OFFSET_CONSUMER<4> * offset4() {
-		return new OFFSET_CONSUMER<4>();
+	virtual unsigned int offset4() {
+		return 4;
 	}
-	virtual OFFSET_CONSUMER<5> * offset5() {
-		return new OFFSET_CONSUMER<5>();
+	virtual unsigned int offset5() {
+		return 5;
 	}
-	virtual OFFSET_CONSUMER<6> * offset6() {
-		return new OFFSET_CONSUMER<6>();
+	virtual unsigned int offset6() {
+		return 6;
 	}
-	virtual OFFSET_CONSUMER<7> * offset7() {
-		return new OFFSET_CONSUMER<7>();
+	virtual unsigned int offset7() {
+		return 7;
 	}
-	virtual OFFSET_CONSUMER<8> * offset8() {
-		return new OFFSET_CONSUMER<8>();
+	virtual unsigned int offset8() {
+		return 8;
 	}
-	virtual OFFSET_CONSUMER<9> * offset9() {
-		return new OFFSET_CONSUMER<9>();
+	virtual unsigned int offset9() {
+		return 9;
 	}
-	virtual OFFSET_CONSUMER<10> * offset10() {
-		return new OFFSET_CONSUMER<10>();
+	virtual unsigned int offset10() {
+		return 10;
 	}
-	virtual OFFSET_CONSUMER<11> * offset11() {
-		return new OFFSET_CONSUMER<11>();
+	virtual unsigned int offset11() {
+		return 11;
 	}
-	virtual OFFSET_CONSUMER<12> * offset12() {
-		return new OFFSET_CONSUMER<12>();
+	virtual unsigned int offset12() {
+		return 12;
 	}
-	virtual OFFSET_CONSUMER<13> * offset13() {
-		return new OFFSET_CONSUMER<13>();
+	virtual unsigned int offset13() {
+		return 13;
 	}
-	virtual OFFSET_CONSUMER<14> * offset14() {
-		return new OFFSET_CONSUMER<14>();
+	virtual unsigned int offset14() {
+		return 14;
 	}
-	virtual OFFSET_CONSUMER<15> * offset15() {
-		return new OFFSET_CONSUMER<15>();
+	virtual unsigned int offset15() {
+		return 15;
 	}
-	virtual OFFSET_CONSUMER<16> * offset16() {
-		return new OFFSET_CONSUMER<16>();
+	virtual unsigned int offset16() {
+		return 16;
 	}
-	virtual OFFSET_CONSUMER<17> * offset17() {
-		return new OFFSET_CONSUMER<17>();
+	virtual unsigned int offset17() {
+		return 17;
 	}
-	virtual OFFSET_CONSUMER<18> * offset18() {
-		return new OFFSET_CONSUMER<18>();
+	virtual unsigned int offset18() {
+		return 18;
 	}
-	virtual OFFSET_CONSUMER<19> * offset19() {
-		return new OFFSET_CONSUMER<19>();
+	virtual unsigned int offset19() {
+		return 19;
 	}
-	virtual OFFSET_CONSUMER<20> * offset20() {
-		return new OFFSET_CONSUMER<20>();
+	virtual unsigned int offset20() {
+		return 20;
 	}
-	virtual OFFSET_CONSUMER<21> * offset21() {
-		return new OFFSET_CONSUMER<21>();
+	virtual unsigned int offset21() {
+		return 21;
 	}
-	virtual OFFSET_CONSUMER<22> * offset22() {
-		return new OFFSET_CONSUMER<22>();
+	virtual unsigned int offset22() {
+		return 22;
 	}
-	virtual OFFSET_CONSUMER<23> * offset23() {
-		return new OFFSET_CONSUMER<23>();
+	virtual unsigned int offset23() {
+		return 23;
 	}
-	virtual OFFSET_CONSUMER<24> * offset24() {
-		return new OFFSET_CONSUMER<24>();
+	virtual unsigned int offset24() {
+		return 24;
 	}
-	virtual OFFSET_CONSUMER<25> * offset25() {
-		return new OFFSET_CONSUMER<25>();
+	virtual unsigned int offset25() {
+		return 25;
 	}
-	virtual OFFSET_CONSUMER<26> * offset26() {
-		return new OFFSET_CONSUMER<26>();
+	virtual unsigned int offset26() {
+		return 26;
 	}
-	virtual OFFSET_CONSUMER<27> * offset27() {
-		return new OFFSET_CONSUMER<27>();
+	virtual unsigned int offset27() {
+		return 27;
 	}
-	virtual OFFSET_CONSUMER<28> * offset28() {
-		return new OFFSET_CONSUMER<28>();
+	virtual unsigned int offset28() {
+		return 28;
 	}
-	virtual OFFSET_CONSUMER<29> * offset29() {
-		return new OFFSET_CONSUMER<29>();
+	virtual unsigned int offset29() {
+		return 29;
 	}
-	virtual OFFSET_CONSUMER<30> * offset30() {
-		return new OFFSET_CONSUMER<30>();
+	virtual unsigned int offset30() {
+		return 30;
 	}
-	virtual OFFSET_CONSUMER<31> * offset31() {
-		return new OFFSET_CONSUMER<31>();
+	virtual unsigned int offset31() {
+		return 31;
 	}
-	virtual OFFSET_CONSUMER<32> * offset32() {
-		return new OFFSET_CONSUMER<32>();
+	virtual unsigned int offset32() {
+		return 32;
 	}
-	virtual OFFSET_CONSUMER<33> * offset33() {
-		return new OFFSET_CONSUMER<33>();
+	virtual unsigned int offset33() {
+		return 33;
 	}
-	virtual OFFSET_CONSUMER<34> * offset34() {
-		return new OFFSET_CONSUMER<34>();
+	virtual unsigned int offset34() {
+		return 34;
 	}
-	virtual OFFSET_CONSUMER<35> * offset35() {
-		return new OFFSET_CONSUMER<35>();
+	virtual unsigned int offset35() {
+		return 35;
 	}
-	virtual OFFSET_CONSUMER<36> * offset36() {
-		return new OFFSET_CONSUMER<36>();
+	virtual unsigned int offset36() {
+		return 36;
 	}
-	virtual OFFSET_CONSUMER<37> * offset37() {
-		return new OFFSET_CONSUMER<37>();
+	virtual unsigned int offset37() {
+		return 37;
 	}
-	virtual OFFSET_CONSUMER<38> * offset38() {
-		return new OFFSET_CONSUMER<38>();
+	virtual unsigned int offset38() {
+		return 38;
 	}
-	virtual OFFSET_CONSUMER<39> * offset39() {
-		return new OFFSET_CONSUMER<39>();
+	virtual unsigned int offset39() {
+		return 39;
 	}
-	virtual OFFSET_CONSUMER<40> * offset40() {
-		return new OFFSET_CONSUMER<40>();
+	virtual unsigned int offset40() {
+		return 40;
 	}
-	virtual OFFSET_CONSUMER<41> * offset41() {
-		return new OFFSET_CONSUMER<41>();
+	virtual unsigned int offset41() {
+		return 41;
 	}
-	virtual OFFSET_CONSUMER<42> * offset42() {
-		return new OFFSET_CONSUMER<42>();
+	virtual unsigned int offset42() {
+		return 42;
 	}
-	virtual OFFSET_CONSUMER<43> * offset43() {
-		return new OFFSET_CONSUMER<43>();
+	virtual unsigned int offset43() {
+		return 43;
 	}
-	virtual OFFSET_CONSUMER<44> * offset44() {
-		return new OFFSET_CONSUMER<44>();
+	virtual unsigned int offset44() {
+		return 44;
 	}
-	virtual OFFSET_CONSUMER<45> * offset45() {
-		return new OFFSET_CONSUMER<45>();
+	virtual unsigned int offset45() {
+		return 45;
 	}
-	virtual OFFSET_CONSUMER<46> * offset46() {
-		return new OFFSET_CONSUMER<46>();
+	virtual unsigned int offset46() {
+		return 46;
 	}
-	virtual OFFSET_CONSUMER<47> * offset47() {
-		return new OFFSET_CONSUMER<47>();
+	virtual unsigned int offset47() {
+		return 47;
 	}
-	virtual OFFSET_CONSUMER<48> * offset48() {
-		return new OFFSET_CONSUMER<48>();
+	virtual unsigned int offset48() {
+		return 48;
 	}
-	virtual OFFSET_CONSUMER<49> * offset49() {
-		return new OFFSET_CONSUMER<49>();
+	virtual unsigned int offset49() {
+		return 49;
 	}
-
-
-	template<typename M>
-	void * create(const M vMethod) {
-		//auto sMethod = union_cast<void * (VirtualOffsetSelector::*)()>(vMethod);
-		auto sMethod = reinterpret_cast<void * (VirtualOffsetSelector::*)()>(vMethod);
-		auto selectMethod = std::bind(sMethod, this);
-		return selectMethod();
-	}
-
 };
 
 }
