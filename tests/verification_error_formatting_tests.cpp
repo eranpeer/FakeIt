@@ -36,19 +36,38 @@ struct ErrorFormattingTests: tpunit::TestFixture {
 	};
 
 	ErrorFormattingTests() :
-			tpunit::TestFixture(TEST(ErrorFormattingTests::check_atleast_exception),
-					TEST(ErrorFormattingTests::check_no_more_invocations_exception)
-			) //
+			tpunit::TestFixture(
+					//
+					TEST(ErrorFormattingTests::check_atleast_verification_exception),
+					TEST(ErrorFormattingTests::check_exact_verification_exception),
+					TEST(ErrorFormattingTests::check_no_more_invocations_exception)) //
 	{
 	}
 
-	void check_atleast_exception() {
+	void check_atleast_verification_exception() {
 		Mock<SomeInterface> mock;
 		try {
 			auto selector = mock[&ErrorFormattingTests::SomeInterface::foo];
 			Verify(selector);
 		} catch (SequenceVerificationException& e) {
 			ASSERT_EQUAL(VerificationType::AtLeast, e.verificationType());
+			ASSERT_EQUAL(0, e.actualCount());
+			ASSERT_EQUAL(1, e.expectedCount());
+			ASSERT_EQUAL(0, e.actualSequence().size());
+			ASSERT_EQUAL(1, e.expectedPattern().size());
+//			std::string expected("Expected invocation sequence could not be found in actual invocation order");
+//			std::string actual(e.what());
+//			ASSERT_EQUAL(expected, actual);
+		}
+	}
+
+	void check_exact_verification_exception() {
+		Mock<SomeInterface> mock;
+		try {
+			auto selector = mock[&ErrorFormattingTests::SomeInterface::foo];
+			Verify(selector).Exactly(1_Time);
+		} catch (SequenceVerificationException& e) {
+			ASSERT_EQUAL(VerificationType::Exact, e.verificationType());
 			ASSERT_EQUAL(0, e.actualCount());
 			ASSERT_EQUAL(1, e.expectedCount());
 			ASSERT_EQUAL(0, e.actualSequence().size());
