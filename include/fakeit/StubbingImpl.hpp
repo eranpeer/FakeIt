@@ -16,7 +16,6 @@
 #include "fakeit/Sequence.hpp"
 #include "fakeit/ActualInvocation.hpp"
 #include "fakeit/ErrorFormatter.hpp"
-#include "fakeit/DefaultErrorFormatter.hpp"
 
 namespace fakeit {
 
@@ -30,22 +29,6 @@ struct StubbingContext : public ActualInvocationsSource {
 	}
 	virtual MethodMock<C, R, arglist...>& getMethodMock() = 0;
 };
-
-struct FakeitRoot {
-	FakeitRoot(ErrorFormatter& errorFormatter) :
-			errorFormatter(errorFormatter) {
-	}
-	void setErrorFormatter(ErrorFormatter& ef) {
-		errorFormatter = ef;
-	}
-
-	ErrorFormatter& getErrorFromatter() {
-		return errorFormatter;
-	}
-
-private:
-	ErrorFormatter& errorFormatter;
-}static Mock4cpp(defaultErrorFormatter);
 
 struct RecordedMethodInvocation {
 	virtual void apply() = 0;
@@ -92,7 +75,7 @@ protected:
 
 public:
 	virtual bool matches(AnyInvocation& invocation) override {
-		if (&invocation.getMethod() != &stubbingContext->getMethodMock()) {
+		if (&invocation.getMethod() != &stubbingContext->getMethodMock().getMethod()) {
 			return false;
 		}
 

@@ -243,16 +243,16 @@ static Verify;
 
 class VerifyNoOtherInvocationsFunctor {
 
-	std::string buildNoOtherInvocationsVerificationErrorMsg( //
-			std::vector<AnyInvocation*>& allIvocations, //
-			std::vector<AnyInvocation*>& unverifedIvocations) {
-		auto format = std::string("found ") + std::to_string(unverifedIvocations.size()) + " non verified invocations.\n";
-		for (auto invocation : unverifedIvocations) {
-			format += invocation->format();
-			format += '\n';
-		}
-		return format;
-	}
+//	std::string buildNoOtherInvocationsVerificationErrorMsg( //
+//			std::vector<AnyInvocation*>& allIvocations, //
+//			std::vector<AnyInvocation*>& unverifedIvocations) {
+//		auto format = std::string("found ") + std::to_string(unverifedIvocations.size()) + " non verified invocations.\n";
+//		for (auto invocation : unverifedIvocations) {
+//			format += invocation->format();
+//			format += '\n';
+//		}
+//		return format;
+//	}
 
 	template<typename ... list>
 	void collectActualInvocations(std::unordered_set<AnyInvocation*>& actualInvocations) {

@@ -243,17 +243,28 @@ private:
 	}
 };
 
+class MethodImpl : public Method {
+	std::string name;
+public:
+	MethodImpl(std::string name):name(name){}
+	virtual std::string getMethodName() const override {
+		return name;
+	}
+};
+
 template<typename C, typename R, typename ... arglist>
-struct MethodMock: public virtual Method, public virtual MethodInvocationHandler<R, arglist...>, public virtual ActualInvocationsSource {
+struct MethodMock: public virtual MethodInvocationHandler<R, arglist...>, public virtual ActualInvocationsSource {
+
+
 	MethodMock(MockObject& mock, R (C::*vMethod)(arglist...)) :
-			mock(mock), vMethod(vMethod) {
+			mock(mock), vMethod(vMethod), method{typeid(vMethod).name()} {
 	}
 
 	virtual ~MethodMock() {
 	}
 
-	std::string getMethodName() const override {
-		return typeid(vMethod).name();
+	Method& getMethod() {
+		return method;
 	}
 
 	void stubMethodInvocation(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> invocationMatcher,
@@ -268,7 +279,7 @@ struct MethodMock: public virtual Method, public virtual MethodInvocationHandler
 
 	R handleMethodInvocation(arglist&... args) override {
 		int ordinal = invocationOrdinal++;
-		auto actualInvoaction = std::shared_ptr<ActualInvocation<arglist...>> { new ActualInvocation<arglist...>(ordinal, *this,
+		auto actualInvoaction = std::shared_ptr<ActualInvocation<arglist...>> { new ActualInvocation<arglist...>(ordinal, this->getMethod(),
 				args...) };
 		auto methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
 		if (!methodInvocationMock) {
@@ -300,13 +311,15 @@ private:
 
 	MockObject& mock;
 	R (C::*vMethod)(arglist...);
+	MethodImpl method;
 	std::vector<std::shared_ptr<MethodInvocationMock<R, arglist...>>>methodInvocationMocks;
 	std::vector<std::shared_ptr<ActualInvocation<arglist...>>> actualInvocations;
 
 	std::shared_ptr<MethodInvocationMockBase<R, arglist...>> buildMethodInvocationMock(
 			std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> invocationMatcher,
 			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {
-		return std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {new MethodInvocationMockBase<R, arglist...>(*this, invocationMatcher,
+		return std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {
+			new MethodInvocationMockBase<R, arglist...>(this->getMethod(), invocationMatcher,
 					invocationHandler)};
 	}
 

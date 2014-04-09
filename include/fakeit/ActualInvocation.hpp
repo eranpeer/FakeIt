@@ -39,7 +39,7 @@ struct AnyInvocation {
 		return _isVerified;
 	}
 
-	virtual std::string format() = 0;
+	//virtual std::string format() = 0;
 
 	struct Matcher {
 		virtual ~Matcher() THROWS {}
@@ -64,12 +64,12 @@ struct ActualInvocation: public virtual AnyInvocation {
 		return actualArguments;
 	}
 
-	virtual std::string format() override {
-		std::stringstream strm;
-		strm << getMethod().getMethodName();
-		strm << getActualArguments();
-		return strm.str();
-	}
+//	virtual std::string format() override {
+//		std::stringstream strm;
+//		strm << getMethod().getMethodName();
+//		strm << getActualArguments();
+//		return strm.str();
+//	}
 
 	struct Matcher: public virtual Destructable {
 		virtual bool matches(ActualInvocation<arglist...>& actualInvocation) = 0;
