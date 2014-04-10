@@ -49,7 +49,7 @@ public:
 		~VerificationProgress() THROWS {
 
 			if (std::uncaught_exception()) {
-				return;
+				_isActive = false;
 			}
 
 			if (!_isActive) {

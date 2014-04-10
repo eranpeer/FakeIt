@@ -37,6 +37,7 @@ struct BasicStubbing: tpunit::TestFixture {
 			TEST(BasicStubbing::stub_multiple_throws_with_list),
 			TEST(BasicStubbing::stub_multiple_do_with_list),
 			TEST(BasicStubbing::verify_all_functions_are_stubbed_correctly),
+			TEST(BasicStubbing::exception_while_stubbing_should_cancel_stubbing),
 			TEST(BasicStubbing::reset_mock_to_initial_state)
 			//
 	) {
@@ -493,6 +494,17 @@ struct BasicStubbing: tpunit::TestFixture {
 		i.proc(1);
 		i.proc(1);
 		ASSERT_THROW(i.proc(1), fakeit::UnexpectedMethodCallException);
+	}
+
+	void exception_while_stubbing_should_cancel_stubbing() {
+		Mock<SomeInterface> mock;
+		try {
+		When(mock[&SomeInterface::func]).Return([](...)->int{throw 1;}(1));
+		} catch(int e){
+
+		}
+		SomeInterface &i = mock.get();
+		ASSERT_THROW(i.func(1), fakeit::UnexpectedMethodCallException);
 	}
 
 
