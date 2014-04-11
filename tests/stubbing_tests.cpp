@@ -498,10 +498,12 @@ struct BasicStubbing: tpunit::TestFixture {
 
 	void exception_while_stubbing_should_cancel_stubbing() {
 		Mock<SomeInterface> mock;
-		try {
-		When(mock[&SomeInterface::func]).Return([](...)->int{throw 1;}(1));
-		} catch(int e){
-
+		{
+			try {
+				const auto& a = When(mock[&SomeInterface::func]);
+				throw std::runtime_error("some exception");
+			} catch (std::exception &e) {
+			}
 		}
 		SomeInterface &i = mock.get();
 		ASSERT_THROW(i.func(1), fakeit::UnexpectedMethodCallException);
