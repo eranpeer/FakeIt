@@ -38,6 +38,7 @@ struct BasicStubbing: tpunit::TestFixture {
 			TEST(BasicStubbing::stub_multiple_do_with_list),
 			TEST(BasicStubbing::verify_all_functions_are_stubbed_correctly),
 			TEST(BasicStubbing::exception_while_stubbing_should_cancel_stubbing),
+			TEST(BasicStubbing::verify_out_of_vtable_size),
 			TEST(BasicStubbing::reset_mock_to_initial_state)
 			//
 	) {
@@ -599,6 +600,7 @@ struct BasicStubbing: tpunit::TestFixture {
 		virtual int func48() = 0;
 		virtual int func49() = 0;
 		virtual int func50() = 0;
+		virtual int outOfVTable() = 0;
 	};
 
 	void verify_all_functions_are_stubbed_correctly(){
@@ -706,5 +708,11 @@ struct BasicStubbing: tpunit::TestFixture {
 		ASSERT_EQUAL(48,i.func48());
 		ASSERT_EQUAL(49,i.func49());
 		ASSERT_EQUAL(50,i.func50());
+	}
+
+	void verify_out_of_vtable_size(){
+		Mock<BigInterface> mock;
+		//When(mock[&BigInterface::outOfVTable]).Return(0);
+		//mock.get().outOfVTable();
 	}
 } __BasicStubbing;

@@ -24,9 +24,9 @@ struct VirtualTable {
 	}
 
 	void setMethod(unsigned int index, void *method) {
-		if (index >= SIZE) {
-			throw "error";
-		}
+//		if (index >= SIZE) {
+//			throw "error";
+//		}
 		firstMethod[index] = method;
 	}
 
