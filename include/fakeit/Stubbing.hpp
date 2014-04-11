@@ -152,9 +152,9 @@ struct FirstFunctionStubbingProgress {
 		return AlwaysDo([e](const arglist&...)->R {throw e;});
 	}
 
-	virtual void operator=(std::function<R(arglist...)> method) {
-		AlwaysDo(method);
-	}
+//	virtual void operator=(std::function<R(arglist...)> method) {
+//		AlwaysDo(method);
+//	}
 
 	virtual FirstFunctionStubbingProgress<R, arglist...>&
 	Do(std::function<R(arglist...)> method) {
@@ -236,9 +236,9 @@ struct FirstProcedureStubbingProgress {
 		return AlwaysDo([e](const arglist&...)->R {throw e;});
 	}
 
-	virtual void operator=(std::function<R(arglist...)> method) {
-		AlwaysDo(method);
-	}
+//	virtual void operator=(std::function<R(arglist...)> method) {
+//		AlwaysDo(method);
+//	}
 
 	virtual FirstProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) {
 		std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoMock<R, arglist...>(method) };
