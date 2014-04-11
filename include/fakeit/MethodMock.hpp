@@ -247,9 +247,9 @@ class MethodImpl : public Method {
 	std::string name;
 public:
 	MethodImpl(std::string name):name(name){}
-	virtual std::string getMethodName() const override {
-		return name;
-	}
+//	virtual std::string getMethodName() const override {
+//		return name;
+//	}
 };
 
 template<typename C, typename R, typename ... arglist>
