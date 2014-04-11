@@ -67,12 +67,12 @@ namespace mock4cpp_tests
 
 			Verify(mock[&SomeInterface::func1]);
 			Verify(mock[&SomeInterface::func2]);
-			Assert::ExpectException<VerificationException>([&mock]{ Verify(mock[&SomeInterface::func3]); });
+			Assert::ExpectException<VerificationException&>([&mock]{ Verify(mock[&SomeInterface::func3]); });
 
 
 			Verify(mock[&SomeInterface::proc1]);
 			Verify(mock[&SomeInterface::proc2]);
-			Assert::ExpectException<VerificationException>([&mock]{ Verify(mock[&SomeInterface::proc3]); });
+			Assert::ExpectException<VerificationException&>([&mock]{ Verify(mock[&SomeInterface::proc3]); });
 		}
 
 		TEST_METHOD(VerifyMethodInvocationCount)
@@ -90,8 +90,8 @@ namespace mock4cpp_tests
 			Verify(mock[&SomeInterface::func1].Using(2)).Once();
 			Verify(mock[&SomeInterface::func1].Using(3)).Never();
 
-			Assert::ExpectException<VerificationException>([&mock]{ Verify(mock[&SomeInterface::func1]).Never(); });
-			Assert::ExpectException<VerificationException>([&mock]{ Verify(mock[&SomeInterface::func1].Using(1)).Never(); });
+			Assert::ExpectException<VerificationException&>([&mock]{ Verify(mock[&SomeInterface::func1]).Never(); });
+			Assert::ExpectException<VerificationException&>([&mock]{ Verify(mock[&SomeInterface::func1].Using(1)).Never(); });
 		}
 
 		TEST_METHOD(ExceptionOnNegativeVerifiedTimes)
@@ -129,7 +129,7 @@ namespace mock4cpp_tests
 			Verify(mock[&SomeInterface::func1] + mock[&SomeInterface::func1]).Twice();
 			Verify(mock[&SomeInterface::func1].Using(1) + mock[&SomeInterface::func1].Using(3)).Never();
 
-			Assert::ExpectException<VerificationException>(
+			Assert::ExpectException<VerificationException&>(
 				[&mock]{Verify(mock[&SomeInterface::func1].Using(1) + mock[&SomeInterface::func1].Using(3)); });
 		}
 
@@ -156,7 +156,7 @@ namespace mock4cpp_tests
 			Verify((mock[&SomeInterface::func1].Using(1) + mock[&SomeInterface::func1].Using(2) + mock[&SomeInterface::func1].Using(3)) * 2).Once();
 			Verify(mock[&SomeInterface::func1].Using(1) * 2).Never();
 
-			Assert::ExpectException<VerificationException>(
+			Assert::ExpectException<VerificationException&>(
 				[&mock]{Verify(mock[&SomeInterface::func1].Using(1) * 2); });
 		}
 
@@ -168,17 +168,17 @@ namespace mock4cpp_tests
 
 			i.func1(1);
 			i.func1(1);
-			Assert::ExpectException<VerificationException>([&mock]{VerifyNoOtherInvocations(mock); });
+			Assert::ExpectException<VerificationException&>([&mock]{VerifyNoOtherInvocations(mock); });
 
 			Verify(mock[&SomeInterface::func1]).AtLeastOnce();
 			VerifyNoOtherInvocations(mock);
 
 			i.func1(1);
 			i.func1(1);
-			Assert::ExpectException<VerificationException>([&mock]{VerifyNoOtherInvocations(mock); });
+			Assert::ExpectException<VerificationException&>([&mock]{VerifyNoOtherInvocations(mock); });
 
 			Verify(mock[&SomeInterface::func1] * 3);
-			Assert::ExpectException<VerificationException>([&mock]{VerifyNoOtherInvocations(mock); });
+			Assert::ExpectException<VerificationException&>([&mock]{VerifyNoOtherInvocations(mock); });
 
 			Verify(mock[&SomeInterface::func1] * 4);
 			VerifyNoOtherInvocations(mock);
@@ -192,17 +192,17 @@ namespace mock4cpp_tests
 
 			i.func1(1);
 			i.func1(1);
-			Assert::ExpectException<VerificationException>([&mock]{VerifyNoOtherInvocations(mock[&SomeInterface::func1]); });
+			Assert::ExpectException<VerificationException&>([&mock]{VerifyNoOtherInvocations(mock[&SomeInterface::func1]); });
 
 			Verify(mock[&SomeInterface::func1]).AtLeastOnce();
 			VerifyNoOtherInvocations(mock[&SomeInterface::func1]);
 
 			i.func1(1);
 			i.func1(1);
-			Assert::ExpectException<VerificationException>([&mock]{VerifyNoOtherInvocations(mock[&SomeInterface::func1]); });
+			Assert::ExpectException<VerificationException&>([&mock]{VerifyNoOtherInvocations(mock[&SomeInterface::func1]); });
 
 			Verify(mock[&SomeInterface::func1] * 3);
-			Assert::ExpectException<VerificationException>([&mock]{VerifyNoOtherInvocations(mock[&SomeInterface::func1]); });
+			Assert::ExpectException<VerificationException&>([&mock]{VerifyNoOtherInvocations(mock[&SomeInterface::func1]); });
 
 			Verify(mock[&SomeInterface::func1] * 4);
 			VerifyNoOtherInvocations(mock[&SomeInterface::func1]);
