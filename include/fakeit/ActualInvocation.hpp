@@ -8,56 +8,19 @@
 #include <iostream>
 #include <sstream>
 
-#include "mockutils/TuplePrinter.hpp"
+//#include "mockutils/TuplePrinter.hpp"
 #include "mockutils/Macros.hpp"
 
-#include "fakeit/DomainObjects.hpp"
+#include "fakeit/Invocation.hpp"
 
 namespace fakeit {
 
-struct AnyInvocation {
-
-	AnyInvocation(const int ordinal, const Method & method) :
-			ordinal(ordinal), method(method), _isVerified(false) {
-	}
-
-	virtual ~AnyInvocation() = default;
-
-	int getOrdinal() const {
-		return ordinal;
-	}
-
-	const Method & getMethod() const {
-		return method;
-	}
-
-	void markAsVerified() {
-		_isVerified = true;
-	}
-
-	bool isVerified() const {
-		return _isVerified;
-	}
-
-	//virtual std::string format() = 0;
-
-	struct Matcher {
-		virtual ~Matcher() THROWS {}
-		virtual bool matches(AnyInvocation& invocation) = 0;
-	};
-
-private:
-	const int ordinal;
-	const Method & method;
-	bool _isVerified;
-};
-
 template<typename ... arglist>
-struct ActualInvocation: public virtual AnyInvocation {
+struct ActualInvocation: public virtual Invocation {
 
 	ActualInvocation(const int ordinal, const Method & method, const arglist&... args) :
 
-			AnyInvocation(ordinal, method), actualArguments { args... } {
+			Invocation(ordinal, method), actualArguments { args... } {
 	}
 
 	const std::tuple<arglist...>& getActualArguments() const {
@@ -98,7 +61,7 @@ std::ostream & operator<<(std::ostream &strm, const ActualInvocation<arglist...>
 }
 
 struct ActualInvocationsSource {
-	virtual void getActualInvocations(std::unordered_set<AnyInvocation*>& into) const = 0;
+	virtual void getActualInvocations(std::unordered_set<Invocation*>& into) const = 0;
 };
 
 }

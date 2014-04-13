@@ -16,9 +16,9 @@
 
 namespace fakeit {
 
-static void sort(std::unordered_set<AnyInvocation*>& actualIvocations, std::vector<AnyInvocation*>& actualSequence) {
-	auto comp = [](AnyInvocation* a, AnyInvocation* b)-> bool {return a->getOrdinal() < b->getOrdinal();};
-	std::set<AnyInvocation*, bool (*)(AnyInvocation* a, AnyInvocation* b)> sortedActualIvocations(comp);
+static void sort(std::unordered_set<Invocation*>& actualIvocations, std::vector<Invocation*>& actualSequence) {
+	auto comp = [](Invocation* a, Invocation* b)-> bool {return a->getOrdinal() < b->getOrdinal();};
+	std::set<Invocation*, bool (*)(Invocation* a, Invocation* b)> sortedActualIvocations(comp);
 	for (auto i : actualIvocations)
 		sortedActualIvocations.insert(i);
 
@@ -56,21 +56,44 @@ public:
 				return;
 			}
 
-			std::unordered_set<AnyInvocation*> actualIvocations;
+			std::unordered_set<Invocation*> actualIvocations;
 			collectActualInvocations(expectedPattern, actualIvocations);
 
-			std::vector<AnyInvocation*> actualSequence;
+			std::vector<Invocation*> actualSequence;
 			sort(actualIvocations, actualSequence);
 
-			std::vector<AnyInvocation*> matchedInvocations;
+			std::vector<Invocation*> matchedInvocations;
 			int count = countMatches(expectedPattern, actualSequence, matchedInvocations);
 
 			if (expectedInvocationCount < 0) {
+				struct AtLeastVerificationException: public SequenceVerificationException {
+					AtLeastVerificationException(std::vector<Sequence*>& expectedPattern, std::vector<Invocation*>& actualSequence, int expectedCount,
+							int actualCount) :
+							SequenceVerificationException(expectedPattern, actualSequence, expectedCount, actualCount) {
+					}
+
+					virtual VerificationType verificationType() override {
+						return VerificationType::AtLeast;
+					}
+				};
+
 				// negative number represents an "AtLeast" search;
 				if (count < -expectedInvocationCount) {
 					throw AtLeastVerificationException(expectedPattern, actualSequence, -expectedInvocationCount, count);
 				}
 			} else if (count != expectedInvocationCount) {
+				struct ExactVerificationException: public SequenceVerificationException {
+					ExactVerificationException(std::vector<Sequence*>& expectedPattern, std::vector<Invocation*>& actualSequence, int expectedCount,
+							int actualCount) :
+							SequenceVerificationException(expectedPattern, actualSequence, expectedCount, actualCount) {
+					}
+
+					virtual VerificationType verificationType() override {
+						return VerificationType::Exact;
+					}
+
+				};
+
 				// "Exact" search.
 				throw ExactVerificationException(expectedPattern, actualSequence, expectedInvocationCount, count);
 			}
@@ -104,7 +127,7 @@ public:
 			return collectSequences(vec, tail...);
 		}
 
-		void collectActualInvocations(std::vector<Sequence*>& expectedPattern, std::unordered_set<AnyInvocation*>& actualIvocations) {
+		void collectActualInvocations(std::vector<Sequence*>& expectedPattern, std::unordered_set<Invocation*>& actualIvocations) {
 			for (auto mock : involvedMocks) {
 				mock->getActualInvocations(actualIvocations);
 			}
@@ -113,13 +136,13 @@ public:
 			expectedInvocationCount = times;
 		}
 
-		void markAsVerified(std::vector<AnyInvocation*>& matchedInvocations) {
+		void markAsVerified(std::vector<Invocation*>& matchedInvocations) {
 			for (auto i : matchedInvocations)
 				i->markAsVerified();
 		}
 
-		int countMatches(std::vector<Sequence*> &pattern, std::vector<AnyInvocation*>& actualSequence,
-				std::vector<AnyInvocation*>& matchedInvocations) {
+		int countMatches(std::vector<Sequence*> &pattern, std::vector<Invocation*>& actualSequence,
+				std::vector<Invocation*>& matchedInvocations) {
 			int end = -1;
 			int count = 0;
 			int startSearchIndex = 0;
@@ -130,7 +153,7 @@ public:
 			return count;
 		}
 
-		void collectMatchedInvocations(std::vector<AnyInvocation*>& actualSequence, std::vector<AnyInvocation*>& matchedInvocations,
+		void collectMatchedInvocations(std::vector<Invocation*>& actualSequence, std::vector<Invocation*>& matchedInvocations,
 				int start, int length) {
 			int indexAfterMatchedPattern = start + length;
 			for (; start < indexAfterMatchedPattern; start++) {
@@ -138,8 +161,8 @@ public:
 			}
 		}
 
-		bool findNextMatch(std::vector<Sequence*> &pattern, std::vector<AnyInvocation*>& actualSequence, int startSearchIndex, int& end,
-				std::vector<AnyInvocation*>& matchedInvocations) {
+		bool findNextMatch(std::vector<Sequence*> &pattern, std::vector<Invocation*>& actualSequence, int startSearchIndex, int& end,
+				std::vector<Invocation*>& matchedInvocations) {
 			for (auto sequence : pattern) {
 				int index = findNextMatch(sequence, actualSequence, startSearchIndex);
 				if (index == -1) {
@@ -152,18 +175,18 @@ public:
 			return true;
 		}
 
-		bool isMatch(std::vector<AnyInvocation*>& actualSequence, std::vector<AnyInvocation::Matcher*>& expectedSequence, int start) {
+		bool isMatch(std::vector<Invocation*>& actualSequence, std::vector<Invocation::Matcher*>& expectedSequence, int start) {
 			bool found = true;
 			for (unsigned int j = 0; found && j < expectedSequence.size(); j++) {
-				AnyInvocation* actual = actualSequence[start + j];
-				AnyInvocation::Matcher* expected = expectedSequence[j];
+				Invocation* actual = actualSequence[start + j];
+				Invocation::Matcher* expected = expectedSequence[j];
 				found = found && expected->matches(*actual);
 			}
 			return found;
 		}
 
-		int findNextMatch(Sequence* &pattern, std::vector<AnyInvocation*>& actualSequence, int startSearchIndex) {
-			std::vector<AnyInvocation::Matcher*> expectedSequence;
+		int findNextMatch(Sequence* &pattern, std::vector<Invocation*>& actualSequence, int startSearchIndex) {
+			std::vector<Invocation::Matcher*> expectedSequence;
 			pattern->getExpectedSequence(expectedSequence);
 			for (int i = startSearchIndex; i < ((int) actualSequence.size() - (int) expectedSequence.size() + 1); i++) {
 				if (isMatch(actualSequence, expectedSequence, i)) {
@@ -255,17 +278,17 @@ class VerifyNoOtherInvocationsFunctor {
 //	}
 
 	template<typename ... list>
-	void collectActualInvocations(std::unordered_set<AnyInvocation*>& actualInvocations) {
+	void collectActualInvocations(std::unordered_set<Invocation*>& actualInvocations) {
 	}
 
 	template<typename ... list>
-	void collectActualInvocations(std::unordered_set<AnyInvocation*>& actualInvocations, const ActualInvocationsSource& head,
+	void collectActualInvocations(std::unordered_set<Invocation*>& actualInvocations, const ActualInvocationsSource& head,
 			const list&... tail) {
 		head.getActualInvocations(actualInvocations);
 		collectActualInvocations(actualInvocations, tail...);
 	}
 
-	void selectNonVerifiedInvocations(std::unordered_set<AnyInvocation*>& actualInvocations, std::unordered_set<AnyInvocation*>& into) {
+	void selectNonVerifiedInvocations(std::unordered_set<Invocation*>& actualInvocations, std::unordered_set<Invocation*>& into) {
 		for (auto invocation : actualInvocations) {
 			if (!invocation->isVerified()) {
 				into.insert(invocation);
@@ -282,17 +305,17 @@ public:
 
 	template<typename ... list>
 	void operator()(const ActualInvocationsSource& head, const list&... tail) {
-		std::unordered_set<AnyInvocation*> actualInvocations;
+		std::unordered_set<Invocation*> actualInvocations;
 		collectActualInvocations(actualInvocations, head, tail...);
 
-		std::unordered_set<AnyInvocation*> nonVerifedIvocations;
+		std::unordered_set<Invocation*> nonVerifedIvocations;
 		selectNonVerifiedInvocations(actualInvocations, nonVerifedIvocations);
 
 		if (nonVerifedIvocations.size() > 0) {
-			std::vector<AnyInvocation*> sortedNonVerifedIvocations;
+			std::vector<Invocation*> sortedNonVerifedIvocations;
 			sort(nonVerifedIvocations, sortedNonVerifedIvocations);
 
-			std::vector<AnyInvocation*> sortedActualIvocations;
+			std::vector<Invocation*> sortedActualIvocations;
 			sort(actualInvocations, sortedActualIvocations);
 
 			throw NoMoreInvocationsVerificationException(sortedActualIvocations, sortedNonVerifedIvocations);

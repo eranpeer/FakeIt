@@ -244,12 +244,9 @@ private:
 };
 
 class MethodImpl : public Method {
-	std::string name;
+	const std::string name;
 public:
 	MethodImpl(std::string name):name(name){}
-//	virtual std::string getMethodName() const override {
-//		return name;
-//	}
 };
 
 template<typename C, typename R, typename ... arglist>
@@ -302,7 +299,7 @@ struct MethodMock: public virtual MethodInvocationHandler<R, arglist...>, public
 		return result;
 	}
 
-	void getActualInvocations(std::unordered_set<AnyInvocation*>& into) const {
+	void getActualInvocations(std::unordered_set<Invocation*>& into) const {
 		for (auto invocation : actualInvocations) {
 			into.insert(invocation.get());
 		}

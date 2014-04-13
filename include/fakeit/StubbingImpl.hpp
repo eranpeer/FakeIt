@@ -38,7 +38,7 @@ template<typename C, typename R, typename ... arglist>
 class MethodStubbingBase: public RecordedMethodInvocation, //
 		public virtual Sequence,
 		public virtual ActualInvocationsSource,
-		public virtual AnyInvocation::Matcher {
+		public virtual Invocation::Matcher {
 private:
 
 	std::shared_ptr<RecordedMethodBody<R, arglist...>> buildInitialMethodBody() {
@@ -74,7 +74,7 @@ protected:
 	}
 
 public:
-	virtual bool matches(AnyInvocation& invocation) override {
+	virtual bool matches(Invocation& invocation) override {
 		if (&invocation.getMethod() != &stubbingContext->getMethodMock().getMethod()) {
 			return false;
 		}
@@ -83,10 +83,10 @@ public:
 		return invocationMatcher->matches(actualInvocation);
 	}
 
-	void getActualInvocations(std::unordered_set<AnyInvocation*>& into) const override {
+	void getActualInvocations(std::unordered_set<Invocation*>& into) const override {
 		std::vector<std::shared_ptr<ActualInvocation<arglist...>>>actualInvocations = stubbingContext->getMethodMock().getActualInvocations(*invocationMatcher);
 		for (auto i : actualInvocations) {
-			AnyInvocation* ai = i.get();
+			Invocation* ai = i.get();
 			into.insert(ai);
 		}
 	}
@@ -95,9 +95,9 @@ public:
 		into.insert(stubbingContext.get());
 	}
 
-	void getExpectedSequence(std::vector<AnyInvocation::Matcher*>& into) const override {
-		const AnyInvocation::Matcher* b = this;
-		AnyInvocation::Matcher* c = const_cast<AnyInvocation::Matcher*>(b);
+	void getExpectedSequence(std::vector<Invocation::Matcher*>& into) const override {
+		const Invocation::Matcher* b = this;
+		Invocation::Matcher* c = const_cast<Invocation::Matcher*>(b);
 		into.push_back(c);
 	}
 

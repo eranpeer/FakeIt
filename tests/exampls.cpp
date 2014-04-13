@@ -8,18 +8,19 @@
 
 using namespace fakeit;
 using namespace std;
+using namespace tpunit;
 
 struct DemoTests
-//		: tpunit::TestFixture
+		: tpunit::TestFixture
 		  {
 	DemoTests()
-//	:
-//			tpunit::TestFixture(
-			//
-					//TEST(DemoTests::basic_stubbing), //
+	:
+			tpunit::TestFixture(
+
+					TEST(DemoTests::on_other_invocations_verification) //
 					//TEST(DemoTests::basic_verification) //
 							//
-//							)
+							)
 		{
 	}
 
@@ -30,50 +31,32 @@ struct DemoTests
 	};
 
 	void basic_stubbing() {
-		// Instantiate a mock object.
-		Mock<SomeInterface> mock;
-
-		// Setup mock behavior.
-		When(mock[&SomeInterface::foo]).AlwaysReturn(1);
-
-		auto agrument_a_is_even = [](int a){return a%2==0;};
-		When(mock[&SomeInterface::foo].Matching(agrument_a_is_even)).Return(0);
-
-		// Fetch the mock instance.
-		SomeInterface &i = mock.get();
-
-		int a = i.foo(1);
-		int a1 = i.foo(2);
-		int a2 = i.foo(3);
-//
-
-		// Will print "1". 
-		cout << i.foo(0);
 	}
 
 	void basic_verification() {
+	}//
+
+	void on_other_invocations_verification() {
 		Mock<SomeInterface> mock;
-		//
 		When(mock[&SomeInterface::foo]).AlwaysReturn(0);
 		When(mock[&SomeInterface::bar]).AlwaysReturn(0);
-
-		SomeInterface &i = mock.get();
-
-		// Production code
+		SomeInterface& i  = mock.get();
 		i.foo(1);
-		i.bar("some value");
+		i.foo(2);
+		i.bar("some string");
 
-		// Verify for foo & bar where invoked
-		Verify(mock[&SomeInterface::foo]);
-		Verify(mock[&SomeInterface::bar]);
-
-		// Verify for foo & bar where invoked with specific arguments
 		Verify(mock[&SomeInterface::foo].Using(1));
-		Verify(mock[&SomeInterface::bar].Using("some value"));
 
-		// Verify for foo & bar where never invoked with other arguments
-		Verify(mock[&SomeInterface::foo].Using(2)).Never();
-		Verify(mock[&SomeInterface::bar].Using("some other value")).Never();
+		ASSERT_THROW(VerifyNoOtherInvocations(mock), fakeit::VerificationException); // will fail.
+		ASSERT_THROW(VerifyNoOtherInvocations(mock[&SomeInterface::foo]),fakeit::VerificationException); // will fail.
+
+		Verify(mock[&SomeInterface::foo].Using(2));
+
+		ASSERT_THROW(VerifyNoOtherInvocations(mock), fakeit::VerificationException); // will fail.
+		VerifyNoOtherInvocations(mock[&SomeInterface::foo]); // will pass.
+
+		Verify(mock[&SomeInterface::bar]);
+		VerifyNoOtherInvocations(mock); // will pass.
 	}//
 
 } __DemoTests;

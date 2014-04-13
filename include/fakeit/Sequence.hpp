@@ -33,7 +33,7 @@ public:
 	/**
 	 * Fetch the matchers that make-up this sequence.
 	 */
-	virtual void getExpectedSequence(std::vector<AnyInvocation::Matcher*>& into) const = 0;
+	virtual void getExpectedSequence(std::vector<Invocation::Matcher*>& into) const = 0;
 
 	/**
 	 * Collect all mock objects that are involved in this sequence.
@@ -64,7 +64,7 @@ public:
 		return s1.size() + s2.size();
 	}
 
-	void getExpectedSequence(std::vector<AnyInvocation::Matcher*>& into) const override {
+	void getExpectedSequence(std::vector<Invocation::Matcher*>& into) const override {
 		s1.getExpectedSequence(into);
 		s2.getExpectedSequence(into);
 	}
@@ -103,7 +103,7 @@ public:
 		s1.getInvolvedMocks(into);
 	}
 
-	void getExpectedSequence(std::vector<AnyInvocation::Matcher*>& into) const override {
+	void getExpectedSequence(std::vector<Invocation::Matcher*>& into) const override {
 		for (int i = 0; i < times; i++)
 			s1.getExpectedSequence(into);
 	}

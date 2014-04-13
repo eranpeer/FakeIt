@@ -8,7 +8,6 @@
 namespace fakeit {
 
 class FakeitException {
-	//virtual const std::string what() const throw () = 0;
 };
 
 struct UnexpectedMethodCallException: public FakeitException {
@@ -30,8 +29,8 @@ struct VerificationException: public FakeitException {
 
 struct NoMoreInvocationsVerificationException: public VerificationException {
 	NoMoreInvocationsVerificationException( //
-			std::vector<AnyInvocation*>& allIvocations, //
-			std::vector<AnyInvocation*>& unverifedIvocations) : //
+			std::vector<Invocation*>& allIvocations, //
+			std::vector<Invocation*>& unverifedIvocations) : //
 			VerificationException(), _allIvocations(allIvocations), _unverifedIvocations(unverifedIvocations) { //
 	}
 
@@ -39,23 +38,23 @@ struct NoMoreInvocationsVerificationException: public VerificationException {
 		return VerificationType::NoMoreInvocatoins;
 	}
 
-	const std::vector<AnyInvocation*>& allIvocations() const {
+	const std::vector<Invocation*>& allIvocations() const {
 		return _allIvocations;
 	}
 
-	const std::vector<AnyInvocation*>& unverifedIvocations() const {
+	const std::vector<Invocation*>& unverifedIvocations() const {
 		return _unverifedIvocations;
 	}
 
 private:
-	const std::vector<AnyInvocation*> _allIvocations;
-	const std::vector<AnyInvocation*> _unverifedIvocations;
+	const std::vector<Invocation*> _allIvocations;
+	const std::vector<Invocation*> _unverifedIvocations;
 };
 
 struct SequenceVerificationException: public VerificationException {
 	SequenceVerificationException( //
 			std::vector<Sequence*>& expectedPattern, //
-			std::vector<AnyInvocation*>& actualSequence, //
+			std::vector<Invocation*>& actualSequence, //
 			int expectedCount, //
 			int actualCount) : //
 			VerificationException(), //
@@ -70,7 +69,7 @@ struct SequenceVerificationException: public VerificationException {
 		return _expectedPattern;
 	}
 
-	const std::vector<AnyInvocation*>& actualSequence() const {
+	const std::vector<Invocation*>& actualSequence() const {
 		return _actualSequence;
 	}
 
@@ -84,32 +83,9 @@ struct SequenceVerificationException: public VerificationException {
 
 private:
 	const std::vector<Sequence*> _expectedPattern;
-	const std::vector<AnyInvocation*> _actualSequence;
+	const std::vector<Invocation*> _actualSequence;
 	const int _expectedCount;
 	const int _actualCount;
-};
-
-struct ExactVerificationException: public SequenceVerificationException {
-	ExactVerificationException(std::vector<Sequence*>& expectedPattern, std::vector<AnyInvocation*>& actualSequence, int expectedCount,
-			int actualCount) :
-			SequenceVerificationException(expectedPattern, actualSequence, expectedCount, actualCount) {
-	}
-
-	virtual VerificationType verificationType() override {
-		return VerificationType::Exact;
-	}
-
-};
-
-struct AtLeastVerificationException: public SequenceVerificationException {
-	AtLeastVerificationException(std::vector<Sequence*>& expectedPattern, std::vector<AnyInvocation*>& actualSequence, int expectedCount,
-			int actualCount) :
-			SequenceVerificationException(expectedPattern, actualSequence, expectedCount, actualCount) {
-	}
-
-	virtual VerificationType verificationType() override {
-		return VerificationType::AtLeast;
-	}
 };
 
 }

@@ -1,0 +1,56 @@
+#ifndef Invocation_h__
+#define Invocation_h__
+
+#include <typeinfo>
+#include <unordered_set>
+#include <tuple>
+#include <string>
+#include <iostream>
+#include <sstream>
+
+#include "mockutils/TuplePrinter.hpp"
+#include "mockutils/Macros.hpp"
+
+#include "fakeit/DomainObjects.hpp"
+
+namespace fakeit {
+
+struct Invocation {
+
+	Invocation(const int ordinal, const Method & method) :
+			ordinal(ordinal), method(method), _isVerified(false) {
+	}
+
+	virtual ~Invocation() = default;
+
+	int getOrdinal() const {
+		return ordinal;
+	}
+
+	const Method & getMethod() const {
+		return method;
+	}
+
+	void markAsVerified() {
+		_isVerified = true;
+	}
+
+	bool isVerified() const {
+		return _isVerified;
+	}
+
+	struct Matcher {
+		virtual ~Matcher() THROWS {
+		}
+		virtual bool matches(Invocation& invocation) = 0;
+	};
+
+private:
+	const int ordinal;
+	const Method & method;
+	bool _isVerified;
+};
+
+}
+
+#endif // Invocation_h__

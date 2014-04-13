@@ -46,7 +46,7 @@ private:
 			return mock.stubMethodIfNotStubbed(mock.instance, vMethod);
 		}
 
-		virtual void getActualInvocations(std::unordered_set<AnyInvocation*>& into) const override {
+		virtual void getActualInvocations(std::unordered_set<Invocation*>& into) const override {
 			mock.getActualInvocations(into);
 		}
 	};
@@ -83,7 +83,7 @@ public:
 	/**
 	 * Return all actual invocations of this mock.
 	 */
-	void getActualInvocations(std::unordered_set<AnyInvocation*>& into) const override {
+	void getActualInvocations(std::unordered_set<Invocation*>& into) const override {
 		std::vector<ActualInvocationsSource*> vec;
 		instance.getMethodMocks(vec);
 		for (ActualInvocationsSource * s : vec) {
