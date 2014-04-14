@@ -1,9 +1,11 @@
 /*
- * DefaultErrorFormatter.hpppp
+ * Copyright (c) 2014 Eran Pe'er.
  *
- *  Created on: Jan 29, 2014
- *      Author: eran
+ * This program is made available under the terms of the MIT License.
+ *
+ * Created on Mar 10, 2014
  */
+
 #ifndef DefaultErrorFormatter_h__
 #define DefaultErrorFormatter_h__
 
