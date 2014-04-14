@@ -1,8 +1,9 @@
 /*
- * Sequence.hpp
+ * Copyright (c) 2014 Eran Pe'er.
  *
- *  Created on: Feb 15, 2014
- *      Author: eran
+ * This program is made available under the terms of the MIT License.
+ *
+ * Created on Mar 10, 2014
  */
 
 #ifndef SEQUENCE_HPP_
