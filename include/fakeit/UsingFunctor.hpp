@@ -1,9 +1,8 @@
 /*
- * Copyright (c) 2014 Eran Pe'er.
+ * VerifyFunctor.hpp
  *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
+ *  Created on: Feb 14, 2014
+ *      Author: Eran
  */
 
 #ifndef UsingFunctor_hpp_
@@ -59,8 +58,8 @@ public:
 
 			if (expectedInvocationCount < 0) {
 				struct AtLeastVerificationException: public SequenceVerificationException {
-					AtLeastVerificationException(std::vector<Sequence*>& expectedPattern, std::vector<Invocation*>& actualSequence,
-							int expectedCount, int actualCount) :
+					AtLeastVerificationException(std::vector<Sequence*>& expectedPattern, std::vector<Invocation*>& actualSequence, int expectedCount,
+							int actualCount) :
 							SequenceVerificationException(expectedPattern, actualSequence, expectedCount, actualCount) {
 					}
 
@@ -75,8 +74,8 @@ public:
 				}
 			} else if (count != expectedInvocationCount) {
 				struct ExactVerificationException: public SequenceVerificationException {
-					ExactVerificationException(std::vector<Sequence*>& expectedPattern, std::vector<Invocation*>& actualSequence,
-							int expectedCount, int actualCount) :
+					ExactVerificationException(std::vector<Sequence*>& expectedPattern, std::vector<Invocation*>& actualSequence, int expectedCount,
+							int actualCount) :
 							SequenceVerificationException(expectedPattern, actualSequence, expectedCount, actualCount) {
 					}
 
@@ -145,8 +144,8 @@ public:
 			return count;
 		}
 
-		void collectMatchedInvocations(std::vector<Invocation*>& actualSequence, std::vector<Invocation*>& matchedInvocations, int start,
-				int length) {
+		void collectMatchedInvocations(std::vector<Invocation*>& actualSequence, std::vector<Invocation*>& matchedInvocations,
+				int start, int length) {
 			int indexAfterMatchedPattern = start + length;
 			for (; start < indexAfterMatchedPattern; start++) {
 				matchedInvocations.push_back(actualSequence[start]);

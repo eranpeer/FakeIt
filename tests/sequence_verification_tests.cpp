@@ -1,11 +1,9 @@
 /*
- * Copyright (c) 2014 Eran Pe'er.
+ * sequence_verification_tests.cpp
  *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
+ *  Created on: Mar 15, 2014
+ *      Author: eran
  */
-
 #include <string>
 
 #include "tpunit++.hpp"
