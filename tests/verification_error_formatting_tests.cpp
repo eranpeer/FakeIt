@@ -73,7 +73,7 @@ struct ErrorFormattingTests: tpunit::TestFixture {
 		Mock<SomeInterface> mock;
 		try {
 			auto selector = mock[&ErrorFormattingTests::SomeInterface::foo];
-			Verify(selector).Exactly(1_Time);
+			Verify(selector).Exactly(Once);
 		} catch (SequenceVerificationException& e) {
 			ASSERT_EQUAL(VerificationType::Exact, e.verificationType());
 			ASSERT_EQUAL(0, e.actualCount());
