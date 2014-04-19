@@ -117,6 +117,13 @@ struct RTTICompleteObjectLocator {
 template<int SIZE, class C, class... baseclasses>
 struct VirtualTable {
 	
+	class SimpleType {
+
+	};
+
+	static_assert(sizeof(unsigned int (SimpleType::*)()) == sizeof(unsigned int (C::*)()), "Can't mock a type with multiple inheritance");
+
+
 	VirtualTable() {
 		auto array = new void*[SIZE + 1] {};
 		RTTICompleteObjectLocator<C, baseclasses...> * objectLocator = new RTTICompleteObjectLocator<C, baseclasses...>(typeid(C));
