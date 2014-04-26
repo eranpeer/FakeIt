@@ -510,7 +510,8 @@ struct BasicStubbing: tpunit::TestFixture {
 		{
 			try {
 				const auto& a = When(mock[&SomeInterface::func]);
-				throw std::runtime_error("some exception");
+				if (&a == &a) // use a to avoid unused variable compilation warning.
+					throw std::runtime_error("some exception");
 			} catch (std::exception &e) {
 			}
 		}
