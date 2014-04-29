@@ -23,17 +23,17 @@ all: fakeit_test_application
 
 coverage: fakeit_test_application_with_coverage
 
-fakeit_test_application: $(OBJS) $(USER_OBJS) 
+fakeit_test_application: $(OBJS) 
 	@echo 'Building test application: fakeit_tests.exe'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -o "fakeit_tests.exe" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -o "fakeit_tests.exe" $(OBJS) 
 	@echo 'Finished building test application: fakeit_tests.exe'
 	@echo ' '
 
-fakeit_test_application_with_coverage: $(subst .cpp,_cover.o,$(CPP_SRCS)) $(USER_OBJS) 
+fakeit_test_application_with_coverage: $(subst .cpp,_with_coverage,$(CPP_SRCS)) 
 	@echo 'Building test application: fakeit_tests.exe'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ --coverage -o "fakeit_tests.exe" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ --coverage -o "fakeit_tests.exe" $(OBJS) 
 	@echo 'Finished building test application: fakeit_tests.exe'
 	@echo ' '
 
@@ -44,10 +44,10 @@ fakeit_test_application_with_coverage: $(subst .cpp,_cover.o,$(CPP_SRCS)) $(USER
 	@echo 'Finished building: $<'
 	@echo ' '
 
-%_cover.o: ../tests/%.cpp
+%_with_coverage: ../tests/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	g++ --coverage -D__GXX_EXPERIMENTAL_CXX0X__ -I"../include" -O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -MMD -MP -MF"$(@:%_cover.o=%.d)" -MT"$(@:%.o=%.d)" -o $(subst _cover,,"$@") "$<"
+	g++ --coverage -D__GXX_EXPERIMENTAL_CXX0X__ -I"../include" -O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -MMD -MP -MF"$(@:%_with_coverage=%.d)" -MT"$(@:%_with_coverage=%.d)" -o $(subst _with_coverage,.o,"$@") "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
