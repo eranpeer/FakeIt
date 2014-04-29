@@ -1,5 +1,0 @@
-
-USER_OBJS :=
-
-LIBS :=
-

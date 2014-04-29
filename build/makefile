@@ -1,32 +1,40 @@
 
 RM := rm -rf
 
-# All of the sources participating in the build are defined here
--include sources.mk
--include subdir.mk
--include objects.mk
+CPP_SRCS += \
+default_behaviore_tests.cpp \
+gcc_stubbing_multiple_values_tests.cpp \
+gcc_type_info_tests.cpp \
+msc_stubbing_multiple_values_tests.cpp \
+msc_type_info_tests.cpp \
+referece_types_tests.cpp \
+sequence_verification_tests.cpp \
+stubbing_tests.cpp \
+tpunit++main.cpp \
+type_info_tests.cpp \
+verification_tests.cpp \
+verification_error_formatting_tests.cpp 
 
-ifneq ($(MAKECMDGOALS),clean)
--include $(CPP_DEPS)
--include $(COVERAGE_DEPS)
-endif
+OBJS += $(subst .cpp,.o,$(CPP_SRCS))
 
-all: fakeit_tests.exe
+CPP_DEPS += $(subst .cpp,.d,$(CPP_SRCS))
 
-coverage: fakeit_tests_with_coverage.exe
+all: fakeit_test_application
 
-fakeit_tests.exe: $(OBJS) $(USER_OBJS) 
-	@echo 'Building target: $@'
+coverage: fakeit_test_application_with_coverage
+
+fakeit_test_application: $(OBJS) $(USER_OBJS) 
+	@echo 'Building test application: fakeit_tests.exe'
 	@echo 'Invoking: GCC C++ Linker'
 	g++ -o "fakeit_tests.exe" $(OBJS) $(USER_OBJS) $(LIBS)
-	@echo 'Finished building target: $@'
+	@echo 'Finished building test application: fakeit_tests.exe'
 	@echo ' '
 
-fakeit_tests_with_coverage.exe: $(COVERAGE_OBJS) $(USER_OBJS) 
-	@echo 'Building target: $@'
+fakeit_test_application_with_coverage: $(subst .cpp,_cover.o,$(CPP_SRCS)) $(USER_OBJS) 
+	@echo 'Building test application: fakeit_tests.exe'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ --coverage -o "fakeit_tests_with_coverage.exe" $(COVERAGE_OBJS) $(USER_OBJS) $(LIBS)
-	@echo 'Finished building target: $@'
+	g++ --coverage -o "fakeit_tests.exe" $(OBJS) $(USER_OBJS) $(LIBS)
+	@echo 'Finished building test application: fakeit_tests.exe'
 	@echo ' '
 
 %.o: ../tests/%.cpp
@@ -36,14 +44,18 @@ fakeit_tests_with_coverage.exe: $(COVERAGE_OBJS) $(USER_OBJS)
 	@echo 'Finished building: $<'
 	@echo ' '
 
-cover_%.o: ../tests/%.cpp
+%_cover.o: ../tests/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	g++ --coverage -D__GXX_EXPERIMENTAL_CXX0X__ -I"../include" -O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -MMD -MP -MF"$(@:cover_%.o=cover_%.d)" -MT"$(@:cover_%.o=cover_%.d)" -o "$@" "$<"
+	g++ --coverage -D__GXX_EXPERIMENTAL_CXX0X__ -I"../include" -O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -MMD -MP -MF"$(@:%_cover.o=%.d)" -MT"$(@:%.o=%.d)" -o $(subst _cover,,"$@") "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
+ifneq ($(MAKECMDGOALS),clean)
+-include $(CPP_DEPS)
+endif
+
 # Other Targets
 clean:
-	-$(RM) $(OBJS)$(C++_DEPS)$(C_DEPS)$(CC_DEPS)$(CPP_DEPS)$(EXECUTABLES)$(CXX_DEPS)$(C_UPPER_DEPS) fakeit_tests.exe cover_*.o *.gc* cover_*.d coverage_fakeit_tests.exe
+	-$(RM) $(OBJS)$(CPP_DEPS) fakeit_tests.exe *.gc*
 	-@echo ' '
