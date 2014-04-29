@@ -14,7 +14,7 @@ script:
   - cd ./build
   - g++ --version
   - make coverage
-  - ./fakeit_tests_with_coverage.exe
+  - ./fakeit_tests.exe
   - gcov *.o
   - cd ..
   - coveralls --no-gcov --exclude msvs_tests --exclude tests
