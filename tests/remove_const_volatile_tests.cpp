@@ -1,17 +1,30 @@
-#include "stdafx.h"
-#include "CppUnitTest.h"
-#include "fakeit.hpp"
-#include <iostream>
+/*
+* Copyright (c) 2014 Eran Pe'er.
+*
+* This program is made available under the terms of the MIT License.
+*
+* Created on Mar 10, 2014
+*/
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+#include <string>
+#include <queue>
+
+#include "tpunit++.hpp"
+#include "fakeit.hpp"
+#include "fakeit/FakeitExceptions.hpp"
+
 using namespace fakeit;
 
-namespace stubbing_tests
-{
-	TEST_CLASS(RemoveConstVolatileTests)
-	{
-	public:
+struct RemoveConstVolatileTests : tpunit::TestFixture {
+public:
 
+	RemoveConstVolatileTests() :
+		tpunit::TestFixture(
+		//
+		TEST(RemoveConstVolatileTests::TestConstFunctions),
+		TEST(RemoveConstVolatileTests::TestConstParameters)
+		) {
+		}
 		struct ConstVolatileFunctions{
 			virtual int func1() const = 0;
 			virtual int func2() volatile = 0;
@@ -29,7 +42,7 @@ namespace stubbing_tests
  			virtual const void proc7() const volatile = 0;
 		};
 
-		TEST_METHOD(TestConstFunctions)
+		void TestConstFunctions()
 		{
 			Mock<ConstVolatileFunctions> mock;
 			//mock.getA().foo();
@@ -49,12 +62,12 @@ namespace stubbing_tests
 // 			Fake(mock[&ConstVolatileFunctions::proc7));
 
 			ConstVolatileFunctions& i = mock.get();
-			Assert::AreEqual(0, i.func1());
-			Assert::AreEqual(0, i.func2());
-			Assert::AreEqual(0, i.func3());
-			Assert::AreEqual(0, i.func4());
-			Assert::AreEqual(0, i.func6());
-			Assert::AreEqual(0, i.func7());
+			ASSERT_EQUAL(0, i.func1());
+			ASSERT_EQUAL(0, i.func2());
+			ASSERT_EQUAL(0, i.func3());
+			ASSERT_EQUAL(0, i.func4());
+			ASSERT_EQUAL(0, i.func6());
+			ASSERT_EQUAL(0, i.func7());
 			i.proc1();
 			i.proc2();
 			i.proc3();
@@ -68,12 +81,11 @@ namespace stubbing_tests
 			virtual int func1(const int a, const volatile std::string s) = 0;
 		};
 
-		TEST_METHOD(TestConstParameters)
+		void TestConstParameters()
 		{
 			Mock<ConstVolatileParameters> mock;
 			Fake(mock[&ConstVolatileParameters::func1]);
 			ConstVolatileParameters& i = mock.get();
-			Assert::AreEqual(0, i.func1(1,std::string()));
+			ASSERT_EQUAL(0, i.func1(1,std::string()));
 		}
-	};
-}
+} __RemoveConstVolatileTests;

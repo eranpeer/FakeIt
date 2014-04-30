@@ -72,6 +72,7 @@
     <ClCompile Include="msc_stubbing_multiple_values_tests.cpp" />
     <ClCompile Include="msc_type_info_tests.cpp" />
     <ClCompile Include="referece_types_tests.cpp" />
+    <ClCompile Include="remove_const_volatile_tests.cpp" />
     <ClCompile Include="sequence_verification_tests.cpp" />
     <ClCompile Include="stubbing_tests.cpp" />
     <ClCompile Include="tpunit++main.cpp" />
