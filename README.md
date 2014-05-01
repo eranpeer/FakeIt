@@ -52,6 +52,18 @@ Checkout the [Quickstart](https://github.com/eranpeer/FakeIt/wiki/Quickstart) fo
 * No limitation on number of method arguments.
 * Supports dynamic casting.
 
+## Installation
+FakeIt is a template library. It does not require any installation. All you need to do is to download the source files and add the "include" folder to the include path of your project.
+It is recommended to build and run the unit tests to make sure FakeIt fits your environment.
+### Building Running the Unit Tests with GCC
+```
+cd build_tests
+make all
+```
+
+### Building Running the Unit Tests with Visual Studio 
+Open the all_tests.vcxproj project file with Visual Studio 2013. Build and run the project and check the test results. 
+
 ## Limitations
 * Currently only GCC and MS C++ are supported.
 * Can't mock classes with multiple inheritance.
