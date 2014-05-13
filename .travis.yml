@@ -2,7 +2,6 @@ language: cpp
 compiler:
   - gcc
 before_install:
-  - gcov --version
   - sudo pip install cpp-coveralls --use-mirrors
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get -qq update
@@ -10,13 +9,14 @@ before_install:
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
   - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.8 90
 script:
-  - gcov --version
   - cd ./build
   - g++ --version
   - make coverage
+  - ls -la
   - ./fakeit_tests.exe
+  - ls -la
   - gcov *.o
+  - ls -la
   - cd ..
   - coveralls --no-gcov --exclude tests --verbose
 after_success:
-  - ls
