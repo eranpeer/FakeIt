@@ -67,7 +67,6 @@ private:
 				std::shared_ptr<StubbingContext<C, R, arglist...>>(new StubbingContextImpl<R, arglist...>(*this, vMethod)));
 	}
 
-	//typename std::remove_cv<T>::type
 	void Stub() {
 	}
 
@@ -146,27 +145,26 @@ public:
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureStubbingRoot<C, void, arglist...> operator [](R(C::*vMethod)(arglist...) const) {
-		auto methodWithoutConstVolatile = reinterpret_cast<void(C::*)(arglist...)>(vMethod);
+	ProcedureStubbingRoot<C, R, arglist...> operator [](R(C::*vMethod)(arglist...) const) {
+		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return StubImpl(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureStubbingRoot<C, void, arglist...> operator [](R(C::*vMethod)(arglist...) volatile) {
-		auto methodWithoutConstVolatile = reinterpret_cast<void(C::*)(arglist...)>(vMethod);
+	ProcedureStubbingRoot<C, R, arglist...> operator [](R(C::*vMethod)(arglist...) volatile) {
+		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return StubImpl(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureStubbingRoot<C, void, arglist...> operator [](R(C::*vMethod)(arglist...) const volatile) {
-		auto methodWithoutConstVolatile = reinterpret_cast<void(C::*)(arglist...)>(vMethod);
+	ProcedureStubbingRoot<C, R, arglist...> operator [](R(C::*vMethod)(arglist...) const volatile) {
+		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return StubImpl(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureStubbingRoot<C, void, arglist...> operator [](R(C::*vMethod)(arglist...)) {
-		auto methodWithoutConstVolatile = reinterpret_cast<void(C::*)(arglist...)>(vMethod);
-		return StubImpl(methodWithoutConstVolatile);
+	ProcedureStubbingRoot<C, R, arglist...> operator [](R(C::*vMethod)(arglist...)) {
+		return StubImpl(vMethod);
 	}
 
 };

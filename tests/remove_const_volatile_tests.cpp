@@ -56,13 +56,10 @@ public:
 			Fake(mock[&ConstVolatileFunctions::proc1]);
 			Fake(mock[&ConstVolatileFunctions::proc2]);
 			Fake(mock[&ConstVolatileFunctions::proc3]);
-			
-//			bool v = std::is_void<const void>::value;
-
-			Fake(mock[&ConstVolatileFunctions::proc4]);
- 			Fake(mock[&ConstVolatileFunctions::proc5]);
- 			Fake(mock[&ConstVolatileFunctions::proc6]);
- 			Fake(mock[&ConstVolatileFunctions::proc7]);
+//			Fake(mock[&ConstVolatileFunctions::proc4]);
+// 			Fake(mock[&ConstVolatileFunctions::proc5));
+// 			Fake(mock[&ConstVolatileFunctions::proc6));
+// 			Fake(mock[&ConstVolatileFunctions::proc7));
 
 			ConstVolatileFunctions& i = mock.get();
 			ASSERT_EQUAL(0, i.func1());
@@ -74,10 +71,10 @@ public:
 			i.proc1();
 			i.proc2();
 			i.proc3();
-			i.proc4();
- 			i.proc5();
- 			i.proc6();
- 			i.proc7();
+//			i.proc4();
+// 			i.proc5();
+// 			i.proc6();
+// 			i.proc7();
 		}
 
 		struct ConstVolatileParameters{
