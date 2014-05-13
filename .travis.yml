@@ -17,6 +17,6 @@ script:
   - ./fakeit_tests.exe
   - gcov *.o
   - cd ..
-  - coveralls --no-gcov --exclude tests
+  - coveralls --no-gcov --exclude tests --verbose
 after_success:
   - ls
