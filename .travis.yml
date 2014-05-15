@@ -18,5 +18,5 @@ script:
   - gcov *.o
   - ls -la
   - cd ..
-  - coveralls --no-gcov --exclude tests --verbose
+  - coveralls --no-gcov --verbose
 after_success:
