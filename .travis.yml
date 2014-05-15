@@ -16,6 +16,7 @@ script:
   - ./fakeit_tests.exe
   - ls -la
   - gcov *.o
+  - cat WhenFunctor.hpp.gcov
   - ls -la
   - cd ..
   - coveralls --no-gcov --verbose
