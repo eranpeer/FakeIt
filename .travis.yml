@@ -15,5 +15,5 @@ script:
   - make coverage
   - ./fakeit_tests.exe
   - gcov *.o
-  - python coveralls.py --root .. --build-root .
+  - python coveralls.py --root .. --build-root . --exclude tests
 after_success:
