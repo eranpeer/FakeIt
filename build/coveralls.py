@@ -90,7 +90,7 @@ def create_args(params):
     parser.add_argument('-b', '--build-root', metavar='DIR', default='.',
                         help='the directory used as root for building the source')
     parser.add_argument('-e', '--exclude', metavar='DIR|FILE',
-                        dest='exclude_list', action='append',
+                        dest='exclude_list', action='append', default=[],
                         help='set exclude file or directory')
     parser.add_argument('-E', '--exclude-pattern', dest='exclude_patterns',
                         action='append', metavar='REGEXP', default=[],
