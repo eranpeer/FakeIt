@@ -96,7 +96,7 @@ class Context:
         abs_excluded_path = os.path.abspath(os.path.join(self.root,rel_file_path))
         for excluded_path in self.exclude_list:
             curr_abs_path = os.path.abspath(os.path.join(self.root,excluded_path))
-            if os.path.isdir(excluded_path):
+            if os.path.isdir(curr_abs_path):
                 return self.is_under_folder(abs_excluded_path, curr_abs_path)
             if curr_abs_path == abs_excluded_path:
                 return True
