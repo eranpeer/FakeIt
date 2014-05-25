@@ -63,7 +63,6 @@ class Context:
         self.exclude_list = exclude_list
         self.exclude_patterns = exclude_patterns
         self.src_encoding = encoding
-        print(self.exclude_list,self.exclude_patterns)
 
     def abs_root(self):
         return os.path.abspath(self.root)
@@ -95,7 +94,6 @@ class Context:
 
     def is_excluded_by_path(self, rel_file_path):
         abs_excluded_path = os.path.abspath(os.path.join(self.root,rel_file_path))
-        print(self.exclude_list)
         for excluded_path in self.exclude_list:
             curr_abs_path = os.path.abspath(os.path.join(self.root,excluded_path))
             if os.path.isdir(excluded_path):

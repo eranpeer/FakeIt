@@ -113,11 +113,7 @@ def run():
 
     args = create_args(sys.argv[1:])
 
-    print(args)
-
     context = Context(args.root,args.build_root, args.exclude_list, args.exclude_patterns, args.encoding)
-
-    print(context)
 
     args.repo_token = ''
     args.service_name = 'travis-ci'
