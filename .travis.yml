@@ -9,8 +9,9 @@ before_install:
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
   - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.8 90
 script:
-  - cd ./build
   - g++ --version
+  - python --version
+  - cd ./build
   - make coverage
   - ./fakeit_tests.exe
   - gcov *.o
