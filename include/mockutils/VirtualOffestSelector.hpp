@@ -165,6 +165,6 @@ struct VirtualOffsetSelector {
 		return 49;
 	}
 };
-
 }
+
 #endif // VirtualOffestSelector_h__

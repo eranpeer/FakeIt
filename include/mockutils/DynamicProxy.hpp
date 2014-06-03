@@ -22,13 +22,11 @@
 #endif
 
 #include "mockutils/MethodProxy.hpp"
-#include "mockutils/VirtualOffestSelector.hpp"
 #include "mockutils/union_cast.hpp"
 #include "mockutils/MethodInvocationHandler.hpp"
+#include "mockutils/VTUtils.hpp"
 
 namespace fakeit {
-
-static VirtualOffsetSelector offsetSelctor;
 
 template<typename C, typename ... baseclasses>
 struct DynamicProxy {
@@ -284,11 +282,9 @@ private:
 		}
 
 		static unsigned int getOffset(R (C::*vMethod)(arglist...)) {
-			auto sMethod = reinterpret_cast<unsigned int (VirtualOffsetSelector::*)()>(vMethod);
-			auto selectMethod = std::bind(sMethod, &offsetSelctor);
-			unsigned int offset = (unsigned int)selectMethod();
-			return offset;
+			return VTUtils<C>::getOffset(vMethod);
 		}
+
 
 	};
 
