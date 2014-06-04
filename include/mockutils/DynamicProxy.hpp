@@ -282,7 +282,7 @@ private:
 		}
 
 		static unsigned int getOffset(R (C::*vMethod)(arglist...)) {
-			return VTUtils<C>::getOffset(vMethod);
+			return VTUtils::getOffset(vMethod);
 		}
 
 
