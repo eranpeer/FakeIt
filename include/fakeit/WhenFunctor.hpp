@@ -65,7 +65,7 @@ public:
 		}
 	protected:
 
-		virtual FirstFunctionStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) override {
+		virtual FirstFunctionStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<Behavior<R, arglist...> > ptr) override {
 			root.AppendAction(ptr);
 			return *this;
 		}
@@ -91,7 +91,7 @@ public:
 
 	protected:
 
-		virtual FirstProcedureStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<BehaviorMock<R, arglist...> > ptr) override {
+		virtual FirstProcedureStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<Behavior<R, arglist...> > ptr) override {
 			root.AppendAction(ptr);
 			return *this;
 		}

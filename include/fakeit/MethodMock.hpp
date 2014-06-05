@@ -15,82 +15,13 @@
 #include <tuple>
 
 #include "mockutils/TupleDispatcher.hpp"
-#include "mockutils/DefaultValue.hpp"
-
 #include "fakeit/DomainObjects.hpp"
 #include "fakeit/ActualInvocation.hpp"
-#include "fakeit/FakeitExceptions.hpp"
+#include "fakeit/Behavior.hpp"
 
 namespace fakeit {
 
 static std::atomic_int invocationOrdinal;
-
-template<typename R, typename ... arglist>
-struct BehaviorMock {
-	virtual R invoke(arglist&... args) = 0;
-	virtual bool isDone() = 0;
-};
-
-template<typename R, typename ... arglist>
-struct DoMock: public BehaviorMock<R, arglist...> {
-	DoMock(std::function<R(arglist&...)> f) :
-			f(f), times(1) {
-	}
-
-	DoMock(std::function<R(arglist&...)> f, long times) :
-			f(f), times(times) {
-	}
-
-	virtual R invoke(arglist&... args) override {
-		times--;
-		return f(args...);
-	}
-
-	virtual bool isDone() override {
-		return times == 0;
-	}
-private:
-	std::function<R(arglist&...)> f;
-	long times;
-};
-
-template<typename R, typename ... arglist>
-struct DoForeverMock: public BehaviorMock<R, arglist...> {
-	DoForeverMock(std::function<R(arglist&...)> f) :
-			f(f) {
-	}
-	virtual R invoke(arglist&... args) override {
-		return f(args...);
-	}
-
-	virtual bool isDone() override {
-		return false;
-	}
-private:
-	std::function<R(arglist&...)> f;
-};
-
-template<typename R, typename ... arglist>
-struct EndMock: public BehaviorMock<R, arglist...> {
-	virtual R invoke(arglist&... args) override {
-		throw UnexpectedMethodCallException();
-	}
-
-	virtual bool isDone() override {
-		return false;
-	}
-};
-
-template<typename R, typename ... arglist>
-struct InitialMock: public BehaviorMock<R, arglist...> {
-	virtual R invoke(arglist&... args) override {
-		return DefaultValue::value<R>();
-	}
-
-	virtual bool isDone() override {
-		return false;
-	}
-};
 
 template<typename R, typename ... arglist>
 struct MethodInvocationMock: public ActualInvocation<arglist...>::Matcher, public MethodInvocationHandler<R, arglist...> {
@@ -122,28 +53,28 @@ struct RecordedMethodBody: public MethodInvocationHandler<R, arglist...> {
 	}
 
 	void AppendDo(std::function<R(arglist...)> method) {
-		std::shared_ptr<BehaviorMock<R, arglist...>> doMock = std::shared_ptr<BehaviorMock<R, arglist...>> { new DoMock<R, arglist...>(
+		std::shared_ptr<Behavior<R, arglist...>> doMock = std::shared_ptr<Behavior<R, arglist...>> { new Call<R, arglist...>(
 				method) };
 		AppendDo(doMock);
 	}
 
 	void LastDo(std::function<R(arglist...)> method) {
-		std::shared_ptr<BehaviorMock<R, arglist...>> doMock = std::shared_ptr<BehaviorMock<R, arglist...>> { new DoMock<R, arglist...>(
+		std::shared_ptr<Behavior<R, arglist...>> doMock = std::shared_ptr<Behavior<R, arglist...>> { new Call<R, arglist...>(
 				method) };
 		LastDo(doMock);
 	}
 
-	void AppendDo(std::shared_ptr<BehaviorMock<R, arglist...> > doMock) {
+	void AppendDo(std::shared_ptr<Behavior<R, arglist...> > doMock) {
 		append(doMock);
 	}
 
-	void LastDo(std::shared_ptr<BehaviorMock<R, arglist...> > doMock) {
+	void LastDo(std::shared_ptr<Behavior<R, arglist...> > doMock) {
 		append(doMock);
 		behaviorMocks.pop_back();
 	}
 
 	R handleMethodInvocation(arglist&... args) override {
-		std::shared_ptr<BehaviorMock<R, arglist...>> behavior = behaviorMocks.front();
+		std::shared_ptr<Behavior<R, arglist...>> behavior = behaviorMocks.front();
 		std::function < void() > finallyClause = [&]()->void {
 			if (behavior->isDone())
 			behaviorMocks.erase(behaviorMocks.begin());
@@ -153,17 +84,17 @@ struct RecordedMethodBody: public MethodInvocationHandler<R, arglist...> {
 	}
 
 private:
-	void append(std::shared_ptr<BehaviorMock<R, arglist...>> mock) {
+	void append(std::shared_ptr<Behavior<R, arglist...>> mock) {
 		behaviorMocks.insert(behaviorMocks.end() - 1, mock);
 	}
 
 	void clear() {
 		behaviorMocks.clear();
-		auto doMock = std::shared_ptr<BehaviorMock<R, arglist...>> { new EndMock<R, arglist...>() };
+		auto doMock = std::shared_ptr<Behavior<R, arglist...>> { new ThrowUnexpectedMethodCall<R, arglist...>() };
 		behaviorMocks.push_back(doMock);
 	}
 
-	std::vector<std::shared_ptr<BehaviorMock<R, arglist...>>>behaviorMocks;
+	std::vector<std::shared_ptr<Behavior<R, arglist...>>>behaviorMocks;
 };
 
 template<typename R, typename ... arglist>

@@ -133,12 +133,12 @@ public:
 					new UserDefinedInvocationMatcher<arglist...>(matcher)});
 	}
 
-	void AppendAction(std::shared_ptr<BehaviorMock<R, arglist...>> method) {
+	void AppendAction(std::shared_ptr<Behavior<R, arglist...>> method) {
 		recordedMethodBody->AppendDo(method);
 	}
 
 	void operator=(std::function<R(arglist...)> method) {
-		std::shared_ptr<BehaviorMock<R, arglist...>> ptr {new DoForeverMock<R, arglist...>(method)};
+		std::shared_ptr<Behavior<R, arglist...>> ptr {new CallForever<R, arglist...>(method)};
 		MethodStubbingBase<C, R, arglist...>::AppendAction(ptr);
 		MethodStubbingBase<C, R, arglist...>::apply();
 	}
@@ -196,7 +196,7 @@ public:
 	template<typename U = R>
 	typename std::enable_if<!std::is_reference<U>::value, void>::type operator=(const R& r) {
 		auto method = [r](arglist&...) -> R {return r;};
-		std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoForeverMock<R, arglist...>(method) };
+		std::shared_ptr<Behavior<R, arglist...>> ptr { new CallForever<R, arglist...>(method) };
 		MethodStubbingBase<C, R, arglist...>::AppendAction(ptr);
 		MethodStubbingBase<C, R, arglist...>::apply();
 	}
@@ -204,7 +204,7 @@ public:
 	template<typename U = R>
 	typename std::enable_if<std::is_reference<U>::value, void>::type operator=(const R& r) {
 		auto method = [&r](arglist&...) -> R {return r;};
-		std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new DoForeverMock<R, arglist...>(method) };
+		std::shared_ptr<Behavior<R, arglist...>> ptr { new CallForever<R, arglist...>(method) };
 		MethodStubbingBase<C, R, arglist...>::AppendAction(ptr);
 		MethodStubbingBase<C, R, arglist...>::apply();
 	}

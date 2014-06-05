@@ -18,6 +18,14 @@ class FakeFunctor {
 private:
 	void operator()() {
 	}
+
+	template<typename C, typename R, typename ... arglist>
+	void fake(MethodStubbingBase<C, R, arglist...>& root) {
+		std::shared_ptr<Behavior<R, arglist...>> ptr { new ReturnDefaultValue<R, arglist...>() };
+		root.AppendAction(ptr);
+		root.apply();
+	}
+
 public:
 
 	FakeFunctor() {
@@ -26,17 +34,13 @@ public:
 	template<typename C, typename R, typename ... arglist>
 	void operator()(const ProcedureStubbingRoot<C, R, arglist...>& root) {
 		ProcedureStubbingRoot<C, R, arglist...>& rootWithoutConst = const_cast<ProcedureStubbingRoot<C, R, arglist...>&>(root);
-		std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new InitialMock<R, arglist...>() };
-		rootWithoutConst.AppendAction(ptr);
-		rootWithoutConst.apply();
+		fake(rootWithoutConst);
 	}
 
 	template<typename C, typename R, typename ... arglist>
 	void operator()(const FunctionStubbingRoot<C, R, arglist...>& root) {
 		FunctionStubbingRoot<C, R, arglist...>& rootWithoutConst = const_cast<FunctionStubbingRoot<C, R, arglist...>&>(root);
-		std::shared_ptr<BehaviorMock<R, arglist...>> ptr { new InitialMock<R, arglist...>() };
-		rootWithoutConst.AppendAction(ptr);
-		rootWithoutConst.apply();
+		fake(rootWithoutConst);
 	}
 
 	template<typename H, typename ... M>
