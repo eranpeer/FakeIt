@@ -17,7 +17,7 @@
 using namespace fakeit;
 using namespace std;
 using namespace tpunit;
-
+/*
 struct DemoTests
 		: tpunit::TestFixture
 		  {
@@ -158,3 +158,4 @@ struct DemoTests
 	}//
 
 } __DemoTests;
+*/

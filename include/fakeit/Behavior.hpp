@@ -85,6 +85,25 @@ struct ReturnDefaultValue: public Behavior<R, arglist...> {
 		return false;
 	}
 };
+
+template<typename C, typename R, typename ... arglist>
+struct ReturnDelegateValue: public Behavior<R, arglist...> {
+
+	ReturnDelegateValue(C & instance, R (C::*vMethod)(arglist... args)):instance(instance),vMethod(vMethod){}
+
+	virtual R invoke(arglist&... args) override {
+		return ((&instance)->*vMethod)(args...);
+	}
+
+	virtual bool isDone() override {
+		return false;
+	}
+
+private:
+	C & instance;
+	R (C::*vMethod)(arglist... args);
+};
+
 }
 
 #endif /* BEHAVIOR_HPP_ */

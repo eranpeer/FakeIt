@@ -164,6 +164,37 @@ struct VirtualOffsetSelector {
 	virtual unsigned int offset49() {
 		return 49;
 	}
+	virtual unsigned int offset50() {
+		return 50;
+	}
+	virtual unsigned int offset51() {
+		return 51;
+	}
+	virtual unsigned int offset52() {
+		return 52;
+	}
+	virtual unsigned int offset53() {
+		return 53;
+	}
+	virtual unsigned int offset54() {
+		return 54;
+	}
+	virtual unsigned int offset55() {
+		return 55;
+	}
+	virtual unsigned int offset56() {
+		return 56;
+	}
+	virtual unsigned int offset57() {
+		return 57;
+	}
+	virtual unsigned int offset58() {
+		return 58;
+	}
+	virtual unsigned int offset59() {
+		return 59;
+	}
+
 };
 }
 

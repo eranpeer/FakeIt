@@ -349,9 +349,7 @@ private:
 	template<typename T>
 	void initVirtualTable(VirtualTable<50, T, baseclasses...>* vtable) {
 		auto mptr = union_cast<void*>(&DynamicProxy::unmocked);
-		for (unsigned int i = 0; i < vtable->getSize(); i++) {
-			vtable->setMethod(i, mptr);
-		}
+		vtable->initAll(mptr);
 	}
 
 //	template <typename T, typename... baseclasses>

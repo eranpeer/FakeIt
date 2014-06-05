@@ -23,7 +23,7 @@ namespace fakeit {
 using namespace fakeit;
 
 template<typename C, typename ... baseclasses>
-class Mock: private MockObject, public virtual ActualInvocationsSource {
+class Mock: private MockObject<C>, public virtual ActualInvocationsSource {
 private:
 	DynamicProxy<C, baseclasses...> instance;
 
@@ -39,11 +39,12 @@ private:
 	}
 
 	template<typename R, typename ... arglist>
-	class StubbingContextImpl: public StubbingContext<C, R, arglist...> {
+	class MethodStubbingContextImpl: public MethodStubbingContext<C, R, arglist...> {
 		Mock<C, baseclasses...>& mock;
 		R (C::*vMethod)(arglist...);
 	public:
-		StubbingContextImpl(Mock<C, baseclasses...>& mock, R (C::*vMethod)(arglist...)) :
+
+		MethodStubbingContextImpl(Mock<C, baseclasses...>& mock, R (C::*vMethod)(arglist...)) :
 				mock(mock), vMethod(vMethod) {
 		}
 		virtual MethodMock<C, R, arglist...>& getMethodMock() override {
@@ -53,18 +54,27 @@ private:
 		virtual void getActualInvocations(std::unordered_set<Invocation*>& into) const override {
 			mock.getActualInvocations(into);
 		}
+
+		virtual typename MethodStubbingContext<C, R, arglist...>::MethodType getMethod() override {
+			return vMethod;
+		}
+
+		virtual MockObject<C>& getMock() override {
+			return mock;
+		}
+
 	};
 
 	template<typename R, typename ... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
 	FunctionStubbingRoot<C, R, arglist...> StubImpl(R (C::*vMethod)(arglist...)) {
 		return FunctionStubbingRoot<C, R, arglist...>(
-				std::shared_ptr<StubbingContext<C, R, arglist...>>(new StubbingContextImpl<R, arglist...>(*this, vMethod)));
+				std::shared_ptr<MethodStubbingContext<C, R, arglist...>>(new MethodStubbingContextImpl<R, arglist...>(*this, vMethod)));
 	}
 
 	template<typename R, typename ... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
 	ProcedureStubbingRoot<C, R, arglist...> StubImpl(R (C::*vMethod)(arglist...)) {
 		return ProcedureStubbingRoot<C, R, arglist...>(
-				std::shared_ptr<StubbingContext<C, R, arglist...>>(new StubbingContextImpl<R, arglist...>(*this, vMethod)));
+				std::shared_ptr<MethodStubbingContext<C, R, arglist...>>(new MethodStubbingContextImpl<R, arglist...>(*this, vMethod)));
 	}
 
 	void Stub() {
@@ -80,12 +90,10 @@ public:
 
 	static_assert(std::is_polymorphic<C>::value, "Can only mock a polymorphic type");
 
-	Mock() :
-			MockObject { }, instance { [] {throw UnexpectedMethodCallException {};} } {
+	Mock() : instance { [] {throw UnexpectedMethodCallException {};} } {
 	}
 
-	Mock(C &obj) :
-		MockObject { }, instance { [] {throw UnexpectedMethodCallException {};} } {
+	Mock(C &obj) : instance { [] {throw UnexpectedMethodCallException {};} } {
 	}
 
 	/**
@@ -101,7 +109,11 @@ public:
 
 	virtual ~Mock() = default;
 
-	C& get() {
+	virtual C& get() override {
+		return instance.get();
+	}
+
+	virtual C & getSpiedInstance() override {
 		return instance.get();
 	}
 

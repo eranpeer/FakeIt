@@ -184,7 +184,7 @@ template<typename C, typename R, typename ... arglist>
 struct MethodMock: public virtual MethodInvocationHandler<R, arglist...>, public virtual ActualInvocationsSource {
 
 
-	MethodMock(MockObject& mock, R (C::*vMethod)(arglist...)) :
+	MethodMock(MockObject<C>& mock, R (C::*vMethod)(arglist...)) :
 			mock(mock), vMethod(vMethod), method{typeid(vMethod).name()} {
 	}
 
@@ -237,7 +237,7 @@ struct MethodMock: public virtual MethodInvocationHandler<R, arglist...>, public
 	}
 private:
 
-	MockObject& mock;
+	MockObject<C>& mock;
 	R (C::*vMethod)(arglist...);
 	MethodImpl method;
 	std::vector<std::shared_ptr<MethodInvocationMock<R, arglist...>>>methodInvocationMocks;

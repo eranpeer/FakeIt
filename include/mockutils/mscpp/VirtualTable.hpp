@@ -117,11 +117,34 @@ struct RTTICompleteObjectLocator {
 template<int SIZE, class C, class... baseclasses>
 struct VirtualTable {
 
-	VirtualTable() {
-		auto array = new void*[SIZE + 1] {};
+	static void ** buildVTArray(){
+		int size = VTUtils::getVTSize<C>();
+		auto array = new void*[size + 1] {};
 		RTTICompleteObjectLocator<C, baseclasses...> * objectLocator = new RTTICompleteObjectLocator<C, baseclasses...>(typeid(C));
 		array[0] = objectLocator; // initialize RTTICompleteObjectLocator pointer
-		firstMethod = array;
+		return array;
+	}
+
+	static VirtualTable* cloneVTable(C& instance){
+		int size = VTUtils::getVTSize<C>();
+		auto array = new void*[size + 1]{};
+		array[1] = (void*) &typeid(C);
+		auto firstMethod = array;
+		firstMethod++; // skip objectLocator
+
+		int ** vtPtr = (int**)(&instance);
+
+		for (int i = 0;i<size;i++){
+			firstMethod[i] = array[i];
+		}
+		return new VirtualTable(array);
+	}
+
+	VirtualTable(): VirtualTable(buildVTArray()) {
+	}
+
+	VirtualTable(void** vtarray) {
+		firstMethod = vtarray;
 		firstMethod++; // skip objectLocator
 	}
 
@@ -145,6 +168,12 @@ struct VirtualTable {
 
 	unsigned int getSize() {
 		return SIZE;
+	}
+
+	void initAll(void* value){
+		for (unsigned int i = 0; i < getSize(); i++) {
+			setMethod(i, value);
+		}
 	}
 
 private:

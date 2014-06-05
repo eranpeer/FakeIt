@@ -725,3 +725,4 @@ struct BasicStubbing: tpunit::TestFixture {
 		//mock.get().outOfVTable();
 	}
 } __BasicStubbing;
+

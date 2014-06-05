@@ -10,17 +10,43 @@
 #define VirtualTable_h__
 
 #include "mockutils/gcc/is_simple_inheritance_layout.hpp"
+#include "mockutils/VTUtils.hpp"
 
 namespace fakeit {
-	template<int SIZE, class C, class... baseclasses>
+
+template<int SIZE, class C, class... baseclasses>
 struct VirtualTable {
 
 	static_assert(is_simple_inheritance_layout<C>::value, "Can't mock a type with multiple inheritance");
 
-	VirtualTable() {
-		auto array = new void*[SIZE + 2]{};
-		array[1] = (void*) &typeid(C); // initialize type_info pointer
-		firstMethod = array;
+	static void ** buildVTArray(){
+		int size = VTUtils::getVTSize<C>();
+		auto array = new void*[size + 2]{};
+		array[1] = (void*) &typeid(C);
+		return array;
+	}
+
+	static VirtualTable* cloneVTable(C& instance){
+		int size = VTUtils::getVTSize<C>();
+		auto array = new void*[size + 2]{};
+		array[1] = (void*) &typeid(C);
+		auto firstMethod = array;
+		firstMethod++; // top_offset
+		firstMethod++; // type_info ptr
+
+		int ** vtPtr = (int**)(&instance);
+
+		for (int i = 0;i<size;i++){
+			firstMethod[i] = array[i];
+		}
+		return new VirtualTable(array);
+	}
+
+	VirtualTable():VirtualTable(buildVTArray()) {
+	}
+
+	VirtualTable(void** vtarray) {
+		firstMethod = vtarray;
 		firstMethod++; // top_offset
 		firstMethod++; // type_info ptr
 	}
@@ -32,9 +58,6 @@ struct VirtualTable {
 	}
 
 	void setMethod(unsigned int index, void *method) {
-//		if (index >= SIZE) {
-//			throw "error";
-//		}
 		firstMethod[index] = method;
 	}
 
@@ -43,9 +66,15 @@ struct VirtualTable {
 	}
 
 	unsigned int getSize() {
-		return SIZE;
+		return VTUtils::getVTSize<C>();
 	}
 
+	void initAll(void* value){
+		unsigned int size = getSize();
+		for (unsigned int i = 0; i < size; i++) {
+			setMethod(i, value);
+		}
+	}
 private:
 	void** firstMethod;
 };

@@ -32,10 +32,18 @@ enum class ProgressType {
 };
 
 template<typename C, typename R, typename ... arglist>
-struct StubbingContext : public ActualInvocationsSource {
-	virtual ~StubbingContext() {
-	}
+struct MethodStubbingContext : public ActualInvocationsSource {
+
+	typedef R (C::*MethodType)(arglist...);
+
+	virtual ~MethodStubbingContext() = default;
+
 	virtual MethodMock<C, R, arglist...>& getMethodMock() = 0;
+
+	virtual MethodType getMethod() = 0;
+
+	virtual MockObject<C>& getMock() = 0;
+
 };
 
 struct RecordedMethodInvocation {
@@ -49,6 +57,16 @@ class MethodStubbingBase: public RecordedMethodInvocation, //
 		public virtual Invocation::Matcher {
 private:
 
+	typedef R (C::*func)(arglist...);
+
+	func getTheMethod() {
+		return stubbingContext->getMethod();
+	}
+
+	MockObject<C>& getMockObject() {
+		return stubbingContext->getMock();
+	}
+
 	std::shared_ptr<RecordedMethodBody<R, arglist...>> buildInitialMethodBody() {
 		std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody { new RecordedMethodBody<R, arglist...>() };
 		return recordedMethodBody;
@@ -61,15 +79,16 @@ private:
 protected:
 	friend class VerifyFunctor;
 	friend class FakeFunctor;
+	friend class SpyFunctor;
 	friend class WhenFunctor;
 
-	std::shared_ptr<StubbingContext<C, R, arglist...>> stubbingContext;
+	std::shared_ptr<MethodStubbingContext<C, R, arglist...>> stubbingContext;
 	std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> invocationMatcher;
 	std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody;
 
 	int expectedInvocationCount;
 
-	MethodStubbingBase(std::shared_ptr<StubbingContext<C, R, arglist...>> stubbingContext) :
+	MethodStubbingBase(std::shared_ptr<MethodStubbingContext<C, R, arglist...>> stubbingContext) :
 			stubbingContext(stubbingContext), invocationMatcher { new DefaultInvocationMatcher<arglist...>() }, expectedInvocationCount(-1) {
 		recordedMethodBody = buildInitialMethodBody();
 	}
@@ -160,7 +179,7 @@ protected:
 
 public:
 
-	FunctionStubbingRoot(std::shared_ptr<StubbingContext<C, R, arglist...>> stubbingContext) :
+	FunctionStubbingRoot(std::shared_ptr<MethodStubbingContext<C, R, arglist...>> stubbingContext) :
 			MethodStubbingBase<C, R, arglist...>(stubbingContext) {
 	}
 
@@ -219,12 +238,13 @@ private:
 
 	friend class VerifyFunctor;
 	friend class FakeFunctor;
+	friend class SpyFunctor;
 	friend class WhenFunctor;
 
 protected:
 
 public:
-	ProcedureStubbingRoot(std::shared_ptr<StubbingContext<C, R, arglist...>> stubbingContext) :
+	ProcedureStubbingRoot(std::shared_ptr<MethodStubbingContext<C, R, arglist...>> stubbingContext) :
 			MethodStubbingBase<C, R, arglist...>(stubbingContext) {
 	}
 
