@@ -33,6 +33,19 @@ struct DemoTests
 		{
 	}
 
+	class Some {
+	public:
+		virtual ~Some(){}
+		virtual void f1(){}
+		virtual void f2(){}
+	};
+
+	class Some2: public Some {
+	public:
+		virtual ~Some2(){}
+		virtual void f3(){}
+	};
+
 	struct SomeInterface {
 		virtual int foo(int) = 0;
 		virtual int bar(int, int) = 0;
@@ -58,6 +71,7 @@ struct DemoTests
 	};
 
 	void simple_inheritance_upcast() {
+		auto size = VTUtils::getVTSize<Some2>();
 		Mock<C> cMock;		
 		When(cMock[&C::foo]).AlwaysReturn(0);
 		

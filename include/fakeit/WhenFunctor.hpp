@@ -31,22 +31,22 @@ public:
 				return;
 			}
 
-			_xaction.apply();
+			_recordedMethodInvocation.apply();
 		}
 
 		StubbingProgress(StubbingProgress& other) :
-				_isActive(other._isActive), _xaction(other._xaction) {
+				_isActive(other._isActive), _recordedMethodInvocation(other._recordedMethodInvocation) {
 			other._isActive = false; // all other ctors should init _isActive to true;
 		}
 
 		StubbingProgress(RecordedMethodInvocation& xaction) :
-				_isActive(true), _xaction(xaction) {
+				_isActive(true), _recordedMethodInvocation(xaction) {
 		}
 
 	private:
 
 		bool _isActive;
-		RecordedMethodInvocation& _xaction;
+		RecordedMethodInvocation& _recordedMethodInvocation;
 	};
 
 	template<typename C, typename R, typename ... arglist>
@@ -71,9 +71,7 @@ public:
 		}
 
 	private:
-
 		FunctionStubbingRoot<C, R, arglist...>& root;
-//		FunctionProgress & operator=(const FunctionProgress & other) = delete;
 	};
 
 	template<typename C, typename R, typename ... arglist>
@@ -100,7 +98,6 @@ public:
 
 	private:
 		ProcedureStubbingRoot<C, R, arglist...>& root;
-//		ProcedureProgress & operator=(const ProcedureProgress & other) = delete;
 	};
 
 	WhenFunctor() {

@@ -118,8 +118,7 @@ template<typename R, typename ... arglist>
 struct RecordedMethodBody: public MethodInvocationHandler<R, arglist...> {
 
 	RecordedMethodBody() {
-		auto initialMock = std::shared_ptr<BehaviorMock<R, arglist...>> { new InitialMock<R, arglist...>() };
-		behaviorMocks.push_back(initialMock);
+		clear();
 	}
 
 	void AppendDo(std::function<R(arglist...)> method) {
@@ -135,9 +134,6 @@ struct RecordedMethodBody: public MethodInvocationHandler<R, arglist...> {
 	}
 
 	void AppendDo(std::shared_ptr<BehaviorMock<R, arglist...> > doMock) {
-		if (isFirstAppend()) {
-			clear();
-		}
 		append(doMock);
 	}
 
@@ -165,10 +161,6 @@ private:
 		behaviorMocks.clear();
 		auto doMock = std::shared_ptr<BehaviorMock<R, arglist...>> { new EndMock<R, arglist...>() };
 		behaviorMocks.push_back(doMock);
-	}
-
-	bool isFirstAppend() {
-		return dynamic_cast<InitialMock<R, arglist...>*>(behaviorMocks.back().get()) != nullptr;
 	}
 
 	std::vector<std::shared_ptr<BehaviorMock<R, arglist...>>>behaviorMocks;

@@ -154,6 +154,7 @@ private:
 
 	friend class VerifyFunctor;
 	friend class FakeFunctor;
+	friend class SpyFunctor;
 	friend class WhenFunctor;
 protected:
 

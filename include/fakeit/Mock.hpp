@@ -67,7 +67,6 @@ private:
 				std::shared_ptr<StubbingContext<C, R, arglist...>>(new StubbingContextImpl<R, arglist...>(*this, vMethod)));
 	}
 
-	//typename std::remove_cv<T>::type
 	void Stub() {
 	}
 
@@ -83,6 +82,10 @@ public:
 
 	Mock() :
 			MockObject { }, instance { [] {throw UnexpectedMethodCallException {};} } {
+	}
+
+	Mock(C &obj) :
+		MockObject { }, instance { [] {throw UnexpectedMethodCallException {};} } {
 	}
 
 	/**
