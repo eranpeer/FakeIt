@@ -302,7 +302,7 @@ private:
 		}
 	};
 
-	VirtualTable<50, C, baseclasses...> vtable;
+	VirtualTable<C, baseclasses...> vtable;
 
 	// Here we alloc too many bytes since sizeof(C) includes the pointer to the virtual table.
 	// Should be sizeof(C) - ptr_size.
@@ -347,7 +347,7 @@ private:
 	}
 
 	template<typename T>
-	void initVirtualTable(VirtualTable<50, T, baseclasses...>* vtable) {
+	void initVirtualTable(VirtualTable<T, baseclasses...>* vtable) {
 		auto mptr = union_cast<void*>(&DynamicProxy::unmocked);
 		vtable->initAll(mptr);
 	}
