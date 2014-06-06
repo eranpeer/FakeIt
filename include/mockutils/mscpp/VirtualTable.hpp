@@ -117,7 +117,7 @@ struct RTTICompleteObjectLocator {
 	struct RTTIClassHierarchyDescriptor<C, baseclasses...>* pClassDescriptor; //describes inheritance hierarchy
 };
 
-template<int SIZE, class C, class... baseclasses>
+template<class C, class... baseclasses>
 struct VirtualTable {
 
 	static void ** buildVTArray(){
