@@ -120,14 +120,6 @@ struct RTTICompleteObjectLocator {
 template<class C, class... baseclasses>
 struct VirtualTable {
 
-	static void ** buildVTArray(){
-		int size = VTUtils::getVTSize<C>();
-		auto array = new void*[size + 1] {};
-		RTTICompleteObjectLocator<C, baseclasses...> * objectLocator = new RTTICompleteObjectLocator<C, baseclasses...>(typeid(C));
-		array[0] = objectLocator; // initialize RTTICompleteObjectLocator pointer
-		return array;
-	}
-
 	static VirtualTable* cloneVTable(C& instance){
 		int size = VTUtils::getVTSize<C>();
 		auto array = new void*[size + 1]{};
@@ -144,11 +136,6 @@ struct VirtualTable {
 	}
 
 	VirtualTable(): VirtualTable(buildVTArray()) {
-	}
-
-	VirtualTable(void** vtarray) {
-		firstMethod = vtarray;
-		firstMethod++; // skip objectLocator
 	}
 
 	~VirtualTable() {
@@ -181,10 +168,23 @@ private:
 	void** firstMethod;
 
 	class SimpleType {
-
 	};
 
 	static_assert(sizeof(unsigned int (SimpleType::*)()) == sizeof(unsigned int (C::*)()), "Can't mock a type with multiple inheritance");
+
+	static void ** buildVTArray(){
+		int size = VTUtils::getVTSize<C>();
+		auto array = new void*[size + 1] {};
+		RTTICompleteObjectLocator<C, baseclasses...> * objectLocator = new RTTICompleteObjectLocator<C, baseclasses...>(typeid(C));
+		array[0] = objectLocator; // initialize RTTICompleteObjectLocator pointer
+		return array;
+	}
+
+	VirtualTable(void** vtarray) {
+		firstMethod = vtarray;
+		firstMethod++; // skip objectLocator
+	}
+
 };
 }
 #endif /* VIRTUALTABLE_H_ */
