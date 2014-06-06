@@ -8,6 +8,9 @@
 
 #ifndef VIRTUALTABLE_H_
 #define VIRTUALTABLE_H_
+
+#include "mockutils/VTUtils.hpp"
+
 namespace fakeit {
 
 typedef unsigned long DWORD;
@@ -156,9 +159,6 @@ struct VirtualTable {
 	}
 
 	void setMethod(unsigned int index, void *method) {
-		if (index >= SIZE) {
-			throw "error";
-		}
 		firstMethod[index] = method;
 	}
 
@@ -167,11 +167,12 @@ struct VirtualTable {
 	}
 
 	unsigned int getSize() {
-		return SIZE;
+		return VTUtils::getVTSize<C>();
 	}
 
 	void initAll(void* value){
-		for (unsigned int i = 0; i < getSize(); i++) {
+		auto size = getSize();
+		for (unsigned int i = 0; i < size; i++) {
 			setMethod(i, value);
 		}
 	}
