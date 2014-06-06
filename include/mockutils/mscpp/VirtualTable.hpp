@@ -130,7 +130,7 @@ struct VirtualTable {
 		int ** vtPtr = (int**)(&instance);
 
 		for (int i = 0;i<size;i++){
-			firstMethod[i] = array[i];
+			firstMethod[i] = vtPtr[i];
 		}
 		return new VirtualTable(array);
 	}

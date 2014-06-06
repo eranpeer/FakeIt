@@ -30,7 +30,7 @@ struct VirtualTable {
 		int ** vtPtr = (int**) (&instance);
 
 		for (int i = 0; i < size; i++) {
-			firstMethod[i] = array[i];
+			firstMethod[i] = vtPtr[i];
 		}
 		return new VirtualTable(array);
 	}
@@ -43,6 +43,11 @@ struct VirtualTable {
 		firstMethod--;
 		firstMethod--;
 		delete[] firstMethod;
+	}
+
+	void apply(C& instance) {
+		int ** vtPtr = (int**)(&instance);
+		*vtPtr = (int *)(this);
 	}
 
 	void setMethod(unsigned int index, void *method) {

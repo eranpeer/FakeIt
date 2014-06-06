@@ -33,23 +33,21 @@ struct DynamicProxy {
 	static_assert(std::is_polymorphic<C>::value, "DynamicProxy requires a polymorphic type");
 
 	DynamicProxy(std::function<void()> unmockedMethodCallHandler) :
-			vtable(), methodMocks(), unmockedMethodCallHandler { unmockedMethodCallHandler } {
-		initVirtualTable<C>(&vtable);
-		initializeDataMembersArea();
+			fake(), methodMocks(), unmockedMethodCallHandler { unmockedMethodCallHandler } {
+				fake.reset(union_cast<void*>(&DynamicProxy::unmocked));
 	}
 
 	~DynamicProxy() {
 	}
 
 	C& get() {
-		return reinterpret_cast<C&>(*this);
+		return reinterpret_cast<C&>(fake);
 	}
 
 	void Reset() {
 		methodMocks = {};
 		members = {};
-		initVirtualTable<C>(&vtable);
-		initializeDataMembersArea();
+		fake.reset(union_cast<void*>(&DynamicProxy::unmocked));
 	}
 
 	template<typename R, typename ... arglist>
@@ -78,8 +76,8 @@ struct DynamicProxy {
 		C& mock = get();
 		DATA_TYPE *memberPtr = &(mock.*theMember);
 		members.push_back(
-				std::shared_ptr<DataMemeberWrapper<DATA_TYPE, arglist...>> { new DataMemeberWrapper<DATA_TYPE, arglist...>(memberPtr,
-						initargs...) });
+				std::shared_ptr<DataMemeberWrapper<DATA_TYPE, arglist...>> {new DataMemeberWrapper<DATA_TYPE, arglist...>(memberPtr,
+							initargs...)});
 	}
 
 	template<typename DATA_TYPE>
@@ -87,7 +85,7 @@ struct DynamicProxy {
 		for (std::shared_ptr<Destructable> ptr : methodMocks) {
 			DATA_TYPE p = dynamic_cast<DATA_TYPE>(ptr.get());
 			if (p)
-				into.push_back(p);
+			into.push_back(p);
 		}
 	}
 
@@ -118,157 +116,157 @@ private:
 
 	public:
 
-		static MethodProxy<R,arglist...>* createMethodProxy(unsigned int offset){
+		static MethodProxy<R,arglist...>* createMethodProxy(unsigned int offset) {
 			MethodProxy<R,arglist...>* proxy = nullptr;
-			switch (offset){
-			case 0:
+			switch (offset) {
+				case 0:
 				proxy = new VirtualMethodProxy<0>();
 				break;
-			case 1:
+				case 1:
 				proxy = new VirtualMethodProxy<1>();
 				break;
-			case 2:
+				case 2:
 				proxy = new VirtualMethodProxy<2>();
 				break;
-			case 3:
+				case 3:
 				proxy = new VirtualMethodProxy<3>();
 				break;
-			case 4:
+				case 4:
 				proxy = new VirtualMethodProxy<4>();
 				break;
-			case 5:
+				case 5:
 				proxy = new VirtualMethodProxy<5>();
 				break;
-			case 6:
+				case 6:
 				proxy = new VirtualMethodProxy<6>();
 				break;
-			case 7:
+				case 7:
 				proxy = new VirtualMethodProxy<7>();
 				break;
-			case 8:
+				case 8:
 				proxy = new VirtualMethodProxy<8>();
 				break;
-			case 9:
+				case 9:
 				proxy = new VirtualMethodProxy<9>();
 				break;
-			case 10:
+				case 10:
 				proxy = new VirtualMethodProxy<10>();
 				break;
-			case 11:
+				case 11:
 				proxy = new VirtualMethodProxy<11>();
 				break;
-			case 12:
+				case 12:
 				proxy = new VirtualMethodProxy<12>();
 				break;
-			case 13:
+				case 13:
 				proxy = new VirtualMethodProxy<13>();
 				break;
-			case 14:
+				case 14:
 				proxy = new VirtualMethodProxy<14>();
 				break;
-			case 15:
+				case 15:
 				proxy = new VirtualMethodProxy<15>();
 				break;
-			case 16:
+				case 16:
 				proxy = new VirtualMethodProxy<16>();
 				break;
-			case 17:
+				case 17:
 				proxy = new VirtualMethodProxy<17>();
 				break;
-			case 18:
+				case 18:
 				proxy = new VirtualMethodProxy<18>();
 				break;
-			case 19:
+				case 19:
 				proxy = new VirtualMethodProxy<19>();
 				break;
-			case 20:
+				case 20:
 				proxy = new VirtualMethodProxy<20>();
 				break;
-			case 21:
+				case 21:
 				proxy = new VirtualMethodProxy<21>();
 				break;
-			case 22:
+				case 22:
 				proxy = new VirtualMethodProxy<22>();
 				break;
-			case 23:
+				case 23:
 				proxy = new VirtualMethodProxy<23>();
 				break;
-			case 24:
+				case 24:
 				proxy = new VirtualMethodProxy<24>();
 				break;
-			case 25:
+				case 25:
 				proxy = new VirtualMethodProxy<25>();
 				break;
-			case 26:
+				case 26:
 				proxy = new VirtualMethodProxy<26>();
 				break;
-			case 27:
+				case 27:
 				proxy = new VirtualMethodProxy<27>();
 				break;
-			case 28:
+				case 28:
 				proxy = new VirtualMethodProxy<28>();
 				break;
-			case 29:
+				case 29:
 				proxy = new VirtualMethodProxy<29>();
 				break;
-			case 30:
+				case 30:
 				proxy = new VirtualMethodProxy<30>();
 				break;
-			case 31:
+				case 31:
 				proxy = new VirtualMethodProxy<31>();
 				break;
-			case 32:
+				case 32:
 				proxy = new VirtualMethodProxy<32>();
 				break;
-			case 33:
+				case 33:
 				proxy = new VirtualMethodProxy<33>();
 				break;
-			case 34:
+				case 34:
 				proxy = new VirtualMethodProxy<34>();
 				break;
-			case 35:
+				case 35:
 				proxy = new VirtualMethodProxy<35>();
 				break;
-			case 36:
+				case 36:
 				proxy = new VirtualMethodProxy<36>();
 				break;
-			case 37:
+				case 37:
 				proxy = new VirtualMethodProxy<37>();
 				break;
-			case 38:
+				case 38:
 				proxy = new VirtualMethodProxy<38>();
 				break;
-			case 39:
+				case 39:
 				proxy = new VirtualMethodProxy<39>();
 				break;
-			case 40:
+				case 40:
 				proxy = new VirtualMethodProxy<40>();
 				break;
-			case 41:
+				case 41:
 				proxy = new VirtualMethodProxy<41>();
 				break;
-			case 42:
+				case 42:
 				proxy = new VirtualMethodProxy<42>();
 				break;
-			case 43:
+				case 43:
 				proxy = new VirtualMethodProxy<43>();
 				break;
-			case 44:
+				case 44:
 				proxy = new VirtualMethodProxy<44>();
 				break;
-			case 45:
+				case 45:
 				proxy = new VirtualMethodProxy<45>();
 				break;
-			case 46:
+				case 46:
 				proxy = new VirtualMethodProxy<46>();
 				break;
-			case 47:
+				case 47:
 				proxy = new VirtualMethodProxy<47>();
 				break;
-			case 48:
+				case 48:
 				proxy = new VirtualMethodProxy<48>();
 				break;
-			case 49:
+				case 49:
 				proxy = new VirtualMethodProxy<49>();
 				break;
 			}
@@ -278,13 +276,12 @@ private:
 		static std::shared_ptr<MethodProxy<R, arglist...>> createMethodProxy(R (C::*vMethod)(arglist...)) {
 			auto offset = getOffset(vMethod);
 			MethodProxy<R, arglist...>* rv = createMethodProxy(offset);
-			return std::shared_ptr<MethodProxy<R, arglist...>> { rv};
+			return std::shared_ptr<MethodProxy<R, arglist...>> {rv};
 		}
 
 		static unsigned int getOffset(R (C::*vMethod)(arglist...)) {
 			return VTUtils::getOffset(vMethod);
 		}
-
 
 	};
 
@@ -294,21 +291,49 @@ private:
 		DATA_TYPE *dataMember;
 	public:
 		DataMemeberWrapper(DATA_TYPE *dataMember, const arglist&... initargs) :
-				dataMember(dataMember) {
-			new (dataMember) DATA_TYPE { initargs ... };
+		dataMember(dataMember) {
+			new (dataMember) DATA_TYPE {initargs ...};
 		}
 		~DataMemeberWrapper() {
 			dataMember->~DATA_TYPE();
 		}
 	};
 
-	VirtualTable<C, baseclasses...> vtable;
+	class FakeObject {
+		VirtualTable<C, baseclasses...> vtable;
 
-	// Here we alloc too many bytes since sizeof(C) includes the pointer to the virtual table.
-	// Should be sizeof(C) - ptr_size.
-	// No harm is done if we alloc more space for data but don't use it.
-	char instanceArea[sizeof(C)];
+		// Here we alloc too many bytes since sizeof(C) includes the pointer to the virtual table.
+		// Should be sizeof(C) - ptr_size.
+		// No harm is done if we alloc more space for data but don't use it.
+		char instanceArea[sizeof(C)];
 
+		void initVirtualTable(void * mptr) {
+			vtable.initAll(mptr);
+		}
+
+		void initializeDataMembersArea() {
+			for (int i = 0; i < sizeof(instanceArea); i++) {
+				instanceArea[i] = (char) 0;
+			}
+		}
+
+	public:
+
+		FakeObject():vtable() {
+			initializeDataMembersArea();
+		}
+
+		void reset(void * mptr) {
+			initializeDataMembersArea();
+			initVirtualTable(mptr);
+		}
+
+		void setMethod(unsigned int index, void *method) {
+			vtable.setMethod(index,method);
+		}
+	};
+
+	FakeObject fake;
 	std::array<std::shared_ptr<Destructable>, 50> methodMocks;
 	std::vector<std::shared_ptr<Destructable>> members;
 	std::function<void()> unmockedMethodCallHandler;
@@ -320,7 +345,7 @@ private:
 
 	template<typename R, typename ... arglist>
 	static R defualtFunc(arglist...) {
-		return R { };
+		return R {};
 	}
 
 	template<typename ... arglist>
@@ -331,14 +356,14 @@ private:
 	void bind(std::shared_ptr<MethodProxy<R, arglist...>> methodProxy,
 			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {
 		auto offset = methodProxy->getOffset();
-		vtable.setMethod(offset, methodProxy->getProxy());
+		fake.setMethod(offset, methodProxy->getProxy());
 		methodMocks[offset] = invocationHandler;
 	}
 
-	void initializeDataMembersArea() {
-		for (int i = 0; i < sizeof(instanceArea); i++)
-			instanceArea[i] = (char) 0;
-	}
+//	void initializeDataMembersArea() {
+//		for (int i = 0; i < sizeof(instanceArea); i++)
+//		instanceArea[i] = (char) 0;
+//	}
 
 	template<typename DATA_TYPE>
 	DATA_TYPE getMethodMock(unsigned int offset) {
@@ -346,11 +371,11 @@ private:
 		return dynamic_cast<DATA_TYPE>(ptr.get());
 	}
 
-	template<typename T>
-	void initVirtualTable(VirtualTable<T, baseclasses...>* vtable) {
-		auto mptr = union_cast<void*>(&DynamicProxy::unmocked);
-		vtable->initAll(mptr);
-	}
+//	template<typename T>
+//	void initVirtualTable(VirtualTable<T, baseclasses...>* vtable) {
+//		auto mptr = union_cast<void*>(&DynamicProxy::unmocked);
+//		vtable->initAll(mptr);
+//	}
 
 //	template <typename T, typename... baseclasses>
 //	void addVirtualTable(int delta)
