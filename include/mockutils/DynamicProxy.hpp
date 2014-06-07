@@ -29,12 +29,45 @@
 namespace fakeit {
 
 template<typename C, typename ... baseclasses>
+class FakeObject {
+
+	VirtualTable<C, baseclasses...> vtable;
+	char instanceArea[sizeof(C) - sizeof(vtable)];
+
+	void initVirtualTable(void * mptr) {
+		vtable.initAll(mptr);
+	}
+
+	void initializeDataMembersArea() {
+		for (int i = 0; i < sizeof(instanceArea); i++) {
+			instanceArea[i] = (char) 0;
+		}
+	}
+
+public:
+
+	FakeObject():vtable() {
+		initializeDataMembersArea();
+	}
+
+	void reset(void * mptr) {
+		initializeDataMembersArea();
+		initVirtualTable(mptr);
+	}
+
+	void setMethod(unsigned int index, void *method) {
+		vtable.setMethod(index,method);
+	}
+};
+
+template<typename C, typename ... baseclasses>
 struct DynamicProxy {
+
 	static_assert(std::is_polymorphic<C>::value, "DynamicProxy requires a polymorphic type");
 
 	DynamicProxy(std::function<void()> unmockedMethodCallHandler) :
 			fake(), methodMocks(), unmockedMethodCallHandler { unmockedMethodCallHandler } {
-				fake.reset(union_cast<void*>(&DynamicProxy::unmocked));
+		fake.reset(union_cast<void*>(&DynamicProxy::unmocked));
 	}
 
 	~DynamicProxy() {
@@ -84,8 +117,9 @@ struct DynamicProxy {
 	void getMethodMocks(std::vector<DATA_TYPE>& into) const {
 		for (std::shared_ptr<Destructable> ptr : methodMocks) {
 			DATA_TYPE p = dynamic_cast<DATA_TYPE>(ptr.get());
-			if (p)
-			into.push_back(p);
+			if (p) {
+				into.push_back(p);
+			}
 		}
 	}
 
@@ -299,41 +333,10 @@ private:
 		}
 	};
 
-	class FakeObject {
-		VirtualTable<C, baseclasses...> vtable;
 
-		// Here we alloc too many bytes since sizeof(C) includes the pointer to the virtual table.
-		// Should be sizeof(C) - ptr_size.
-		// No harm is done if we alloc more space for data but don't use it.
-		char instanceArea[sizeof(C)];
+	static_assert(sizeof(C) == sizeof(FakeObject<C,baseclasses...>), "This is a problem");
 
-		void initVirtualTable(void * mptr) {
-			vtable.initAll(mptr);
-		}
-
-		void initializeDataMembersArea() {
-			for (int i = 0; i < sizeof(instanceArea); i++) {
-				instanceArea[i] = (char) 0;
-			}
-		}
-
-	public:
-
-		FakeObject():vtable() {
-			initializeDataMembersArea();
-		}
-
-		void reset(void * mptr) {
-			initializeDataMembersArea();
-			initVirtualTable(mptr);
-		}
-
-		void setMethod(unsigned int index, void *method) {
-			vtable.setMethod(index,method);
-		}
-	};
-
-	FakeObject fake;
+	FakeObject<C,baseclasses...> fake;
 	std::array<std::shared_ptr<Destructable>, 50> methodMocks;
 	std::vector<std::shared_ptr<Destructable>> members;
 	std::function<void()> unmockedMethodCallHandler;
@@ -360,32 +363,11 @@ private:
 		methodMocks[offset] = invocationHandler;
 	}
 
-//	void initializeDataMembersArea() {
-//		for (int i = 0; i < sizeof(instanceArea); i++)
-//		instanceArea[i] = (char) 0;
-//	}
-
 	template<typename DATA_TYPE>
 	DATA_TYPE getMethodMock(unsigned int offset) {
 		std::shared_ptr<Destructable> ptr = methodMocks[offset];
 		return dynamic_cast<DATA_TYPE>(ptr.get());
 	}
-
-//	template<typename T>
-//	void initVirtualTable(VirtualTable<T, baseclasses...>* vtable) {
-//		auto mptr = union_cast<void*>(&DynamicProxy::unmocked);
-//		vtable->initAll(mptr);
-//	}
-
-//	template <typename T, typename... baseclasses>
-//	void addVirtualTable(int delta)
-//	{
-//		auto virtTablePtr = (char *)&get() + delta;
-//		VirtualTable<50, T>* baseVirtualTable = new VirtualTable<50, T, baseclasses...>();
-//		initVirtualTable(*baseVirtualTable);
-//		VirtualTable<50, T>* virtualTablePtrInObjectData = (VirtualTable<50, T, baseclasses...>*)virtTablePtr;
-//		*virtualTablePtrInObjectData = *baseVirtualTable;
-//	}
 
 	template<typename BaseClass>
 	void checkMultipleInheritance() {
