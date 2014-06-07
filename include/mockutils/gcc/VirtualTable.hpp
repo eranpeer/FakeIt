@@ -20,8 +20,13 @@ struct VirtualTable {
 	static_assert(is_simple_inheritance_layout<C>::value, "Can't mock a type with multiple inheritance");
 
 	static VirtualTable<C, baseclasses...>* cloneVTable(C& instance) {
-		fakeit::VirtualTable<C, baseclasses...>* orig = (fakeit::VirtualTable<C, baseclasses...>*)(&instance);
-		return orig->clone();
+		fakeit::VirtualTable<C, baseclasses...>& orig = getVTable(instance);
+		return orig.clone();
+	}
+
+	static VirtualTable<C, baseclasses...>& getVTable(C& instance) {
+		fakeit::VirtualTable<C, baseclasses...>* vt = (fakeit::VirtualTable<C, baseclasses...>*)(&instance);
+		return *vt;
 	}
 
 	VirtualTable<C, baseclasses...>* clone() {
@@ -70,6 +75,11 @@ struct VirtualTable {
 			setMethod(i, value);
 		}
 	}
+
+	const std::type_info* getTypeId(){
+		return (const std::type_info*)(firstMethod[-1]);
+	}
+
 private:
 	void** firstMethod;
 
@@ -84,10 +94,6 @@ private:
 		firstMethod = vtarray;
 		firstMethod++; // top_offset
 		firstMethod++; // type_info ptr
-	}
-
-	const std::type_info* getTypeId(){
-		return (const std::type_info*)(firstMethod[-1]);
 	}
 
 };

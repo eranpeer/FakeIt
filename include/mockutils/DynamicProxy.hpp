@@ -34,8 +34,11 @@ class FakeObject {
 	VirtualTable<C, baseclasses...> vtable;
 	char instanceArea[sizeof(C) - sizeof(vtable)];
 
-	void initVirtualTable(void * mptr) {
-		vtable.initAll(mptr);
+public:
+
+	FakeObject() :
+			vtable() {
+		initializeDataMembersArea();
 	}
 
 	void initializeDataMembersArea() {
@@ -44,19 +47,16 @@ class FakeObject {
 		}
 	}
 
-public:
-
-	FakeObject():vtable() {
-		initializeDataMembersArea();
-	}
-
-	void reset(void * mptr) {
-		initializeDataMembersArea();
-		initVirtualTable(mptr);
-	}
-
 	void setMethod(unsigned int index, void *method) {
-		vtable.setMethod(index,method);
+		vtable.setMethod(index, method);
+	}
+
+	VirtualTable<C, baseclasses...>& getVirtualTable() {
+		return vtable;
+	}
+
+	void setVirtualTable(VirtualTable<C, baseclasses...>& t) {
+		vtable = t;
 	}
 };
 
@@ -67,8 +67,20 @@ struct DynamicProxy {
 
 	DynamicProxy(std::function<void()> unmockedMethodCallHandler) :
 			fake(), methodMocks(), unmockedMethodCallHandler { unmockedMethodCallHandler } {
-		fake.reset(union_cast<void*>(&DynamicProxy::unmocked));
+
+		fake.initializeDataMembersArea();
+		void* unmockedMethodStubPtr = union_cast<void*>(&DynamicProxy::unmocked);
+		fake.getVirtualTable().initAll(unmockedMethodStubPtr);
+
+		//originalVT = VirtualTable<C, baseclasses...>::getVTable(get());
+		originalVT = VirtualTable<C, baseclasses...>::cloneVTable(get());
 	}
+
+//	DynamicProxy(C& instance):
+//		fake(), methodMocks(), unmockedMethodCallHandler { unmockedMethodCallHandler }
+//	{
+//
+//	}
 
 	~DynamicProxy() {
 	}
@@ -80,7 +92,8 @@ struct DynamicProxy {
 	void Reset() {
 		methodMocks = {};
 		members = {};
-		fake.reset(union_cast<void*>(&DynamicProxy::unmocked));
+		fake.initializeDataMembersArea();
+		fake.setVirtualTable(*(originalVT->clone()));
 	}
 
 	template<typename R, typename ... arglist>
@@ -333,10 +346,10 @@ private:
 		}
 	};
 
-
 	static_assert(sizeof(C) == sizeof(FakeObject<C,baseclasses...>), "This is a problem");
 
 	FakeObject<C,baseclasses...> fake;
+	VirtualTable<C, baseclasses...>* originalVT;
 	std::array<std::shared_ptr<Destructable>, 50> methodMocks;
 	std::vector<std::shared_ptr<Destructable>> members;
 	std::function<void()> unmockedMethodCallHandler;
