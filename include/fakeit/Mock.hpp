@@ -25,7 +25,21 @@ using namespace fakeit;
 template<typename C, typename ... baseclasses>
 class Mock: private MockObject<C>, public virtual ActualInvocationsSource {
 private:
-	DynamicProxy<C, baseclasses...> instance;
+	DynamicProxy<C, baseclasses...> proxy;
+	C* instance;
+	bool isSpy;
+
+	void unmocked() {
+		throw UnexpectedMethodCallException {};
+	}
+
+	static C* createFakeInstance(){
+		FakeObject<C, baseclasses...>* fake = new FakeObject<C, baseclasses...>();
+		fake->initializeDataMembersArea();
+		void* unmockedMethodStubPtr = union_cast<void*>(&Mock<C, baseclasses...>::unmocked);
+		fake->getVirtualTable().initAll(unmockedMethodStubPtr);
+		return (C*)fake;
+	}
 
 	template<typename R, typename ... arglist>
 	MethodMock<C, R, arglist...>& stubMethodIfNotStubbed(DynamicProxy<C, baseclasses...> &instance, R (C::*vMethod)(arglist...)) {
@@ -48,7 +62,7 @@ private:
 				mock(mock), vMethod(vMethod) {
 		}
 		virtual MethodMock<C, R, arglist...>& getMethodMock() override {
-			return mock.stubMethodIfNotStubbed(mock.instance, vMethod);
+			return mock.stubMethodIfNotStubbed(mock.proxy, vMethod);
 		}
 
 		virtual void getActualInvocations(std::unordered_set<Invocation*>& into) const override {
@@ -82,7 +96,7 @@ private:
 
 	template<class DATA_TYPE, typename ... arglist>
 	DataMemberStubbingRoot<C, DATA_TYPE> stubDataMember(DATA_TYPE C::*member, const arglist&... ctorargs) {
-		instance.stubDataMember(member, ctorargs...);
+		proxy.stubDataMember(member, ctorargs...);
 		return DataMemberStubbingRoot<C, DATA_TYPE>();
 	}
 
@@ -90,10 +104,11 @@ public:
 
 	static_assert(std::is_polymorphic<C>::value, "Can only mock a polymorphic type");
 
-	Mock() : instance { [] {throw UnexpectedMethodCallException {};} } {
+	Mock() : Mock<C,baseclasses...> ( *(createFakeInstance()) ) {
+		isSpy = false;
 	}
 
-	Mock(C &obj) : instance { [] {throw UnexpectedMethodCallException {};} } {
+	Mock(C &obj) : proxy { obj }, instance(&obj) ,isSpy(true) {
 	}
 
 	/**
@@ -101,28 +116,33 @@ public:
 	 */
 	void getActualInvocations(std::unordered_set<Invocation*>& into) const override {
 		std::vector<ActualInvocationsSource*> vec;
-		instance.getMethodMocks(vec);
+		proxy.getMethodMocks(vec);
 		for (ActualInvocationsSource * s : vec) {
 			s->getActualInvocations(into);
 		}
 	}
 
-	virtual ~Mock() = default;
+	virtual ~Mock() {
+		if (isSpy)
+			return;
+		FakeObject<C,baseclasses...>* fake = (FakeObject<C,baseclasses...>*)instance;
+		delete fake;
+	}
 
 	virtual C& get() override {
-		return instance.get();
+		return proxy.get();
 	}
 
 	virtual C & getSpiedInstance() override {
-		return instance.get();
+		return proxy.get();
 	}
 
 	C& operator()() {
-		return instance.get();
+		return proxy.get();
 	}
 
 	void Reset() {
-		instance.Reset();
+		proxy.Reset();
 	}
 
 	template<class DATA_TYPE, typename ... arglist,

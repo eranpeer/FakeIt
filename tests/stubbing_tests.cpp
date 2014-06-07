@@ -530,7 +530,7 @@ struct BasicStubbing: tpunit::TestFixture {
 		When(mock[&SomeInterface::func]).AlwaysReturn(0);
 		When(mock[&SomeInterface::func].Using(1)).AlwaysReturn(1);
 		mock.Stub(&SomeInterface::state, "state");
-
+//
 		SomeInterface& i = mock.get();
 		i.func(0);
 		i.func(1);

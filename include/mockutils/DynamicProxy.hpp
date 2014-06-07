@@ -65,35 +65,32 @@ struct DynamicProxy {
 
 	static_assert(std::is_polymorphic<C>::value, "DynamicProxy requires a polymorphic type");
 
-	DynamicProxy(std::function<void()> unmockedMethodCallHandler) :
-			fake(), methodMocks(), unmockedMethodCallHandler { unmockedMethodCallHandler } {
-
-		fake.initializeDataMembersArea();
-		void* unmockedMethodStubPtr = union_cast<void*>(&DynamicProxy::unmocked);
-		fake.getVirtualTable().initAll(unmockedMethodStubPtr);
-
-		//originalVT = VirtualTable<C, baseclasses...>::getVTable(get());
-		originalVT = VirtualTable<C, baseclasses...>::cloneVTable(get());
+	DynamicProxy(C& instance):
+		instance(instance),
+		originalVT(VirtualTable<C, baseclasses...>::getVTable(instance)),
+		methodMocks()
+	{
+		auto newVt = originalVT.clone();
+		newVt->setCookie(this);
+		getFake().setVirtualTable(*newVt);
 	}
-
-//	DynamicProxy(C& instance):
-//		fake(), methodMocks(), unmockedMethodCallHandler { unmockedMethodCallHandler }
-//	{
-//
-//	}
 
 	~DynamicProxy() {
 	}
 
 	C& get() {
-		return reinterpret_cast<C&>(fake);
+		return instance;
 	}
 
 	void Reset() {
 		methodMocks = {};
 		members = {};
-		fake.initializeDataMembersArea();
-		fake.setVirtualTable(*(originalVT->clone()));
+
+		auto newVt = originalVT.clone();
+		newVt->setCookie(this);
+
+		getFake().initializeDataMembersArea();
+		getFake().setVirtualTable(*newVt);
 	}
 
 	template<typename R, typename ... arglist>
@@ -154,7 +151,10 @@ private:
 
 		private:
 			R methodProxy(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = union_cast<DynamicProxy<C, baseclasses...> *>(this);
+				C* instance = (C*)this;
+				VirtualTable<C,baseclasses...> & vt = VirtualTable<C,baseclasses...>::getVTable(*instance);
+				DynamicProxy<C, baseclasses...> * dynamicProxy = (DynamicProxy<C, baseclasses...> *)vt.getCookie();
+				//DynamicProxy<C, baseclasses...> * dynamicProxy = union_cast<DynamicProxy<C, baseclasses...> *>(this);
 				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(
 						OFFSET);
 				return methodMock->handleMethodInvocation(args...);
@@ -348,15 +348,13 @@ private:
 
 	static_assert(sizeof(C) == sizeof(FakeObject<C,baseclasses...>), "This is a problem");
 
-	FakeObject<C,baseclasses...> fake;
-	VirtualTable<C, baseclasses...>* originalVT;
+	C& instance;
+	VirtualTable<C, baseclasses...> originalVT;
 	std::array<std::shared_ptr<Destructable>, 50> methodMocks;
 	std::vector<std::shared_ptr<Destructable>> members;
-	std::function<void()> unmockedMethodCallHandler;
 
-	void unmocked() {
-		//DynamicProxy * m = this; // this should work
-		unmockedMethodCallHandler();
+	FakeObject<C,baseclasses...>& getFake() {
+		return reinterpret_cast<FakeObject<C,baseclasses...>&>(instance);
 	}
 
 	template<typename R, typename ... arglist>
@@ -372,7 +370,7 @@ private:
 	void bind(std::shared_ptr<MethodProxy<R, arglist...>> methodProxy,
 			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {
 		auto offset = methodProxy->getOffset();
-		fake.setMethod(offset, methodProxy->getProxy());
+		getFake().setMethod(offset, methodProxy->getProxy());
 		methodMocks[offset] = invocationHandler;
 	}
 

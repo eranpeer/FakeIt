@@ -29,10 +29,11 @@ struct VirtualTable {
 		return *vt;
 	}
 
-	VirtualTable<C, baseclasses...>* clone() {
+	VirtualTable<C, baseclasses...>* clone() const {
 		auto array = buildVTArray();
 		int size = VTUtils::getVTSize<C>();
 		auto firstMethod = array;
+		firstMethod++; // skip cookie
 		firstMethod++; // skip top_offset
 		firstMethod++; // skip type_info ptr
 		firstMethod[-1] = this->firstMethod[-1]; // copy type_info
@@ -49,6 +50,7 @@ struct VirtualTable {
 	~VirtualTable() {
 		firstMethod--;
 		firstMethod--;
+		firstMethod--;
 		delete[] firstMethod;
 	}
 
@@ -61,7 +63,7 @@ struct VirtualTable {
 		firstMethod[index] = method;
 	}
 
-	void * getMethod(unsigned int index) {
+	void * getMethod(unsigned int index) const {
 		return firstMethod[index];
 	}
 
@@ -80,20 +82,37 @@ struct VirtualTable {
 		return (const std::type_info*)(firstMethod[-1]);
 	}
 
+	void* getCookie(){
+		return firstMethod[-3];
+	}
+
+	void setCookie(void * value){
+		firstMethod[-3] = value;
+	}
+
+//	void print(){
+//		std::cout<<"location:"<<firstMethod<<std::endl;
+//		int size = VTUtils::getVTSize<C>();
+//		for (int i = 0; i<size;i++ ){
+//			std::cout<<firstMethod[i]<<std::endl;
+//		}
+//	}
+
 private:
 	void** firstMethod;
 
 	static void ** buildVTArray() {
 		int size = VTUtils::getVTSize<C>();
-		auto array = new void*[size + 2] { };
-		array[1] = (void*) &typeid(C);
+		auto array = new void*[size + 3] { };
+		array[2] = (void*) &typeid(C);
 		return array;
 	}
 
 	VirtualTable(void** vtarray) {
 		firstMethod = vtarray;
-		firstMethod++; // top_offset
-		firstMethod++; // type_info ptr
+		firstMethod++; // skip cookie
+		firstMethod++; // skip top_offset
+		firstMethod++; // skip type_info ptr
 	}
 
 };
