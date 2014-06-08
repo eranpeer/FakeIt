@@ -32,7 +32,7 @@ template<typename C, typename ... baseclasses>
 class FakeObject {
 
 	VirtualTable<C, baseclasses...> vtable;
-	char instanceArea[sizeof(C) - sizeof(vtable)];
+	char instanceArea[sizeof(C) -sizeof(VirtualTable<C, baseclasses...>)];
 
 public:
 
@@ -42,7 +42,7 @@ public:
 	}
 
 	void initializeDataMembersArea() {
-		for (int i = 0; i < sizeof(instanceArea); i++) {
+		for (int i = 0; i < (sizeof(C) -sizeof(VirtualTable<C, baseclasses...>)); i++) {
 			instanceArea[i] = (char) 0;
 		}
 	}
@@ -349,7 +349,7 @@ private:
 	static_assert(sizeof(C) == sizeof(FakeObject<C,baseclasses...>), "This is a problem");
 
 	C& instance;
-	VirtualTable<C, baseclasses...> originalVT;
+	VirtualTable<C, baseclasses...> originalVT; // avoid delete!! this is the original!
 	std::array<std::shared_ptr<Destructable>, 50> methodMocks;
 	std::vector<std::shared_ptr<Destructable>> members;
 

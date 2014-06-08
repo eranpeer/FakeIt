@@ -120,28 +120,34 @@ struct RTTICompleteObjectLocator {
 template<class C, class... baseclasses>
 struct VirtualTable {
 
-	static VirtualTable* cloneVTable(C& instance){
+	static VirtualTable<C, baseclasses...>* cloneVTable(C& instance) {
+		fakeit::VirtualTable<C, baseclasses...>& orig = getVTable(instance);
+		return orig.clone();
+	}
+
+	static VirtualTable<C, baseclasses...>& getVTable(C& instance) {
+		fakeit::VirtualTable<C, baseclasses...>* vt = (fakeit::VirtualTable<C, baseclasses...>*)(&instance);
+		return *vt;
+	}
+
+	VirtualTable<C, baseclasses...>* clone() const {
+		auto firstMethod = buildVTArray();
 		int size = VTUtils::getVTSize<C>();
-		auto array = new void*[size + 1]{};
-		array[1] = (void*) &typeid(C);
-		auto firstMethod = array;
-		firstMethod++; // skip objectLocator
-
-		int ** vtPtr = (int**)(&instance);
-
-		for (int i = 0;i<size;i++){
-			firstMethod[i] = vtPtr[i];
+		firstMethod[-1] = this->firstMethod[-1]; // copy object locator
+		for (int i = 0; i < size; i++) {
+			firstMethod[i] = getMethod(i);
 		}
-		return new VirtualTable(array);
+		return new VirtualTable(firstMethod);
 	}
 
 	VirtualTable(): VirtualTable(buildVTArray()) {
 	}
 
 	~VirtualTable() {
-		firstMethod--;
-		RTTICompleteObjectLocator<C> * objectLocator = (RTTICompleteObjectLocator<C> *) firstMethod[0];
-		delete objectLocator;
+		RTTICompleteObjectLocator<C> * objectLocator = (RTTICompleteObjectLocator<C> *) firstMethod[-1];
+		firstMethod--; // skip objectLocator
+		firstMethod--; // skip cookie
+		//delete objectLocator;
 		delete[] firstMethod;
 	}
 
@@ -149,7 +155,7 @@ struct VirtualTable {
 		firstMethod[index] = method;
 	}
 
-	void * getMethod(unsigned int index) {
+	void * getMethod(unsigned int index) const {
 		return firstMethod[index];
 	}
 
@@ -164,6 +170,14 @@ struct VirtualTable {
 		}
 	}
 
+	void* getCookie(){
+		return firstMethod[-2];
+	}
+
+	void setCookie(void * value){
+		firstMethod[-2] = value;
+	}
+
 private:
 	void** firstMethod;
 
@@ -174,17 +188,23 @@ private:
 
 	static void ** buildVTArray(){
 		int size = VTUtils::getVTSize<C>();
-		auto array = new void*[size + 1] {};
+		auto array = new void*[size + 2] {};
 		RTTICompleteObjectLocator<C, baseclasses...> * objectLocator = new RTTICompleteObjectLocator<C, baseclasses...>(typeid(C));
-		array[0] = objectLocator; // initialize RTTICompleteObjectLocator pointer
-		return array;
+		array[1] = objectLocator; // initialize RTTICompleteObjectLocator pointer
+		void** firstMethod = array;
+		firstMethod++; // skip cookie
+		firstMethod++; // skip object locator
+		return firstMethod;
 	}
 
-	VirtualTable(void** vtarray) {
-		firstMethod = vtarray;
-		firstMethod++; // skip objectLocator
+	VirtualTable(void** firstMethod) :firstMethod(firstMethod){
 	}
 
+	class Handle {
+		void** firstMethod;
+	public:
+
+	};
 };
 }
 #endif /* VIRTUALTABLE_H_ */

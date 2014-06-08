@@ -54,11 +54,6 @@ struct VirtualTable {
 		delete[] firstMethod;
 	}
 
-	void apply(C& instance) {
-		int ** vtPtr = (int**)(&instance);
-		*vtPtr = (int *)(this);
-	}
-
 	void setMethod(unsigned int index, void *method) {
 		firstMethod[index] = method;
 	}
