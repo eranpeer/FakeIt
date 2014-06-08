@@ -15,7 +15,9 @@ struct SpyingTests: tpunit::TestFixture {
 
 	SpyingTests() :
 			tpunit::TestFixture( //
-					TEST(SpyingTests::test1), TEST(SpyingTests::test2)) {
+			TEST(SpyingTests::useOriginalClassMethodIfNotFaked), //
+			TEST(SpyingTests::useOriginalClassMethodIfStubbed)) //
+	{
 	}
 
 	struct SomeClass {
@@ -23,29 +25,26 @@ struct SpyingTests: tpunit::TestFixture {
 			return arg;
 		}
 		virtual int func2(int arg) {
-			return ++arg;
+			return arg;
 		}
 	};
 
-	void test1() {
+	void useOriginalClassMethodIfNotFaked() {
 		SomeClass obj;
 		Mock<SomeClass> s(obj);
-		Fake(s[&SomeClass::func]);
+		Fake(s[&SomeClass::func]); // Override to return a default value.
 		SomeClass& i = s.get();
-		ASSERT_EQUAL(0, i.func(1));
-		ASSERT_EQUAL(1, i.func2(0));
-		Verify(s[&SomeClass::func](1));
-//		Spy(s[&SomeClass::func]);
-//
-//		VirtualTable<SomeClass>* clone = VirtualTable<SomeClass>::cloneVTable(obj);
-//		clone->apply(obj);
-//		auto a = obj.func(1);
-//		auto a2 = obj.func2(1);
-//		a++;//
+		ASSERT_EQUAL(0, i.func(1)); // should return default int value (0) 
+		ASSERT_EQUAL(1, i.func2(1)); // should use original method
 	}
 
-	void test2() {
+	void useOriginalClassMethodIfStubbed() {
+		SomeClass obj;
+		Mock<SomeClass> s(obj);
+		When(s[&SomeClass::func]).AlwaysReturn(10); // Override to return 10
+		SomeClass& i = s.get();
+		ASSERT_EQUAL(10, i.func(1)); // should return default int value (0) 
+		ASSERT_EQUAL(1, i.func2(1)); // func2 is not stubbed. should use original method
 	}
-//
 } __SpyingTests;
 
