@@ -34,6 +34,8 @@ class FakeObject {
 	VirtualTable<C, baseclasses...> vtable;
 	char instanceArea[sizeof(C) -sizeof(VirtualTable<C, baseclasses...>)];
 
+	FakeObject(FakeObject const &) = delete;            // undefined
+	FakeObject& operator=(FakeObject const &) = delete; // undefined
 public:
 
 	FakeObject() :
