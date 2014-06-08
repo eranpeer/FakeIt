@@ -30,17 +30,13 @@ struct VirtualTable {
 	}
 
 	VirtualTable<C, baseclasses...>* clone() const {
-		auto array = buildVTArray();
+		auto firstMethod = buildVTArray();
 		int size = VTUtils::getVTSize<C>();
-		auto firstMethod = array;
-		firstMethod++; // skip cookie
-		firstMethod++; // skip top_offset
-		firstMethod++; // skip type_info ptr
 		firstMethod[-1] = this->firstMethod[-1]; // copy type_info
 		for (int i = 0; i < size; i++) {
 			firstMethod[i] = getMethod(i);
 		}
-		return new VirtualTable(array);
+		return new VirtualTable(firstMethod);
 	}
 
 	VirtualTable() :
@@ -93,6 +89,22 @@ struct VirtualTable {
 //		}
 //	}
 
+	class Handle {
+		void** firstMethod;
+	public:
+		Handle(void** firstMethod) :firstMethod(firstMethod){}
+
+		VirtualTable<C, baseclasses...>& restore(){
+			VirtualTable<C, baseclasses...>* vt = (VirtualTable<C, baseclasses...>*)this;
+			return *vt;
+		}
+	};
+
+	Handle createHandle() {
+		Handle h(firstMethod);
+		return h;
+	}
+
 private:
 	void** firstMethod;
 
@@ -100,14 +112,14 @@ private:
 		int size = VTUtils::getVTSize<C>();
 		auto array = new void*[size + 3] { };
 		array[2] = (void*) &typeid(C);
-		return array;
-	}
-
-	VirtualTable(void** vtarray) {
-		firstMethod = vtarray;
+		auto firstMethod = array;
 		firstMethod++; // skip cookie
 		firstMethod++; // skip top_offset
 		firstMethod++; // skip type_info ptr
+		return firstMethod;
+	}
+
+	VirtualTable(void** firstMethod):firstMethod(firstMethod) {
 	}
 
 };
