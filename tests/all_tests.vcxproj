@@ -74,6 +74,7 @@
     <ClCompile Include="referece_types_tests.cpp" />
     <ClCompile Include="remove_const_volatile_tests.cpp" />
     <ClCompile Include="sequence_verification_tests.cpp" />
+    <ClCompile Include="spying_tests.cpp" />
     <ClCompile Include="stubbing_tests.cpp" />
     <ClCompile Include="tpunit++main.cpp" />
     <ClCompile Include="type_info_tests.cpp" />
