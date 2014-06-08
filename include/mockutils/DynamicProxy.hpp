@@ -67,10 +67,10 @@ struct DynamicProxy {
 
 	DynamicProxy(C& instance):
 		instance(instance),
-		originalVT(VirtualTable<C, baseclasses...>::getVTable(instance)),
+		originalVT(VirtualTable<C, baseclasses...>::getVTable(instance).createHandle()),
 		methodMocks()
 	{
-		auto newVt = originalVT.clone();
+		auto newVt = originalVT.restore().clone();
 		newVt->setCookie(this);
 		getFake().setVirtualTable(*newVt);
 	}
@@ -86,7 +86,7 @@ struct DynamicProxy {
 		methodMocks = {};
 		members = {};
 
-		auto newVt = originalVT.clone();
+		auto newVt = originalVT.restore().clone();
 		newVt->setCookie(this);
 
 		getFake().initializeDataMembersArea();
@@ -349,7 +349,7 @@ private:
 	static_assert(sizeof(C) == sizeof(FakeObject<C,baseclasses...>), "This is a problem");
 
 	C& instance;
-	VirtualTable<C, baseclasses...> originalVT; // avoid delete!! this is the original!
+	typename VirtualTable<C, baseclasses...>::Handle originalVT; // avoid delete!! this is the original!
 	std::array<std::shared_ptr<Destructable>, 50> methodMocks;
 	std::vector<std::shared_ptr<Destructable>> members;
 

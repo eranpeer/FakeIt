@@ -178,6 +178,22 @@ struct VirtualTable {
 		firstMethod[-2] = value;
 	}
 
+	class Handle {
+		void** firstMethod;
+	public:
+		Handle(void** firstMethod) :firstMethod(firstMethod){}
+
+		VirtualTable<C, baseclasses...>& restore(){
+			VirtualTable<C, baseclasses...>* vt = (VirtualTable<C, baseclasses...>*)this;
+			return *vt;
+		}
+	};
+
+	Handle createHandle() {
+		Handle h(firstMethod);
+		return h;
+	}
+
 private:
 	void** firstMethod;
 
@@ -200,11 +216,6 @@ private:
 	VirtualTable(void** firstMethod) :firstMethod(firstMethod){
 	}
 
-	class Handle {
-		void** firstMethod;
-	public:
-
-	};
 };
 }
 #endif /* VIRTUALTABLE_H_ */
