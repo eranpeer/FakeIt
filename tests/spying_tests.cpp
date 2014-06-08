@@ -16,7 +16,9 @@ struct SpyingTests: tpunit::TestFixture {
 	SpyingTests() :
 			tpunit::TestFixture( //
 			TEST(SpyingTests::useOriginalClassMethodIfNotFaked), //
-			TEST(SpyingTests::useOriginalClassMethodIfStubbed)) //
+			TEST(SpyingTests::useOriginalClassMethodIfStubbed), //
+			TEST(SpyingTests::returnToOrignalClassMethodsOnReset) //
+			) //
 	{
 	}
 
@@ -46,5 +48,17 @@ struct SpyingTests: tpunit::TestFixture {
 		ASSERT_EQUAL(10, i.func(1)); // should return default int value (0) 
 		ASSERT_EQUAL(1, i.func2(1)); // func2 is not stubbed. should use original method
 	}
+
+	void returnToOrignalClassMethodsOnReset() {
+		SomeClass obj;
+		Mock<SomeClass> s(obj);
+		When(s[&SomeClass::func]).AlwaysReturn(10); // Override to return 10
+		When(s[&SomeClass::func2]).AlwaysReturn(10); // Override to return 10
+		s.Reset();
+		SomeClass& i = s.get();
+		ASSERT_EQUAL(1, i.func(1));  // should use original method
+		ASSERT_EQUAL(1, i.func2(1)); // should use original method
+	}
+
 } __SpyingTests;
 
