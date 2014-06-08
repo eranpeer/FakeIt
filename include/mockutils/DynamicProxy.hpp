@@ -89,7 +89,6 @@ struct DynamicProxy {
 		auto newVt = originalVT.restore().clone();
 		newVt->setCookie(this);
 
-		getFake().initializeDataMembersArea();
 		getFake().setVirtualTable(*newVt);
 	}
 

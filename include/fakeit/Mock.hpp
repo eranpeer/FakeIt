@@ -143,6 +143,10 @@ public:
 
 	void Reset() {
 		proxy.Reset();
+		if (!isSpy) {
+			FakeObject<C,baseclasses...>* fake = (FakeObject<C,baseclasses...>*)instance;
+			fake->initializeDataMembersArea();
+		}
 	}
 
 	template<class DATA_TYPE, typename ... arglist,

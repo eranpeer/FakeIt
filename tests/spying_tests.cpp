@@ -15,14 +15,16 @@ struct SpyingTests: tpunit::TestFixture {
 
 	SpyingTests() :
 			tpunit::TestFixture( //
-			TEST(SpyingTests::useOriginalClassMethodIfNotFaked), //
-			TEST(SpyingTests::useOriginalClassMethodIfStubbed), //
-			TEST(SpyingTests::returnToOrignalClassMethodsOnReset) //
-			) //
+					TEST(SpyingTests::useOriginalClassMethodIfNotFaked), //
+					TEST(SpyingTests::useOriginalClassMethodIfStubbed), //
+					TEST(SpyingTests::returnToOrignalClassMethodsOnReset), //
+					TEST(SpyingTests::dataMembersAreNotChangedOnReset)
+							) //
 	{
 	}
 
 	struct SomeClass {
+		int a;
 		virtual int func(int arg) {
 			return arg;
 		}
@@ -60,5 +62,16 @@ struct SpyingTests: tpunit::TestFixture {
 		ASSERT_EQUAL(1, i.func2(1)); // should use original method
 	}
 
-} __SpyingTests;
+	void dataMembersAreNotChangedOnReset() {
+		SomeClass obj;
+		Mock<SomeClass> s(obj);
 
+		obj.a = 10;
+		s.Reset();
+		SomeClass& i = s.get();
+
+		ASSERT_EQUAL(10, obj.a);
+		ASSERT_EQUAL(10, i.a);
+	}
+
+} __SpyingTests;
