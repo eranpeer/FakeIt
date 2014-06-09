@@ -39,12 +39,13 @@ struct DynamicProxy {
 		originalVT(VirtualTable<C, baseclasses...>::getVTable(instance).createHandle()),
 		methodMocks()
 	{
-		auto newVt = originalVT.restore().clone();
-		newVt->setCookie(this);
-		getFake().setVirtualTable(*newVt);
+		cloneVt.copyFrom(originalVT.restore());
+		cloneVt.setCookie(this);
+		getFake().setVirtualTable(cloneVt);
 	}
 
 	~DynamicProxy() {
+		cloneVt.dispose();
 	}
 
 	C& get() {
@@ -54,11 +55,7 @@ struct DynamicProxy {
 	void Reset() {
 		methodMocks = {};
 		members = {};
-
-		auto newVt = originalVT.restore().clone();
-		newVt->setCookie(this);
-
-		getFake().setVirtualTable(*newVt);
+		cloneVt.copyFrom(originalVT.restore());
 	}
 
 	template<typename R, typename ... arglist>
@@ -317,6 +314,7 @@ private:
 
 	C& instance;
 	typename VirtualTable<C, baseclasses...>::Handle originalVT; // avoid delete!! this is the original!
+	VirtualTable<C, baseclasses...> cloneVt; //
 	std::array<std::shared_ptr<Destructable>, 50> methodMocks;
 	std::vector<std::shared_ptr<Destructable>> members;
 
