@@ -120,9 +120,9 @@ struct RTTICompleteObjectLocator {
 template<class C, class... baseclasses>
 struct VirtualTable {
 
-	static VirtualTable<C, baseclasses...>* cloneVTable(C& instance) {
-		fakeit::VirtualTable<C, baseclasses...>& orig = getVTable(instance);
-		return orig.clone();
+	static VirtualTable<C, baseclasses...>& nullVTable(){
+		static VirtualTable<C, baseclasses...> instance;
+		return instance;
 	}
 
 	static VirtualTable<C, baseclasses...>& getVTable(C& instance) {
@@ -130,24 +130,20 @@ struct VirtualTable {
 		return *vt;
 	}
 
-	VirtualTable<C, baseclasses...>* clone() const {
-		auto firstMethod = buildVTArray();
+	void copyFrom(VirtualTable<C, baseclasses...>& from) {
 		int size = VTUtils::getVTSize<C>();
-		firstMethod[-1] = this->firstMethod[-1]; // copy object locator
+		firstMethod[-1] = from.firstMethod[-1]; // copy object locator
 		for (int i = 0; i < size; i++) {
-			firstMethod[i] = getMethod(i);
+			firstMethod[i] = from.getMethod(i);
 		}
-		return new VirtualTable(firstMethod);
 	}
 
 	VirtualTable(): VirtualTable(buildVTArray()) {
 	}
 
-	~VirtualTable() {
-		RTTICompleteObjectLocator<C> * objectLocator = (RTTICompleteObjectLocator<C> *) firstMethod[-1];
+	void dispose() {
 		firstMethod--; // skip objectLocator
 		firstMethod--; // skip cookie
-		//delete objectLocator;
 		delete[] firstMethod;
 	}
 
