@@ -17,6 +17,11 @@ namespace fakeit {
 template<class C, class ... baseclasses>
 struct VirtualTable {
 
+	static VirtualTable<C, baseclasses...>& nullVTable(){
+		static VirtualTable<C, baseclasses...> instance;
+		return instance;
+	}
+
 	static_assert(is_simple_inheritance_layout<C>::value, "Can't mock a type with multiple inheritance");
 
 	static VirtualTable<C, baseclasses...>* cloneVTable(C& instance) {
@@ -43,7 +48,7 @@ struct VirtualTable {
 			VirtualTable(buildVTArray()) {
 	}
 
-	~VirtualTable() {
+	void dispose() {
 		firstMethod--;
 		firstMethod--;
 		firstMethod--;

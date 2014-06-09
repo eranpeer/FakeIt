@@ -35,7 +35,7 @@ class FakeObject {
 public:
 
 	FakeObject() :
-			vtable() {
+			vtable(VirtualTable<C, baseclasses...>::nullVTable()) {
 		initializeDataMembersArea();
 	}
 
