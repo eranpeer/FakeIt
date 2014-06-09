@@ -18,13 +18,15 @@ struct SpyingTests: tpunit::TestFixture {
 					TEST(SpyingTests::useOriginalClassMethodIfNotFaked), //
 					TEST(SpyingTests::useOriginalClassMethodIfStubbed), //
 					TEST(SpyingTests::returnToOrignalClassMethodsOnReset), //
-					TEST(SpyingTests::dataMembersAreNotChangedOnReset)
-							) //
+					TEST(SpyingTests::dataMembersAreNotChangedOnReset), //
+					TEST(SpyingTests::mockDestructordoesNotDeleteObject) //
+			) //
 	{
 	}
 
 	struct SomeClass {
 		int a;
+
 		virtual int func(int arg) {
 			return arg;
 		}
@@ -72,6 +74,28 @@ struct SpyingTests: tpunit::TestFixture {
 
 		ASSERT_EQUAL(10, obj.a);
 		ASSERT_EQUAL(10, i.a);
+	}
+
+	void mockDestructordoesNotDeleteObject() {
+		struct SomeClass {
+			bool deleted;
+			SomeClass() :
+					deleted(false) {
+			}
+			~SomeClass() {
+				deleted = true;
+			}
+			virtual int func(int arg) {
+				return arg;
+			}
+		};
+
+		SomeClass obj;
+		{
+			Mock<SomeClass> spy(obj);
+		}
+
+		ASSERT_FALSE(obj.deleted);
 	}
 
 } __SpyingTests;
