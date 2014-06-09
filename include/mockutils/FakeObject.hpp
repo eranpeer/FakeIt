@@ -19,6 +19,11 @@
 
 namespace fakeit {
 
+#ifdef _WIN32
+#pragma warning( push )
+#pragma warning( disable : 4200 )
+#endif
+
 template<typename C, typename ... baseclasses>
 class FakeObject {
 
@@ -52,6 +57,12 @@ public:
 		vtable = t;
 	}
 };
+
+#ifdef _WIN32
+#pragma warning( pop )
+#endif
+
+
 }
 
 
