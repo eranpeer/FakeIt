@@ -25,42 +25,9 @@
 #include "mockutils/union_cast.hpp"
 #include "mockutils/MethodInvocationHandler.hpp"
 #include "mockutils/VTUtils.hpp"
+#include "mockutils/FakeObject.hpp"
 
 namespace fakeit {
-
-template<typename C, typename ... baseclasses>
-class FakeObject {
-
-	VirtualTable<C, baseclasses...> vtable;
-	char instanceArea[sizeof(C) -sizeof(VirtualTable<C, baseclasses...>)];
-
-	FakeObject(FakeObject const &) = delete;            // undefined
-	FakeObject& operator=(FakeObject const &) = delete; // undefined
-public:
-
-	FakeObject() :
-			vtable() {
-		initializeDataMembersArea();
-	}
-
-	void initializeDataMembersArea() {
-		for (int i = 0; i < (sizeof(C) -sizeof(VirtualTable<C, baseclasses...>)); i++) {
-			instanceArea[i] = (char) 0;
-		}
-	}
-
-	void setMethod(unsigned int index, void *method) {
-		vtable.setMethod(index, method);
-	}
-
-	VirtualTable<C, baseclasses...>& getVirtualTable() {
-		return vtable;
-	}
-
-	void setVirtualTable(VirtualTable<C, baseclasses...>& t) {
-		vtable = t;
-	}
-};
 
 template<typename C, typename ... baseclasses>
 struct DynamicProxy {
@@ -155,7 +122,6 @@ private:
 				C* instance = (C*)this;
 				VirtualTable<C,baseclasses...> & vt = VirtualTable<C,baseclasses...>::getVTable(*instance);
 				DynamicProxy<C, baseclasses...> * dynamicProxy = (DynamicProxy<C, baseclasses...> *)vt.getCookie();
-				//DynamicProxy<C, baseclasses...> * dynamicProxy = union_cast<DynamicProxy<C, baseclasses...> *>(this);
 				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(
 						OFFSET);
 				return methodMock->handleMethodInvocation(args...);
