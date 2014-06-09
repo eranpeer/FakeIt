@@ -40,9 +40,9 @@ struct MethodStubbingContext : public ActualInvocationsSource {
 
 	virtual MethodMock<C, R, arglist...>& getMethodMock() = 0;
 
-	virtual MethodType getMethod() = 0;
-
-	virtual MockObject<C>& getMock() = 0;
+//	virtual MethodType getMethod() = 0;
+//
+//	virtual MockObject<C>& getMock() = 0;
 
 };
 

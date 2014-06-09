@@ -69,13 +69,13 @@ private:
 			mock.getActualInvocations(into);
 		}
 
-		virtual typename MethodStubbingContext<C, R, arglist...>::MethodType getMethod() override {
-			return vMethod;
-		}
-
-		virtual MockObject<C>& getMock() override {
-			return mock;
-		}
+//		virtual typename MethodStubbingContext<C, R, arglist...>::MethodType getMethod() override {
+//			return vMethod;
+//		}
+//
+//		virtual MockObject<C>& getMock() override {
+//			return mock;
+//		}
 
 	};
 
@@ -133,9 +133,9 @@ public:
 		return proxy.get();
 	}
 
-	virtual C & getSpiedInstance() override {
-		return proxy.get();
-	}
+//	virtual C & getSpiedInstance() override {
+//		return proxy.get();
+//	}
 
 	C& operator()() {
 		return proxy.get();

@@ -16,7 +16,7 @@ namespace fakeit {
 template <typename C>
 struct MockObject {
 	virtual C & get() = 0;
-	virtual C & getSpiedInstance() = 0;
+//	virtual C & getSpiedInstance() = 0;
 };
 
 struct Method {
