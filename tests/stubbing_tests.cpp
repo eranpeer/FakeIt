@@ -63,7 +63,7 @@ struct BasicStubbing: tpunit::TestFixture {
 		try {
 			i.func(1);
 			FAIL();
-		} catch(UnexpectedMethodCallException& e)
+		} catch(UnexpectedMethodCallException&)
 		{
 //			std::string expected("Unexpected method call. Could not find recorded implementation to support method call");
 //			std::string actual(e.what());
@@ -512,7 +512,7 @@ struct BasicStubbing: tpunit::TestFixture {
 				const auto& a = When(mock[&SomeInterface::func]);
 				if (&a == &a) // use a to avoid unused variable compilation warning.
 					throw std::runtime_error("some exception");
-			} catch (std::exception &e) {
+			} catch (std::exception &) {
 			}
 		}
 		SomeInterface &i = mock.get();

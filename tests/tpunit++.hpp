@@ -111,8 +111,8 @@
  * ASSERT|EXPECT_ANY_THROW(statement); generates a failure if the
  * given statement does not throw any exceptions.
  */
-#define ASSERT_THROW(statement, exception) try { statement; ABORT(); } catch(const exception& e) { PASS(); } catch(...) { ABORT(); }
-#define EXPECT_THROW(statement, exception) try { statement; FAIL(); } catch(const exception& e) { PASS(); } catch(...) { FAIL(); }
+#define ASSERT_THROW(statement, exception) try { statement; ABORT(); } catch(const exception&) { PASS(); } catch(...) { ABORT(); }
+#define EXPECT_THROW(statement, exception) try { statement; FAIL(); } catch(const exception&) { PASS(); } catch(...) { FAIL(); }
 #define ASSERT_NO_THROW(statement) try { statement; PASS(); } catch(...) { ABORT(); }
 #define EXPECT_NO_THROW(statement) try { statement; PASS(); } catch(...) { FAIL(); }
 #define ASSERT_ANY_THROW(statement) try { statement; ABORT(); } catch(...) { PASS(); }
