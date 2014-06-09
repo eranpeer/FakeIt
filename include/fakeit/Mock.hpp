@@ -133,10 +133,6 @@ public:
 		return proxy.get();
 	}
 
-//	virtual C & getSpiedInstance() override {
-//		return proxy.get();
-//	}
-
 	C& operator()() {
 		return proxy.get();
 	}
