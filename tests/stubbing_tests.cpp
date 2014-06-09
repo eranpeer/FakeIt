@@ -609,7 +609,7 @@ struct BasicStubbing: tpunit::TestFixture {
 		virtual int func48() = 0;
 		virtual int func49() = 0;
 		virtual int func50() = 0;
-		virtual int outOfVTable() = 0;
+		//virtual int outOfVTable() = 0;
 	};
 
 	void verify_all_functions_are_stubbed_correctly(){
