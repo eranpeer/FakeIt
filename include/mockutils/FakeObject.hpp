@@ -18,7 +18,7 @@
 #endif
 
 namespace fakeit {
-
+// silent MSC++ compiler warning: C4200: nonstandard extension used : zero-sized array in struct/union.
 #ifdef _WIN32
 #pragma warning( push )
 #pragma warning( disable : 4200 )
