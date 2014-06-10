@@ -17,6 +17,20 @@ namespace fakeit {
 template<class C, class ... baseclasses>
 struct VirtualTable {
 
+	class Handle {
+
+		friend class VirtualTable<C,baseclasses...>;
+		void** firstMethod;
+		Handle(void** firstMethod) :firstMethod(firstMethod){}
+
+	public:
+
+		VirtualTable<C, baseclasses...>& restore(){
+			VirtualTable<C, baseclasses...>* vt = (VirtualTable<C, baseclasses...>*)this;
+			return *vt;
+		}
+	};
+
 	static VirtualTable<C, baseclasses...>& nullVTable(){
 		static VirtualTable<C, baseclasses...> instance;
 		return instance;
@@ -78,25 +92,6 @@ struct VirtualTable {
 	void setCookie(void * value){
 		firstMethod[-3] = value;
 	}
-
-//	void print(){
-//		std::cout<<"location:"<<firstMethod<<std::endl;
-//		int size = VTUtils::getVTSize<C>();
-//		for (int i = 0; i<size;i++ ){
-//			std::cout<<firstMethod[i]<<std::endl;
-//		}
-//	}
-
-	class Handle {
-		void** firstMethod;
-	public:
-		Handle(void** firstMethod) :firstMethod(firstMethod){}
-
-		VirtualTable<C, baseclasses...>& restore(){
-			VirtualTable<C, baseclasses...>* vt = (VirtualTable<C, baseclasses...>*)this;
-			return *vt;
-		}
-	};
 
 	Handle createHandle() {
 		Handle h(firstMethod);

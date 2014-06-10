@@ -38,7 +38,7 @@ struct PMD {
 	/* since since the first member is placed at 0.
 	/* In the case of multiple inheritance, this value may have a positive value.
 	/************************************************************************/
-	int mdisp;  
+	int mdisp;
 	
 	int pdisp;  // vtable displacement
 	int vdisp;  //displacement inside vtable
@@ -120,6 +120,20 @@ struct RTTICompleteObjectLocator {
 template<class C, class... baseclasses>
 struct VirtualTable {
 
+	class Handle {
+
+		friend class VirtualTable<C,baseclasses...>;
+		void** firstMethod;
+		Handle(void** firstMethod) :firstMethod(firstMethod){}
+
+	public:
+
+		VirtualTable<C, baseclasses...>& restore(){
+			VirtualTable<C, baseclasses...>* vt = (VirtualTable<C, baseclasses...>*)this;
+			return *vt;
+		}
+	};
+
 	static VirtualTable<C, baseclasses...>& nullVTable(){
 		static VirtualTable<C, baseclasses...> instance;
 		return instance;
@@ -173,17 +187,6 @@ struct VirtualTable {
 	void setCookie(void * value){
 		firstMethod[-2] = value;
 	}
-
-	class Handle {
-		void** firstMethod;
-	public:
-		Handle(void** firstMethod) :firstMethod(firstMethod){}
-
-		VirtualTable<C, baseclasses...>& restore(){
-			VirtualTable<C, baseclasses...>* vt = (VirtualTable<C, baseclasses...>*)this;
-			return *vt;
-		}
-	};
 
 	Handle createHandle() {
 		Handle h(firstMethod);
