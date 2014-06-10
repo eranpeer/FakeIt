@@ -105,11 +105,10 @@ private:
 		int size = VTUtils::getVTSize<C>();
 		auto array = new void*[size + 3] { };
 		array[2] = (void*) &typeid(C);
-		auto firstMethod = array;
-		firstMethod++; // skip cookie
-		firstMethod++; // skip top_offset
-		firstMethod++; // skip type_info ptr
-		return firstMethod;
+		array++; // skip cookie
+		array++; // skip top_offset
+		array++; // skip type_info ptr
+		return array;
 	}
 
 	VirtualTable(void** firstMethod):firstMethod(firstMethod) {

@@ -206,10 +206,9 @@ private:
 		auto array = new void*[size + 2] {};
 		RTTICompleteObjectLocator<C, baseclasses...> * objectLocator = new RTTICompleteObjectLocator<C, baseclasses...>(typeid(C));
 		array[1] = objectLocator; // initialize RTTICompleteObjectLocator pointer
-		void** firstMethod = array;
-		firstMethod++; // skip cookie
-		firstMethod++; // skip object locator
-		return firstMethod;
+		array++; // skip cookie
+		array++; // skip object locator
+		return array;
 	}
 
 	VirtualTable(void** firstMethod) :firstMethod(firstMethod){
