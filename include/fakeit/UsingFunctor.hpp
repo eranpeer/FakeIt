@@ -57,37 +57,12 @@ public:
 			std::vector<Invocation*> matchedInvocations;
 			int count = countMatches(expectedPattern, actualSequence, matchedInvocations);
 
-			if (expectedInvocationCount < 0) {
-				struct AtLeastVerificationException: public SequenceVerificationException {
-					AtLeastVerificationException(std::vector<Sequence*>& expectedPattern, std::vector<Invocation*>& actualSequence, int expectedCount,
-							int actualCount) :
-							SequenceVerificationException(expectedPattern, actualSequence, expectedCount, actualCount) {
-					}
-
-					virtual VerificationType verificationType() override {
-						return VerificationType::AtLeast;
-					}
-				};
-
-				// negative number represents an "AtLeast" search;
-				if (count < -expectedInvocationCount) {
-					throw AtLeastVerificationException(expectedPattern, actualSequence, -expectedInvocationCount, count);
+			if (isAtLeastVerification()) {
+				if (atLeastLimitCrossed(count)) {
+					throwAtLeastVerificationException(actualSequence, count);
 				}
-			} else if (count != expectedInvocationCount) {
-				struct ExactVerificationException: public SequenceVerificationException {
-					ExactVerificationException(std::vector<Sequence*>& expectedPattern, std::vector<Invocation*>& actualSequence, int expectedCount,
-							int actualCount) :
-							SequenceVerificationException(expectedPattern, actualSequence, expectedCount, actualCount) {
-					}
-
-					virtual VerificationType verificationType() override {
-						return VerificationType::Exact;
-					}
-
-				};
-
-				// "Exact" search.
-				throw ExactVerificationException(expectedPattern, actualSequence, expectedInvocationCount, count);
+			} else if (exactLimitNotMatched(count)) {
+				throwExactVerificationException(actualSequence, count);
 			}
 
 			markAsVerified(matchedInvocations);
@@ -145,8 +120,8 @@ public:
 			return count;
 		}
 
-		void collectMatchedInvocations(std::vector<Invocation*>& actualSequence, std::vector<Invocation*>& matchedInvocations,
-				int start, int length) {
+		void collectMatchedInvocations(std::vector<Invocation*>& actualSequence, std::vector<Invocation*>& matchedInvocations, int start,
+				int length) {
 			int indexAfterMatchedPattern = start + length;
 			for (; start < indexAfterMatchedPattern; start++) {
 				matchedInvocations.push_back(actualSequence[start]);
@@ -203,6 +178,50 @@ public:
 			other._isActive = false;
 		}
 
+		bool isAtLeastVerification() {
+			// negative number represents an "AtLeast" search;
+			return expectedInvocationCount < 0;
+		}
+
+		bool atLeastLimitCrossed(int count) {
+			return count < -expectedInvocationCount;
+		}
+
+		bool exactLimitNotMatched(int count) {
+			return count != expectedInvocationCount;
+		}
+
+		void throwExactVerificationException(std::vector<Invocation*> actualSequence, int count) {
+			struct ExactVerificationException: public SequenceVerificationException {
+				ExactVerificationException(std::vector<Sequence*>& expectedPattern, std::vector<Invocation*>& actualSequence,
+						int expectedCount, int actualCount) :
+						SequenceVerificationException(expectedPattern, actualSequence, expectedCount, actualCount) {
+				}
+
+				virtual VerificationType verificationType() override {
+					return VerificationType::Exact;
+				}
+
+			};
+
+			// "Exact" search.
+			throw ExactVerificationException(expectedPattern, actualSequence, expectedInvocationCount, count);
+		}
+
+		void throwAtLeastVerificationException(std::vector<Invocation*> actualSequence, int count) {
+			struct AtLeastVerificationException: public SequenceVerificationException {
+				AtLeastVerificationException(std::vector<Sequence*>& expectedPattern, std::vector<Invocation*>& actualSequence,
+						int expectedCount, int actualCount) :
+						SequenceVerificationException(expectedPattern, actualSequence, expectedCount, actualCount) {
+				}
+
+				virtual VerificationType verificationType() override {
+					return VerificationType::AtLeast;
+				}
+			};
+
+			throw AtLeastVerificationException(expectedPattern, actualSequence, -expectedInvocationCount, count);
+		}
 	};
 
 public:
