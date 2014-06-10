@@ -19,7 +19,7 @@ struct VirtualTable {
 
 	class Handle {
 
-		friend class VirtualTable<C,baseclasses...>;
+		friend struct VirtualTable<C,baseclasses...>;
 		void** firstMethod;
 		Handle(void** firstMethod) :firstMethod(firstMethod){}
 
