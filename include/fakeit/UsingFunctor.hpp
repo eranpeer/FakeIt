@@ -57,11 +57,11 @@ public:
 			std::vector<Invocation*> matchedInvocations;
 			int count = countMatches(expectedPattern, actualSequence, matchedInvocations);
 
-			if (isAtLeastVerification()) {
-				if (atLeastLimitCrossed(count)) {
-					throwAtLeastVerificationException(actualSequence, count);
-				}
-			} else if (exactLimitNotMatched(count)) {
+			if (isAtLeastVerification() && atLeastLimitNotReached(count)) {
+				throwAtLeastVerificationException(actualSequence, count);
+			}
+
+			if (isExactVerification() && exactLimitNotMatched(count)) {
 				throwExactVerificationException(actualSequence, count);
 			}
 
@@ -99,6 +99,7 @@ public:
 				mock->getActualInvocations(actualIvocations);
 			}
 		}
+
 		virtual void verifyInvocations(const int times) override {
 			expectedInvocationCount = times;
 		}
@@ -183,7 +184,11 @@ public:
 			return expectedInvocationCount < 0;
 		}
 
-		bool atLeastLimitCrossed(int count) {
+		bool isExactVerification() {
+			return !isAtLeastVerification();
+		}
+
+		bool atLeastLimitNotReached(int count) {
 			return count < -expectedInvocationCount;
 		}
 
@@ -222,6 +227,7 @@ public:
 
 			throw AtLeastVerificationException(expectedPattern, actualSequence, -expectedInvocationCount, count);
 		}
+
 	};
 
 public:
