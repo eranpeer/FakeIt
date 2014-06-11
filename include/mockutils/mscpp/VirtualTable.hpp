@@ -195,6 +195,7 @@ struct VirtualTable {
 	}
 
 private:
+
 	void** firstMethod;
 
 	class SimpleType {

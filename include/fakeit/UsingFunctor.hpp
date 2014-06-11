@@ -206,10 +206,8 @@ public:
 				virtual VerificationType verificationType() override {
 					return VerificationType::Exact;
 				}
-
 			};
 
-			// "Exact" search.
 			throw ExactVerificationException(expectedPattern, actualSequence, expectedInvocationCount, count);
 		}
 

@@ -17,29 +17,31 @@ namespace fakeit {
 template<class C, class ... baseclasses>
 struct VirtualTable {
 
+	static_assert(is_simple_inheritance_layout<C>::value, "Can't mock a type with multiple inheritance");
+
 	class Handle {
 
-		friend struct VirtualTable<C,baseclasses...>;
+		friend struct VirtualTable<C, baseclasses...> ;
 		void** firstMethod;
-		Handle(void** firstMethod) :firstMethod(firstMethod){}
+		Handle(void** firstMethod) :
+				firstMethod(firstMethod) {
+		}
 
 	public:
 
-		VirtualTable<C, baseclasses...>& restore(){
-			VirtualTable<C, baseclasses...>* vt = (VirtualTable<C, baseclasses...>*)this;
+		VirtualTable<C, baseclasses...>& restore() {
+			VirtualTable<C, baseclasses...>* vt = (VirtualTable<C, baseclasses...>*) this;
 			return *vt;
 		}
 	};
 
-	static VirtualTable<C, baseclasses...>& nullVTable(){
+	static VirtualTable<C, baseclasses...>& nullVTable() {
 		static VirtualTable<C, baseclasses...> instance;
 		return instance;
 	}
 
-	static_assert(is_simple_inheritance_layout<C>::value, "Can't mock a type with multiple inheritance");
-
 	static VirtualTable<C, baseclasses...>& getVTable(C& instance) {
-		fakeit::VirtualTable<C, baseclasses...>* vt = (fakeit::VirtualTable<C, baseclasses...>*)(&instance);
+		fakeit::VirtualTable<C, baseclasses...>* vt = (fakeit::VirtualTable<C, baseclasses...>*) (&instance);
 		return *vt;
 	}
 
@@ -81,15 +83,15 @@ struct VirtualTable {
 		}
 	}
 
-	const std::type_info* getTypeId(){
-		return (const std::type_info*)(firstMethod[-1]);
+	const std::type_info* getTypeId() {
+		return (const std::type_info*) (firstMethod[-1]);
 	}
 
-	void* getCookie(){
+	void* getCookie() {
 		return firstMethod[-3];
 	}
 
-	void setCookie(void * value){
+	void setCookie(void * value) {
 		firstMethod[-3] = value;
 	}
 
@@ -99,6 +101,7 @@ struct VirtualTable {
 	}
 
 private:
+
 	void** firstMethod;
 
 	static void ** buildVTArray() {
@@ -111,7 +114,8 @@ private:
 		return array;
 	}
 
-	VirtualTable(void** firstMethod):firstMethod(firstMethod) {
+	VirtualTable(void** firstMethod) :
+			firstMethod(firstMethod) {
 	}
 
 };
