@@ -58,7 +58,7 @@ FakeIt is a template library. It does not require any installation. All you need
 It is recommended to build and run the unit tests to make sure FakeIt fits your environment.
 ### Building and Running the Unit Tests with GCC
 ```
-cd build_tests
+cd build
 make all
 ```
 run the tests by typing
