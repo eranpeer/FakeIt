@@ -51,7 +51,7 @@ Checkout the [Quickstart](https://github.com/eranpeer/FakeIt/wiki/Quickstart) fo
 * Very simple API based on the expressiveness of C++11.
 * Supports both GCC and MS C++.
 * Expressive [Arrange-Act-Assert](http://xp123.com/articles/3a-arrange-act-assert/) syntax.
-* Create mock classes or spy an existing objects instantly in one simple line.
+* Create mock classes or **spy an existing objects** instantly in one simple line.
 * No limitation on number of method arguments.
 * Supports dynamic casting.
 
