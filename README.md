@@ -1,8 +1,9 @@
 FakeIt
 ======
-[![Build Status GCC](https://travis-ci.org/eranpeer/FakeIt.svg?branch=master)](https://travis-ci.org/eranpeer/FakeIt)
+GCC: [![Build Status GCC](https://travis-ci.org/eranpeer/FakeIt.svg?branch=master)](https://travis-ci.org/eranpeer/FakeIt)
 [![Coverage Status](https://coveralls.io/repos/eranpeer/FakeIt/badge.png?branch=master)](https://coveralls.io/r/eranpeer/FakeIt?branch=master)
-[![Build status MSC](https://ci.appveyor.com/api/projects/status/sy2dk8se2yoxaqve)](https://ci.appveyor.com/project/eranpeer/fakeit)
+
+MSC: [![Build status MSC](https://ci.appveyor.com/api/projects/status/sy2dk8se2yoxaqve)](https://ci.appveyor.com/project/eranpeer/fakeit)
 
 FakeIt is a simple mocking framework for C++11. It supports GCC and MS Visual C++.
 
