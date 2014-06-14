@@ -76,10 +76,6 @@ private:
 			mock.getActualInvocations(into);
 		}
 
-		virtual typename MethodStubbingContext<C, R, arglist...>::MethodType getMethod() override {
-			return vMethod;
-		}
-
 		virtual typename MethodStubbingContext<C, R, arglist...>::MethodType getOriginalMethod() override {
 			void * mPtr = mock.getOriginalMethod(vMethod);
 			return union_cast<typename MethodStubbingContext<C, R, arglist...>::MethodType>(mPtr);
