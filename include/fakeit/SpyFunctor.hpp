@@ -22,7 +22,7 @@ private:
 	template<typename C, typename R, typename ... arglist>
 	void spy(MethodStubbingBase<C, R, arglist...>& root) {
 		std::shared_ptr<Behavior<R, arglist...>> ptr {
-			new ReturnDelegateValue<C, R, arglist...>(root.getMockObject().get(),root.getTheMethod()) };
+			new ReturnDelegateValue<C, R, arglist...>(root.getMockObject().get(),root.getOriginalMethod()) };
 		root.AppendAction(ptr);
 		root.apply();
 	}

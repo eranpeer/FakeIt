@@ -40,9 +40,11 @@ struct MethodStubbingContext : public ActualInvocationsSource {
 
 	virtual MethodMock<C, R, arglist...>& getMethodMock() = 0;
 
-//	virtual MethodType getMethod() = 0;
-//
-//	virtual MockObject<C>& getMock() = 0;
+	virtual MethodType getMethod() = 0;
+
+	virtual MethodType getOriginalMethod() = 0;
+
+	virtual MockObject<C>& getMock() = 0;
 
 };
 
@@ -61,6 +63,10 @@ private:
 
 	func getTheMethod() {
 		return stubbingContext->getMethod();
+	}
+
+	func getOriginalMethod() {
+		return stubbingContext->getOriginalMethod();
 	}
 
 	MockObject<C>& getMockObject() {

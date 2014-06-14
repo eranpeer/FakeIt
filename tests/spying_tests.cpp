@@ -20,7 +20,8 @@ struct SpyingTests: tpunit::TestFixture {
 					TEST(SpyingTests::returnToOrignalClassMethodsOnReset), //
 					TEST(SpyingTests::dataMembersAreNotChangedOnReset), //
 					TEST(SpyingTests::verifySpyiedMethodWasCalled), //
-					TEST(SpyingTests::mockDestructordoesNotDeleteObject) //
+					TEST(SpyingTests::mockDestructordoesNotDeleteObject), //
+					TEST(SpyingTests::canVerifyMethodAfterSpying) //
 			) //
 	{
 	}
@@ -107,6 +108,17 @@ struct SpyingTests: tpunit::TestFixture {
 		}
 
 		ASSERT_FALSE(obj.deleted);
+	}
+
+	void canVerifyMethodAfterSpying() {
+		SomeClass obj;
+		Mock<SomeClass> mock(obj);
+		Spy(mock[&SomeClass::func1]);
+		SomeClass& i = mock.get();
+		ASSERT_EQUAL(1, i.func1(1));
+		Verify(mock[&SomeClass::func1]);
+		Verify(mock[&SomeClass::func1]).Exactly(Once);
+		VerifyNoOtherInvocations(mock);
 	}
 
 } __SpyingTests;

@@ -26,36 +26,43 @@ template<typename C, typename ... baseclasses>
 class Mock: private MockObject<C>, public virtual ActualInvocationsSource {
 private:
 	DynamicProxy<C, baseclasses...> proxy;
-	C* instance;
-	bool isSpy;
+	C* instance;bool isSpy;
 
 	void unmocked() {
-		throw UnexpectedMethodCallException {};
+		throw UnexpectedMethodCallException { };
 	}
 
-	static C* createFakeInstance(){
+	static C* createFakeInstance() {
 		FakeObject<C, baseclasses...>* fake = new FakeObject<C, baseclasses...>();
 		fake->initializeDataMembersArea();
 		void* unmockedMethodStubPtr = union_cast<void*>(&Mock<C, baseclasses...>::unmocked);
 		fake->getVirtualTable().initAll(unmockedMethodStubPtr);
-		return (C*)fake;
+		return (C*) fake;
 	}
 
 	template<typename R, typename ... arglist>
-	MethodMock<C, R, arglist...>& stubMethodIfNotStubbed(DynamicProxy<C, baseclasses...> &instance, R (C::*vMethod)(arglist...)) {
-		if (!instance.isStubbed(vMethod)) {
+	MethodMock<C, R, arglist...>& stubMethodIfNotStubbed(DynamicProxy<C, baseclasses...> &proxy, R (C::*vMethod)(arglist...)) {
+		if (!proxy.isStubbed(vMethod)) {
 			auto methodMock = std::shared_ptr<MethodInvocationHandler<R, arglist...>> { new MethodMock<C, R, arglist...>(*this, vMethod) };
-			instance.stubMethod(vMethod, methodMock);
+			proxy.stubMethod(vMethod, methodMock);
 		}
-		Destructable * d = instance.getMethodMock(vMethod);
+		Destructable * d = proxy.getMethodMock(vMethod);
 		MethodMock<C, R, arglist...> * methodMock = dynamic_cast<MethodMock<C, R, arglist...> *>(d);
 		return *methodMock;
 	}
 
 	template<typename R, typename ... arglist>
+	void * getOriginalMethod(R (C::*vMethod)(arglist...)) {
+		auto vt = proxy.getOriginalVT();
+		auto offset = VTUtils::getOffset(vMethod);
+		void * origMethodPtr = vt.getMethod(offset);
+		return origMethodPtr;
+	}
+
+	template<typename R, typename ... arglist>
 	class MethodStubbingContextImpl: public MethodStubbingContext<C, R, arglist...> {
 		Mock<C, baseclasses...>& mock;
-		R (C::*vMethod)(arglist...);
+		typename MethodStubbingContext<C, R, arglist...>::MethodType vMethod;
 	public:
 
 		MethodStubbingContextImpl(Mock<C, baseclasses...>& mock, R (C::*vMethod)(arglist...)) :
@@ -69,13 +76,18 @@ private:
 			mock.getActualInvocations(into);
 		}
 
-//		virtual typename MethodStubbingContext<C, R, arglist...>::MethodType getMethod() override {
-//			return vMethod;
-//		}
-//
-//		virtual MockObject<C>& getMock() override {
-//			return mock;
-//		}
+		virtual typename MethodStubbingContext<C, R, arglist...>::MethodType getMethod() override {
+			return vMethod;
+		}
+
+		virtual typename MethodStubbingContext<C, R, arglist...>::MethodType getOriginalMethod() override {
+			void * mPtr = mock.getOriginalMethod(vMethod);
+			return union_cast<typename MethodStubbingContext<C, R, arglist...>::MethodType>(mPtr);
+		}
+
+		virtual MockObject<C>& getMock() override {
+			return mock;
+		}
 
 	};
 
@@ -104,11 +116,13 @@ public:
 
 	static_assert(std::is_polymorphic<C>::value, "Can only mock a polymorphic type");
 
-	Mock() : Mock<C,baseclasses...> ( *(createFakeInstance()) ) {
+	Mock() :
+			Mock<C, baseclasses...>(*(createFakeInstance())) {
 		isSpy = false;
 	}
 
-	Mock(C &obj) : proxy { obj }, instance(&obj) ,isSpy(true) {
+	Mock(C &obj) :
+			proxy { obj }, instance(&obj), isSpy(true) {
 	}
 
 	/**
@@ -125,7 +139,7 @@ public:
 	virtual ~Mock() {
 		if (isSpy)
 			return;
-		FakeObject<C,baseclasses...>* fake = (FakeObject<C,baseclasses...>*)instance;
+		FakeObject<C, baseclasses...>* fake = (FakeObject<C, baseclasses...>*) instance;
 		delete fake;
 	}
 
@@ -140,7 +154,7 @@ public:
 	void Reset() {
 		proxy.Reset();
 		if (!isSpy) {
-			FakeObject<C,baseclasses...>* fake = (FakeObject<C,baseclasses...>*)instance;
+			FakeObject<C, baseclasses...>* fake = (FakeObject<C, baseclasses...>*) instance;
 			fake->initializeDataMembersArea();
 		}
 	}

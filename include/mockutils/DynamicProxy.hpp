@@ -98,6 +98,11 @@ struct DynamicProxy {
 		}
 	}
 
+	VirtualTable<C, baseclasses...>& getOriginalVT() {
+		VirtualTable<C, baseclasses...>& vt = originalVT.restore();
+		return vt;
+	}
+
 private:
 
 	template<typename R, typename ... arglist>
