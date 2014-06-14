@@ -1,8 +1,9 @@
 FakeIt
 ======
-[![Build Status GCC](https://travis-ci.org/eranpeer/FakeIt.svg?branch=master)](https://travis-ci.org/eranpeer/FakeIt)
+GCC: [![Build Status GCC](https://travis-ci.org/eranpeer/FakeIt.svg?branch=master)](https://travis-ci.org/eranpeer/FakeIt)
 [![Coverage Status](https://coveralls.io/repos/eranpeer/FakeIt/badge.png?branch=master)](https://coveralls.io/r/eranpeer/FakeIt?branch=master)
-[![Build status MSC](https://ci.appveyor.com/api/projects/status/sy2dk8se2yoxaqve)](https://ci.appveyor.com/project/eranpeer/fakeit)
+
+MSC: [![Build status MSC](https://ci.appveyor.com/api/projects/status/sy2dk8se2yoxaqve)](https://ci.appveyor.com/project/eranpeer/fakeit)
 
 FakeIt is a simple mocking framework for C++11. It supports GCC and MS Visual C++.
 
@@ -50,6 +51,8 @@ Checkout the [Quickstart](https://github.com/eranpeer/FakeIt/wiki/Quickstart) fo
 ## Features
 * Very simple API based on the expressiveness of C++11.
 * Supports both GCC and MS C++.
+* Expressive [Arrange-Act-Assert](http://xp123.com/articles/3a-arrange-act-assert/) syntax.
+* Create mock classes or **spy existing objects** instantly in one simple line.
 * No limitation on number of method arguments.
 * Supports dynamic casting.
 
@@ -58,7 +61,7 @@ FakeIt is a template library. It does not require any installation. All you need
 It is recommended to build and run the unit tests to make sure FakeIt fits your environment.
 ### Building and Running the Unit Tests with GCC
 ```
-cd build_tests
+cd build
 make all
 ```
 run the tests by typing
