@@ -19,15 +19,16 @@ struct SpyingTests: tpunit::TestFixture {
 					TEST(SpyingTests::useOriginalClassMethodIfStubbed), //
 					TEST(SpyingTests::returnToOrignalClassMethodsOnReset), //
 					TEST(SpyingTests::dataMembersAreNotChangedOnReset), //
+					TEST(SpyingTests::verifySpyiedMethodWasCalled), //
 					TEST(SpyingTests::mockDestructordoesNotDeleteObject) //
 			) //
 	{
 	}
 
-	struct SomeClass {
+	class SomeClass {
+	public:
 		int a;
-
-		virtual int func(int arg) {
+		virtual int func1(int arg) {
 			return arg;
 		}
 		virtual int func2(int arg) {
@@ -38,29 +39,29 @@ struct SpyingTests: tpunit::TestFixture {
 	void useOriginalClassMethodIfNotFaked() {
 		SomeClass obj;
 		Mock<SomeClass> spy(obj);
-		Fake(spy[&SomeClass::func]); // Override to return a default value.
+		Fake(spy[&SomeClass::func1]); // Override to return a default value.
 		SomeClass& i = spy.get();
-		ASSERT_EQUAL(0, i.func(1)); // should return default int value (0) 
+		ASSERT_EQUAL(0, i.func1(1)); // should return default int value (0)
 		ASSERT_EQUAL(1, i.func2(1)); // should use original method
 	}
 
 	void useOriginalClassMethodIfStubbed() {
 		SomeClass obj;
 		Mock<SomeClass> spy(obj);
-		When(spy[&SomeClass::func]).AlwaysReturn(10); // Override to return 10
+		When(spy[&SomeClass::func1]).AlwaysReturn(10); // Override to return 10
 		SomeClass& i = spy.get();
-		ASSERT_EQUAL(10, i.func(1)); // should return default int value (0) 
+		ASSERT_EQUAL(10, i.func1(1)); // should return 10
 		ASSERT_EQUAL(1, i.func2(1)); // func2 is not stubbed. should use original method
 	}
 
 	void returnToOrignalClassMethodsOnReset() {
 		SomeClass obj;
 		Mock<SomeClass> spy(obj);
-		When(spy[&SomeClass::func]).AlwaysReturn(10); // Override to return 10
+		When(spy[&SomeClass::func1]).AlwaysReturn(10); // Override to return 10
 		When(spy[&SomeClass::func2]).AlwaysReturn(10); // Override to return 10
 		spy.Reset();
 		SomeClass& i = spy.get();
-		ASSERT_EQUAL(1, i.func(1));  // should use original method
+		ASSERT_EQUAL(1, i.func1(1));  // should use original method
 		ASSERT_EQUAL(1, i.func2(1)); // should use original method
 	}
 
@@ -74,6 +75,16 @@ struct SpyingTests: tpunit::TestFixture {
 
 		ASSERT_EQUAL(10, obj.a);
 		ASSERT_EQUAL(10, i.a);
+	}
+
+	void verifySpyiedMethodWasCalled() {
+		SomeClass obj;
+		Mock<SomeClass> spy(obj);
+		Fake(spy[&SomeClass::func1],spy[&SomeClass::func2]); // Override to return a default value.
+		SomeClass& i = spy.get();
+		i.func1(1);
+		Verify(spy[&SomeClass::func1]);
+		ASSERT_THROW(Verify(spy[&SomeClass::func2]),fakeit::VerificationException);
 	}
 
 	void mockDestructordoesNotDeleteObject() {
