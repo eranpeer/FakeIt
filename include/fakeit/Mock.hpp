@@ -68,6 +68,7 @@ private:
 		MethodStubbingContextImpl(Mock<C, baseclasses...>& mock, R (C::*vMethod)(arglist...)) :
 				mock(mock), vMethod(vMethod) {
 		}
+
 		virtual MethodMock<C, R, arglist...>& getMethodMock() override {
 			return mock.stubMethodIfNotStubbed(mock.proxy, vMethod);
 		}
