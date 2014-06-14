@@ -47,7 +47,8 @@ struct BasicStubbing: tpunit::TestFixture {
 			TEST(BasicStubbing::verify_all_functions_are_stubbed_correctly),
 			TEST(BasicStubbing::exception_while_stubbing_should_cancel_stubbing),
 			TEST(BasicStubbing::verify_out_of_vtable_size),
-			TEST(BasicStubbing::reset_mock_to_initial_state)
+			TEST(BasicStubbing::reset_mock_to_initial_state),
+			TEST(BasicStubbing::use_lambda_to_change_ptr_value)
 			//
 	) {
 	}
@@ -724,5 +725,22 @@ struct BasicStubbing: tpunit::TestFixture {
 		//When(mock[&BigInterface::outOfVTable]).Return(0);
 		//mock.get().outOfVTable();
 	}
+
+
+	void use_lambda_to_change_ptr_value() {
+		struct SomeClass {
+			virtual int foo(int * x) = 0;
+		};
+
+		Mock<SomeClass> mock;
+
+		When(mock[&SomeClass::foo]).AlwaysDo([](int * x) { (*x)++; return 0;});
+
+		SomeClass &i = mock.get();
+		int num = 0;
+		ASSERT_EQUAL(0, i.foo(&num));
+		ASSERT_EQUAL(1, num);
+	}
+
 } __BasicStubbing;
 
