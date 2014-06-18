@@ -21,7 +21,7 @@ struct SpyingTests: tpunit::TestFixture {
 					TEST(SpyingTests::dataMembersAreNotChangedOnReset), //
 					TEST(SpyingTests::verifySpyiedMethodWasCalled), //
 					TEST(SpyingTests::mockDestructordoesNotDeleteObject), //
-					TEST(SpyingTests::canVerifyMethodAfterSpying) //
+					TEST(SpyingTests::canVerifyMethodAfterSpying)//
 			) //
 	{
 	}

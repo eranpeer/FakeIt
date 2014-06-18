@@ -28,7 +28,9 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 					TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToNullIfAbstract), //
 					TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToDefaultConstructedObject), //
 					TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToNullIfNotDefaultConstructible),//
-					TEST(DefaultBehavioreTests::ReturnPtr_NullPtrIfPtrToAbstract)
+					TEST(DefaultBehavioreTests::ReturnPtr_NullPtrIfPtrToAbstract),
+					TEST(DefaultBehavioreTests::canMockClassWithoutDefaultConstructor),
+					TEST(DefaultBehavioreTests::canMockClassWithProtectedConstructor)
 					//
 							) {
 	}
@@ -203,6 +205,24 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 		ASSERT_EQUAL(nullptr, i.abstractTypeFunc2());
 	}
 
-} __DefaultBehaviore;
+	void canMockClassWithoutDefaultConstructor() {
+		struct SomeClass {
+			SomeClass(int a){}
+			virtual void foo() = 0;
+		};
+		Mock<SomeClass> mock;
+		Fake(mock[&SomeClass::foo]);
+	}
 
+	void canMockClassWithProtectedConstructor() {
+		struct SomeClass {
+			virtual void foo() = 0;
+		protected:
+			SomeClass(int a){}
+		};
+		Mock<SomeClass> mock;
+		Fake(mock[&SomeClass::foo]);
+	}
+
+} __DefaultBehaviore;
 #endif

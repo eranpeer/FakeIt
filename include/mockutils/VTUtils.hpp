@@ -10,6 +10,7 @@
 #define VTUTILS_HPP_
 
 #include <functional>
+#include <type_traits>
 #include "mockutils/VirtualOffestSelector.hpp"
 
 namespace fakeit {
@@ -25,15 +26,13 @@ public:
 		return offset;
 	}
 
-
-	// Return the size of vTable starting at the index of the first method.
-	// In a simple inheritance layout the size is the number of virtual methods in the table.
 	template<typename C>
 	static unsigned int getVTSize() {
-		struct Tmp:public C {
+		struct Derrived:public C{
 			virtual void endOfVt(){}
 		};
-		unsigned int vtSize = getOffset(&Tmp::endOfVt);
+
+		unsigned int vtSize = getOffset(&Derrived::endOfVt);
 		return vtSize;
 	}
 
