@@ -21,8 +21,7 @@ public:
 	template<typename C, typename R, typename ... arglist>
 	static unsigned int getOffset(R (C::*vMethod)(arglist...)) {
 		auto sMethod = reinterpret_cast<unsigned int (VirtualOffsetSelector::*)()>(vMethod);
-		auto selectMethod = std::bind(sMethod, &offsetSelctor);
-		unsigned int offset = (unsigned int)selectMethod();
+		unsigned int offset = (offsetSelctor.*sMethod)();
 		return offset;
 	}
 
