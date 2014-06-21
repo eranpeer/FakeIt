@@ -52,6 +52,12 @@ struct ErrorFormattingTests: tpunit::TestFixture {
 	{
 	}
 
+	template <typename T> std::string to_string(T& val){
+		std::stringstream stream;
+		stream << val;
+		return stream.str();
+	}
+
 	void check_atleast_verification_exception() {
 		Mock<SomeInterface> mock;
 		try {
@@ -63,9 +69,9 @@ struct ErrorFormattingTests: tpunit::TestFixture {
 			ASSERT_EQUAL(1, e.expectedCount());
 			ASSERT_EQUAL(0, e.actualSequence().size());
 			ASSERT_EQUAL(1, e.expectedPattern().size());
-//			std::string expected("Expected invocation sequence could not be found in actual invocation order");
-//			std::string actual(e.what());
-//			ASSERT_EQUAL(expected, actual);
+
+			std::string expected{"VerificationException: expected at least 1 invocations but was 0"};
+			ASSERT_EQUAL(expected,to_string(e));
 		}
 	}
 
@@ -80,9 +86,9 @@ struct ErrorFormattingTests: tpunit::TestFixture {
 			ASSERT_EQUAL(1, e.expectedCount());
 			ASSERT_EQUAL(0, e.actualSequence().size());
 			ASSERT_EQUAL(1, e.expectedPattern().size());
-//			std::string expected("Expected invocation sequence could not be found in actual invocation order");
-//			std::string actual(e.what());
-//			ASSERT_EQUAL(expected, actual);
+
+			std::string expected{"VerificationException: expected exactly 1 invocations but was 0"};
+			ASSERT_EQUAL(expected,to_string(e));
 		}
 	}
 
@@ -98,6 +104,10 @@ struct ErrorFormattingTests: tpunit::TestFixture {
 			ASSERT_EQUAL(VerificationType::NoMoreInvocatoins, e.verificationType());
 			ASSERT_EQUAL(2, e.allIvocations().size());
 			ASSERT_EQUAL(1, e.unverifedIvocations().size());
+
+			std::string expected{"VerificationException: expected no more invocations but found 1"};
+			ASSERT_EQUAL(expected,to_string(e));
+
 		}
 	}
 

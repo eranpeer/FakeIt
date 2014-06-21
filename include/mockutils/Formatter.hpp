@@ -28,6 +28,12 @@ template<class T> struct Formatter {
 	}
 };
 
+template<> struct Formatter<bool> {
+	static std::string format(const bool& val) {
+		return val? "true":"false";
+	}
+};
+
 template<> struct Formatter<int> {
 	static std::string format(const int& val) {
 		return std::to_string(val);

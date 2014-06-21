@@ -10,6 +10,7 @@
 #define UsingFunctor_hpp_
 
 #include <set>
+#include <iostream>
 
 #include "fakeit/StubbingImpl.hpp"
 #include "fakeit/Stubbing.hpp"
@@ -203,12 +204,15 @@ public:
 						SequenceVerificationException(expectedPattern, actualSequence, expectedCount, actualCount) {
 				}
 
-				virtual VerificationType verificationType() override {
+				virtual VerificationType verificationType()const override {
 					return VerificationType::Exact;
 				}
 			};
 
-			throw ExactVerificationException(expectedPattern, actualSequence, expectedInvocationCount, count);
+
+			ExactVerificationException e(expectedPattern, actualSequence, expectedInvocationCount, count);
+			std::cout << e << std::endl;
+			throw e;
 		}
 
 		void throwAtLeastVerificationException(std::vector<Invocation*> actualSequence, int count) {
@@ -218,12 +222,14 @@ public:
 						SequenceVerificationException(expectedPattern, actualSequence, expectedCount, actualCount) {
 				}
 
-				virtual VerificationType verificationType() override {
+				virtual VerificationType verificationType()const override {
 					return VerificationType::AtLeast;
 				}
 			};
 
-			throw AtLeastVerificationException(expectedPattern, actualSequence, -expectedInvocationCount, count);
+			AtLeastVerificationException e(expectedPattern, actualSequence, -expectedInvocationCount, count);
+			std::cout << e << std::endl;
+			throw e;
 		}
 
 	};

@@ -16,9 +16,6 @@
 #include <iostream>
 #include <sstream>
 
-#include "mockutils/TuplePrinter.hpp"
-#include "mockutils/Macros.hpp"
-
 #include "fakeit/DomainObjects.hpp"
 
 namespace fakeit {

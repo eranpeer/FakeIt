@@ -12,6 +12,7 @@
 #include <functional>
 #include "fakeit/Sequence.hpp"
 #include "fakeit/DomainObjects.hpp"
+#include "mockutils/Formatter.hpp"
 
 namespace fakeit {
 
@@ -21,6 +22,12 @@ class FakeitException {
 struct UnexpectedMethodCallException: public FakeitException {
 	UnexpectedMethodCallException() {
 	}
+
+	friend std::ostream & operator<<(std::ostream &os, const UnexpectedMethodCallException& val) {
+		os << std::string("UnexpectedMethodCallException: could not find any recorded behavior to support this method call");
+		return os;
+	}
+
 };
 
 enum class VerificationType {
@@ -32,7 +39,7 @@ struct VerificationException: public FakeitException {
 	VerificationException() {
 	}
 
-	virtual VerificationType verificationType() = 0;
+	virtual VerificationType verificationType() const = 0;
 };
 
 struct NoMoreInvocationsVerificationException: public VerificationException {
@@ -42,7 +49,7 @@ struct NoMoreInvocationsVerificationException: public VerificationException {
 			VerificationException(), _allIvocations(allIvocations), _unverifedIvocations(unverifedIvocations) { //
 	}
 
-	virtual VerificationType verificationType() override {
+	virtual VerificationType verificationType() const override {
 		return VerificationType::NoMoreInvocatoins;
 	}
 
@@ -54,10 +61,17 @@ struct NoMoreInvocationsVerificationException: public VerificationException {
 		return _unverifedIvocations;
 	}
 
+	friend std::ostream & operator<<(std::ostream &os, const NoMoreInvocationsVerificationException& val) {
+		os << std::string("VerificationException: expected no more invocations but found ") //
+		.append(std::to_string(val.unverifedIvocations().size()));
+		return os;
+	}
+
 private:
 	const std::vector<Invocation*> _allIvocations;
 	const std::vector<Invocation*> _unverifedIvocations;
 };
+
 
 struct SequenceVerificationException: public VerificationException {
 	SequenceVerificationException( //
@@ -89,6 +103,15 @@ struct SequenceVerificationException: public VerificationException {
 		return _actualCount;
 	}
 
+	friend std::ostream & operator<<(std::ostream &os, const SequenceVerificationException& val) {
+		os << std::string("VerificationException: expected ") //
+		.append(val.verificationType() == fakeit::VerificationType::Exact ? "exactly " : "at least ") //
+		.append(std::to_string(val.expectedCount())) //
+		.append(" invocations but was ") //
+		.append(std::to_string(val.actualCount()));
+		return os;
+	}
+
 private:
 	const std::vector<Sequence*> _expectedPattern;
 	const std::vector<Invocation*> _actualSequence;
@@ -96,6 +119,7 @@ private:
 	const int _actualCount;
 };
 
-}
 
+
+}
 #endif // FakeitExceptions_h__
