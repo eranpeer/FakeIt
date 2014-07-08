@@ -11,23 +11,24 @@
 
 #include <functional>
 #include "fakeit/Sequence.hpp"
-#include "fakeit/DomainObjects.hpp"
 #include "mockutils/Formatter.hpp"
 
 namespace fakeit {
 
-class FakeitException {
+struct FakeitException {
+
+	virtual std::string what() const = 0;
+
+	friend std::ostream & operator<<(std::ostream &os, const FakeitException& val) {
+		os << val.what();
+		return os;
+	}
 };
 
 struct UnexpectedMethodCallException: public FakeitException {
-	UnexpectedMethodCallException() {
+	virtual std::string what() const override {
+		return std::string("UnexpectedMethodCallException: could not find any recorded behavior to support this method call");
 	}
-
-	friend std::ostream & operator<<(std::ostream &os, const UnexpectedMethodCallException& val) {
-		os << std::string("UnexpectedMethodCallException: could not find any recorded behavior to support this method call");
-		return os;
-	}
-
 };
 
 enum class VerificationType {
@@ -35,10 +36,6 @@ enum class VerificationType {
 };
 
 struct VerificationException: public FakeitException {
-
-	VerificationException() {
-	}
-
 	virtual VerificationType verificationType() const = 0;
 };
 
@@ -61,10 +58,9 @@ struct NoMoreInvocationsVerificationException: public VerificationException {
 		return _unverifedIvocations;
 	}
 
-	friend std::ostream & operator<<(std::ostream &os, const NoMoreInvocationsVerificationException& val) {
-		os << std::string("VerificationException: expected no more invocations but found ") //
-		.append(std::to_string(val.unverifedIvocations().size()));
-		return os;
+	virtual std::string what() const override {
+		return std::string("VerificationException: expected no more invocations but found ") //
+		.append(std::to_string(unverifedIvocations().size()));
 	}
 
 private:
@@ -103,13 +99,12 @@ struct SequenceVerificationException: public VerificationException {
 		return _actualCount;
 	}
 
-	friend std::ostream & operator<<(std::ostream &os, const SequenceVerificationException& val) {
-		os << std::string("VerificationException: expected ") //
-		.append(val.verificationType() == fakeit::VerificationType::Exact ? "exactly " : "at least ") //
-		.append(std::to_string(val.expectedCount())) //
+	virtual std::string what() const override {
+		return std::string("VerificationException: expected ") //
+		.append(verificationType() == fakeit::VerificationType::Exact ? "exactly " : "at least ") //
+		.append(std::to_string(expectedCount())) //
 		.append(" invocations but was ") //
-		.append(std::to_string(val.actualCount()));
-		return os;
+		.append(std::to_string(actualCount()));
 	}
 
 private:
@@ -118,8 +113,6 @@ private:
 	const int _expectedCount;
 	const int _actualCount;
 };
-
-
 
 }
 #endif // FakeitExceptions_h__

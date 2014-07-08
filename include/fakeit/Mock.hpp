@@ -17,19 +17,27 @@
 #include "mockutils/DynamicProxy.hpp"
 #include "fakeit/StubbingImpl.hpp"
 #include "fakeit/DomainObjects.hpp"
+#include "fakeit/DefaultLogger.hpp"
 
 namespace fakeit {
 
 using namespace fakeit;
 
+static DefaultLogger logger;
+
 template<typename C, typename ... baseclasses>
 class Mock: private MockObject<C>, public virtual ActualInvocationsSource {
 private:
 	DynamicProxy<C, baseclasses...> proxy;
-	C* instance;bool isSpy;
+	C* instance; //
+	bool isSpy;
 
 	void unmocked() {
-		throw UnexpectedMethodCallException { };
+		class UnmockedMethodInvocation: public UnexpectedMethodCallException {
+
+		} e;
+		FakeIt::log(e);
+		throw e;
 	}
 
 	static C* createFakeInstance() {
@@ -100,26 +108,10 @@ private:
 				std::shared_ptr<MethodStubbingContext<C, R, arglist...>>(new MethodStubbingContextImpl<R, arglist...>(*this, vMethod)));
 	}
 
-	void Stub() {
-	}
-
 	template<class DATA_TYPE, typename ... arglist>
 	DataMemberStubbingRoot<C, DATA_TYPE> stubDataMember(DATA_TYPE C::*member, const arglist&... ctorargs) {
 		proxy.stubDataMember(member, ctorargs...);
 		return DataMemberStubbingRoot<C, DATA_TYPE>();
-	}
-
-public:
-
-	static_assert(std::is_polymorphic<C>::value, "Can only mock a polymorphic type");
-
-	Mock() :
-			Mock<C, baseclasses...>(*(createFakeInstance())) {
-		isSpy = false;
-	}
-
-	Mock(C &obj) :
-			proxy { obj }, instance(&obj), isSpy(true) {
 	}
 
 	/**
@@ -131,6 +123,20 @@ public:
 		for (ActualInvocationsSource * s : vec) {
 			s->getActualInvocations(into);
 		}
+	}
+
+	Mock(C &obj, bool isSpy) :
+		proxy { obj }, instance(&obj), isSpy(isSpy) {
+	}
+
+public:
+
+	static_assert(std::is_polymorphic<C>::value, "Can only mock a polymorphic type");
+
+	Mock() : Mock<C, baseclasses...>(*(createFakeInstance()), false) {
+	}
+
+	Mock(C &obj) :Mock<C, baseclasses...>(obj, true) {
 	}
 
 	virtual ~Mock() {
@@ -160,12 +166,6 @@ public:
 			class = typename std::enable_if<std::is_member_object_pointer<DATA_TYPE C::*>::value>::type>
 	DataMemberStubbingRoot<C, DATA_TYPE> Stub(DATA_TYPE C::* member, const arglist&... ctorargs) {
 		return stubDataMember(member, ctorargs...);
-	}
-
-	template<typename H, typename ... M, class = typename std::enable_if<std::is_member_function_pointer<H>::value>::type>
-	void Stub(H head, M ... tail) {
-		When(head);
-		Stub(tail...);
 	}
 
 	template<typename R, typename ... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>

@@ -20,13 +20,13 @@ private:
 	}
 
 	template<typename C, typename R, typename ... arglist>
-	void spy(MethodStubbingBase<C, R, arglist...>& root) {
-		C& obj = root.getMockObject().get();
-		auto methodFromOriginalVT = root.getOriginalMethod();
+	void spy(MethodStubbingBase<C, R, arglist...>& context) {
+		C& obj = context.get();
+		auto methodFromOriginalVT = context.getOriginalMethod();
 		std::shared_ptr<Behavior<R, arglist...>> ptr {
 			new ReturnDelegateValue<C, R, arglist...>(obj, methodFromOriginalVT) };
-		root.AppendAction(ptr);
-		root.apply();
+		context.AppendAction(ptr);
+		context.apply();
 	}
 
 public:

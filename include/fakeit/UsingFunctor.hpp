@@ -10,12 +10,12 @@
 #define UsingFunctor_hpp_
 
 #include <set>
-#include <iostream>
 
 #include "fakeit/StubbingImpl.hpp"
 #include "fakeit/Stubbing.hpp"
 #include "fakeit/Sequence.hpp"
 #include "fakeit/SortInvocations.hpp"
+#include "fakeit/FakeIt.hpp"
 
 namespace fakeit {
 
@@ -79,7 +79,8 @@ public:
 
 		std::set<ActualInvocationsSource*> involvedMocks;
 		std::vector<Sequence*> expectedPattern;
-		int expectedInvocationCount;bool _isActive;
+		int expectedInvocationCount;
+		bool _isActive;
 
 		static inline int AT_LEAST_ONCE() {
 			return -1;
@@ -211,7 +212,7 @@ public:
 
 
 			ExactVerificationException e(expectedPattern, actualSequence, expectedInvocationCount, count);
-			std::cout << e << std::endl;
+			fakeit::FakeIt::log(e);
 			throw e;
 		}
 
@@ -228,7 +229,7 @@ public:
 			};
 
 			AtLeastVerificationException e(expectedPattern, actualSequence, -expectedInvocationCount, count);
-			std::cout << e << std::endl;
+			FakeIt::log(e);
 			throw e;
 		}
 

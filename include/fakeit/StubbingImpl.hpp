@@ -23,7 +23,7 @@
 #include "fakeit/Stubbing.hpp"
 #include "fakeit/Sequence.hpp"
 #include "fakeit/ActualInvocation.hpp"
-#include "fakeit/ErrorFormatter.hpp"
+#include "fakeit/Logger.hpp"
 
 namespace fakeit {
 
@@ -66,8 +66,14 @@ private:
 		return stubbingContext->getOriginalMethod();
 	}
 
-	MockObject<C>& getMockObject() {
-		return stubbingContext->getMock();
+//	virtual R invoke(arglist&... args) {
+//		C& instance = getMockObject().get();
+//		auto vMethod = getOriginalMethod();
+//		return ((&instance)->*vMethod)(args...);
+//	}
+
+	C& get() {
+		return stubbingContext->getMock().get();
 	}
 
 	std::shared_ptr<RecordedMethodBody<R, arglist...>> buildInitialMethodBody() {

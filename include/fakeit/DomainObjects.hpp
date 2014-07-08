@@ -13,7 +13,7 @@
 
 namespace fakeit {
 
-template <typename C>
+template<typename C>
 struct MockObject {
 	virtual C & get() = 0;
 };

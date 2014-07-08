@@ -211,7 +211,9 @@ struct MethodMock: public virtual MethodInvocationHandler<R, arglist...>, public
 				args...) };
 		auto methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
 		if (!methodInvocationMock) {
-			throw UnexpectedMethodCallException();
+			UnexpectedMethodCallException e;
+			FakeIt::log(e);
+			throw e;
 		}
 		auto matcher = methodInvocationMock->getMatcher();
 		actualInvoaction->setActualMatcher(matcher);

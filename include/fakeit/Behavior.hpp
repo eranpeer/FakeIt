@@ -16,6 +16,7 @@
 
 #include "mockutils/DefaultValue.hpp"
 #include "fakeit/FakeitExceptions.hpp"
+#include "fakeit/FakeIt.hpp"
 
 namespace fakeit {
 
@@ -67,7 +68,9 @@ private:
 template<typename R, typename ... arglist>
 struct ThrowUnexpectedMethodCall: public Behavior<R, arglist...> {
 	virtual R invoke(arglist&... args) override {
-		throw UnexpectedMethodCallException();
+		UnexpectedMethodCallException e;
+		FakeIt::log(e);
+		throw e;
 	}
 
 	virtual bool isDone() override {
