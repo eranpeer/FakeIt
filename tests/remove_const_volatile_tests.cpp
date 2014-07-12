@@ -46,23 +46,23 @@ public:
 		{
 			Mock<ConstVolatileFunctions> mock;
 			//mock.getA().foo();
-			Fake(mock[&ConstVolatileFunctions::func1]);
-			Fake(mock[&ConstVolatileFunctions::func2]);
-			Fake(mock[&ConstVolatileFunctions::func3]);
-			Fake(mock[&ConstVolatileFunctions::func4]);
-			Fake(mock[&ConstVolatileFunctions::func6]);
-			Fake(mock[&ConstVolatileFunctions::func7]);
+			Fake(Call(mock,func1));
+			Fake(Call(mock,func2));
+			Fake(Call(mock,func3));
+			Fake(Call(mock,func4));
+			Fake(Call(mock,func6));
+			Fake(Call(mock,func7));
 
-			Fake(mock[&ConstVolatileFunctions::proc1]);
-			Fake(mock[&ConstVolatileFunctions::proc2]);
-			Fake(mock[&ConstVolatileFunctions::proc3]);
+			Fake(Call(mock,proc1));
+			Fake(Call(mock,proc2));
+			Fake(Call(mock,proc3));
 			
 //			bool v = std::is_void<const void>::value;
 
-			Fake(mock[&ConstVolatileFunctions::proc4]);
- 			Fake(mock[&ConstVolatileFunctions::proc5]);
- 			Fake(mock[&ConstVolatileFunctions::proc6]);
- 			Fake(mock[&ConstVolatileFunctions::proc7]);
+			Fake(Call(mock,proc4));
+ 			Fake(Call(mock,proc5));
+ 			Fake(Call(mock,proc6));
+ 			Fake(Call(mock,proc7));
 
 			ConstVolatileFunctions& i = mock.get();
 			ASSERT_EQUAL(0, i.func1());
@@ -87,7 +87,7 @@ public:
 		void TestConstParameters()
 		{
 			Mock<ConstVolatileParameters> mock;
-			Fake(mock[&ConstVolatileParameters::func1]);
+			Fake(Call(mock,func1));
 			ConstVolatileParameters& i = mock.get();
 			ASSERT_EQUAL(0, i.func1(1,std::string()));
 		}

@@ -59,9 +59,9 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 	void implicitStubbingDefaultReturnValues() {
 		Mock<ReferenceInterface> mock;
 		Fake( //
-				mock[&ReferenceInterface::returnIntByRef], //
-				mock[&ReferenceInterface::returnAbstractTypeByRef], //
-				mock[&ReferenceInterface::returnConcreteTypeByRef] //
+				Call(mock,returnIntByRef), //
+				Call(mock,returnAbstractTypeByRef), //
+				Call(mock,returnConcreteTypeByRef) //
 				);
 
 		ReferenceInterface & i = mock.get();
@@ -80,9 +80,9 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 
 	void explicitStubbingDefualtReturnValues() {
 		Mock<ReferenceInterface> mock;		//
-		When(mock[&ReferenceInterface::returnIntByRef]).Return(); //
-		When(mock[&ReferenceInterface::returnAbstractTypeByRef]).Return(); //
-		When(mock[&ReferenceInterface::returnConcreteTypeByRef]).Return(); //
+		When(Call(mock,returnIntByRef)).Return(); //
+		When(Call(mock,returnAbstractTypeByRef)).Return(); //
+		When(Call(mock,returnConcreteTypeByRef)).Return(); //
 
 		ReferenceInterface & i = mock.get();
 
@@ -104,9 +104,9 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 		int num { 1 };
 		ConcreteType c;
 		AbstractType& a = c;
-		When(mock[&ReferenceInterface::returnIntByRef]).Return(num); //
-		When(mock[&ReferenceInterface::returnConcreteTypeByRef]).Return(c); //
-		When(mock[&ReferenceInterface::returnAbstractTypeByRef]).Return(a); //
+		When(Call(mock,returnIntByRef)).Return(num); //
+		When(Call(mock,returnConcreteTypeByRef)).Return(c); //
+		When(Call(mock,returnAbstractTypeByRef)).Return(a); //
 
 		ReferenceInterface & i = mock.get();
 
@@ -128,9 +128,9 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 		int num { 1 };
 		ConcreteType c;
 		AbstractType& a = c;
-		When(mock[&ReferenceInterface::returnIntByRef]).AlwaysReturn(num); //
-		When(mock[&ReferenceInterface::returnConcreteTypeByRef]).AlwaysReturn(c); //
-		When(mock[&ReferenceInterface::returnAbstractTypeByRef]).AlwaysReturn(a); //
+		When(Call(mock,returnIntByRef)).AlwaysReturn(num); //
+		When(Call(mock,returnConcreteTypeByRef)).AlwaysReturn(c); //
+		When(Call(mock,returnAbstractTypeByRef)).AlwaysReturn(a); //
 
 		ReferenceInterface & i = mock.get();
 
@@ -152,9 +152,9 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 		int num { 1 };
 		ConcreteType c;
 		AbstractType& a = c;
-		mock[&ReferenceInterface::returnIntByRef] = num;
-		mock[&ReferenceInterface::returnConcreteTypeByRef] = c;
-		mock[&ReferenceInterface::returnAbstractTypeByRef] = a;
+		Call(mock,returnIntByRef) = num;
+		Call(mock,returnConcreteTypeByRef) = c;
+		Call(mock,returnAbstractTypeByRef) = a;
 
 		ReferenceInterface & i = mock.get();
 
@@ -172,9 +172,9 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 
 	void explicitStubbingDefualtReturnValues_with_AlwaysReturn() {
 		Mock<ReferenceInterface> mock;
-		When(mock[&ReferenceInterface::returnIntByRef]).AlwaysReturn();
-		When(mock[&ReferenceInterface::returnAbstractTypeByRef]).AlwaysReturn(); //
-		When(mock[&ReferenceInterface::returnConcreteTypeByRef]).AlwaysReturn(); //
+		When(Call(mock,returnIntByRef)).AlwaysReturn();
+		When(Call(mock,returnAbstractTypeByRef)).AlwaysReturn(); //
+		When(Call(mock,returnConcreteTypeByRef)).AlwaysReturn(); //
 
 		ReferenceInterface & i = mock.get();
 

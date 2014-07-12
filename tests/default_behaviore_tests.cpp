@@ -39,7 +39,7 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 		RED = 1, GREEN = 2, BLUE = 3
 	};
 
-	struct ScalarFuctions {
+	struct ScalarFunctions {
 		virtual bool boolFunc() = 0;
 		virtual char charFunc() = 0;
 		virtual char16_t char16Func() = 0;
@@ -56,10 +56,10 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 		virtual Color enumFunc() = 0;
 
 		virtual int * pIntFunc() = 0;
-		virtual ScalarFuctions * pScalarFuctionsfunc() = 0;
+		virtual ScalarFunctions * pScalarFuctionsfunc() = 0;
 		virtual std::nullptr_t nullptrFunc() = 0;
 
-		typedef bool (ScalarFuctions::*func)();
+		typedef bool (ScalarFunctions::*func)();
 		virtual func pMemberFunc() = 0;
 	};
 
@@ -95,26 +95,26 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 		}
 	};
 	void scalar_types_should_return_zero() {
-		Mock<ScalarFuctions> mock;
-		Fake(mock[&ScalarFuctions::boolFunc]);
-		Fake(mock[&ScalarFuctions::charFunc]);
-		Fake(mock[&ScalarFuctions::char16Func]);
-		Fake(mock[&ScalarFuctions::char32Func]);
-		Fake(mock[&ScalarFuctions::wcharFunc]);
-		Fake(mock[&ScalarFuctions::shortFunc]);
-		Fake(mock[&ScalarFuctions::intFunc]);
-		Fake(mock[&ScalarFuctions::longFunc]);
-		Fake(mock[&ScalarFuctions::longLongFunc]);
-		Fake(mock[&ScalarFuctions::floatFunc]);
-		Fake(mock[&ScalarFuctions::doubleFunc]);
-		Fake(mock[&ScalarFuctions::longDoubleFunc]);
-		Fake(mock[&ScalarFuctions::enumFunc]);
-		Fake(mock[&ScalarFuctions::pIntFunc]);
-		Fake(mock[&ScalarFuctions::pScalarFuctionsfunc]);
-		Fake(mock[&ScalarFuctions::nullptrFunc]);
-		Fake(mock[&ScalarFuctions::pMemberFunc]);
+		Mock<ScalarFunctions> mock;
+		Fake(Call(mock,boolFunc));
+		Fake(Call(mock,charFunc));
+		Fake(Call(mock,char16Func));
+		Fake(Call(mock,char32Func));
+		Fake(Call(mock,wcharFunc));
+		Fake(Call(mock,shortFunc));
+		Fake(Call(mock,intFunc));
+		Fake(Call(mock,longFunc));
+		Fake(Call(mock,longLongFunc));
+		Fake(Call(mock,floatFunc));
+		Fake(Call(mock,doubleFunc));
+		Fake(Call(mock,longDoubleFunc));
+		Fake(Call(mock,enumFunc));
+		Fake(Call(mock,pIntFunc));
+		Fake(Call(mock,pScalarFuctionsfunc));
+		Fake(Call(mock,nullptrFunc));
+		Fake(Call(mock,pMemberFunc));
 
-		ScalarFuctions &i = mock.get();
+		ScalarFunctions &i = mock.get();
 
 		//Default behavior of a scalar function is to return 0/false/null
 
@@ -146,8 +146,8 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 	void DefaultBeaviorOfVoidFunctionsIsToDoNothing()
 	{
 		Mock<VoidFunctions> mock;
-		Fake(mock[&VoidFunctions::proc1]);
-		Fake(mock[&VoidFunctions::proc2]);
+		Fake(Call(mock,proc1));
+		Fake(Call(mock,proc2));
 		VoidFunctions& i = mock.get();
 		i.proc1();
 		i.proc2(1);
@@ -155,15 +155,15 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 
 	void ReturnByValue_ReturnDefaultConstructedObject() {
 		Mock<DefaultConstructibleFunctions> mock;
-		Fake(mock[&DefaultConstructibleFunctions::stringfunc]);
+		Fake(Call(mock,stringfunc));
 		DefaultConstructibleFunctions& i = mock.get();
 		ASSERT_EQUAL(std::string(), i.stringfunc());
 	}
 
 	void ReturnByReference_ReturnReferenceToDefaultConstructedObject() {
 		Mock<ReferenceFunctions> mock;
-		Fake(mock[&ReferenceFunctions::scalarFunc]);
-		Fake(mock[&ReferenceFunctions::stringFunc]);
+		Fake(Call(mock,scalarFunc));
+		Fake(Call(mock,stringFunc));
 		ReferenceFunctions& i = mock.get();
 		ASSERT_EQUAL(0, i.scalarFunc());
 		ASSERT_EQUAL(std::string(), i.stringFunc());
@@ -171,7 +171,7 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 
 	void ReturnByValue_ThrowExceptionIfNotDefaultConstructible() {
 		Mock<NonDefaultConstructibleFunctions> mock;
-		Fake(mock[&NonDefaultConstructibleFunctions::notDefaultConstructibleFunc]);
+		Fake(Call(mock,notDefaultConstructibleFunc));
 		NonDefaultConstructibleFunctions& i = mock.get();
 		try {
 			i.notDefaultConstructibleFunc();
@@ -186,21 +186,21 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 
 	void ReturnByReference_ReturnReferenceToNullIfNotDefaultConstructible() {
 		Mock<ReferenceFunctions> mock;
-		Fake(mock[&ReferenceFunctions::notDefaultConstructibleFunc]);
+		Fake(Call(mock,notDefaultConstructibleFunc));
 		ReferenceFunctions& i = mock.get();
 		ASSERT_EQUAL(nullptr, &i.notDefaultConstructibleFunc());
 	}
 
 	void ReturnByReference_ReturnReferenceToNullIfAbstract() {
 		Mock<ReferenceFunctions> mock;
-		Fake(mock[&ReferenceFunctions::abstractTypeFunc]);
+		Fake(Call(mock,abstractTypeFunc));
 		ReferenceFunctions& i = mock.get();
 		ASSERT_EQUAL(nullptr, &i.abstractTypeFunc());
 	}
 
 	void ReturnPtr_NullPtrIfPtrToAbstract() {
 		Mock<ReferenceFunctions> mock;
-		Fake(mock[&ReferenceFunctions::abstractTypeFunc2]);
+		Fake(Call(mock,abstractTypeFunc2));
 		ReferenceFunctions& i = mock.get();
 		ASSERT_EQUAL(nullptr, i.abstractTypeFunc2());
 	}
@@ -211,7 +211,7 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 			virtual void foo() = 0;
 		};
 		Mock<SomeClass> mock;
-		Fake(mock[&SomeClass::foo]);
+		Fake(Call(mock,foo));
 	}
 
 	void canMockClassWithProtectedConstructor() {
@@ -221,7 +221,7 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 			SomeClass(int a){}
 		};
 		Mock<SomeClass> mock;
-		Fake(mock[&SomeClass::foo]);
+		Fake(Call(mock,foo));
 	}
 
 } __DefaultBehaviore;

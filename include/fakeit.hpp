@@ -9,4 +9,7 @@
 #include "fakeit/VerifyNoOtherInvocationsFunctor.hpp"
 #include "fakeit/SpyFunctor.hpp"
 
+#define Call(mock, method) \
+    mock[&std::remove_reference<decltype(mock.get())>::type::method].setMethodDetails(#mock,#method)
+
 #endif // fakeit_h__

@@ -20,6 +20,7 @@ struct MockObject {
 
 struct Method {
 	virtual ~Method() = default;
+	virtual std::string name() const = 0;
 };
 
 }

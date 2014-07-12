@@ -109,6 +109,20 @@ protected:
 		stubbingContext->getMethodMock().stubMethodInvocation(invocationMatcher, recordedMethodBody);
 	}
 
+	void setMethodDetails(std::string mockName,std::string methodName){
+		stubbingContext->getMethodMock().setMethodDetails(mockName,methodName);
+	}
+
+	void Using(const arglist&... args) {
+		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> {
+					new ExpectedArgumentsInvocationMatcher<arglist...>(args...)});
+	}
+
+	void Matching(std::function<bool(arglist...)> matcher) {
+		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> {
+					new UserDefinedInvocationMatcher<arglist...>(matcher)});
+	}
+
 public:
 	virtual bool matches(Invocation& invocation) override {
 		if (&invocation.getMethod() != &stubbingContext->getMethodMock().getMethod()) {
@@ -139,16 +153,6 @@ public:
 
 	unsigned int size() const override {
 		return 1;
-	}
-
-	void Using(const arglist&... args) {
-		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> {
-					new ExpectedArgumentsInvocationMatcher<arglist...>(args...)});
-	}
-
-	void Matching(std::function<bool(arglist...)> matcher) {
-		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> {
-					new UserDefinedInvocationMatcher<arglist...>(matcher)});
 	}
 
 	void operator()(const arglist&... args) {
@@ -199,6 +203,11 @@ public:
 
 	void operator=(std::function<R(arglist...)> method) {
 		MethodStubbingBase<C, R, arglist...>::operator=(method);
+	}
+
+	FunctionStubbingRoot<C, R, arglist...>& setMethodDetails(std::string mockName,std::string methodName){
+		MethodStubbingBase<C, R, arglist...>::setMethodDetails(mockName,methodName);
+		return *this;
 	}
 
 	FunctionStubbingRoot<C, R, arglist...>& Using(const arglist&... args) {
@@ -264,6 +273,11 @@ public:
 
 	void operator=(std::function<R(arglist...)> method) {
 		MethodStubbingBase<C, R, arglist...>::operator=(method);
+	}
+
+	ProcedureStubbingRoot<C, R, arglist...>& setMethodDetails(std::string mockName,std::string methodName){
+		MethodStubbingBase<C, R, arglist...>::setMethodDetails(mockName,methodName);
+		return *this;
 	}
 
 	ProcedureStubbingRoot<C, R, arglist...>& Using(const arglist&... args) {

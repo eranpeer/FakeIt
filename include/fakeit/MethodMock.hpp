@@ -174,15 +174,48 @@ private:
 	}
 };
 
-class MethodImpl : public Method {
-	const std::string name;
-public:
-	MethodImpl(std::string name):name(name){}
-};
 
 template<typename C, typename R, typename ... arglist>
-struct MethodMock: public virtual MethodInvocationHandler<R, arglist...>, public virtual ActualInvocationsSource {
+class MethodMock: public virtual MethodInvocationHandler<R, arglist...>, public virtual ActualInvocationsSource {
 
+	class MethodImpl : public Method {
+		std::string _name;
+	public:
+		MethodImpl(std::string name):_name(name){}
+
+		virtual std::string name() const override {
+			return _name;
+		}
+
+		void setName(const std::string& name){
+			_name = name;
+		}
+	};
+
+	MockObject<C>& mock;
+	R (C::*vMethod)(arglist...);
+	MethodImpl method;
+	std::vector<std::shared_ptr<MethodInvocationMock<R, arglist...>>>methodInvocationMocks;
+	std::vector<std::shared_ptr<ActualInvocation<arglist...>>> actualInvocations;
+
+	std::shared_ptr<MethodInvocationMockBase<R, arglist...>> buildMethodInvocationMock(
+			std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> invocationMatcher,
+			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {
+		return std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {
+			new MethodInvocationMockBase<R, arglist...>(this->getMethod(), invocationMatcher,
+					invocationHandler)};
+	}
+
+	std::shared_ptr<MethodInvocationMock<R, arglist...>> getMethodInvocationMockForActualArgs(ActualInvocation<arglist...>& invocation) {
+		for (auto i = methodInvocationMocks.rbegin(); i != methodInvocationMocks.rend(); ++i) {
+			if ((*i)->matches(invocation)) {
+				return (*i);
+			}
+		}
+		return nullptr;
+	}
+
+public:
 
 	MethodMock(MockObject<C>& mock, R (C::*vMethod)(arglist...)) :
 			mock(mock), vMethod(vMethod), method{typeid(vMethod).name()} {
@@ -237,29 +270,10 @@ struct MethodMock: public virtual MethodInvocationHandler<R, arglist...>, public
 			into.insert(invocation.get());
 		}
 	}
-private:
 
-	MockObject<C>& mock;
-	R (C::*vMethod)(arglist...);
-	MethodImpl method;
-	std::vector<std::shared_ptr<MethodInvocationMock<R, arglist...>>>methodInvocationMocks;
-	std::vector<std::shared_ptr<ActualInvocation<arglist...>>> actualInvocations;
-
-	std::shared_ptr<MethodInvocationMockBase<R, arglist...>> buildMethodInvocationMock(
-			std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> invocationMatcher,
-			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {
-		return std::shared_ptr<MethodInvocationMockBase<R, arglist...>> {
-			new MethodInvocationMockBase<R, arglist...>(this->getMethod(), invocationMatcher,
-					invocationHandler)};
-	}
-
-	std::shared_ptr<MethodInvocationMock<R, arglist...>> getMethodInvocationMockForActualArgs(ActualInvocation<arglist...>& invocation) {
-		for (auto i = methodInvocationMocks.rbegin(); i != methodInvocationMocks.rend(); ++i) {
-			if ((*i)->matches(invocation)) {
-				return (*i);
-			}
-		}
-		return nullptr;
+	void setMethodDetails(const std::string& mockName, const std::string& methodName) {
+		const std::string fullName {mockName + "." + methodName};
+		method.setName(fullName);
 	}
 
 };

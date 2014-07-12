@@ -45,10 +45,8 @@ struct DemoTests
 	};
 
 
-#define Call(mock, method) \
-    mock[&std::remove_reference<decltype(mock.get())>::type::method]
-
 	void test1(){
+//
 		Mock<SomeInterface> m;
 		When(Call(m,foo)).Return(0);
 		ASSERT_EQUAL(0,m.get().foo(1));
