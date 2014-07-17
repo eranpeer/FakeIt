@@ -107,7 +107,6 @@ struct ErrorFormattingTests: tpunit::TestFixture {
 
 			std::string expected{"VerificationException: expected no more invocations but found 1"};
 			ASSERT_EQUAL(expected,to_string(e));
-
 		}
 	}
 

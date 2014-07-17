@@ -10,12 +10,14 @@
 #define VerifyNoOtherInvocationsFunctor_hpp_
 
 #include <set>
+#include <memory>
 
 #include "fakeit/StubbingImpl.hpp"
 #include "fakeit/Stubbing.hpp"
 #include "fakeit/Sequence.hpp"
 #include "fakeit/SortInvocations.hpp"
 #include "fakeit/UsingFunctor.hpp"
+#include "mockutils/smart_ptr.hpp"
 
 namespace fakeit {
 class VerifyNoOtherInvocationsFunctor {
@@ -47,29 +49,21 @@ class VerifyNoOtherInvocationsFunctor {
 		}
 	}
 
-public:
-
 	struct VerificationProgress {
 
 		friend class VerifyNoOtherInvocationsFunctor;
 
 		VerificationProgress(VerificationProgress& other) : //
 				_mocks(other._mocks), //
-				_isActive(other._isActive), //
 				_file(other._file), //
 				_line(other._line), //
 				_testMethod(other._testMethod) //
 		{
-			other._isActive = false;
 		}
 
 		~VerificationProgress() THROWS {
 
 			if (std::uncaught_exception()) {
-				_isActive = false;
-			}
-
-			if (!_isActive) {
 				return;
 			}
 
@@ -103,17 +97,32 @@ public:
 	private:
 
 		std::unordered_set<const ActualInvocationsSource*> _mocks;
-		bool _isActive;
 
 		std::string _file;
 		int _line;
 		std::string _testMethod;
 
 		VerificationProgress(std::unordered_set<const ActualInvocationsSource*> mocks) :
-				_mocks(mocks), //
-				_isActive(true) {
+				_mocks(mocks) {
 		}
 
+	};
+
+public:
+
+
+	class VerificationProgressProxy{
+		fakeit::smart_ptr<VerificationProgress> ptr;
+	public:
+		~VerificationProgressProxy() THROWS  = default;
+
+		VerificationProgressProxy(VerificationProgress * ptr):ptr(ptr){
+		}
+
+		VerificationProgressProxy setFileInfo(std::string file, int line, std::string testMethod) {
+			ptr->setFileInfo(file, line, testMethod);
+			return *this;
+		}
 	};
 
 	VerifyNoOtherInvocationsFunctor() {
@@ -123,11 +132,11 @@ public:
 	}
 
 	template<typename ... list>
-	VerificationProgress operator()(const ActualInvocationsSource& head, const list&... tail) {
+	VerificationProgressProxy operator()(const ActualInvocationsSource& head, const list&... tail) {
 		std::unordered_set<const ActualInvocationsSource*> invocationSources;
 		collectInvocationSources(invocationSources, head, tail...);
-		VerificationProgress progress(invocationSources);
-		return progress;
+		VerificationProgressProxy proxy{new VerificationProgress(invocationSources)};
+		return proxy;
 	}
 }
 static VerifyNoOtherInvocations;

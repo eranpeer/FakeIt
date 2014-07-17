@@ -17,8 +17,6 @@
 #include <set>
 #include <iostream>
 
-#include "mockutils/ExtractMemberType.hpp"
-
 #include "fakeit/MethodMock.hpp"
 #include "fakeit/Stubbing.hpp"
 #include "fakeit/Sequence.hpp"
