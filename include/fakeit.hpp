@@ -21,19 +21,19 @@
 #define CALL( mock , method ) \
 	mock[&std::remove_reference<decltype(mock.get())>::type::method].setMethodDetails(#mock,#method)
 
-#define VERIFY( call ) \
-		Verify(call).setFileInfo(__FILE__,__LINE__, __func__)
+#define Verify( ... ) \
+		Verify( __VA_ARGS__ ).setFileInfo(__FILE__,__LINE__, __func__)
 
-#define USING( ... ) \
-		Using(__VA_ARGS__)
+#define Using( ... ) \
+		Using( __VA_ARGS__ )
 
-#define VERIFY_NO_OTHER_INVOCATIONS( ... ) \
-	VerifyNoOtherInvocations(__VA_ARGS__ ).setFileInfo(__FILE__,__LINE__, __func__)
+#define VerifyNoOtherInvocations( ... ) \
+	VerifyNoOtherInvocations( __VA_ARGS__ ).setFileInfo(__FILE__,__LINE__, __func__)
 
-#define FAKE( ... ) \
-	Fake(__VA_ARGS__)
+#define Fake( ... ) \
+	Fake( __VA_ARGS__ )
 
-#define WHEN( call ) \
+#define When( call ) \
 	When(call)
 
 #endif // fakeit_h__

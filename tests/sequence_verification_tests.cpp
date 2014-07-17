@@ -186,11 +186,11 @@ struct SequenceVerification: tpunit::TestFixture {
 		Verify(CALL(mock2,func));
 		Verify(CALL(mock2,func) * 2);
 
-		USING(mock1,mock2).VERIFY(CALL(mock1,func));
-		USING(mock1,mock2).VERIFY(CALL(mock2,func));
+		Using(mock1,mock2).Verify(CALL(mock1,func));
+		Using(mock1,mock2).Verify(CALL(mock2,func));
 
-		Using(mock1,mock2).VERIFY(CALL(mock1,func) + CALL(mock2,func));
-		Using(mock1,mock2).VERIFY((CALL(mock1,func) + CALL(mock2,func)) * 2);
+		Using(mock1,mock2).Verify(CALL(mock1,func) + CALL(mock2,func));
+		Using(mock1,mock2).Verify((CALL(mock1,func) + CALL(mock2,func)) * 2);
 
 		ASSERT_THROW(Using(mock1,mock2).Verify(CALL(mock1,func) * 2), fakeit::VerificationException);
 		ASSERT_THROW(Using(mock1,mock2).Verify(CALL(mock2,func) * 2), fakeit::VerificationException);

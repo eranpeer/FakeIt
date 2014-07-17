@@ -272,8 +272,8 @@ struct BasicVerification: tpunit::TestFixture {
 	void verify_method_was_called_exactly_x_times() {
 		Mock<SomeInterface> mock;
 
-		ASSERT_THROW(VERIFY(CALL(mock,func)).Exactly(2), fakeit::VerificationException);
-		ASSERT_THROW(VERIFY(CALL(mock,proc)).Exactly(2), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,func)).Exactly(2), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,proc)).Exactly(2), fakeit::VerificationException);
 
 		Fake(CALL(mock,func), CALL(mock,proc));
 		SomeInterface &i = mock.get();
@@ -330,7 +330,7 @@ struct BasicVerification: tpunit::TestFixture {
 		ASSERT_THROW(VerifyNoOtherInvocations(mock), fakeit::VerificationException);
 
 		Verify(CALL(mock,func) * 3);
-		ASSERT_THROW(VERIFY_NO_OTHER_INVOCATIONS(mock), fakeit::VerificationException);
+		ASSERT_THROW(VerifyNoOtherInvocations(mock), fakeit::VerificationException);
 
 		Verify(CALL(mock,func) * 4);
 		VerifyNoOtherInvocations(mock);
@@ -340,14 +340,14 @@ struct BasicVerification: tpunit::TestFixture {
 		Mock<SomeInterface> mock;
 		Fake(CALL(mock,func), CALL(mock,proc2));
 		SomeInterface &i = mock.get();
-		VERIFY_NO_OTHER_INVOCATIONS(CALL(mock,func));
+		VerifyNoOtherInvocations(CALL(mock,func));
 
 		i.func(1);
 		i.func(1);
-		ASSERT_THROW(VERIFY_NO_OTHER_INVOCATIONS(CALL(mock,func), CALL(mock,proc2)), fakeit::VerificationException);
+		ASSERT_THROW(VerifyNoOtherInvocations(CALL(mock,func), CALL(mock,proc2)), fakeit::VerificationException);
 
 		Verify(CALL(mock,func)).AtLeastOnce();
-		VERIFY_NO_OTHER_INVOCATIONS(CALL(mock,func));
+		VerifyNoOtherInvocations(CALL(mock,func));
 
 		i.func(1);
 		i.func(1);

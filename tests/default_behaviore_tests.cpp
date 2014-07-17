@@ -200,7 +200,7 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 
 	void ReturnPtr_NullPtrIfPtrToAbstract() {
 		Mock<ReferenceFunctions> mock;
-		FAKE(CALL(mock,abstractTypeFunc2));
+		Fake(CALL(mock,abstractTypeFunc2));
 		ReferenceFunctions& i = mock.get();
 		ASSERT_EQUAL(nullptr, i.abstractTypeFunc2());
 	}
