@@ -9,14 +9,9 @@
 #include "fakeit/VerifyNoOtherInvocationsFunctor.hpp"
 #include "fakeit/SpyFunctor.hpp"
 
-//fakeit::MethodVerificationProgress& setFileInfo( //
-//		fakeit::MethodVerificationProgress& progress, //
-//		std::string file, //
-//		int line, //
-//		std::string testMethod) {
-//	progress.setFileInfo(file,line,testMethod);
-//	return progress;
-//}
+#ifdef _WIN32
+#define __func__ __FUNCTION__
+#endif
 
 #define CALL( mock , method ) \
 	mock[&std::remove_reference<decltype(mock.get())>::type::method].setMethodDetails(#mock,#method)
