@@ -9,6 +9,11 @@
 #include "fakeit/VerifyNoOtherInvocationsFunctor.hpp"
 #include "fakeit/SpyFunctor.hpp"
 
+
+#ifdef _WIN32
+#define __func__ __FUNCTION__
+#endif
+
 #define CALL( mock , method ) \
 	mock[&std::remove_reference<decltype(mock.get())>::type::method].setMethodDetails(#mock,#method)
 
