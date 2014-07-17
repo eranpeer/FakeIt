@@ -53,13 +53,13 @@ struct RecordedMethodBody: public MethodInvocationHandler<R, arglist...> {
 	}
 
 	void AppendDo(std::function<R(arglist...)> method) {
-		std::shared_ptr<Behavior<R, arglist...>> doMock = std::shared_ptr<Behavior<R, arglist...>> { new Call<R, arglist...>(
+		std::shared_ptr<Behavior<R, arglist...>> doMock = std::shared_ptr<Behavior<R, arglist...>> { new Repeat<R, arglist...>(
 				method) };
 		AppendDo(doMock);
 	}
 
 	void LastDo(std::function<R(arglist...)> method) {
-		std::shared_ptr<Behavior<R, arglist...>> doMock = std::shared_ptr<Behavior<R, arglist...>> { new Call<R, arglist...>(
+		std::shared_ptr<Behavior<R, arglist...>> doMock = std::shared_ptr<Behavior<R, arglist...>> { new Repeat<R, arglist...>(
 				method) };
 		LastDo(doMock);
 	}

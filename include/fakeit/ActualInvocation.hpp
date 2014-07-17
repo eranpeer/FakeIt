@@ -14,11 +14,8 @@
 #include <tuple>
 #include <string>
 #include <iostream>
-#include <sstream>
 
-//#include "mockutils/TuplePrinter.hpp"
 #include "mockutils/Macros.hpp"
-
 #include "fakeit/Invocation.hpp"
 
 namespace fakeit {
@@ -26,25 +23,17 @@ namespace fakeit {
 template<typename ... arglist>
 struct ActualInvocation: public virtual Invocation {
 
-	ActualInvocation(const int ordinal, const Method & method, const arglist&... args) :
+	struct Matcher: public virtual Destructable {
+		virtual bool matches(ActualInvocation<arglist...>& actualInvocation) = 0;
+	};
 
+	ActualInvocation(const int ordinal, const Method & method, const arglist&... args) :
 			Invocation(ordinal, method), actualArguments { args... } {
 	}
 
 	const std::tuple<arglist...>& getActualArguments() const {
 		return actualArguments;
 	}
-
-//	virtual std::string format() override {
-//		std::stringstream strm;
-//		strm << getMethod().getMethodName();
-//		strm << getActualArguments();
-//		return strm.str();
-//	}
-
-	struct Matcher: public virtual Destructable {
-		virtual bool matches(ActualInvocation<arglist...>& actualInvocation) = 0;
-	};
 
 	/**
 	 * The Matcher that was use to match this ActualInvocation.

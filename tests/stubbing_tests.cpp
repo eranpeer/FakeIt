@@ -80,8 +80,8 @@ struct BasicStubbing: tpunit::TestFixture {
 	void stub_method_to_default_behaviore_will_always_return_do_the_default_behaviore() {
 		Mock<SomeInterface> mock;
 
-		Fake(Call(mock,func));
-		Fake(Call(mock,proc));
+		Fake(CALL(mock,func));
+		Fake(CALL(mock,proc));
 
 		SomeInterface &i = mock.get();
 
@@ -95,7 +95,7 @@ struct BasicStubbing: tpunit::TestFixture {
 	void stub_multiple_methods_to_default_behaviore() {
 		Mock<SomeInterface> mock;
 
-		Fake(Call(mock,func), Call(mock,proc));
+		Fake(CALL(mock,func), CALL(mock,proc));
 
 		SomeInterface &i = mock.get();
 
@@ -108,8 +108,7 @@ struct BasicStubbing: tpunit::TestFixture {
 
 	void stub_a_function_to_return_a_specified_value_once() {
 		Mock<SomeInterface> mock;
-
-		When(Call(mock,func)).Return(1);
+		When(CALL(mock,func)).Return(1);
 
 		SomeInterface &i = mock.get();
 
@@ -121,7 +120,7 @@ struct BasicStubbing: tpunit::TestFixture {
 	void stub_a_function_to_return_a_specified_value_always() {
 		Mock<SomeInterface> mock;
 
-		When(Call(mock,func)).AlwaysReturn(1);
+		When(CALL(mock,func)).AlwaysReturn(1);
 
 		SomeInterface &i = mock.get();
 
@@ -132,8 +131,8 @@ struct BasicStubbing: tpunit::TestFixture {
 	void stub_a_method_to_throw_a_specified_exception_once() {
 		Mock<SomeInterface> mock;
 
-		When(Call(mock,func)).Throw(std::string("func exception"));
-		When(Call(mock,proc)).Throw(std::string("proc exception"));
+		When(CALL(mock,func)).Throw(std::string("func exception"));
+		When(CALL(mock,proc)).Throw(std::string("proc exception"));
 
 		SomeInterface &i = mock.get();
 
@@ -158,8 +157,8 @@ struct BasicStubbing: tpunit::TestFixture {
 
 		int a = 0;
 
-		When(Call(mock,func)).Do([](int val) {return val;});
-		When(Call(mock,proc)).Do([&a](int val) {a = val;});
+		When(CALL(mock,func)).Do([](int val) {return val;});
+		When(CALL(mock,proc)).Do([&a](int val) {a = val;});
 
 		SomeInterface &i = mock.get();
 
@@ -177,8 +176,8 @@ struct BasicStubbing: tpunit::TestFixture {
 
 		int a = 0;
 
-		When(Call(mock,func)).AlwaysDo([](int val) {return val;});
-		When(Call(mock,proc)).AlwaysDo([&a](int val) {a = val;});
+		When(CALL(mock,func)).AlwaysDo([](int val) {return val;});
+		When(CALL(mock,proc)).AlwaysDo([&a](int val) {a = val;});
 
 		SomeInterface &i = mock.get();
 
@@ -204,8 +203,8 @@ struct BasicStubbing: tpunit::TestFixture {
 	void stub_a_method_with_static_method_delegate() {
 		Mock<SomeInterface> mock;
 
-		When(Call(mock,func)).Do(func_delegate);
-		When(Call(mock,proc)).Do(proc_delegate);
+		When(CALL(mock,func)).Do(func_delegate);
+		When(CALL(mock,proc)).Do(proc_delegate);
 
 		SomeInterface &i = mock.get();
 
@@ -225,8 +224,8 @@ struct BasicStubbing: tpunit::TestFixture {
 
 		int a = 0;
 
-		Call(mock,func) = [](int val) {return val;};
-		Call(mock,proc) = [&a](int val) {a = val;};
+		CALL(mock,func) = [](int val) {return val;};
+		CALL(mock,proc) = [&a](int val) {a = val;};
 
 		SomeInterface &i = mock.get();
 
@@ -242,11 +241,11 @@ struct BasicStubbing: tpunit::TestFixture {
 	{
 		Mock<SomeInterface> mock;
 
-		Fake(Call(mock,func));
-		Fake(Call(mock,proc));
+		Fake(CALL(mock,func));
+		Fake(CALL(mock,proc));
 
-		Call(mock,func).Using(1) = [](...){return 1; };
-		Call(mock,proc).Using(1) = [](...){throw std::string("error"); };
+		CALL(mock,func).Using(1) = [](...){return 1; };
+		CALL(mock,proc).Using(1) = [](...){throw std::string("error"); };
 
 		SomeInterface &i = mock.get();
 
@@ -265,8 +264,8 @@ struct BasicStubbing: tpunit::TestFixture {
 	void stub_by_assignment_with_static_method_delegate() {
 		Mock<SomeInterface> mock;
 
-		Call(mock,func) = func_delegate;
-		Call(mock,proc) = proc_delegate;
+		CALL(mock,func) = func_delegate;
+		CALL(mock,proc) = proc_delegate;
 
 		SomeInterface &i = mock.get();
 
@@ -290,8 +289,8 @@ struct BasicStubbing: tpunit::TestFixture {
 	void stub_return_value_by_assignment() {
 		Mock<SomeInterface> mock;
 
-		Call(mock,func) = 1;
-		Call(mock,func).Using(2) = 2;
+		CALL(mock,func) = 1;
+		CALL(mock,func).Using(2) = 2;
 
 		SomeInterface &i = mock.get();
 
@@ -303,8 +302,8 @@ struct BasicStubbing: tpunit::TestFixture {
 	void stub_to_default_behavior_with_filter() {
 		Mock<SomeInterface> mock;
 
-		Fake(Call(mock,func).Using(1));
-		Fake(Call(mock,proc).Using(1));
+		Fake(CALL(mock,func).Using(1));
+		Fake(CALL(mock,proc).Using(1));
 
 		SomeInterface &i = mock.get();
 
@@ -321,8 +320,8 @@ struct BasicStubbing: tpunit::TestFixture {
 
 		Mock<SomeInterface> mock;
 
-		When(Call(mock,func).Using(1)).Return(1);
-		When(Call(mock,proc).Using(1)).Throw(e);
+		When(CALL(mock,func).Using(1)).Return(1);
+		When(CALL(mock,proc).Using(1)).Throw(e);
 
 		SomeInterface &i = mock.get();
 
@@ -339,8 +338,8 @@ struct BasicStubbing: tpunit::TestFixture {
 
 		Mock<SomeInterface> mock;
 
-		When(Call(mock,func)(1)).Return(1);
-		When(Call(mock,proc)(1)).Throw(e);
+		When(CALL(mock,func)(1)).Return(1);
+		When(CALL(mock,proc)(1)).Throw(e);
 
 		SomeInterface &i = mock.get();
 
@@ -357,8 +356,8 @@ struct BasicStubbing: tpunit::TestFixture {
 
 		Mock<SomeInterface> mock;
 
-		When(Call(mock,func).Matching([](int a) {return a == 1;})).Return(1);
-		When(Call(mock,proc).Matching([](int a) {return a == 1;})).Throw(e);
+		When(CALL(mock,func).Matching([](int a) {return a == 1;})).Return(1);
+		When(CALL(mock,proc).Matching([](int a) {return a == 1;})).Throw(e);
 
 		SomeInterface &i = mock.get();
 
@@ -375,8 +374,8 @@ struct BasicStubbing: tpunit::TestFixture {
 
 		Mock<SomeInterface> mock;
 
-		When(Call(mock,func)([](int a) {return a == 1;})).Return(1);
-		When(Call(mock,proc)([](int a) {return a == 1;})).Throw(e);
+		When(CALL(mock,func)([](int a) {return a == 1;})).Return(1);
+		When(CALL(mock,proc)([](int a) {return a == 1;})).Throw(e);
 
 		SomeInterface &i = mock.get();
 
@@ -390,7 +389,7 @@ struct BasicStubbing: tpunit::TestFixture {
 	void stub_multiple_return_values() {
 		Mock<SomeInterface> mock;
 
-		When(Call(mock,func)).Return(1).Return(2);
+		When(CALL(mock,func)).Return(1).Return(2);
 
 		SomeInterface &i = mock.get();
 
@@ -405,7 +404,7 @@ struct BasicStubbing: tpunit::TestFixture {
 		Mock<SomeInterface> mock;
 		std::queue<int> q( { 1, 2 });
 
-		When(Call(mock,func)).AlwaysDo([&](...) {int rv = q.front(); q.pop(); return rv;});
+		When(CALL(mock,func)).AlwaysDo([&](...) {int rv = q.front(); q.pop(); return rv;});
 
 		SomeInterface &i = mock.get();
 
@@ -417,8 +416,8 @@ struct BasicStubbing: tpunit::TestFixture {
 
 		Mock<SomeInterface> mock;
 
-		When(Call(mock,func)).Throw(std::string("A")).Throw(std::string("B"));
-		When(Call(mock,proc)).Throw(std::string("A")).Throw(std::string("B"));
+		When(CALL(mock,func)).Throw(std::string("A")).Throw(std::string("B"));
+		When(CALL(mock,proc)).Throw(std::string("A")).Throw(std::string("B"));
 
 		SomeInterface &i = mock.get();
 
@@ -473,7 +472,7 @@ struct BasicStubbing: tpunit::TestFixture {
 
 	void stub_multiple_return_values_with_list() {
 		Mock<SomeInterface> mock;
-		When(Call(mock,func)).Return(1, 2);
+		When(CALL(mock,func)).Return(1, 2);
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(1, i.func(1));
@@ -483,8 +482,8 @@ struct BasicStubbing: tpunit::TestFixture {
 
 	void stub_multiple_throws_with_list() {
 		Mock<SomeInterface> mock;
-		When(Call(mock,func)).Throw(std::string("1"), std::string("2"));
-		When(Call(mock,proc)).Throw(std::string("1"), std::string("2"));
+		When(CALL(mock,func)).Throw(std::string("1"), std::string("2"));
+		When(CALL(mock,proc)).Throw(std::string("1"), std::string("2"));
 		SomeInterface &i = mock.get();
 
 		ASSERT_THROW(i.func(1), std::string);
@@ -498,8 +497,8 @@ struct BasicStubbing: tpunit::TestFixture {
 
 	void stub_multiple_do_with_list() {
 		Mock<SomeInterface> mock;
-		When(Call(mock,func)).Do([](...) {return 1;}, [](...) {return 2;});
-		When(Call(mock,proc)).Do([](...) {}, [](...) {});
+		When(CALL(mock,func)).Do([](...) {return 1;}, [](...) {return 2;});
+		When(CALL(mock,proc)).Do([](...) {}, [](...) {});
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(1, i.func(1));
@@ -515,7 +514,7 @@ struct BasicStubbing: tpunit::TestFixture {
 		Mock<SomeInterface> mock;
 		{
 			try {
-				const auto& a = When(Call(mock,func));
+				const auto& a = When(CALL(mock,func));
 				if (&a == &a) // use a to avoid unused variable compilation warning.
 					throw std::runtime_error("some exception");
 			} catch (std::exception &) {
@@ -533,35 +532,35 @@ struct BasicStubbing: tpunit::TestFixture {
 		};
 
 		Mock<SomeInterface> mock;
-		When(Call(mock,func)).AlwaysReturn(0);
-		When(Call(mock,func).Using(1)).AlwaysReturn(1);
+		When(CALL(mock,func)).AlwaysReturn(0);
+		When(CALL(mock,func).Using(1)).AlwaysReturn(1);
 		mock.Stub(&SomeInterface::state, "state");
 //
 		SomeInterface& i = mock.get();
 		i.func(0);
 		i.func(1);
 
-		Verify(Call(mock,func));
-		Verify(Call(mock,func).Using(1));
+		Verify(CALL(mock,func));
+		Verify(CALL(mock,func).Using(1));
 
 		mock.Reset();
 
 		ASSERT_THROW(i.func(0), fakeit::UnexpectedMethodCallException);
 		ASSERT_THROW(i.func(1), fakeit::UnexpectedMethodCallException);
 
-		ASSERT_THROW(Verify(Call(mock,func)), fakeit::VerificationException);
-		ASSERT_THROW(Verify(Call(mock,func).Using(1)), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,func)), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,func).Using(1)), fakeit::VerificationException);
 
 
 		// stub agin and check it works again.
-		When(Call(mock,func)).AlwaysReturn(0);
-		When(Call(mock,func).Using(1)).AlwaysReturn(1);
+		When(CALL(mock,func)).AlwaysReturn(0);
+		When(CALL(mock,func).Using(1)).AlwaysReturn(1);
 
 		i.func(0);
 		i.func(1);
 
-		Verify(Call(mock,func));
-		Verify(Call(mock,func).Using(1));
+		Verify(CALL(mock,func));
+		Verify(CALL(mock,func).Using(1));
 	}
 
 	struct BigInterface {
@@ -620,56 +619,56 @@ struct BasicStubbing: tpunit::TestFixture {
 
 	void verify_all_functions_are_stubbed_correctly(){
 		Mock<BigInterface> mock;
-		When(Call(mock,func1)).Return(1);
-		When(Call(mock,func2)).Return(2);
-		When(Call(mock,func3)).Return(3);
-		When(Call(mock,func4)).Return(4);
-		When(Call(mock,func5)).Return(5);
-		When(Call(mock,func6)).Return(6);
-		When(Call(mock,func7)).Return(7);
-		When(Call(mock,func8)).Return(8);
-		When(Call(mock,func9)).Return(9);
-		When(Call(mock,func10)).Return(10);
-		When(Call(mock,func11)).Return(11);
-		When(Call(mock,func12)).Return(12);
-		When(Call(mock,func13)).Return(13);
-		When(Call(mock,func14)).Return(14);
-		When(Call(mock,func15)).Return(15);
-		When(Call(mock,func16)).Return(16);
-		When(Call(mock,func17)).Return(17);
-		When(Call(mock,func18)).Return(18);
-		When(Call(mock,func19)).Return(19);
-		When(Call(mock,func20)).Return(20);
-		When(Call(mock,func21)).Return(21);
-		When(Call(mock,func22)).Return(22);
-		When(Call(mock,func23)).Return(23);
-		When(Call(mock,func24)).Return(24);
-		When(Call(mock,func25)).Return(25);
-		When(Call(mock,func26)).Return(26);
-		When(Call(mock,func27)).Return(27);
-		When(Call(mock,func28)).Return(28);
-		When(Call(mock,func29)).Return(29);
-		When(Call(mock,func30)).Return(30);
-		When(Call(mock,func31)).Return(31);
-		When(Call(mock,func32)).Return(32);
-		When(Call(mock,func33)).Return(33);
-		When(Call(mock,func34)).Return(34);
-		When(Call(mock,func35)).Return(35);
-		When(Call(mock,func36)).Return(36);
-		When(Call(mock,func37)).Return(37);
-		When(Call(mock,func38)).Return(38);
-		When(Call(mock,func39)).Return(39);
-		When(Call(mock,func40)).Return(40);
-		When(Call(mock,func41)).Return(41);
-		When(Call(mock,func42)).Return(42);
-		When(Call(mock,func43)).Return(43);
-		When(Call(mock,func44)).Return(44);
-		When(Call(mock,func45)).Return(45);
-		When(Call(mock,func46)).Return(46);
-		When(Call(mock,func47)).Return(47);
-		When(Call(mock,func48)).Return(48);
-		When(Call(mock,func49)).Return(49);
-		When(Call(mock,func50)).Return(50);
+		When(CALL(mock,func1)).Return(1);
+		When(CALL(mock,func2)).Return(2);
+		When(CALL(mock,func3)).Return(3);
+		When(CALL(mock,func4)).Return(4);
+		When(CALL(mock,func5)).Return(5);
+		When(CALL(mock,func6)).Return(6);
+		When(CALL(mock,func7)).Return(7);
+		When(CALL(mock,func8)).Return(8);
+		When(CALL(mock,func9)).Return(9);
+		When(CALL(mock,func10)).Return(10);
+		When(CALL(mock,func11)).Return(11);
+		When(CALL(mock,func12)).Return(12);
+		When(CALL(mock,func13)).Return(13);
+		When(CALL(mock,func14)).Return(14);
+		When(CALL(mock,func15)).Return(15);
+		When(CALL(mock,func16)).Return(16);
+		When(CALL(mock,func17)).Return(17);
+		When(CALL(mock,func18)).Return(18);
+		When(CALL(mock,func19)).Return(19);
+		When(CALL(mock,func20)).Return(20);
+		When(CALL(mock,func21)).Return(21);
+		When(CALL(mock,func22)).Return(22);
+		When(CALL(mock,func23)).Return(23);
+		When(CALL(mock,func24)).Return(24);
+		When(CALL(mock,func25)).Return(25);
+		When(CALL(mock,func26)).Return(26);
+		When(CALL(mock,func27)).Return(27);
+		When(CALL(mock,func28)).Return(28);
+		When(CALL(mock,func29)).Return(29);
+		When(CALL(mock,func30)).Return(30);
+		When(CALL(mock,func31)).Return(31);
+		When(CALL(mock,func32)).Return(32);
+		When(CALL(mock,func33)).Return(33);
+		When(CALL(mock,func34)).Return(34);
+		When(CALL(mock,func35)).Return(35);
+		When(CALL(mock,func36)).Return(36);
+		When(CALL(mock,func37)).Return(37);
+		When(CALL(mock,func38)).Return(38);
+		When(CALL(mock,func39)).Return(39);
+		When(CALL(mock,func40)).Return(40);
+		When(CALL(mock,func41)).Return(41);
+		When(CALL(mock,func42)).Return(42);
+		When(CALL(mock,func43)).Return(43);
+		When(CALL(mock,func44)).Return(44);
+		When(CALL(mock,func45)).Return(45);
+		When(CALL(mock,func46)).Return(46);
+		When(CALL(mock,func47)).Return(47);
+		When(CALL(mock,func48)).Return(48);
+		When(CALL(mock,func49)).Return(49);
+		When(CALL(mock,func50)).Return(50);
 
 		BigInterface& i = mock.get();
 
@@ -727,7 +726,7 @@ struct BasicStubbing: tpunit::TestFixture {
 
 	void verify_out_of_vtable_size(){
 		Mock<BigInterface> mock;
-		//When(Call(mock,outOfVTable)).Return(0);
+		//When(CALL(mock,outOfVTable)).Return(0);
 		//mock.get().outOfVTable();
 	}
 
@@ -739,7 +738,7 @@ struct BasicStubbing: tpunit::TestFixture {
 
 		Mock<SomeClass> mock;
 
-		When(Call(mock,foo)).AlwaysDo([](int * x) { (*x)++; return 0;});
+		When(CALL(mock,foo)).AlwaysDo([](int * x) { (*x)++; return 0;});
 
 		SomeClass &i = mock.get();
 		int num = 0;

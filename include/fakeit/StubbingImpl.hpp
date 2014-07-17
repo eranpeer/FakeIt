@@ -66,12 +66,6 @@ private:
 		return stubbingContext->getOriginalMethod();
 	}
 
-//	virtual R invoke(arglist&... args) {
-//		C& instance = getMockObject().get();
-//		auto vMethod = getOriginalMethod();
-//		return ((&instance)->*vMethod)(args...);
-//	}
-
 	C& get() {
 		return stubbingContext->getMock().get();
 	}
@@ -170,7 +164,7 @@ public:
 	}
 
 	void operator=(std::function<R(arglist...)> method) {
-		std::shared_ptr<Behavior<R, arglist...>> ptr {new CallForever<R, arglist...>(method)};
+		std::shared_ptr<Behavior<R, arglist...>> ptr {new RepeatForever<R, arglist...>(method)};
 		MethodStubbingBase<C, R, arglist...>::AppendAction(ptr);
 		MethodStubbingBase<C, R, arglist...>::apply();
 	}
@@ -233,7 +227,7 @@ public:
 	template<typename U = R>
 	typename std::enable_if<!std::is_reference<U>::value, void>::type operator=(const R& r) {
 		auto method = [r](arglist&...) -> R {return r;};
-		std::shared_ptr<Behavior<R, arglist...>> ptr { new CallForever<R, arglist...>(method) };
+		std::shared_ptr<Behavior<R, arglist...>> ptr { new RepeatForever<R, arglist...>(method) };
 		MethodStubbingBase<C, R, arglist...>::AppendAction(ptr);
 		MethodStubbingBase<C, R, arglist...>::apply();
 	}
@@ -241,11 +235,10 @@ public:
 	template<typename U = R>
 	typename std::enable_if<std::is_reference<U>::value, void>::type operator=(const R& r) {
 		auto method = [&r](arglist&...) -> R {return r;};
-		std::shared_ptr<Behavior<R, arglist...>> ptr { new CallForever<R, arglist...>(method) };
+		std::shared_ptr<Behavior<R, arglist...>> ptr { new RepeatForever<R, arglist...>(method) };
 		MethodStubbingBase<C, R, arglist...>::AppendAction(ptr);
 		MethodStubbingBase<C, R, arglist...>::apply();
 	}
-
 };
 
 template<typename C, typename R, typename ... arglist>

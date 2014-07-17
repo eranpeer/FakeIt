@@ -37,8 +37,8 @@ struct GccMultipleStubbing: tpunit::TestFixture {
 
 	void stub_multiple_return_values_with_quantifier() {
 		Mock<SomeInterface> mock;
-		When(Call(mock,func)).Return(2_Times(1), 2_Times(2));
-		When(Call(mock,proc)).Return(2_Times);
+		When(CALL(mock,func)).Return(2_Times(1), 2_Times(2));
+		When(CALL(mock,proc)).Return(2_Times);
 
 		SomeInterface &i = mock.get();
 		ASSERT_EQUAL(1, i.func(1));
@@ -54,7 +54,7 @@ struct GccMultipleStubbing: tpunit::TestFixture {
 
 	void stub_multiple_return_values_with_mixed_values_and_quantifiers() {
 		Mock<SomeInterface> mock;
-		When(Call(mock,func)).Return(0, 2_Times(1), 2);
+		When(CALL(mock,func)).Return(0, 2_Times(1), 2);
 		SomeInterface &i = mock.get();
 		ASSERT_EQUAL(0, i.func(1));
 		ASSERT_EQUAL(1, i.func(1));
@@ -65,8 +65,8 @@ struct GccMultipleStubbing: tpunit::TestFixture {
 
 	void stub_multiple_throws_with_quantifier() {
 		Mock<SomeInterface> mock;
-		When(Call(mock,func)).Throw(2_Times(std::string("1")), 1_Times(1));
-		When(Call(mock,proc)).Throw(2_Times(std::string("1")), 1_Times(1));
+		When(CALL(mock,func)).Throw(2_Times(std::string("1")), 1_Times(1));
+		When(CALL(mock,proc)).Throw(2_Times(std::string("1")), 1_Times(1));
 		SomeInterface &i = mock.get();
 //
 		ASSERT_THROW(i.func(1), std::string);
@@ -82,8 +82,8 @@ struct GccMultipleStubbing: tpunit::TestFixture {
 
 	void stub_multiple_throws_and_returns() {
 		Mock<SomeInterface> mock;
-		When(Call(mock,func)).Throw(std::string("1"), 1_Times(1)).Return(1, 1_Times(2));
-		When(Call(mock,proc)).Throw(std::string("1"), 1_Times(1)).Return(2_Times);
+		When(CALL(mock,func)).Throw(std::string("1"), 1_Times(1)).Return(1, 1_Times(2));
+		When(CALL(mock,proc)).Throw(std::string("1"), 1_Times(1)).Return(2_Times);
 		SomeInterface &i = mock.get();
 //
 		ASSERT_THROW(i.func(1), std::string);
@@ -101,8 +101,8 @@ struct GccMultipleStubbing: tpunit::TestFixture {
 
 	void stub_multiple_do_with_list_of_mixed_quatifiers_and_values() {
 		Mock<SomeInterface> mock;
-		When(Call(mock,func)).Do(1_Times([](...) {return 1;}), [](...) {return 2;});
-		When(Call(mock,proc)).Do(1_Times([](...) {}), [](...) {});
+		When(CALL(mock,func)).Do(1_Times([](...) {return 1;}), [](...) {return 2;});
+		When(CALL(mock,proc)).Do(1_Times([](...) {}), [](...) {});
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(1, i.func(1));

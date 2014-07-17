@@ -9,7 +9,31 @@
 #include "fakeit/VerifyNoOtherInvocationsFunctor.hpp"
 #include "fakeit/SpyFunctor.hpp"
 
-#define Call(mock, method) \
-    mock[&std::remove_reference<decltype(mock.get())>::type::method].setMethodDetails(#mock,#method)
+//fakeit::MethodVerificationProgress& setFileInfo( //
+//		fakeit::MethodVerificationProgress& progress, //
+//		std::string file, //
+//		int line, //
+//		std::string testMethod) {
+//	progress.setFileInfo(file,line,testMethod);
+//	return progress;
+//}
+
+#define CALL( mock , method ) \
+	mock[&std::remove_reference<decltype(mock.get())>::type::method].setMethodDetails(#mock,#method)
+
+#define VERIFY( call ) \
+		Verify(call).setFileInfo(__FILE__,__LINE__, __func__)
+
+#define USING( ... ) \
+		Using(__VA_ARGS__)
+
+#define VERIFY_NO_OTHER_INVOCATIONS( ... ) \
+	VerifyNoOtherInvocations(__VA_ARGS__ ).setFileInfo(__FILE__,__LINE__, __func__)
+
+#define FAKE( ... ) \
+	Fake(__VA_ARGS__)
+
+#define WHEN( call ) \
+	When(call)
 
 #endif // fakeit_h__

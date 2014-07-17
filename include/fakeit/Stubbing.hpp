@@ -72,6 +72,8 @@ struct MethodVerificationProgress {
 		AtLeast(q.quantity);
 	}
 
+	virtual MethodVerificationProgress& setFileInfo(std::string file, int line, std::string testMethod) = 0;
+
 protected:
 	virtual void verifyInvocations(const int times) = 0;
 private:
@@ -101,7 +103,7 @@ struct FirstFunctionStubbingProgress {
 	Return(const Quantifier<R>& q) {
 		const R& value = q.value;
 		auto method = [value](const arglist&...)->R {return value;};
-		std::shared_ptr<Behavior<R, arglist...>> doMock { new Call<R, arglist...>(method, q.quantity) };
+		std::shared_ptr<Behavior<R, arglist...>> doMock { new Repeat<R, arglist...>(method, q.quantity) };
 		return DoImpl(doMock);
 	}
 
@@ -144,7 +146,7 @@ struct FirstFunctionStubbingProgress {
 	Throw(const Quantifier<E>& q) {
 		const E& value = q.value;
 		auto method = [value](const arglist&...)->R {throw value;};
-		std::shared_ptr<Behavior<R, arglist...>> doMock { new Call<R, arglist...>(method, q.quantity) };
+		std::shared_ptr<Behavior<R, arglist...>> doMock { new Repeat<R, arglist...>(method, q.quantity) };
 		return DoImpl(doMock);
 	}
 
@@ -162,14 +164,14 @@ struct FirstFunctionStubbingProgress {
 
 	virtual FirstFunctionStubbingProgress<R, arglist...>&
 	Do(std::function<R(arglist...)> method) {
-		std::shared_ptr<Behavior<R, arglist...>> ptr { new Call<R, arglist...>(method) };
+		std::shared_ptr<Behavior<R, arglist...>> ptr { new Repeat<R, arglist...>(method) };
 		return DoImpl(ptr);
 	}
 
 	template<typename F>
 	FirstFunctionStubbingProgress<R, arglist...>&
 	Do(const Quantifier<F>& q) {
-		std::shared_ptr<Behavior<R, arglist...>> doMock { new Call<R, arglist...>(q.value, q.quantity) };
+		std::shared_ptr<Behavior<R, arglist...>> doMock { new Repeat<R, arglist...>(q.value, q.quantity) };
 		return DoImpl(doMock);
 	}
 
@@ -181,7 +183,7 @@ struct FirstFunctionStubbingProgress {
 	}
 
 	virtual void AlwaysDo(std::function<R(arglist...)> method) {
-		std::shared_ptr<Behavior<R, arglist...>> ptr { new CallForever<R, arglist...>(method) };
+		std::shared_ptr<Behavior<R, arglist...>> ptr { new RepeatForever<R, arglist...>(method) };
 		DoImpl(ptr);
 	}
 
@@ -210,7 +212,7 @@ struct FirstProcedureStubbingProgress {
 	FirstProcedureStubbingProgress<R, arglist...>&
 	Return(const Quantifier<R>& q) {
 		auto method = [](const arglist&...)->R {return DefaultValue::value<R>();};
-		std::shared_ptr<Behavior<R, arglist...>> doMock { new Call<R, arglist...>(method, q.quantity) };
+		std::shared_ptr<Behavior<R, arglist...>> doMock { new Repeat<R, arglist...>(method, q.quantity) };
 		return DoImpl(doMock);
 	}
 
@@ -224,7 +226,7 @@ struct FirstProcedureStubbingProgress {
 	Throw(const Quantifier<E>& q) {
 		const E& value = q.value;
 		auto method = [value](const arglist&...)->R {throw value;};
-		std::shared_ptr<Behavior<R, arglist...>> doMock { new Call<R, arglist...>(method, q.quantity) };
+		std::shared_ptr<Behavior<R, arglist...>> doMock { new Repeat<R, arglist...>(method, q.quantity) };
 		return DoImpl(doMock);
 	}
 
@@ -241,14 +243,14 @@ struct FirstProcedureStubbingProgress {
 	}
 
 	virtual FirstProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) {
-		std::shared_ptr<Behavior<R, arglist...>> ptr { new Call<R, arglist...>(method) };
+		std::shared_ptr<Behavior<R, arglist...>> ptr { new Repeat<R, arglist...>(method) };
 		return DoImpl(ptr);
 	}
 
 	template<typename F>
 	FirstProcedureStubbingProgress<R, arglist...>&
 	Do(const Quantifier<F>& q) {
-		std::shared_ptr<Behavior<R, arglist...>> doMock { new Call<R, arglist...>(q.value, q.quantity) };
+		std::shared_ptr<Behavior<R, arglist...>> doMock { new Repeat<R, arglist...>(q.value, q.quantity) };
 		return DoImpl(doMock);
 	}
 
@@ -260,7 +262,7 @@ struct FirstProcedureStubbingProgress {
 	}
 
 	virtual void AlwaysDo(std::function<R(arglist...)> method) {
-		std::shared_ptr<Behavior<R, arglist...>> ptr { new CallForever<R, arglist...>(method) };
+		std::shared_ptr<Behavior<R, arglist...>> ptr { new RepeatForever<R, arglist...>(method) };
 		DoImpl(ptr);
 	}
 

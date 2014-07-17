@@ -69,174 +69,174 @@ struct BasicVerification: tpunit::TestFixture {
 
 	void verify_should_throw_VerificationException_if_method_was_not_called() {
 		Mock<SomeInterface> mock;
-		Fake(Call(mock,func), Call(mock,proc));
-		ASSERT_THROW(Verify(Call(mock,func)), fakeit::VerificationException);
-		ASSERT_THROW(Verify(Call(mock,proc)), fakeit::VerificationException);
+		Fake(CALL(mock,func), CALL(mock,proc));
+		ASSERT_THROW(Verify(CALL(mock,func)), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,proc)), fakeit::VerificationException);
 	}
 
 	void verify_should_throw_VerificationException_if_method_was_not_stubbed() {
 		Mock<SomeInterface> mock;
-		ASSERT_THROW(Verify(Call(mock,func)), fakeit::VerificationException);
-		ASSERT_THROW(Verify(Call(mock,proc)), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,func)), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,proc)), fakeit::VerificationException);
 	}
 
 	void verify_should_not_throw_exception_if_method_was_called() {
 		Mock<SomeInterface> mock;
-		Fake(Call(mock,func), Call(mock,proc));
+		Fake(CALL(mock,func), CALL(mock,proc));
 		SomeInterface &i = mock.get();
 		i.func(1);
 		i.proc(1);
-		Verify(Call(mock,func));
-		Verify(Call(mock,proc));
+		Verify(CALL(mock,func));
+		Verify(CALL(mock,proc));
 	}
 
 	void verify_method_was_called_at_least_once() {
 		Mock<SomeInterface> mock;
 
-		ASSERT_THROW(Verify(Call(mock,func)), fakeit::VerificationException);
-		ASSERT_THROW(Verify(Call(mock,proc)), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,func)), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,proc)), fakeit::VerificationException);
 
-		Fake(Call(mock,func), Call(mock,proc));
+		Fake(CALL(mock,func), CALL(mock,proc));
 		SomeInterface &i = mock.get();
 		i.func(1);
 		i.proc(2);
 
-		Verify(Call(mock,func));
-		Verify(Call(mock,proc));
+		Verify(CALL(mock,func));
+		Verify(CALL(mock,proc));
 
 		i.func(1);
 		i.proc(2);
 
-		Verify(Call(mock,func));
-		Verify(Call(mock,proc));
+		Verify(CALL(mock,func));
+		Verify(CALL(mock,proc));
 	}
 
 	void verify_method_was_called_at_least_twice() {
 		Mock<SomeInterface> mock;
 
-		ASSERT_THROW(Verify(Call(mock,func)).AtLeast(2), fakeit::VerificationException);
-		ASSERT_THROW(Verify(Call(mock,proc)).AtLeast(2), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,func)).AtLeast(2), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,proc)).AtLeast(2), fakeit::VerificationException);
 
-		Fake(Call(mock,func), Call(mock,proc));
+		Fake(CALL(mock,func), CALL(mock,proc));
 		SomeInterface &i = mock.get();
 		i.func(1);
 		i.proc(2);
 
-		ASSERT_THROW(Verify(Call(mock,func)).AtLeast(2), fakeit::VerificationException);
-		ASSERT_THROW(Verify(Call(mock,proc)).AtLeast(2), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,func)).AtLeast(2), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,proc)).AtLeast(2), fakeit::VerificationException);
 
 		i.func(1);
 		i.proc(2);
 
-		Verify(Call(mock,func)).AtLeast(2);
-		Verify(Call(mock,proc)).AtLeast(2);
+		Verify(CALL(mock,func)).AtLeast(2);
+		Verify(CALL(mock,proc)).AtLeast(2);
 
 		i.func(1);
 		i.proc(2);
 
-		Verify(Call(mock,func)).AtLeast(2);
-		Verify(Call(mock,proc)).AtLeast(2);
+		Verify(CALL(mock,func)).AtLeast(2);
+		Verify(CALL(mock,proc)).AtLeast(2);
 	}
 
 	void verify_method_was_called_at_least_X_with_quantifier() {
 		Mock<SomeInterface> mock;
 
 #if defined (__GNUG__)
-		ASSERT_THROW(Verify(Call(mock,func)).AtLeast(2_Times), fakeit::VerificationException);
-		ASSERT_THROW(Verify(Call(mock,proc)).AtLeast(2_Times), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,func)).AtLeast(2_Times), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,proc)).AtLeast(2_Times), fakeit::VerificationException);
 #endif
 
-		Fake(Call(mock,func), Call(mock,proc));
+		Fake(CALL(mock,func), CALL(mock,proc));
 		SomeInterface &i = mock.get();
 		i.func(1);
 		i.proc(2);
 
 #if defined (__GNUG__)
-		ASSERT_THROW(Verify(Call(mock,func)).AtLeast(2_Times), fakeit::VerificationException);
-		ASSERT_THROW(Verify(Call(mock,proc)).AtLeast(2), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,func)).AtLeast(2_Times), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,proc)).AtLeast(2), fakeit::VerificationException);
 #endif
-		ASSERT_THROW(Verify(Call(mock,func)).AtLeast(Times<2>()), fakeit::VerificationException);
-		ASSERT_THROW(Verify(Call(mock,proc)).AtLeast(Times<2>()), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,func)).AtLeast(Times<2>()), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,proc)).AtLeast(Times<2>()), fakeit::VerificationException);
 		i.func(1);
 		i.proc(2);
 
 #if defined (__GNUG__)
-		Verify(Call(mock,func)).AtLeast(2_Times);
-		Verify(Call(mock,proc)).AtLeast(2_Times);
+		Verify(CALL(mock,func)).AtLeast(2_Times);
+		Verify(CALL(mock,proc)).AtLeast(2_Times);
 #endif
-		Verify(Call(mock,func)).AtLeast(Times<2>());
-		Verify(Call(mock,proc)).AtLeast(Times<2>());
+		Verify(CALL(mock,func)).AtLeast(Times<2>());
+		Verify(CALL(mock,proc)).AtLeast(Times<2>());
 		i.func(1);
 		i.proc(2);
 
 #if defined (__GNUG__)
-		Verify(Call(mock,func)).AtLeast(2_Times);
-		Verify(Call(mock,proc)).AtLeast(2_Times);
+		Verify(CALL(mock,func)).AtLeast(2_Times);
+		Verify(CALL(mock,proc)).AtLeast(2_Times);
 #endif
-		Verify(Call(mock,func)).AtLeast(Times<2>());
-		Verify(Call(mock,proc)).AtLeast(Times<2>());
+		Verify(CALL(mock,func)).AtLeast(Times<2>());
+		Verify(CALL(mock,proc)).AtLeast(Times<2>());
 	}
 
 	void verify_method_was_called_exactly_once() {
 		Mock<SomeInterface> mock;
 
-		ASSERT_THROW(Verify(Call(mock,func)).Once(), fakeit::VerificationException);
-		ASSERT_THROW(Verify(Call(mock,proc)).Once(), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,func)).Once(), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,proc)).Once(), fakeit::VerificationException);
 
-		Fake(Call(mock,func), Call(mock,proc));
+		Fake(CALL(mock,func), CALL(mock,proc));
 		SomeInterface &i = mock.get();
 
-		ASSERT_THROW(Verify(Call(mock,func)).Once(), fakeit::VerificationException);
-		ASSERT_THROW(Verify(Call(mock,proc)).Once(), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,func)).Once(), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,proc)).Once(), fakeit::VerificationException);
 
 		i.func(1);
 		i.proc(1);
 
-		Verify(Call(mock,func)).Once();
-		Verify(Call(mock,proc)).Once();
+		Verify(CALL(mock,func)).Once();
+		Verify(CALL(mock,proc)).Once();
 
 		i.func(1);
 		i.proc(1);
 
-		ASSERT_THROW(Verify(Call(mock,func)).Once(), fakeit::VerificationException);
-		ASSERT_THROW(Verify(Call(mock,proc)).Once(), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,func)).Once(), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,proc)).Once(), fakeit::VerificationException);
 	}
 
 	void verify_method_was_never_called() {
 		Mock<SomeInterface> mock;
 
-		Verify(Call(mock,func)).Never();
-		Verify(Call(mock,proc)).Never();
+		Verify(CALL(mock,func)).Never();
+		Verify(CALL(mock,proc)).Never();
 
-		Fake(Call(mock,func), Call(mock,proc));
+		Fake(CALL(mock,func), CALL(mock,proc));
 		SomeInterface &i = mock.get();
 
-		Verify(Call(mock,func)).Never();
-		Verify(Call(mock,proc)).Never();
+		Verify(CALL(mock,func)).Never();
+		Verify(CALL(mock,proc)).Never();
 
 		i.func(1);
 		i.proc(1);
 
-		ASSERT_THROW(Verify(Call(mock,func)).Never(), fakeit::VerificationException);
-		ASSERT_THROW(Verify(Call(mock,proc)).Never(), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,func)).Never(), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,proc)).Never(), fakeit::VerificationException);
 	}
 
 	void verify_method_was_called_exactly_x_times_with_quantifier() {
 		Mock<SomeInterface> mock;
-		Fake(Call(mock,func), Call(mock,proc));
+		Fake(CALL(mock,func), CALL(mock,proc));
 
 #if defined (__GNUG__)
 // Only supported by GCC
 
-		ASSERT_THROW(Verify(Call(mock,func)).Exactly(2_Time), std::invalid_argument);
-		ASSERT_THROW(Verify(Call(mock,func)).Exactly(1_Time), fakeit::VerificationException);
-		ASSERT_THROW(Verify(Call(mock,proc)).Exactly(1_Time), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,func)).Exactly(2_Time), std::invalid_argument);
+		ASSERT_THROW(Verify(CALL(mock,func)).Exactly(1_Time), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,proc)).Exactly(1_Time), fakeit::VerificationException);
 
 #endif
 
-		ASSERT_THROW(Verify(Call(mock,func)).Exactly(Times<1>()), fakeit::VerificationException);
-		ASSERT_THROW(Verify(Call(mock,proc)).Exactly(Times<1>()), fakeit::VerificationException);
-		ASSERT_THROW(Verify(Call(mock,proc)).Exactly(Once), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,func)).Exactly(Times<1>()), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,proc)).Exactly(Times<1>()), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,proc)).Exactly(Once), fakeit::VerificationException);
 
 		SomeInterface &i = mock.get();
 		i.func(1);
@@ -245,14 +245,14 @@ struct BasicVerification: tpunit::TestFixture {
 #if defined (__GNUG__)
 // Only supported by GCC
 
-		Verify(Call(mock,func)).Exactly(1_Time);
-		Verify(Call(mock,proc)).Exactly(1_Time);
+		Verify(CALL(mock,func)).Exactly(1_Time);
+		Verify(CALL(mock,proc)).Exactly(1_Time);
 
 #endif
 
-		Verify(Call(mock,func)).Exactly(Times<1>());
-		Verify(Call(mock,proc)).Exactly(Times<1>());
-		Verify(Call(mock,proc)).Exactly(Once);
+		Verify(CALL(mock,func)).Exactly(Times<1>());
+		Verify(CALL(mock,proc)).Exactly(Times<1>());
+		Verify(CALL(mock,proc)).Exactly(Once);
 
 		i.func(1);
 		i.proc(1);
@@ -260,61 +260,61 @@ struct BasicVerification: tpunit::TestFixture {
 #if defined (__GNUG__)
 // Only supported by GCC
 
-		Verify(Call(mock,func)).Exactly(2_Times);
-		Verify(Call(mock,proc)).Exactly(2_Times);
+		Verify(CALL(mock,func)).Exactly(2_Times);
+		Verify(CALL(mock,proc)).Exactly(2_Times);
 
 #endif
 
-		Verify(Call(mock,func)).Exactly(Times<2>());
-		Verify(Call(mock,proc)).Exactly(Times<2>());
+		Verify(CALL(mock,func)).Exactly(Times<2>());
+		Verify(CALL(mock,proc)).Exactly(Times<2>());
 	}
 
 	void verify_method_was_called_exactly_x_times() {
 		Mock<SomeInterface> mock;
 
-		ASSERT_THROW(Verify(Call(mock,func)).Exactly(2), fakeit::VerificationException);
-		ASSERT_THROW(Verify(Call(mock,proc)).Exactly(2), fakeit::VerificationException);
+		ASSERT_THROW(VERIFY(CALL(mock,func)).Exactly(2), fakeit::VerificationException);
+		ASSERT_THROW(VERIFY(CALL(mock,proc)).Exactly(2), fakeit::VerificationException);
 
-		Fake(Call(mock,func), Call(mock,proc));
+		Fake(CALL(mock,func), CALL(mock,proc));
 		SomeInterface &i = mock.get();
 
-		ASSERT_THROW(Verify(Call(mock,func)).Exactly(2), fakeit::VerificationException);
-		ASSERT_THROW(Verify(Call(mock,proc)).Exactly(2), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,func)).Exactly(2), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,proc)).Exactly(2), fakeit::VerificationException);
 
 		i.func(1);
 		i.func(1);
 		i.proc(1);
 		i.proc(1);
 
-		Verify(Call(mock,func)).Exactly(2);
-		Verify(Call(mock,proc)).Exactly(2);
+		Verify(CALL(mock,func)).Exactly(2);
+		Verify(CALL(mock,proc)).Exactly(2);
 
 		i.func(1);
 		i.proc(1);
 
-		ASSERT_THROW(Verify(Call(mock,func)).Exactly(2), fakeit::VerificationException);
-		ASSERT_THROW(Verify(Call(mock,proc)).Exactly(2), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,func)).Exactly(2), fakeit::VerificationException);
+		ASSERT_THROW(Verify(CALL(mock,proc)).Exactly(2), fakeit::VerificationException);
 	}
 
 	void should_throw_IllegalArgumentException_on_negative_times_argument() {
 		Mock<SomeInterface> mock;
-		ASSERT_THROW(Verify(Call(mock,func)).Exactly(-1), std::invalid_argument);
-		ASSERT_THROW(Verify(Call(mock,proc)).Exactly(-1), std::invalid_argument);
-		ASSERT_THROW(Verify(Call(mock,proc)).AtLeast(-1), std::invalid_argument);
+		ASSERT_THROW(Verify(CALL(mock,func)).Exactly(-1), std::invalid_argument);
+		ASSERT_THROW(Verify(CALL(mock,proc)).Exactly(-1), std::invalid_argument);
+		ASSERT_THROW(Verify(CALL(mock,proc)).AtLeast(-1), std::invalid_argument);
 	}
 
 	void verify_with_filter() {
 		Mock<SomeInterface> mock;
-		Fake(Call(mock,func), Call(mock,proc));
+		Fake(CALL(mock,func), CALL(mock,proc));
 		SomeInterface &i = mock.get();
 		i.func(1);
-		Verify(Call(mock,func).Using(1));
-		ASSERT_THROW(Verify(Call(mock,func).Using(2)), fakeit::VerificationException);
+		Verify(CALL(mock,func).Using(1));
+		ASSERT_THROW(Verify(CALL(mock,func).Using(2)), fakeit::VerificationException);
 	}
 
 	void verify_no_other_invocations_for_mock() {
 		Mock<SomeInterface> mock;
-		Fake(Call(mock,func), Call(mock,proc2));
+		Fake(CALL(mock,func), CALL(mock,proc2));
 		SomeInterface &i = mock.get();
 		VerifyNoOtherInvocations(mock);
 
@@ -322,47 +322,47 @@ struct BasicVerification: tpunit::TestFixture {
 		i.func(1);
 		ASSERT_THROW(VerifyNoOtherInvocations(mock), fakeit::VerificationException);
 
-		Verify(Call(mock,func)).AtLeastOnce();
+		Verify(CALL(mock,func)).AtLeastOnce();
 		VerifyNoOtherInvocations(mock);
 
 		i.func(1);
 		i.func(1);
 		ASSERT_THROW(VerifyNoOtherInvocations(mock), fakeit::VerificationException);
 
-		Verify(Call(mock,func) * 3);
-		ASSERT_THROW(VerifyNoOtherInvocations(mock), fakeit::VerificationException);
+		Verify(CALL(mock,func) * 3);
+		ASSERT_THROW(VERIFY_NO_OTHER_INVOCATIONS(mock), fakeit::VerificationException);
 
-		Verify(Call(mock,func) * 4);
+		Verify(CALL(mock,func) * 4);
 		VerifyNoOtherInvocations(mock);
 	}
 
 	void verify_no_other_invocations_for_method_filter() {
 		Mock<SomeInterface> mock;
-		Fake(Call(mock,func), Call(mock,proc2));
+		Fake(CALL(mock,func), CALL(mock,proc2));
 		SomeInterface &i = mock.get();
-		VerifyNoOtherInvocations(Call(mock,func));
+		VERIFY_NO_OTHER_INVOCATIONS(CALL(mock,func));
 
 		i.func(1);
 		i.func(1);
-		ASSERT_THROW(VerifyNoOtherInvocations(Call(mock,func), Call(mock,proc2)), fakeit::VerificationException);
+		ASSERT_THROW(VERIFY_NO_OTHER_INVOCATIONS(CALL(mock,func), CALL(mock,proc2)), fakeit::VerificationException);
 
-		Verify(Call(mock,func)).AtLeastOnce();
-		VerifyNoOtherInvocations(Call(mock,func));
+		Verify(CALL(mock,func)).AtLeastOnce();
+		VERIFY_NO_OTHER_INVOCATIONS(CALL(mock,func));
 
 		i.func(1);
 		i.func(1);
-		ASSERT_THROW(VerifyNoOtherInvocations(Call(mock,func)), fakeit::VerificationException);
+		ASSERT_THROW(VerifyNoOtherInvocations(CALL(mock,func)), fakeit::VerificationException);
 
-		Verify(Call(mock,func) * 3);
-		ASSERT_THROW(VerifyNoOtherInvocations(Call(mock,func)), fakeit::VerificationException);
+		Verify(CALL(mock,func) * 3);
+		ASSERT_THROW(VerifyNoOtherInvocations(CALL(mock,func)), fakeit::VerificationException);
 
-		Verify(Call(mock,func) * 4);
-		VerifyNoOtherInvocations(Call(mock,func).Using(1));
+		Verify(CALL(mock,func) * 4);
+		VerifyNoOtherInvocations(CALL(mock,func).Using(1));
 	}
 
 	void use_same_filter_for_both_stubbing_and_verification() {
 		Mock<SomeInterface> mock;
-		auto any_func_invocation = Call(mock,func);
+		auto any_func_invocation = CALL(mock,func);
 		When(any_func_invocation).AlwaysReturn(1);
 		SomeInterface &i = mock.get();
 		i.func(1);
@@ -372,7 +372,7 @@ struct BasicVerification: tpunit::TestFixture {
 
 	void verify_after_paramter_was_changed__with_Matching() {
 		Mock<SomeInterface> mock;
-		auto any_A_with_state_1 = Call(mock,proc2).Matching([](const A& a)->bool {
+		auto any_A_with_state_1 = CALL(mock,proc2).Matching([](const A& a)->bool {
 			return a.state == 1;
 		});
 		Fake(any_A_with_state_1);
@@ -393,7 +393,7 @@ struct BasicVerification: tpunit::TestFixture {
 		A a1;
 		a1.state = 1;
 
-		auto call_to_proc2_with_state_1 = Call(mock,proc2).Using(a1);
+		auto call_to_proc2_with_state_1 = CALL(mock,proc2).Using(a1);
 		Fake(call_to_proc2_with_state_1);
 		SomeInterface &i = mock.get();
 

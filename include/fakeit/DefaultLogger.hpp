@@ -21,6 +21,10 @@ struct DefaultLogger: public fakeit::Logger {
 	}
 
 	virtual void log(SequenceVerificationException& e) override {
+//		for (unsigned int i = 0;i<e.expectedPattern().size();i++){
+//			Sequence* s = e.expectedPattern()[i];
+//		}
+
 		for (unsigned int i = 0;i<e.actualSequence().size();i++){
 			const Method& m = e.actualSequence()[i]->getMethod();
 			out << m.name() << std::endl;

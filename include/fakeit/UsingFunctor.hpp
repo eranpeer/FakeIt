@@ -39,6 +39,14 @@ public:
 		friend class UsingFunctor;
 		friend class VerifyFunctor;
 
+		VerificationProgress(VerificationProgress& other) : //
+				_involvedMocks(other._involvedMocks), //
+				_expectedPattern(other._expectedPattern), //
+				_expectedInvocationCount(other._expectedInvocationCount), //
+				_isActive(other._isActive) {
+			other._isActive = false;
+		}
+
 		~VerificationProgress() THROWS {
 
 			if (std::uncaught_exception()) {
@@ -50,13 +58,13 @@ public:
 			}
 
 			std::unordered_set<Invocation*> actualIvocations;
-			collectActualInvocations(expectedPattern, actualIvocations);
+			collectActualInvocations(_expectedPattern, actualIvocations);
 
 			std::vector<Invocation*> actualSequence;
 			sortByInvocationOrder(actualIvocations, actualSequence);
 
 			std::vector<Invocation*> matchedInvocations;
-			int count = countMatches(expectedPattern, actualSequence, matchedInvocations);
+			int count = countMatches(_expectedPattern, actualSequence, matchedInvocations);
 
 			if (isAtLeastVerification() && atLeastLimitNotReached(count)) {
 				throwAtLeastVerificationException(actualSequence, count);
@@ -71,16 +79,27 @@ public:
 
 		template<typename ... list>
 		MethodVerificationProgress& Verify(const Sequence& sequence, const list&... tail) {
-			collectSequences(expectedPattern, sequence, tail...);
+			collectSequences(_expectedPattern, sequence, tail...);
+			return *this;
+		}
+
+		MethodVerificationProgress& setFileInfo(std::string file, int line, std::string testMethod) {
+			_file = file;
+			_line = line;
+			_testMethod = testMethod;
 			return *this;
 		}
 
 	private:
 
-		std::set<ActualInvocationsSource*> involvedMocks;
-		std::vector<Sequence*> expectedPattern;
-		int expectedInvocationCount;
+		std::set<ActualInvocationsSource*> _involvedMocks;
+		std::vector<Sequence*> _expectedPattern;
+		int _expectedInvocationCount;
 		bool _isActive;
+
+		std::string _file;
+		int _line;
+		std::string _testMethod;
 
 		static inline int AT_LEAST_ONCE() {
 			return -1;
@@ -97,13 +116,13 @@ public:
 		}
 
 		void collectActualInvocations(std::vector<Sequence*>& expectedPattern, std::unordered_set<Invocation*>& actualIvocations) {
-			for (auto mock : involvedMocks) {
+			for (auto mock : _involvedMocks) {
 				mock->getActualInvocations(actualIvocations);
 			}
 		}
 
 		virtual void verifyInvocations(const int times) override {
-			expectedInvocationCount = times;
+			_expectedInvocationCount = times;
 		}
 
 		void markAsVerified(std::vector<Invocation*>& matchedInvocations) {
@@ -167,23 +186,15 @@ public:
 		}
 
 		VerificationProgress(std::set<ActualInvocationsSource*> mocks) : //
-				involvedMocks { mocks }, //
-				expectedPattern { }, //
-				expectedInvocationCount(-1), //
+				_involvedMocks { mocks }, //
+				_expectedPattern { }, //
+				_expectedInvocationCount(-1), //
 				_isActive(true) {
-		}
-
-		VerificationProgress(VerificationProgress& other) : //
-				involvedMocks(other.involvedMocks), //
-				expectedPattern(other.expectedPattern), //
-				expectedInvocationCount(other.expectedInvocationCount), //
-				_isActive(other._isActive) {
-			other._isActive = false;
 		}
 
 		bool isAtLeastVerification() {
 			// negative number represents an "AtLeast" search;
-			return expectedInvocationCount < 0;
+			return _expectedInvocationCount < 0;
 		}
 
 		bool isExactVerification() {
@@ -191,15 +202,16 @@ public:
 		}
 
 		bool atLeastLimitNotReached(int count) {
-			return count < -expectedInvocationCount;
+			return count < -_expectedInvocationCount;
 		}
 
 		bool exactLimitNotMatched(int count) {
-			return count != expectedInvocationCount;
+			return count != _expectedInvocationCount;
 		}
 
 		void throwExactVerificationException(std::vector<Invocation*> actualSequence, int count) {
 			struct ExactVerificationException: public SequenceVerificationException {
+
 				ExactVerificationException(std::vector<Sequence*>& expectedPattern, std::vector<Invocation*>& actualSequence,
 						int expectedCount, int actualCount) :
 						SequenceVerificationException(expectedPattern, actualSequence, expectedCount, actualCount) {
@@ -211,7 +223,8 @@ public:
 			};
 
 
-			ExactVerificationException e(expectedPattern, actualSequence, expectedInvocationCount, count);
+			ExactVerificationException e(_expectedPattern, actualSequence, _expectedInvocationCount, count);
+			e.setFileInfo(_file, _line, _testMethod);
 			fakeit::FakeIt::log(e);
 			throw e;
 		}
@@ -228,7 +241,8 @@ public:
 				}
 			};
 
-			AtLeastVerificationException e(expectedPattern, actualSequence, -expectedInvocationCount, count);
+			AtLeastVerificationException e(_expectedPattern, actualSequence, -_expectedInvocationCount, count);
+			e.setFileInfo(_file, _line, _testMethod);
 			FakeIt::log(e);
 			throw e;
 		}

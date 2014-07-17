@@ -22,17 +22,19 @@ namespace fakeit {
 
 template<typename R, typename ... arglist>
 struct Behavior {
+	virtual ~Behavior() = default;
 	virtual R invoke(arglist&... args) = 0;
 	virtual bool isDone() = 0;
 };
 
 template<typename R, typename ... arglist>
-struct Call: public Behavior<R, arglist...> {
-	Call(std::function<R(arglist&...)> f) :
+struct Repeat: public Behavior<R, arglist...> {
+	virtual ~Repeat() = default;
+	Repeat(std::function<R(arglist&...)> f) :
 			f(f), times(1) {
 	}
 
-	Call(std::function<R(arglist&...)> f, long times) :
+	Repeat(std::function<R(arglist&...)> f, long times) :
 			f(f), times(times) {
 	}
 
@@ -50,8 +52,9 @@ private:
 };
 
 template<typename R, typename ... arglist>
-struct CallForever: public Behavior<R, arglist...> {
-	CallForever(std::function<R(arglist&...)> f) :
+struct RepeatForever: public Behavior<R, arglist...> {
+	virtual ~RepeatForever() = default;
+	RepeatForever(std::function<R(arglist&...)> f) :
 			f(f) {
 	}
 	virtual R invoke(arglist&... args) override {
@@ -67,6 +70,8 @@ private:
 
 template<typename R, typename ... arglist>
 struct ThrowUnexpectedMethodCall: public Behavior<R, arglist...> {
+	virtual ~ThrowUnexpectedMethodCall() = default;
+
 	virtual R invoke(arglist&... args) override {
 		UnexpectedMethodCallException e;
 		FakeIt::log(e);
@@ -80,6 +85,8 @@ struct ThrowUnexpectedMethodCall: public Behavior<R, arglist...> {
 
 template<typename R, typename ... arglist>
 struct ReturnDefaultValue: public Behavior<R, arglist...> {
+	virtual ~ReturnDefaultValue() = default;
+
 	virtual R invoke(arglist&... args) override {
 		return DefaultValue::value<R>();
 	}
@@ -93,6 +100,7 @@ template<typename C, typename R, typename ... arglist>
 struct ReturnDelegateValue: public Behavior<R, arglist...> {
 
 	ReturnDelegateValue(C & instance, R (C::*vMethod)(arglist... args)):instance(instance),vMethod(vMethod){}
+	virtual ~ReturnDelegateValue() = default;
 
 	virtual R invoke(arglist&... args) override {
 		return ((&instance)->*vMethod)(args...);

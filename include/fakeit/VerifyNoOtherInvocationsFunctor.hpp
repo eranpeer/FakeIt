@@ -20,29 +20,26 @@
 namespace fakeit {
 class VerifyNoOtherInvocationsFunctor {
 
-//	std::string buildNoOtherInvocationsVerificationErrorMsg( //
-//			std::vector<AnyInvocation*>& allIvocations, //
-//			std::vector<AnyInvocation*>& unverifedIvocations) {
-//		auto format = std::string("found ") + std::to_string(unverifedIvocations.size()) + " non verified invocations.\n";
-//		for (auto invocation : unverifedIvocations) {
-//			format += invocation->format();
-//			format += '\n';
-//		}
-//		return format;
-//	}
-
 	template<typename ... list>
-	void collectActualInvocations(std::unordered_set<Invocation*>& actualInvocations) {
+	static void collectActualInvocations(std::unordered_set<Invocation*>& actualInvocations,
+			std::unordered_set<const ActualInvocationsSource*>& invocationSources) {
+		for (auto source : invocationSources) {
+			source->getActualInvocations(actualInvocations);
+		}
 	}
 
 	template<typename ... list>
-	void collectActualInvocations(std::unordered_set<Invocation*>& actualInvocations, const ActualInvocationsSource& head,
-			const list&... tail) {
-		head.getActualInvocations(actualInvocations);
-		collectActualInvocations(actualInvocations, tail...);
+	static void collectInvocationSources(std::unordered_set<const ActualInvocationsSource*>& invocationSources,
+			const ActualInvocationsSource& head, const list&... tail) {
+		invocationSources.insert(&head);
+		collectInvocationSources(invocationSources, tail...);
 	}
 
-	void selectNonVerifiedInvocations(std::unordered_set<Invocation*>& actualInvocations, std::unordered_set<Invocation*>& into) {
+	template<typename ... list>
+	static void collectInvocationSources(std::unordered_set<const ActualInvocationsSource*>& invocationSources) {
+	}
+
+	static void selectNonVerifiedInvocations(std::unordered_set<Invocation*>& actualInvocations, std::unordered_set<Invocation*>& into) {
 		for (auto invocation : actualInvocations) {
 			if (!invocation->isVerified()) {
 				into.insert(invocation);
@@ -51,6 +48,74 @@ class VerifyNoOtherInvocationsFunctor {
 	}
 
 public:
+
+	struct VerificationProgress {
+
+		friend class VerifyNoOtherInvocationsFunctor;
+
+		VerificationProgress(VerificationProgress& other) : //
+				_mocks(other._mocks), //
+				_isActive(other._isActive), //
+				_file(other._file), //
+				_line(other._line), //
+				_testMethod(other._testMethod) //
+		{
+			other._isActive = false;
+		}
+
+		~VerificationProgress() THROWS {
+
+			if (std::uncaught_exception()) {
+				_isActive = false;
+			}
+
+			if (!_isActive) {
+				return;
+			}
+
+			std::unordered_set<Invocation*> actualInvocations;
+			collectActualInvocations(actualInvocations, _mocks);
+
+			std::unordered_set<Invocation*> nonVerifedIvocations;
+			selectNonVerifiedInvocations(actualInvocations, nonVerifedIvocations);
+
+			if (nonVerifedIvocations.size() > 0) {
+				std::vector<Invocation*> sortedNonVerifedIvocations;
+				sortByInvocationOrder(nonVerifedIvocations, sortedNonVerifedIvocations);
+
+				std::vector<Invocation*> sortedActualIvocations;
+				sortByInvocationOrder(actualInvocations, sortedActualIvocations);
+
+				NoMoreInvocationsVerificationException e(sortedActualIvocations, sortedNonVerifedIvocations);
+				e.setFileInfo(_file,_line,_testMethod);
+				fakeit::FakeIt::log(e);
+				throw e;
+			}
+		}
+
+		VerificationProgress& setFileInfo(std::string file, int line, std::string testMethod) {
+			_file = file;
+			_line = line;
+			_testMethod = testMethod;
+			return *this;
+		}
+
+	private:
+
+		std::unordered_set<const ActualInvocationsSource*> _mocks;
+		bool _isActive;
+
+		std::string _file;
+		int _line;
+		std::string _testMethod;
+
+		VerificationProgress(std::unordered_set<const ActualInvocationsSource*> mocks) :
+				_mocks(mocks), //
+				_isActive(true) {
+		}
+
+	};
+
 	VerifyNoOtherInvocationsFunctor() {
 	}
 
@@ -58,22 +123,11 @@ public:
 	}
 
 	template<typename ... list>
-	void operator()(const ActualInvocationsSource& head, const list&... tail) {
-		std::unordered_set<Invocation*> actualInvocations;
-		collectActualInvocations(actualInvocations, head, tail...);
-
-		std::unordered_set<Invocation*> nonVerifedIvocations;
-		selectNonVerifiedInvocations(actualInvocations, nonVerifedIvocations);
-
-		if (nonVerifedIvocations.size() > 0) {
-			std::vector<Invocation*> sortedNonVerifedIvocations;
-			sortByInvocationOrder(nonVerifedIvocations, sortedNonVerifedIvocations);
-
-			std::vector<Invocation*> sortedActualIvocations;
-			sortByInvocationOrder(actualInvocations, sortedActualIvocations);
-
-			throw NoMoreInvocationsVerificationException(sortedActualIvocations, sortedNonVerifedIvocations);
-		}
+	VerificationProgress operator()(const ActualInvocationsSource& head, const list&... tail) {
+		std::unordered_set<const ActualInvocationsSource*> invocationSources;
+		collectInvocationSources(invocationSources, head, tail...);
+		VerificationProgress progress(invocationSources);
+		return progress;
 	}
 }
 static VerifyNoOtherInvocations;

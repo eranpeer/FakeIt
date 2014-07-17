@@ -35,8 +35,8 @@ struct MultipleStubbing: tpunit::TestFixture {
 
 	void stub_multiple_return_values_with_quantifier() {
 		Mock<SomeInterface> mock;
-		When(Call(mock,func)).Return(Times<2>::of(1), Times<2>::of(2));
-		When(Call(mock,proc)).Return(Times<2>::Void());
+		When(CALL(mock,func)).Return(Times<2>::of(1), Times<2>::of(2));
+		When(CALL(mock,proc)).Return(Times<2>::Void());
 
 		SomeInterface &i = mock.get();
 		ASSERT_EQUAL(1, i.func(1));
@@ -52,7 +52,7 @@ struct MultipleStubbing: tpunit::TestFixture {
 
 	void stub_multiple_return_values_with_mixed_values_and_quantifiers() {
 		Mock<SomeInterface> mock;
-		When(Call(mock,func)).Return(0, Times<2>::of(1), 2);
+		When(CALL(mock,func)).Return(0, Times<2>::of(1), 2);
 		SomeInterface &i = mock.get();
 		ASSERT_EQUAL(0, i.func(1));
 		ASSERT_EQUAL(1, i.func(1));
@@ -63,8 +63,8 @@ struct MultipleStubbing: tpunit::TestFixture {
 
 	void stub_multiple_throws_with_quantifier() {
 		Mock<SomeInterface> mock;
-		When(Call(mock,func)).Throw(Times<2>::of(std::string("1")),Times<1>::of(1));
-		When(Call(mock,proc)).Throw(Times<2>::of(std::string("1")),Times<1>::of(1));
+		When(CALL(mock,func)).Throw(Times<2>::of(std::string("1")),Times<1>::of(1));
+		When(CALL(mock,proc)).Throw(Times<2>::of(std::string("1")),Times<1>::of(1));
 		SomeInterface &i = mock.get();
 //
 		ASSERT_THROW(i.func(1), std::string);
@@ -80,8 +80,8 @@ struct MultipleStubbing: tpunit::TestFixture {
 
 	void stub_multiple_throws_and_returns() {
 		Mock<SomeInterface> mock;
-		When(Call(mock,func)).Throw(std::string("1"),Times<1>::of(1)).Return(1,Times<1>::of(2));
-		When(Call(mock,proc)).Throw(std::string("1"),Times<1>::of(1)).Return(Times<2>::Void());
+		When(CALL(mock,func)).Throw(std::string("1"),Times<1>::of(1)).Return(1,Times<1>::of(2));
+		When(CALL(mock,proc)).Throw(std::string("1"),Times<1>::of(1)).Return(Times<2>::Void());
 		SomeInterface &i = mock.get();
 //
 		ASSERT_THROW(i.func(1), std::string);
@@ -100,8 +100,8 @@ struct MultipleStubbing: tpunit::TestFixture {
 
 	void stub_multiple_do_with_list_of_mixed_quatifiers_and_values() {
 		Mock<SomeInterface> mock;
-		When(Call(mock,func)).Do(Times<1>::of([](...){return 1;}), [](...){return 2;});
-		When(Call(mock,proc)).Do(Times<1>::of([](...){}), [](...){});
+		When(CALL(mock,func)).Do(Times<1>::of([](...){return 1;}), [](...){return 2;});
+		When(CALL(mock,proc)).Do(Times<1>::of([](...){}), [](...){});
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(1, i.func(1));
