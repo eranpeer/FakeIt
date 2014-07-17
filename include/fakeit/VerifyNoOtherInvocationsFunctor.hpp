@@ -18,6 +18,7 @@
 #include "fakeit/SortInvocations.hpp"
 #include "fakeit/UsingFunctor.hpp"
 #include "mockutils/smart_ptr.hpp"
+#include "mockutils/Macros.hpp"
 
 namespace fakeit {
 class VerifyNoOtherInvocationsFunctor {
@@ -114,7 +115,7 @@ public:
 	class VerificationProgressProxy{
 		fakeit::smart_ptr<VerificationProgress> ptr;
 	public:
-		~VerificationProgressProxy() THROWS  = default;
+		~VerificationProgressProxy() THROWS {};
 
 		VerificationProgressProxy(VerificationProgress * ptr):ptr(ptr){
 		}
