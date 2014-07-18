@@ -68,24 +68,7 @@ class VerifyNoOtherInvocationsFunctor {
 				return;
 			}
 
-			std::unordered_set<Invocation*> actualInvocations;
-			collectActualInvocations(actualInvocations, _mocks);
-
-			std::unordered_set<Invocation*> nonVerifedIvocations;
-			selectNonVerifiedInvocations(actualInvocations, nonVerifedIvocations);
-
-			if (nonVerifedIvocations.size() > 0) {
-				std::vector<Invocation*> sortedNonVerifedIvocations;
-				sortByInvocationOrder(nonVerifedIvocations, sortedNonVerifedIvocations);
-
-				std::vector<Invocation*> sortedActualIvocations;
-				sortByInvocationOrder(actualInvocations, sortedActualIvocations);
-
-				NoMoreInvocationsVerificationException e(sortedActualIvocations, sortedNonVerifedIvocations);
-				e.setFileInfo(_file,_line,_testMethod);
-				fakeit::FakeIt::log(e);
-				throw e;
-			}
+			VerifyExpectation();
 		}
 
 		void setFileInfo(std::string file, int line, std::string testMethod) {
@@ -104,6 +87,28 @@ class VerifyNoOtherInvocationsFunctor {
 
 		VerificationProgress(std::unordered_set<const ActualInvocationsSource*> mocks) :
 				_mocks(mocks) {
+		}
+
+		void VerifyExpectation()
+		{
+			std::unordered_set<Invocation*> actualInvocations;
+			collectActualInvocations(actualInvocations, _mocks);
+
+			std::unordered_set<Invocation*> nonVerifedIvocations;
+			selectNonVerifiedInvocations(actualInvocations, nonVerifedIvocations);
+
+			if (nonVerifedIvocations.size() > 0) {
+				std::vector<Invocation*> sortedNonVerifedIvocations;
+				sortByInvocationOrder(nonVerifedIvocations, sortedNonVerifedIvocations);
+
+				std::vector<Invocation*> sortedActualIvocations;
+				sortByInvocationOrder(actualInvocations, sortedActualIvocations);
+
+				NoMoreInvocationsVerificationException e(sortedActualIvocations, sortedNonVerifedIvocations);
+				e.setFileInfo(_file, _line, _testMethod);
+				fakeit::FakeIt::log(e);
+				throw e;
+			}
 		}
 
 	};
