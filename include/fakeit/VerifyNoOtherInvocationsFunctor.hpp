@@ -54,14 +54,6 @@ class VerifyNoOtherInvocationsFunctor {
 
 		friend class VerifyNoOtherInvocationsFunctor;
 
-		VerificationProgress(VerificationProgress& other) : //
-				_mocks(other._mocks), //
-				_file(other._file), //
-				_line(other._line), //
-				_callingMethod(other._callingMethod) //
-		{
-		}
-
 		~VerificationProgress() THROWS {
 			if (std::uncaught_exception()) {
 				return;
@@ -84,7 +76,7 @@ class VerifyNoOtherInvocationsFunctor {
 		std::string _callingMethod;
 
 		VerificationProgress(std::unordered_set<const ActualInvocationsSource*> mocks) :
-				_mocks(mocks) {
+			_mocks(mocks) {
 		}
 
 		void VerifyExpectation()
@@ -113,14 +105,21 @@ class VerifyNoOtherInvocationsFunctor {
 
 public:
 
+	class VerificationProgressProxy {
 
-	class VerificationProgressProxy{
+		friend class VerifyNoOtherInvocationsFunctor;
+
 		fakeit::smart_ptr<VerificationProgress> ptr;
-	public:
-		~VerificationProgressProxy() THROWS {};
 
-		VerificationProgressProxy(VerificationProgress * ptr):ptr(ptr){
+		VerificationProgressProxy(VerificationProgress * ptr) :ptr(ptr){
 		}
+
+		VerificationProgressProxy(std::unordered_set<const ActualInvocationsSource*>& invocationSources)
+			:VerificationProgressProxy(new VerificationProgress(invocationSources)){
+		}
+
+	public:
+		~VerificationProgressProxy() THROWS {};		
 
 		VerificationProgressProxy setFileInfo(std::string file, int line, std::string callingMethod) {
 			ptr->setFileInfo(file, line, callingMethod);
@@ -138,7 +137,7 @@ public:
 	VerificationProgressProxy operator()(const ActualInvocationsSource& head, const list&... tail) {
 		std::unordered_set<const ActualInvocationsSource*> invocationSources;
 		collectInvocationSources(invocationSources, head, tail...);
-		VerificationProgressProxy proxy{new VerificationProgress(invocationSources)};
+		VerificationProgressProxy proxy{invocationSources};
 		return proxy;
 	}
 }
