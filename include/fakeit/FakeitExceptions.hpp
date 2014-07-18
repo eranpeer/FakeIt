@@ -46,7 +46,7 @@ struct VerificationException: public FakeitException {
 
 	const std::string& file(){return _file;}
 	int line(){return _line;}
-	const std::string& 	testMethod(){return _callingMethod;}
+	const std::string& 	callingMethod(){ return _callingMethod; }
 
 private:
 	std::string _file;

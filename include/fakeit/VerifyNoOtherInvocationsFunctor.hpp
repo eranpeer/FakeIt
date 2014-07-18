@@ -69,10 +69,10 @@ class VerifyNoOtherInvocationsFunctor {
 			VerifyExpectation();
 		}
 
-		void setFileInfo(std::string file, int line, std::string testMethod) {
+		void setFileInfo(std::string file, int line, std::string callingMethod) {
 			_file = file;
 			_line = line;
-			_callingMethod = testMethod;
+			_callingMethod = callingMethod;
 		}
 
 	private:
@@ -122,8 +122,8 @@ public:
 		VerificationProgressProxy(VerificationProgress * ptr):ptr(ptr){
 		}
 
-		VerificationProgressProxy setFileInfo(std::string file, int line, std::string testMethod) {
-			ptr->setFileInfo(file, line, testMethod);
+		VerificationProgressProxy setFileInfo(std::string file, int line, std::string callingMethod) {
+			ptr->setFileInfo(file, line, callingMethod);
 			return *this;
 		}
 	};
