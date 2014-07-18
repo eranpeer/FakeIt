@@ -38,15 +38,15 @@ enum class VerificationType {
 struct VerificationException: public FakeitException {
 	virtual VerificationType verificationType() const = 0;
 
-	void setFileInfo(std::string file, int line, std::string testMethod) {
+	void setFileInfo(std::string file, int line, std::string callingMethod) {
 		_file = file;
-		_testMethod = testMethod;
+		_testMethod = callingMethod;
 		_line = line;
 	}
 
 	const std::string& file(){return _file;}
 	int line(){return _line;}
-	const std::string& 	testMethod(){return _testMethod;}
+	const std::string& 	callingMethod(){return _testMethod;}
 
 private:
 	std::string _file;
