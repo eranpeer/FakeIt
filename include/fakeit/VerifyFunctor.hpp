@@ -21,14 +21,13 @@ namespace fakeit {
 
 class VerifyFunctor {
 
-	std::vector<Sequence*>& collectSequences(std::vector<Sequence*>& vec) {
-		return vec;
+	void collectSequences(std::vector<Sequence*>& vec) {
 	}
 
 	template<typename ... list>
-	std::vector<Sequence*>& collectSequences(std::vector<Sequence*>& vec, const Sequence& sequence, const list&... tail) {
+	void collectSequences(std::vector<Sequence*>& vec, const Sequence& sequence, const list&... tail) {
 		vec.push_back(&const_cast<Sequence&>(sequence));
-		return collectSequences(vec, tail...);
+		collectSequences(vec, tail...);
 	}
 
 public:
@@ -40,7 +39,6 @@ public:
 	UsingFunctor::VerificationProgressProxy operator()(const Sequence& sequence, const list&... tail) {
 		std::vector<Sequence*> allSequences;
 		collectSequences(allSequences, sequence, tail...);
-
 		std::set<ActualInvocationsSource*> allMocks;
 		for (auto sequence : allSequences) {
 			sequence->getInvolvedMocks(allMocks);

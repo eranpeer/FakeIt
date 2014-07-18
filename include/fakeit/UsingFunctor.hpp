@@ -54,25 +54,9 @@ class UsingFunctor {
 				return;
 			}
 
-			std::unordered_set<Invocation*> actualIvocations;
-			collectActualInvocations(_expectedPattern, actualIvocations);
-
-			std::vector<Invocation*> actualSequence;
-			sortByInvocationOrder(actualIvocations, actualSequence);
-
-			std::vector<Invocation*> matchedInvocations;
-			int count = countMatches(_expectedPattern, actualSequence, matchedInvocations);
-
-			if (isAtLeastVerification() && atLeastLimitNotReached(count)) {
-				throwAtLeastVerificationException(actualSequence, count);
-			}
-
-			if (isExactVerification() && exactLimitNotMatched(count)) {
-				throwExactVerificationException(actualSequence, count);
-			}
-
-			markAsVerified(matchedInvocations);
+			VerifyExpectation();
 		}
+
 
 		template<typename ... list>
 		void Verify(const Sequence& sequence, const list&... tail) {
@@ -98,6 +82,28 @@ class UsingFunctor {
 		std::string _file;
 		int _line;
 		std::string _testMethod;
+
+		void VerifyExpectation()
+		{
+			std::unordered_set<Invocation*> actualIvocations;
+			collectActualInvocations(_expectedPattern, actualIvocations);
+
+			std::vector<Invocation*> actualSequence;
+			sortByInvocationOrder(actualIvocations, actualSequence);
+
+			std::vector<Invocation*> matchedInvocations;
+			int count = countMatches(_expectedPattern, actualSequence, matchedInvocations);
+
+			if (isAtLeastVerification() && atLeastLimitNotReached(count)) {
+				throwAtLeastVerificationException(actualSequence, count);
+			}
+
+			if (isExactVerification() && exactLimitNotMatched(count)) {
+				throwExactVerificationException(actualSequence, count);
+			}
+
+			markAsVerified(matchedInvocations);
+		}
 
 		static inline int AT_LEAST_ONCE() {
 			return -1;
@@ -244,7 +250,7 @@ class UsingFunctor {
 
 public:
 
-	class VerificationProgressProxy: public MethodVerificationProgress {
+	class VerificationProgressProxy : public MethodVerificationProgress {
 
 		friend class UsingFunctor;
 		friend class VerifyFunctor;

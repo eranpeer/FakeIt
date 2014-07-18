@@ -165,7 +165,7 @@ private:
 	 */
 	struct method {
 		method(TestFixture* obj, void (TestFixture::*addr)(), const char* name, unsigned char type) :
-				_this(obj), _addr(addr), _name(), _type(type), _next(0) {
+		_this(obj), _addr(addr), _name(), _type(type), _next(0) {
 			char* dest = _name;
 			while (name && *name != 0) {
 				*dest++ = *name++;

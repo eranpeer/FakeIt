@@ -9,7 +9,6 @@
 #include "fakeit/VerifyNoOtherInvocationsFunctor.hpp"
 #include "fakeit/SpyFunctor.hpp"
 
-
 #ifdef _WIN32
 #define __func__ __FUNCTION__
 #endif
