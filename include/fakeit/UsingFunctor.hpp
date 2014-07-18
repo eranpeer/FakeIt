@@ -22,6 +22,8 @@ namespace fakeit {
 
 class UsingFunctor {
 
+	friend class VerifyFunctor;
+
 	std::set<ActualInvocationsSource*>& collectMocks(std::set<ActualInvocationsSource*>& into) {
 		return into;
 	}
