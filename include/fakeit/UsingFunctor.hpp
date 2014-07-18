@@ -40,20 +40,10 @@ class UsingFunctor {
 		friend class UsingFunctor;
 		friend class VerifyFunctor;
 
-		VerificationProgress(VerificationProgress& other) : //
-				_involvedMocks(other._involvedMocks), //
-				_expectedPattern(other._expectedPattern), //
-				_expectedInvocationCount(other._expectedInvocationCount), //
-				_line(other._line) //
-		{
-		}
-
 		~VerificationProgress() THROWS {
-
 			if (std::uncaught_exception()) {
 				return;
 			}
-
 			VerifyExpectation();
 		}
 
