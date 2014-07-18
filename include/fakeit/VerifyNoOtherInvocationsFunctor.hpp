@@ -63,11 +63,9 @@ class VerifyNoOtherInvocationsFunctor {
 		}
 
 		~VerificationProgress() THROWS {
-
 			if (std::uncaught_exception()) {
 				return;
 			}
-
 			VerifyExpectation();
 		}
 
