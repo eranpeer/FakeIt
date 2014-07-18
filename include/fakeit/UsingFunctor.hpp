@@ -16,6 +16,7 @@
 #include "fakeit/Sequence.hpp"
 #include "fakeit/SortInvocations.hpp"
 #include "fakeit/FakeIt.hpp"
+#include "mockutils/smart_ptr.hpp"
 
 namespace fakeit {
 
@@ -32,9 +33,7 @@ class UsingFunctor {
 		return collectMocks(into, tail...);
 	}
 
-public:
-
-	struct VerificationProgress: public virtual MethodVerificationProgress {
+	struct VerificationProgress {
 
 		friend class UsingFunctor;
 		friend class VerifyFunctor;
@@ -43,17 +42,13 @@ public:
 				_involvedMocks(other._involvedMocks), //
 				_expectedPattern(other._expectedPattern), //
 				_expectedInvocationCount(other._expectedInvocationCount), //
-				_isActive(other._isActive) {
-			other._isActive = false;
+				_line(other._line) //
+		{
 		}
 
 		~VerificationProgress() THROWS {
 
 			if (std::uncaught_exception()) {
-				_isActive = false;
-			}
-
-			if (!_isActive) {
 				return;
 			}
 
@@ -78,16 +73,18 @@ public:
 		}
 
 		template<typename ... list>
-		MethodVerificationProgress& Verify(const Sequence& sequence, const list&... tail) {
+		void Verify(const Sequence& sequence, const list&... tail) {
 			collectSequences(_expectedPattern, sequence, tail...);
-			return *this;
 		}
 
-		MethodVerificationProgress& setFileInfo(std::string file, int line, std::string testMethod) {
+		void verifyInvocations(const int times) {
+			_expectedInvocationCount = times;
+		}
+
+		void setFileInfo(std::string file, int line, std::string testMethod) {
 			_file = file;
 			_line = line;
 			_testMethod = testMethod;
-			return *this;
 		}
 
 	private:
@@ -95,7 +92,6 @@ public:
 		std::set<ActualInvocationsSource*> _involvedMocks;
 		std::vector<Sequence*> _expectedPattern;
 		int _expectedInvocationCount;
-		bool _isActive;
 
 		std::string _file;
 		int _line;
@@ -119,10 +115,6 @@ public:
 			for (auto mock : _involvedMocks) {
 				mock->getActualInvocations(actualIvocations);
 			}
-		}
-
-		virtual void verifyInvocations(const int times) override {
-			_expectedInvocationCount = times;
 		}
 
 		void markAsVerified(std::vector<Invocation*>& matchedInvocations) {
@@ -189,7 +181,7 @@ public:
 				_involvedMocks { mocks }, //
 				_expectedPattern { }, //
 				_expectedInvocationCount(-1), //
-				_isActive(true) {
+				_line(0) {
 		}
 
 		bool isAtLeastVerification() {
@@ -222,7 +214,6 @@ public:
 				}
 			};
 
-
 			ExactVerificationException e(_expectedPattern, actualSequence, _expectedInvocationCount, count);
 			e.setFileInfo(_file, _line, _testMethod);
 			fakeit::FakeIt::log(e);
@@ -251,15 +242,47 @@ public:
 
 public:
 
+	class VerificationProgressProxy: public MethodVerificationProgress {
+
+		friend class UsingFunctor;
+		friend class VerifyFunctor;
+
+		fakeit::smart_ptr<VerificationProgress> ptr;
+
+		VerificationProgressProxy(VerificationProgress * ptr):ptr(ptr){
+		}
+
+		virtual void verifyInvocations(const int times) override {
+			ptr->verifyInvocations(times);
+		}
+
+	public:
+
+		~VerificationProgressProxy() THROWS {};
+
+		VerificationProgressProxy setFileInfo(std::string file, int line, std::string testMethod) {
+			ptr->setFileInfo(file, line, testMethod);
+			return *this;
+		}
+
+		template<typename ... list>
+		VerificationProgressProxy Verify(const Sequence& sequence, const list&... tail) {
+			ptr->Verify(sequence, tail...);
+			return *this;
+		}
+	};
+
+public:
+
 	UsingFunctor() {
 	}
 
 	template<typename ... list>
-	VerificationProgress operator()(const ActualInvocationsSource& mock, const list&... tail) {
+	VerificationProgressProxy operator()(const ActualInvocationsSource& mock, const list&... tail) {
 		std::set<ActualInvocationsSource*> allMocks;
 		collectMocks(allMocks, mock, tail...);
-		VerificationProgress progress(allMocks);
-		return progress;
+		VerificationProgressProxy proxy (new VerificationProgress(allMocks));
+		return proxy;
 	}
 
 }

@@ -37,7 +37,7 @@ public:
 	}
 
 	template<typename ... list>
-	UsingFunctor::VerificationProgress operator()(const Sequence& sequence, const list&... tail) {
+	UsingFunctor::VerificationProgressProxy operator()(const Sequence& sequence, const list&... tail) {
 		std::vector<Sequence*> allSequences;
 		collectSequences(allSequences, sequence, tail...);
 
@@ -46,9 +46,10 @@ public:
 			sequence->getInvolvedMocks(allMocks);
 		}
 
-		UsingFunctor::VerificationProgress rv(allMocks);
-		rv.Verify(sequence, tail...);
-		return rv;
+		UsingFunctor::VerificationProgressProxy proxy(new UsingFunctor::VerificationProgress(allMocks));
+		proxy.Verify(sequence, tail...);
+
+		return proxy;
 	}
 
 }

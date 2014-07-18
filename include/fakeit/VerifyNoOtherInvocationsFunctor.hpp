@@ -88,11 +88,10 @@ class VerifyNoOtherInvocationsFunctor {
 			}
 		}
 
-		VerificationProgress& setFileInfo(std::string file, int line, std::string testMethod) {
+		void setFileInfo(std::string file, int line, std::string testMethod) {
 			_file = file;
 			_line = line;
 			_testMethod = testMethod;
-			return *this;
 		}
 
 	private:

@@ -70,8 +70,6 @@ struct MethodVerificationProgress {
 		AtLeast(q.quantity);
 	}
 
-	virtual MethodVerificationProgress& setFileInfo(std::string file, int line, std::string testMethod) = 0;
-
 protected:
 	virtual void verifyInvocations(const int times) = 0;
 private:

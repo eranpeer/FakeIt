@@ -54,6 +54,8 @@ struct BasicVerification: tpunit::TestFixture {
 					TEST(BasicVerification::verify_with_filter), //
 					TEST(BasicVerification::verify_no_other_invocations_for_mock), //
 					TEST(BasicVerification::verify_no_other_invocations_for_method_filter), //
+					TEST(BasicVerification::exception_while_verifying_no_more_interactions_should_cancel_verification), //
+					TEST(BasicVerification::exception_while_verifying_should_cancel_verification), //
 					TEST(BasicVerification::use_same_filter_for_both_stubbing_and_verification), //
 					TEST(BasicVerification::verify_after_paramter_was_changed__with_Matching), //
 					TEST(BasicVerification::verify_after_paramter_was_changed_with_Using)) //
@@ -358,6 +360,33 @@ struct BasicVerification: tpunit::TestFixture {
 
 		Verify(CALL(mock,func) * 4);
 		VerifyNoOtherInvocations(CALL(mock,func).Using(1));
+	}
+
+	void exception_while_verifying_no_more_interactions_should_cancel_verification() {
+		Mock<SomeInterface> mock;
+		Fake(CALL(mock,func));
+		mock.get().func(1);
+		{
+			try {
+				const auto a = VerifyNoOtherInvocations(CALL(mock,func));
+				if (&a == &a) // use a to avoid unused variable compilation warning.
+					throw std::runtime_error("some exception");
+			} catch (std::runtime_error &) {
+			}
+		}
+	}
+
+	void exception_while_verifying_should_cancel_verification() {
+		Mock<SomeInterface> mock;
+		Fake(CALL(mock,func));
+		{
+			try {
+				const auto a = Verify(CALL(mock,func));
+				if (&a == &a) // use a to avoid unused variable compilation warning.
+					throw std::runtime_error("some exception");
+			} catch (std::runtime_error &) {
+			}
+		}
 	}
 
 	void use_same_filter_for_both_stubbing_and_verification() {
