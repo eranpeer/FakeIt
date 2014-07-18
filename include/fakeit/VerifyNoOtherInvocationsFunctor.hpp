@@ -58,7 +58,7 @@ class VerifyNoOtherInvocationsFunctor {
 				_mocks(other._mocks), //
 				_file(other._file), //
 				_line(other._line), //
-				_testMethod(other._testMethod) //
+				_callingMethod(other._callingMethod) //
 		{
 		}
 
@@ -72,7 +72,7 @@ class VerifyNoOtherInvocationsFunctor {
 		void setFileInfo(std::string file, int line, std::string testMethod) {
 			_file = file;
 			_line = line;
-			_testMethod = testMethod;
+			_callingMethod = testMethod;
 		}
 
 	private:
@@ -81,7 +81,7 @@ class VerifyNoOtherInvocationsFunctor {
 
 		std::string _file;
 		int _line;
-		std::string _testMethod;
+		std::string _callingMethod;
 
 		VerificationProgress(std::unordered_set<const ActualInvocationsSource*> mocks) :
 				_mocks(mocks) {
@@ -103,7 +103,7 @@ class VerifyNoOtherInvocationsFunctor {
 				sortByInvocationOrder(actualInvocations, sortedActualIvocations);
 
 				NoMoreInvocationsVerificationException e(sortedActualIvocations, sortedNonVerifedIvocations);
-				e.setFileInfo(_file, _line, _testMethod);
+				e.setFileInfo(_file, _line, _callingMethod);
 				fakeit::FakeIt::log(e);
 				throw e;
 			}

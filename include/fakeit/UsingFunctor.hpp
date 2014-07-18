@@ -260,6 +260,9 @@ public:
 		VerificationProgressProxy(VerificationProgress * ptr):ptr(ptr){
 		}
 
+		VerificationProgressProxy(std::set<ActualInvocationsSource*>& sources) :VerificationProgressProxy(new VerificationProgress(sources)){
+		}
+
 		virtual void verifyInvocations(const int times) override {
 			ptr->verifyInvocations(times);
 		}
@@ -289,7 +292,7 @@ public:
 	VerificationProgressProxy operator()(const ActualInvocationsSource& mock, const list&... tail) {
 		std::set<ActualInvocationsSource*> allMocks;
 		collectMocks(allMocks, mock, tail...);
-		VerificationProgressProxy proxy (new VerificationProgress(allMocks));
+		VerificationProgressProxy proxy (allMocks);
 		return proxy;
 	}
 
