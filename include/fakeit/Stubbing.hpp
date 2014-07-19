@@ -18,7 +18,7 @@
 
 #include "fakeit/FakeitExceptions.hpp"
 #include "fakeit/ActualInvocation.hpp"
-#include "fakeit/quantifier.hpp"
+#include "fakeit/Quantifier.hpp"
 #include "mockutils/DefaultValue.hpp"
 #include "mockutils/Macros.hpp"
 

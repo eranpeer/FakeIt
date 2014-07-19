@@ -16,7 +16,7 @@
 #include <stdexcept>
 #include <utility>
 
-#include "fakeit/quantifier.hpp"
+#include "fakeit/Quantifier.hpp"
 #include "mockutils/Macros.hpp"
 
 namespace fakeit {
