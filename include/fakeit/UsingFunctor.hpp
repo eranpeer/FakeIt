@@ -49,7 +49,7 @@ class UsingFunctor {
 
 
 		template<typename ... list>
-		void Verify(const Sequence& sequence, const list&... tail) {
+		void setExpectedPattern(const Sequence& sequence, const list&... tail) {
 			collectSequences(_expectedPattern, sequence, tail...);
 		}
 
@@ -268,7 +268,7 @@ public:
 
 		template<typename ... list>
 		VerificationProgressProxy Verify(const Sequence& sequence, const list&... tail) {
-			ptr->Verify(sequence, tail...);
+			ptr->setExpectedPattern(sequence, tail...);
 			return *this;
 		}
 	};

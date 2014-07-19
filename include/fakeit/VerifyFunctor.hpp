@@ -30,6 +30,15 @@ class VerifyFunctor {
 		collectSequences(vec, tail...);
 	}
 
+	template<typename ... list>
+	void collectInvolvedMocks(std::set<ActualInvocationsSource*>& invlovedMocks, const Sequence& sequence, const list&... tail) {
+		std::vector<Sequence*> allSequences;
+		collectSequences(allSequences, sequence, tail...);
+		for (auto sequence : allSequences) {
+			sequence->getInvolvedMocks(invlovedMocks);
+		}
+	}
+
 public:
 
 	VerifyFunctor() {
@@ -37,16 +46,10 @@ public:
 
 	template<typename ... list>
 	UsingFunctor::VerificationProgressProxy operator()(const Sequence& sequence, const list&... tail) {
-		std::vector<Sequence*> allSequences;
-		collectSequences(allSequences, sequence, tail...);
-		std::set<ActualInvocationsSource*> allMocks;
-		for (auto sequence : allSequences) {
-			sequence->getInvolvedMocks(allMocks);
-		}
-
-		UsingFunctor::VerificationProgressProxy proxy(new UsingFunctor::VerificationProgress(allMocks));
+		std::set<ActualInvocationsSource*> invlovedMocks;
+		collectInvolvedMocks(invlovedMocks, sequence, tail...);
+		UsingFunctor::VerificationProgressProxy proxy(invlovedMocks);
 		proxy.Verify(sequence, tail...);
-
 		return proxy;
 	}
 
