@@ -382,6 +382,7 @@ struct BasicVerification: tpunit::TestFixture {
 		{
 			try {
 				const auto a = Verify(CALL(mock,func));
+				//const auto b = Verify(CALL(mock, func)).Exactly(1);
 				if (&a == &a) // use a to avoid unused variable compilation warning.
 					throw std::runtime_error("some exception");
 			} catch (std::runtime_error &) {

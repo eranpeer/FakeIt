@@ -35,12 +35,11 @@ class UsingFunctor {
 		return collectMocks(into, tail...);
 	}
 
-	struct VerificationProgress {
+	struct Expectation {
 
 		friend class UsingFunctor;
-		friend class VerifyFunctor;
-
-		~VerificationProgress() THROWS {
+		
+		~Expectation() THROWS {
 			if (std::uncaught_exception()) {
 				return;
 			}
@@ -53,8 +52,8 @@ class UsingFunctor {
 			collectSequences(_expectedPattern, sequence, tail...);
 		}
 
-		void verifyInvocations(const int times) {
-			_expectedInvocationCount = times;
+		void setExpectedCount(const int count) {
+			_expectedCount = count;
 		}
 
 		void setFileInfo(std::string file, int line, std::string callingMethod) {
@@ -67,7 +66,7 @@ class UsingFunctor {
 
 		std::set<ActualInvocationsSource*> _involvedMocks;
 		std::vector<Sequence*> _expectedPattern;
-		int _expectedInvocationCount;
+		int _expectedCount;
 
 		std::string _file;
 		int _line;
@@ -175,16 +174,16 @@ class UsingFunctor {
 			return -1;
 		}
 
-		VerificationProgress(std::set<ActualInvocationsSource*> mocks) : //
+		Expectation(std::set<ActualInvocationsSource*> mocks) : //
 				_involvedMocks { mocks }, //
 				_expectedPattern { }, //
-				_expectedInvocationCount(-1), //
+				_expectedCount(-1), //
 				_line(0) {
 		}
 
 		bool isAtLeastVerification() {
 			// negative number represents an "AtLeast" search;
-			return _expectedInvocationCount < 0;
+			return _expectedCount < 0;
 		}
 
 		bool isExactVerification() {
@@ -192,11 +191,11 @@ class UsingFunctor {
 		}
 
 		bool atLeastLimitNotReached(int count) {
-			return count < -_expectedInvocationCount;
+			return count < -_expectedCount;
 		}
 
 		bool exactLimitNotMatched(int count) {
-			return count != _expectedInvocationCount;
+			return count != _expectedCount;
 		}
 
 		void throwExactVerificationException(std::vector<Invocation*> actualSequence, int count) {
@@ -212,7 +211,7 @@ class UsingFunctor {
 				}
 			};
 
-			ExactVerificationException e(_expectedPattern, actualSequence, _expectedInvocationCount, count);
+			ExactVerificationException e(_expectedPattern, actualSequence, _expectedCount, count);
 			e.setFileInfo(_file, _line, _testMethod);
 			fakeit::FakeIt::log(e);
 			throw e;
@@ -230,7 +229,7 @@ class UsingFunctor {
 				}
 			};
 
-			AtLeastVerificationException e(_expectedPattern, actualSequence, -_expectedInvocationCount, count);
+			AtLeastVerificationException e(_expectedPattern, actualSequence, -_expectedCount, count);
 			e.setFileInfo(_file, _line, _testMethod);
 			FakeIt::log(e);
 			throw e;
@@ -240,34 +239,34 @@ class UsingFunctor {
 
 public:
 
-	class VerificationProgressProxy : public MethodVerificationProgress {
+	class VerificationProgress : public MethodVerificationProgress {
 
 		friend class UsingFunctor;
 		friend class VerifyFunctor;
 
-		fakeit::smart_ptr<VerificationProgress> ptr;
+		fakeit::smart_ptr<Expectation> ptr;
 
-		VerificationProgressProxy(VerificationProgress * ptr):ptr(ptr){
+		VerificationProgress(Expectation * ptr):ptr(ptr){
 		}
 
-		VerificationProgressProxy(std::set<ActualInvocationsSource*>& sources) :VerificationProgressProxy(new VerificationProgress(sources)){
+		VerificationProgress(std::set<ActualInvocationsSource*>& sources) :VerificationProgress(new Expectation(sources)){
 		}
 
 		virtual void verifyInvocations(const int times) override {
-			ptr->verifyInvocations(times);
+			ptr->setExpectedCount(times);
 		}
 
 	public:
 
-		~VerificationProgressProxy() THROWS {};
+		~VerificationProgress() THROWS {};
 
-		VerificationProgressProxy setFileInfo(std::string file, int line, std::string callingMethod) {
+		VerificationProgress setFileInfo(std::string file, int line, std::string callingMethod) {
 			ptr->setFileInfo(file, line, callingMethod);
 			return *this;
 		}
 
 		template<typename ... list>
-		VerificationProgressProxy Verify(const Sequence& sequence, const list&... tail) {
+		VerificationProgress Verify(const Sequence& sequence, const list&... tail) {
 			ptr->setExpectedPattern(sequence, tail...);
 			return *this;
 		}
@@ -279,11 +278,11 @@ public:
 	}
 
 	template<typename ... list>
-	VerificationProgressProxy operator()(const ActualInvocationsSource& mock, const list&... tail) {
+	VerificationProgress operator()(const ActualInvocationsSource& mock, const list&... tail) {
 		std::set<ActualInvocationsSource*> allMocks;
 		collectMocks(allMocks, mock, tail...);
-		VerificationProgressProxy proxy (allMocks);
-		return proxy;
+		VerificationProgress progress (allMocks);
+		return progress;
 	}
 
 }

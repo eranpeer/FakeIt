@@ -50,11 +50,11 @@ class VerifyNoOtherInvocationsFunctor {
 		}
 	}
 
-	struct VerificationProgress {
+	struct Expectation {
 
 		friend class VerifyNoOtherInvocationsFunctor;
 
-		~VerificationProgress() THROWS {
+		~Expectation() THROWS {
 			if (std::uncaught_exception()) {
 				return;
 			}
@@ -75,7 +75,7 @@ class VerifyNoOtherInvocationsFunctor {
 		int _line;
 		std::string _callingMethod;
 
-		VerificationProgress(std::unordered_set<const ActualInvocationsSource*> mocks) :
+		Expectation(std::unordered_set<const ActualInvocationsSource*> mocks) :
 			_mocks(mocks) {
 		}
 
@@ -105,23 +105,23 @@ class VerifyNoOtherInvocationsFunctor {
 
 public:
 
-	class VerificationProgressProxy {
+	class VerificationProgress {
 
 		friend class VerifyNoOtherInvocationsFunctor;
 
-		fakeit::smart_ptr<VerificationProgress> ptr;
+		fakeit::smart_ptr<Expectation> ptr;
 
-		VerificationProgressProxy(VerificationProgress * ptr) :ptr(ptr){
+		VerificationProgress(Expectation * ptr) :ptr(ptr){
 		}
 
-		VerificationProgressProxy(std::unordered_set<const ActualInvocationsSource*>& invocationSources)
-			:VerificationProgressProxy(new VerificationProgress(invocationSources)){
+		VerificationProgress(std::unordered_set<const ActualInvocationsSource*>& invocationSources)
+			:VerificationProgress(new Expectation(invocationSources)){
 		}
 
 	public:
-		~VerificationProgressProxy() THROWS {};		
+		~VerificationProgress() THROWS {};		
 
-		VerificationProgressProxy setFileInfo(std::string file, int line, std::string callingMethod) {
+		VerificationProgress setFileInfo(std::string file, int line, std::string callingMethod) {
 			ptr->setFileInfo(file, line, callingMethod);
 			return *this;
 		}
@@ -134,10 +134,10 @@ public:
 	}
 
 	template<typename ... list>
-	VerificationProgressProxy operator()(const ActualInvocationsSource& head, const list&... tail) {
+	VerificationProgress operator()(const ActualInvocationsSource& head, const list&... tail) {
 		std::unordered_set<const ActualInvocationsSource*> invocationSources;
 		collectInvocationSources(invocationSources, head, tail...);
-		VerificationProgressProxy proxy{invocationSources};
+		VerificationProgress proxy{invocationSources};
 		return proxy;
 	}
 }

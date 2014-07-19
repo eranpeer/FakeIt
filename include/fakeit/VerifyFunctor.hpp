@@ -45,16 +45,17 @@ public:
 	}
 
 	template<typename ... list>
-	UsingFunctor::VerificationProgressProxy operator()(const Sequence& sequence, const list&... tail) {
+	UsingFunctor::VerificationProgress operator()(const Sequence& sequence, const list&... tail) {
 		std::set<ActualInvocationsSource*> invlovedMocks;
 		collectInvolvedMocks(invlovedMocks, sequence, tail...);
-		UsingFunctor::VerificationProgressProxy proxy(invlovedMocks);
-		proxy.Verify(sequence, tail...);
-		return proxy;
+		UsingFunctor::VerificationProgress progress(invlovedMocks);
+		progress.Verify(sequence, tail...);
+		return progress;
 	}
 
 }
 static Verify;
+
 }
 
 #endif // VerifyFunctor_hpp_
