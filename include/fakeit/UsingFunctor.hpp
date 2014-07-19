@@ -15,7 +15,9 @@
 #include "fakeit/Stubbing.hpp"
 #include "fakeit/Sequence.hpp"
 #include "fakeit/SortInvocations.hpp"
+#include "fakeit/MethodVerificationProgress.hpp"
 #include "fakeit/FakeIt.hpp"
+
 #include "mockutils/smart_ptr.hpp"
 
 namespace fakeit {
