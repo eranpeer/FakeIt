@@ -52,13 +52,13 @@ class VerifyNoOtherInvocationsFunctor {
 
 public:
 
-	class VerificationProgress {
+	class VerifyNoOtherInvocationsVerificationProgress {
 
-		struct Expectation {
+		struct VerifyNoOtherInvocationsExpectation {
 
 			friend class VerifyNoOtherInvocationsFunctor;
 
-			~Expectation() THROWS {
+			~VerifyNoOtherInvocationsExpectation() THROWS {
 				if (std::uncaught_exception()) {
 					return;
 				}
@@ -79,8 +79,8 @@ public:
 			int _line;
 			std::string _callingMethod;
 
-			Expectation(std::unordered_set<const ActualInvocationsSource*> mocks) :
-				_mocks(mocks) {
+			VerifyNoOtherInvocationsExpectation(std::unordered_set<const ActualInvocationsSource*> mocks) :
+				_mocks(mocks),_line(0) {
 			}
 
 			void VerifyExpectation()
@@ -109,19 +109,19 @@ public:
 
 		friend class VerifyNoOtherInvocationsFunctor;
 
-		fakeit::smart_ptr<Expectation> ptr;
+		fakeit::smart_ptr<VerifyNoOtherInvocationsExpectation> ptr;
 
-		VerificationProgress(Expectation * ptr) :ptr(ptr){
+		VerifyNoOtherInvocationsVerificationProgress(VerifyNoOtherInvocationsExpectation * ptr) :ptr(ptr){
 		}
 
-		VerificationProgress(std::unordered_set<const ActualInvocationsSource*>& invocationSources)
-			:VerificationProgress(new Expectation(invocationSources)){
+		VerifyNoOtherInvocationsVerificationProgress(std::unordered_set<const ActualInvocationsSource*>& invocationSources)
+			:VerifyNoOtherInvocationsVerificationProgress(new VerifyNoOtherInvocationsExpectation(invocationSources)){
 		}
 
 	public:
-		~VerificationProgress() THROWS {};		
+		~VerifyNoOtherInvocationsVerificationProgress() THROWS {};		
 
-		VerificationProgress setFileInfo(std::string file, int line, std::string callingMethod) {
+		VerifyNoOtherInvocationsVerificationProgress setFileInfo(std::string file, int line, std::string callingMethod) {
 			ptr->setFileInfo(file, line, callingMethod);
 			return *this;
 		}
@@ -134,11 +134,11 @@ public:
 	}
 
 	template<typename ... list>
-	VerificationProgress operator()(const ActualInvocationsSource& head, const list&... tail) {
+	VerifyNoOtherInvocationsVerificationProgress operator()(const ActualInvocationsSource& head, const list&... tail) {
 		std::unordered_set<const ActualInvocationsSource*> invocationSources;
 		collectInvocationSources(invocationSources, head, tail...);
-		VerificationProgress proxy{invocationSources};
-		return proxy;
+		VerifyNoOtherInvocationsVerificationProgress progress{invocationSources};
+		return progress;
 	}
 }
 static VerifyNoOtherInvocations;

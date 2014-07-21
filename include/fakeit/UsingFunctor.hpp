@@ -26,15 +26,14 @@ class UsingFunctor {
 
 	friend class VerifyFunctor;
 
-	std::set<ActualInvocationsSource*>& collectMocks(std::set<ActualInvocationsSource*>& into) {
-		return into;
+	void collectInvocationsSources(std::set<ActualInvocationsSource*>& into) {
 	}
 
 	template<typename ... list>
-	std::set<ActualInvocationsSource*>& collectMocks(std::set<ActualInvocationsSource*>& into, const ActualInvocationsSource& mock,
+	void collectInvocationsSources(std::set<ActualInvocationsSource*>& into, const ActualInvocationsSource& mock,
 			const list&... tail) {
 		into.insert(&const_cast<ActualInvocationsSource&>(mock));
-		return collectMocks(into, tail...);
+		collectInvocationsSources(into, tail...);
 	}
 
 public:
@@ -45,7 +44,7 @@ public:
 	template<typename ... list>
 	SequenceVerificationProgress operator()(const ActualInvocationsSource& mock, const list&... tail) {
 		std::set<ActualInvocationsSource*> allMocks;
-		collectMocks(allMocks, mock, tail...);
+		collectInvocationsSources(allMocks, mock, tail...);
 		SequenceVerificationProgress progress (allMocks);
 		return progress;
 	}
