@@ -1,17 +1,16 @@
-#ifndef Expectation_hpp_
-#define Expectation_hpp_
+#ifndef SequenceVerificationExpectation_hpp_
+#define SequenceVerificationExpectation_hpp_
 
 #include "fakeit/FakeitExceptions.hpp"
 #include "mockutils/smart_ptr.hpp"
 
 namespace fakeit {
 
+struct SequenceVerificationExpectation {
 
-struct Expectation {
+	friend class SequenceVerificationProgress;
 
-	friend class VerificationProgress;
-
-	~Expectation() THROWS{
+	~SequenceVerificationExpectation() THROWS{
 		if (std::uncaught_exception()) {
 			return;
 		}
@@ -43,7 +42,7 @@ private:
 	int _line;
 	std::string _testMethod;
 
-	Expectation(std::set<ActualInvocationsSource*> mocks) : //
+	SequenceVerificationExpectation(std::set<ActualInvocationsSource*> mocks) : //
 		_involvedMocks{ mocks }, //
 		_expectedPattern{}, //
 		_expectedCount(-1), //

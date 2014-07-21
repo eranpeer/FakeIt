@@ -50,62 +50,62 @@ class VerifyNoOtherInvocationsFunctor {
 		}
 	}
 
-	struct Expectation {
-
-		friend class VerifyNoOtherInvocationsFunctor;
-
-		~Expectation() THROWS {
-			if (std::uncaught_exception()) {
-				return;
-			}
-			VerifyExpectation();
-		}
-
-		void setFileInfo(std::string file, int line, std::string callingMethod) {
-			_file = file;
-			_line = line;
-			_callingMethod = callingMethod;
-		}
-
-	private:
-
-		std::unordered_set<const ActualInvocationsSource*> _mocks;
-
-		std::string _file;
-		int _line;
-		std::string _callingMethod;
-
-		Expectation(std::unordered_set<const ActualInvocationsSource*> mocks) :
-			_mocks(mocks) {
-		}
-
-		void VerifyExpectation()
-		{
-			std::unordered_set<Invocation*> actualInvocations;
-			collectActualInvocations(actualInvocations, _mocks);
-
-			std::unordered_set<Invocation*> nonVerifedIvocations;
-			selectNonVerifiedInvocations(actualInvocations, nonVerifedIvocations);
-
-			if (nonVerifedIvocations.size() > 0) {
-				std::vector<Invocation*> sortedNonVerifedIvocations;
-				sortByInvocationOrder(nonVerifedIvocations, sortedNonVerifedIvocations);
-
-				std::vector<Invocation*> sortedActualIvocations;
-				sortByInvocationOrder(actualInvocations, sortedActualIvocations);
-
-				NoMoreInvocationsVerificationException e(sortedActualIvocations, sortedNonVerifedIvocations);
-				e.setFileInfo(_file, _line, _callingMethod);
-				fakeit::FakeIt::log(e);
-				throw e;
-			}
-		}
-
-	};
-
 public:
 
 	class VerificationProgress {
+
+		struct Expectation {
+
+			friend class VerifyNoOtherInvocationsFunctor;
+
+			~Expectation() THROWS {
+				if (std::uncaught_exception()) {
+					return;
+				}
+				VerifyExpectation();
+			}
+
+			void setFileInfo(std::string file, int line, std::string callingMethod) {
+				_file = file;
+				_line = line;
+				_callingMethod = callingMethod;
+			}
+
+		private:
+
+			std::unordered_set<const ActualInvocationsSource*> _mocks;
+
+			std::string _file;
+			int _line;
+			std::string _callingMethod;
+
+			Expectation(std::unordered_set<const ActualInvocationsSource*> mocks) :
+				_mocks(mocks) {
+			}
+
+			void VerifyExpectation()
+			{
+				std::unordered_set<Invocation*> actualInvocations;
+				collectActualInvocations(actualInvocations, _mocks);
+
+				std::unordered_set<Invocation*> nonVerifedIvocations;
+				selectNonVerifiedInvocations(actualInvocations, nonVerifedIvocations);
+
+				if (nonVerifedIvocations.size() > 0) {
+					std::vector<Invocation*> sortedNonVerifedIvocations;
+					sortByInvocationOrder(nonVerifedIvocations, sortedNonVerifedIvocations);
+
+					std::vector<Invocation*> sortedActualIvocations;
+					sortByInvocationOrder(actualInvocations, sortedActualIvocations);
+
+					NoMoreInvocationsVerificationException e(sortedActualIvocations, sortedNonVerifedIvocations);
+					e.setFileInfo(_file, _line, _callingMethod);
+					fakeit::FakeIt::log(e);
+					throw e;
+				}
+			}
+
+		};
 
 		friend class VerifyNoOtherInvocationsFunctor;
 

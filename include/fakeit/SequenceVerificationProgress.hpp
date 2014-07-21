@@ -1,23 +1,23 @@
-#ifndef VerificationProgress_hpp_
-#define VerificationProgress_hpp_
+#ifndef SequenceVerificationProgress_hpp_
+#define SequenceVerificationProgress_hpp_
 
 #include "fakeit/FakeitExceptions.hpp"
-#include "fakeit/Expectation.hpp"
+#include "fakeit/SequenceVerificationExpectation.hpp"
 #include "mockutils/smart_ptr.hpp"
 
 namespace fakeit {
 
-	class VerificationProgress {
+	class SequenceVerificationProgress {
 
 		friend class UsingFunctor;
 		friend class VerifyFunctor;
 
-		fakeit::smart_ptr<Expectation> ptr;
+		fakeit::smart_ptr<SequenceVerificationExpectation> ptr;
 
-		VerificationProgress(Expectation * ptr) :ptr(ptr){
+		SequenceVerificationProgress(SequenceVerificationExpectation * ptr) :ptr(ptr){
 		}
 
-		VerificationProgress(std::set<ActualInvocationsSource*>& sources) :VerificationProgress(new Expectation(sources)){
+		SequenceVerificationProgress(std::set<ActualInvocationsSource*>& sources) :SequenceVerificationProgress(new SequenceVerificationExpectation(sources)){
 		}
 
 		virtual void verifyInvocations(const int times) {
@@ -26,7 +26,7 @@ namespace fakeit {
 
 	public:
 
-		virtual ~VerificationProgress() THROWS{};
+		virtual ~SequenceVerificationProgress() THROWS{};
 
 		void Never() {
 			Exactly(0);
@@ -66,13 +66,13 @@ namespace fakeit {
 			AtLeast(q.quantity);
 		}
 
-		VerificationProgress setFileInfo(std::string file, int line, std::string callingMethod) {
+		SequenceVerificationProgress setFileInfo(std::string file, int line, std::string callingMethod) {
 			ptr->setFileInfo(file, line, callingMethod);
 			return *this;
 		}
 
 		template<typename ... list>
-		VerificationProgress Verify(const Sequence& sequence, const list&... tail) {
+		SequenceVerificationProgress Verify(const Sequence& sequence, const list&... tail) {
 			ptr->setExpectedPattern(sequence, tail...);
 			return *this;
 		}
