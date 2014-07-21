@@ -16,6 +16,7 @@
 #include "fakeit/Sequence.hpp"
 #include "fakeit/SortInvocations.hpp"
 #include "fakeit/UsingFunctor.hpp"
+#include "fakeit/VerificationProgress.hpp"
 
 namespace fakeit {
 
@@ -45,10 +46,10 @@ public:
 	}
 
 	template<typename ... list>
-	UsingFunctor::VerificationProgress operator()(const Sequence& sequence, const list&... tail) {
+	VerificationProgress operator()(const Sequence& sequence, const list&... tail) {
 		std::set<ActualInvocationsSource*> invlovedMocks;
 		collectInvolvedMocks(invlovedMocks, sequence, tail...);
-		UsingFunctor::VerificationProgress progress(invlovedMocks);
+		VerificationProgress progress(invlovedMocks);
 		progress.Verify(sequence, tail...);
 		return progress;
 	}
