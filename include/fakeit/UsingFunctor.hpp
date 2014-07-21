@@ -15,7 +15,6 @@
 #include "fakeit/Stubbing.hpp"
 #include "fakeit/Sequence.hpp"
 #include "fakeit/SortInvocations.hpp"
-#include "fakeit/MethodVerificationProgress.hpp"
 #include "fakeit/FakeIt.hpp"
 
 #include "mockutils/smart_ptr.hpp"
@@ -241,7 +240,7 @@ class UsingFunctor {
 
 public:
 
-	class VerificationProgress : public MethodVerificationProgress {
+	class VerificationProgress {
 
 		friend class UsingFunctor;
 		friend class VerifyFunctor;
@@ -254,13 +253,51 @@ public:
 		VerificationProgress(std::set<ActualInvocationsSource*>& sources) :VerificationProgress(new Expectation(sources)){
 		}
 
-		virtual void verifyInvocations(const int times) override {
+		virtual void verifyInvocations(const int times) {
 			ptr->setExpectedCount(times);
 		}
 
 	public:
 
 		~VerificationProgress() THROWS {};
+
+		void Never() {
+			Exactly(0);
+		}
+
+		virtual void Once() {
+			Exactly(1);
+		}
+
+		virtual void Twice() {
+			Exactly(2);
+		}
+
+		virtual void AtLeastOnce() {
+			verifyInvocations(-1);
+		}
+
+		virtual void Exactly(const int times) {
+			if (times < 0) {
+				throw std::invalid_argument(std::string("bad argument times:").append(std::to_string(times)));
+			}
+			verifyInvocations(times);
+		}
+
+		virtual void Exactly(const Quantity & q) {
+			Exactly(q.quantity);
+		}
+
+		virtual void AtLeast(const int times) {
+			if (times < 0) {
+				throw std::invalid_argument(std::string("bad argument times:").append(std::to_string(times)));
+			}
+			verifyInvocations(-times);
+		}
+
+		virtual void AtLeast(const Quantity & q) {
+			AtLeast(q.quantity);
+		}
 
 		VerificationProgress setFileInfo(std::string file, int line, std::string callingMethod) {
 			ptr->setFileInfo(file, line, callingMethod);
