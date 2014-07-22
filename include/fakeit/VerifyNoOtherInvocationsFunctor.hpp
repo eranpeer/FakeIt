@@ -36,7 +36,8 @@ public:
 	template<typename ... list>
 	VerifyNoOtherInvocationsVerificationProgress operator()(const ActualInvocationsSource& head, const list&... tail) {
 		std::set<const ActualInvocationsSource*> invocationSources;
-		collectInvocationSources(invocationSources, head, tail...);
+		invocationSources.insert(&head);
+		collectInvocationSources(invocationSources, tail...);
 		VerifyNoOtherInvocationsVerificationProgress progress{invocationSources};
 		return progress;
 	}

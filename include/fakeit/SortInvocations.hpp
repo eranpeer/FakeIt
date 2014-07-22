@@ -27,13 +27,14 @@ static void sortByInvocationOrder(std::unordered_set<Invocation*>& ivocations, s
 		result.push_back(i);
 }
 
-static void collectInvocationSources(std::set<const ActualInvocationsSource*>& into) {
+template<typename T>
+static void collectInvocationSources(T& into) {
 }
 
 template<typename ... list>
 static void collectInvocationSources(std::set<const ActualInvocationsSource*>& into, const ActualInvocationsSource& mock,
 		const list&... tail) {
-	into.insert(&const_cast<ActualInvocationsSource&>(mock));
+	into.insert(&mock);
 	collectInvocationSources(into, tail...);
 }
 

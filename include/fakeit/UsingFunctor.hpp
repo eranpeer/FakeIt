@@ -32,9 +32,10 @@ public:
 	}
 
 	template<typename ... list>
-	SequenceVerificationProgress operator()(const ActualInvocationsSource& mock, const list&... tail) {
+	SequenceVerificationProgress operator()(const ActualInvocationsSource& head, const list&... tail) {
 		std::set<const ActualInvocationsSource*> allMocks;
-		collectInvocationSources(allMocks, mock, tail...);
+		allMocks.insert(&head);
+		collectInvocationSources(allMocks, tail...);
 		SequenceVerificationProgress progress (allMocks);
 		return progress;
 	}
