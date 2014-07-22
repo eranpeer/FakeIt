@@ -34,7 +34,7 @@ struct SequenceVerificationExpectation {
 
 private:
 
-	std::set<ActualInvocationsSource*> _involvedMocks;
+	std::set<const ActualInvocationsSource*> _involvedMocks;
 	std::vector<Sequence*> _expectedPattern;
 	int _expectedCount;
 
@@ -42,7 +42,7 @@ private:
 	int _line;
 	std::string _testMethod;
 
-	SequenceVerificationExpectation(std::set<ActualInvocationsSource*> mocks) : //
+	SequenceVerificationExpectation(std::set<const ActualInvocationsSource*>& mocks) : //
 		_involvedMocks{ mocks }, //
 		_expectedPattern{}, //
 		_expectedCount(-1), //

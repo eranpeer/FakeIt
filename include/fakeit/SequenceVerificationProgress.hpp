@@ -17,7 +17,8 @@ namespace fakeit {
 		SequenceVerificationProgress(SequenceVerificationExpectation * ptr) :ptr(ptr){
 		}
 
-		SequenceVerificationProgress(std::set<ActualInvocationsSource*>& sources) :SequenceVerificationProgress(new SequenceVerificationExpectation(sources)){
+		SequenceVerificationProgress(std::set<const ActualInvocationsSource*>& sources) :
+			SequenceVerificationProgress(new SequenceVerificationExpectation(sources)){
 		}
 
 		virtual void verifyInvocations(const int times) {

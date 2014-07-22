@@ -39,7 +39,7 @@ public:
 	/**
 	 * Collect all mock objects that are involved in this sequence.
 	 */
-	virtual void getInvolvedMocks(std::set<ActualInvocationsSource*>& into) const = 0;
+	virtual void getInvolvedMocks(std::set<const ActualInvocationsSource*>& into) const = 0;
 
 	virtual unsigned int size() const = 0;
 
@@ -70,7 +70,7 @@ public:
 		s2.getExpectedSequence(into);
 	}
 
-	virtual void getInvolvedMocks(std::set<ActualInvocationsSource*>& into) const override {
+	virtual void getInvolvedMocks(std::set<const ActualInvocationsSource*>& into) const override {
 		s1.getInvolvedMocks(into);
 		s2.getInvolvedMocks(into);
 	}
@@ -100,7 +100,7 @@ public:
 	friend inline RepeatedSequence operator*(const Sequence &s, int times);
 	friend inline RepeatedSequence operator*(int times, const Sequence &s);
 
-	void getInvolvedMocks(std::set<ActualInvocationsSource*>& into) const override {
+	void getInvolvedMocks(std::set<const ActualInvocationsSource*>& into) const override {
 		s1.getInvolvedMocks(into);
 	}
 

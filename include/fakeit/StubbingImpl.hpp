@@ -133,7 +133,7 @@ public:
 		}
 	}
 
-	void getInvolvedMocks(std::set<ActualInvocationsSource*>& into) const override {
+	void getInvolvedMocks(std::set<const ActualInvocationsSource*>& into) const override {
 		into.insert(stubbingContext.get());
 	}
 

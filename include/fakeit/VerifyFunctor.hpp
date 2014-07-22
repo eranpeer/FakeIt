@@ -32,7 +32,7 @@ class VerifyFunctor {
 	}
 
 	template<typename ... list>
-	void collectInvolvedMocks(std::set<ActualInvocationsSource*>& invlovedMocks, const Sequence& sequence, const list&... tail) {
+	void collectInvolvedMocks(std::set<const ActualInvocationsSource*>& invlovedMocks, const Sequence& sequence, const list&... tail) {
 		std::vector<Sequence*> allSequences;
 		collectSequences(allSequences, sequence, tail...);
 		for (auto sequence : allSequences) {
@@ -47,7 +47,7 @@ public:
 
 	template<typename ... list>
 	SequenceVerificationProgress operator()(const Sequence& sequence, const list&... tail) {
-		std::set<ActualInvocationsSource*> invlovedMocks;
+		std::set<const ActualInvocationsSource*> invlovedMocks;
 		collectInvolvedMocks(invlovedMocks, sequence, tail...);
 		SequenceVerificationProgress progress(invlovedMocks);
 		progress.Verify(sequence, tail...);

@@ -26,16 +26,6 @@ class UsingFunctor {
 
 	friend class VerifyFunctor;
 
-	void collectInvocationsSources(std::set<ActualInvocationsSource*>& into) {
-	}
-
-	template<typename ... list>
-	void collectInvocationsSources(std::set<ActualInvocationsSource*>& into, const ActualInvocationsSource& mock,
-			const list&... tail) {
-		into.insert(&const_cast<ActualInvocationsSource&>(mock));
-		collectInvocationsSources(into, tail...);
-	}
-
 public:
 
 	UsingFunctor() {
@@ -43,8 +33,8 @@ public:
 
 	template<typename ... list>
 	SequenceVerificationProgress operator()(const ActualInvocationsSource& mock, const list&... tail) {
-		std::set<ActualInvocationsSource*> allMocks;
-		collectInvocationsSources(allMocks, mock, tail...);
+		std::set<const ActualInvocationsSource*> allMocks;
+		collectInvocationSources(allMocks, mock, tail...);
 		SequenceVerificationProgress progress (allMocks);
 		return progress;
 	}
