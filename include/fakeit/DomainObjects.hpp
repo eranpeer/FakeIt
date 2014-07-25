@@ -23,6 +23,20 @@ struct Method {
 	virtual std::string name() const = 0;
 };
 
+struct UnknownMethod : public Method {
+
+	virtual ~UnknownMethod() = default;
+
+	virtual std::string name() const {
+		return {"unknown"};
+	}
+
+	static Method& instance() {
+		static UnknownMethod instance;
+		return instance;
+	}
+};
+
 }
 
 #endif // DomainObjects_h__

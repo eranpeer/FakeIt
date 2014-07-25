@@ -56,7 +56,6 @@ class MethodStubbingBase: public RecordedMethodInvocation, //
 		public virtual Sequence,
 		public virtual ActualInvocationsSource,
 		public virtual Invocation::Matcher {
-private:
 
 	typedef R (C::*func)(arglist...);
 
@@ -69,7 +68,7 @@ private:
 	}
 
 	std::shared_ptr<RecordedMethodBody<R, arglist...>> buildInitialMethodBody() {
-		std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody { new RecordedMethodBody<R, arglist...>() };
+		std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody { new RecordedMethodBody<R, arglist...>(stubbingContext->getMethodMock().getMethod()) };
 		return recordedMethodBody;
 	}
 

@@ -11,6 +11,7 @@
 
 #include <functional>
 #include "fakeit/Sequence.hpp"
+#include "fakeit/DomainObjects.hpp"
 #include "mockutils/Formatter.hpp"
 
 namespace fakeit {
@@ -26,9 +27,20 @@ struct FakeitException {
 };
 
 struct UnexpectedMethodCallException: public FakeitException {
+
+	UnexpectedMethodCallException(Method & method) : _method (method) {
+	}
+
 	virtual std::string what() const override {
 		return std::string("UnexpectedMethodCallException: could not find any recorded behavior to support this method call");
 	}
+
+	Method& getMethod(){
+		return _method;
+	}
+
+private:
+	Method & _method;
 };
 
 enum class VerificationType {

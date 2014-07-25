@@ -48,7 +48,7 @@ public:
 template<typename R, typename ... arglist>
 struct RecordedMethodBody: public MethodInvocationHandler<R, arglist...> {
 
-	RecordedMethodBody() {
+	RecordedMethodBody(Method & method): method(method) {
 		clear();
 	}
 
@@ -84,13 +84,16 @@ struct RecordedMethodBody: public MethodInvocationHandler<R, arglist...> {
 	}
 
 private:
+
+	Method & method;
+
 	void append(std::shared_ptr<Behavior<R, arglist...>> mock) {
 		behaviorMocks.insert(behaviorMocks.end() - 1, mock);
 	}
 
 	void clear() {
 		behaviorMocks.clear();
-		auto doMock = std::shared_ptr<Behavior<R, arglist...>> { new ThrowUnexpectedMethodCall<R, arglist...>() };
+		auto doMock = std::shared_ptr<Behavior<R, arglist...>> { new ThrowUnexpectedMethodCall<R, arglist...>(method) };
 		behaviorMocks.push_back(doMock);
 	}
 
@@ -244,7 +247,7 @@ public:
 				args...) };
 		auto methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
 		if (!methodInvocationMock) {
-			UnexpectedMethodCallException e;
+			UnexpectedMethodCallException e(this->method);
 			FakeIt::log(e);
 			throw e;
 		}

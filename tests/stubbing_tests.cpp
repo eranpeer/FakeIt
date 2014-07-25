@@ -72,8 +72,10 @@ struct BasicStubbing: tpunit::TestFixture {
 			FAIL();
 		} catch(UnexpectedMethodCallException& e)
 		{
-			std::string expected("UnexpectedMethodCallException: could not find any recorded behavior to support this method call");
-			ASSERT_EQUAL(expected,to_string(e));
+			std::string expectedMsg("UnexpectedMethodCallException: could not find any recorded behavior to support this method call");
+			std::string expectedName("unknown");
+			ASSERT_EQUAL(expectedName,e.getMethod().name());
+			ASSERT_EQUAL(expectedMsg,to_string(e));
 		}
 	}
 
@@ -113,8 +115,13 @@ struct BasicStubbing: tpunit::TestFixture {
 		SomeInterface &i = mock.get();
 
 		ASSERT_EQUAL(1, i.func(1));
-		ASSERT_THROW(i.func(1), fakeit::UnexpectedMethodCallException);
-
+		try{
+			i.func(1);
+			FAIL();
+		} catch(fakeit::UnexpectedMethodCallException &e){
+			std::string expected("mock.func");
+			ASSERT_EQUAL(expected,e.getMethod().name());
+		}
 	}
 
 	void stub_a_function_to_return_a_specified_value_always() {

@@ -33,8 +33,8 @@ private:
 	bool isSpy;
 
 	void unmocked() {
-		class UnmockedMethodInvocation: public UnexpectedMethodCallException {
-
+		struct UnmockedMethodInvocation: public UnexpectedMethodCallException {
+			UnmockedMethodInvocation():UnexpectedMethodCallException(UnknownMethod::instance()){}
 		} e;
 		FakeIt::log(e);
 		throw e;
