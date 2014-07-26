@@ -26,6 +26,8 @@ static std::atomic_int invocationOrdinal;
 template<typename R, typename ... arglist>
 struct MethodInvocationMock: public ActualInvocation<arglist...>::Matcher, public MethodInvocationHandler<R, arglist...> {
 
+	virtual ~MethodInvocationMock() = default;
+
 	virtual std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> getMatcher()= 0;
 
 };
@@ -89,10 +91,9 @@ struct RecordedMethodBody: public MethodInvocationHandler<R, arglist...> {
 
 private:
 
+	struct NoMoreRecordedBehavior: public Behavior<R, arglist...> {
 
-	struct ThrowUnexpectedMethodCall: public Behavior<R, arglist...> {
-
-		virtual ~ThrowUnexpectedMethodCall() = default;
+		virtual ~NoMoreRecordedBehavior() = default;
 
 		virtual R invoke(arglist&... args) override {
 			NoMoreRecordedBehaviorException e;
@@ -112,7 +113,7 @@ private:
 
 	void clear() {
 		behaviorMocks.clear();
-		auto doMock = std::shared_ptr<Behavior<R, arglist...>> { new ThrowUnexpectedMethodCall() };
+		auto doMock = std::shared_ptr<Behavior<R, arglist...>> { new NoMoreRecordedBehavior() };
 		behaviorMocks.push_back(doMock);
 	}
 
@@ -121,6 +122,8 @@ private:
 
 template<typename R, typename ... arglist>
 struct MethodInvocationMockBase: public virtual MethodInvocationMock<R, arglist...> {
+
+	virtual ~MethodInvocationMockBase() = default;
 
 	MethodInvocationMockBase(const Method& method, std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> matcher,
 			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) :
@@ -147,6 +150,9 @@ private:
 
 template<typename ... arglist>
 struct ExpectedArgumentsInvocationMatcher: public ActualInvocation<arglist...>::Matcher {
+
+	virtual ~ExpectedArgumentsInvocationMatcher() = default;
+
 	ExpectedArgumentsInvocationMatcher(const arglist&... args) :
 			expectedArguments(args...) {
 	}
@@ -156,6 +162,7 @@ struct ExpectedArgumentsInvocationMatcher: public ActualInvocation<arglist...>::
 			return true;
 		return matches(invocation.getActualArguments());
 	}
+
 private:
 	virtual bool matches(const std::tuple<arglist...>& actualArgs) {
 		return expectedArguments == actualArgs;
@@ -165,6 +172,8 @@ private:
 
 template<typename ... arglist>
 struct UserDefinedInvocationMatcher: public ActualInvocation<arglist...>::Matcher {
+	virtual ~UserDefinedInvocationMatcher() = default;
+
 	UserDefinedInvocationMatcher(std::function<bool(arglist...)> matcher) :
 			matcher { matcher } {
 	}
@@ -183,6 +192,9 @@ private:
 
 template<typename ... arglist>
 struct DefaultInvocationMatcher: public ActualInvocation<arglist...>::Matcher {
+
+	virtual ~DefaultInvocationMatcher() = default;
+
 	DefaultInvocationMatcher() {
 	}
 
