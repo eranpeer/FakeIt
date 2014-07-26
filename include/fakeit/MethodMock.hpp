@@ -47,26 +47,24 @@ public:
 	}
 };
 
-class NoMoreRecordedBehaviorException : public std::exception {
-
+struct NoMoreRecordedBehaviorException: public std::exception {
 };
 
 template<typename R, typename ... arglist>
 struct RecordedMethodBody: public MethodInvocationHandler<R, arglist...> {
 
-	RecordedMethodBody(Method & method): method(method) {
+	RecordedMethodBody(Method & method) :
+			method(method) {
 		clear();
 	}
 
 	void AppendDo(std::function<R(arglist...)> method) {
-		std::shared_ptr<Behavior<R, arglist...>> doMock = std::shared_ptr<Behavior<R, arglist...>> { new Repeat<R, arglist...>(
-				method) };
+		std::shared_ptr<Behavior<R, arglist...>> doMock = std::shared_ptr<Behavior<R, arglist...>> { new Repeat<R, arglist...>(method) };
 		AppendDo(doMock);
 	}
 
 	void LastDo(std::function<R(arglist...)> method) {
-		std::shared_ptr<Behavior<R, arglist...>> doMock = std::shared_ptr<Behavior<R, arglist...>> { new Repeat<R, arglist...>(
-				method) };
+		std::shared_ptr<Behavior<R, arglist...>> doMock = std::shared_ptr<Behavior<R, arglist...>> { new Repeat<R, arglist...>(method) };
 		LastDo(doMock);
 	}
 
@@ -96,8 +94,7 @@ private:
 		virtual ~NoMoreRecordedBehavior() = default;
 
 		virtual R invoke(arglist&... args) override {
-			NoMoreRecordedBehaviorException e;
-			throw e;
+			throw NoMoreRecordedBehaviorException();
 		}
 
 		virtual bool isDone() override {
@@ -208,20 +205,21 @@ private:
 	}
 };
 
-
 template<typename C, typename R, typename ... arglist>
 class MethodMock: public virtual MethodInvocationHandler<R, arglist...>, public virtual ActualInvocationsSource {
 
-	class MethodImpl : public Method {
+	class MethodImpl: public Method {
 		std::string _name;
 	public:
-		MethodImpl(std::string name):_name(name){}
+		MethodImpl(std::string name) :
+				_name(name) {
+		}
 
 		virtual std::string name() const override {
 			return _name;
 		}
 
-		void setName(const std::string& name){
+		void setName(const std::string& name) {
 			_name = name;
 		}
 	};
@@ -252,7 +250,7 @@ class MethodMock: public virtual MethodInvocationHandler<R, arglist...>, public 
 public:
 
 	MethodMock(MockObject<C>& mock, R (C::*vMethod)(arglist...)) :
-			mock(mock), vMethod(vMethod), method{typeid(vMethod).name()} {
+	mock(mock), vMethod(vMethod), method {typeid(vMethod).name()} {
 	}
 
 	virtual ~MethodMock() {
@@ -274,8 +272,8 @@ public:
 
 	R handleMethodInvocation(arglist&... args) override {
 		int ordinal = invocationOrdinal++;
-		auto actualInvoaction = std::shared_ptr<ActualInvocation<arglist...>> { new ActualInvocation<arglist...>(ordinal, this->getMethod(),
-				args...) };
+		auto actualInvoaction = std::shared_ptr<ActualInvocation<arglist...>> {new ActualInvocation<arglist...>(ordinal, this->getMethod(),
+					args...)};
 		auto methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
 		if (!methodInvocationMock) {
 			UnexpectedMethodCallException e(this->method);
@@ -287,7 +285,7 @@ public:
 		actualInvocations.push_back(actualInvoaction);
 		try {
 			return methodInvocationMock->handleMethodInvocation(args...);
-		} catch (NoMoreRecordedBehaviorException&){
+		} catch (NoMoreRecordedBehaviorException&) {
 			UnexpectedMethodCallException e(this->method);
 			FakeIt::log(e);
 			throw e;
