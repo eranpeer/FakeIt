@@ -69,27 +69,6 @@ private:
 };
 
 template<typename R, typename ... arglist>
-struct ThrowUnexpectedMethodCall: public Behavior<R, arglist...> {
-
-	ThrowUnexpectedMethodCall(Method &method):method(method){}
-
-	virtual ~ThrowUnexpectedMethodCall() = default;
-
-
-	virtual R invoke(arglist&... args) override {
-		UnexpectedMethodCallException e(method);
-		FakeIt::log(e);
-		throw e;
-	}
-
-	virtual bool isDone() override {
-		return false;
-	}
-private:
-	Method &method;
-};
-
-template<typename R, typename ... arglist>
 struct ReturnDefaultValue: public Behavior<R, arglist...> {
 	virtual ~ReturnDefaultValue() = default;
 

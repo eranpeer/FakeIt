@@ -45,6 +45,10 @@ public:
 	}
 };
 
+class NoMoreRecordedBehaviorException : public std::exception {
+
+};
+
 template<typename R, typename ... arglist>
 struct RecordedMethodBody: public MethodInvocationHandler<R, arglist...> {
 
@@ -85,6 +89,21 @@ struct RecordedMethodBody: public MethodInvocationHandler<R, arglist...> {
 
 private:
 
+
+	struct ThrowUnexpectedMethodCall: public Behavior<R, arglist...> {
+
+		virtual ~ThrowUnexpectedMethodCall() = default;
+
+		virtual R invoke(arglist&... args) override {
+			NoMoreRecordedBehaviorException e;
+			throw e;
+		}
+
+		virtual bool isDone() override {
+			return false;
+		}
+	};
+
 	Method & method;
 
 	void append(std::shared_ptr<Behavior<R, arglist...>> mock) {
@@ -93,7 +112,7 @@ private:
 
 	void clear() {
 		behaviorMocks.clear();
-		auto doMock = std::shared_ptr<Behavior<R, arglist...>> { new ThrowUnexpectedMethodCall<R, arglist...>(method) };
+		auto doMock = std::shared_ptr<Behavior<R, arglist...>> { new ThrowUnexpectedMethodCall() };
 		behaviorMocks.push_back(doMock);
 	}
 
@@ -254,7 +273,13 @@ public:
 		auto matcher = methodInvocationMock->getMatcher();
 		actualInvoaction->setActualMatcher(matcher);
 		actualInvocations.push_back(actualInvoaction);
-		return methodInvocationMock->handleMethodInvocation(args...);
+		try {
+			return methodInvocationMock->handleMethodInvocation(args...);
+		} catch (NoMoreRecordedBehaviorException&){
+			UnexpectedMethodCallException e(this->method);
+			FakeIt::log(e);
+			throw e;
+		}
 	}
 
 	std::vector<std::shared_ptr<ActualInvocation<arglist...>> > getActualInvocations(
