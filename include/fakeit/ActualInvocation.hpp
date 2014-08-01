@@ -14,11 +14,20 @@
 #include <tuple>
 #include <string>
 #include <iostream>
+#include <atomic>
+
 
 #include "mockutils/Macros.hpp"
 #include "fakeit/Invocation.hpp"
 
 namespace fakeit {
+
+static std::atomic_int invocationOrdinal;
+
+static int nextInvocationOrdinal(){
+	return ++invocationOrdinal;
+}
+
 
 template<typename ... arglist>
 struct ActualInvocation: public virtual Invocation {

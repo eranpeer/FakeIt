@@ -11,7 +11,6 @@
 
 #include <vector>
 #include <functional>
-#include <atomic>
 #include <tuple>
 
 #include "mockutils/TupleDispatcher.hpp"
@@ -20,8 +19,6 @@
 #include "fakeit/Behavior.hpp"
 
 namespace fakeit {
-
-static std::atomic_int invocationOrdinal;
 
 template<typename R, typename ... arglist>
 struct MethodInvocationMock: public ActualInvocation<arglist...>::Matcher, public MethodInvocationHandler<R, arglist...> {
@@ -271,12 +268,12 @@ public:
 	}
 
 	R handleMethodInvocation(arglist&... args) override {
-		int ordinal = invocationOrdinal++;
+		int ordinal = nextInvocationOrdinal();
 		auto actualInvoaction = std::shared_ptr<ActualInvocation<arglist...>> {new ActualInvocation<arglist...>(ordinal, this->getMethod(),
 					args...)};
 		auto methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
 		if (!methodInvocationMock) {
-			UnexpectedMethodCallException e(this->method);
+			UnexpectedMethodCallException e(actualInvoaction); // TODO: should pass the actual invocation here!!
 			FakeIt::log(e);
 			throw e;
 		}
@@ -286,7 +283,7 @@ public:
 		try {
 			return methodInvocationMock->handleMethodInvocation(args...);
 		} catch (NoMoreRecordedBehaviorException&) {
-			UnexpectedMethodCallException e(this->method);
+			UnexpectedMethodCallException e(actualInvoaction); // TODO: should pass the actual invocation here!!
 			FakeIt::log(e);
 			throw e;
 		}

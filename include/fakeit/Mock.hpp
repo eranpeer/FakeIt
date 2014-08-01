@@ -34,7 +34,9 @@ private:
 
 	void unmocked() {
 		struct UnmockedMethodInvocation: public UnexpectedMethodCallException {
-			UnmockedMethodInvocation():UnexpectedMethodCallException(UnknownMethod::instance()){}
+			UnmockedMethodInvocation():UnexpectedMethodCallException( //
+					std::shared_ptr<Invocation> {new ActualInvocation<>(nextInvocationOrdinal(), UnknownMethod::instance())} //
+			){} //
 		} e;
 		FakeIt::log(e);
 		throw e;

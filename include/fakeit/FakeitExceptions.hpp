@@ -10,6 +10,8 @@
 #define FakeitExceptions_h__
 
 #include <functional>
+#include <memory>
+
 #include "fakeit/Sequence.hpp"
 #include "fakeit/DomainObjects.hpp"
 #include "mockutils/Formatter.hpp"
@@ -28,19 +30,19 @@ struct FakeitException {
 
 struct UnexpectedMethodCallException: public FakeitException {
 
-	UnexpectedMethodCallException(Method & method) : _method (method) {
+	UnexpectedMethodCallException(std::shared_ptr<Invocation> actualInvocation) : _actualInvocation (actualInvocation) {
 	}
 
 	virtual std::string what() const override {
 		return std::string("UnexpectedMethodCallException: could not find any recorded behavior to support this method call");
 	}
 
-	Method& getMethod(){
-		return _method;
+	const Method& getMethod(){
+		return _actualInvocation->getMethod();
 	}
 
 private:
-	Method & _method;
+	std::shared_ptr<Invocation> _actualInvocation;
 };
 
 enum class VerificationType {
