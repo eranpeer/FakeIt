@@ -55,6 +55,7 @@ enum class VerificationType {
 };
 
 struct VerificationException: public FakeitException {
+	virtual ~VerificationException() = default;
 	virtual VerificationType verificationType() const = 0;
 
 	void setFileInfo(std::string file, int line, std::string callingMethod) {
