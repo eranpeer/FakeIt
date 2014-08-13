@@ -44,10 +44,14 @@ struct Invocation {
 		return _isVerified;
 	}
 
+	virtual std::string format() const = 0;
+
 	struct Matcher {
 		virtual ~Matcher() THROWS {
 		}
 		virtual bool matches(Invocation& invocation) = 0;
+
+		virtual std::string format() const = 0;
 	};
 
 private:

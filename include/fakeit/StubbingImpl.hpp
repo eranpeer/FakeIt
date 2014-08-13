@@ -21,7 +21,7 @@
 #include "fakeit/Stubbing.hpp"
 #include "fakeit/Sequence.hpp"
 #include "fakeit/ActualInvocation.hpp"
-#include "fakeit/Logger.hpp"
+#include "fakeit/EventHandler.hpp"
 
 namespace fakeit {
 
@@ -140,6 +140,12 @@ public:
 		const Invocation::Matcher* b = this;
 		Invocation::Matcher* c = const_cast<Invocation::Matcher*>(b);
 		into.push_back(c);
+	}
+
+	std::string format() const {
+		std::string s = stubbingContext->getMethodMock().getMethod().name();
+		s += invocationMatcher->format();
+		return s;
 	}
 
 	unsigned int size() const override {

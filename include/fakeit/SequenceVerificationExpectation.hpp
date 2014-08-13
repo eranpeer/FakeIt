@@ -43,8 +43,8 @@ private:
 	std::string _testMethod;
 
 	SequenceVerificationExpectation(std::set<const ActualInvocationsSource*>& mocks) : //
-		_involvedMocks{ mocks }, //
-		_expectedPattern{}, //
+		_involvedMocks( mocks ), //
+		_expectedPattern(), //
 		_expectedCount(-1), //
 		_line(0) {
 	}
@@ -184,7 +184,7 @@ private:
 
 		ExactVerificationException e(_expectedPattern, actualSequence, _expectedCount, count);
 		e.setFileInfo(_file, _line, _testMethod);
-		fakeit::FakeIt::log(e);
+		fakeit::FakeIt::handle(e);
 		throw e;
 	}
 
@@ -202,7 +202,7 @@ private:
 
 		AtLeastVerificationException e(_expectedPattern, actualSequence, -_expectedCount, count);
 		e.setFileInfo(_file, _line, _testMethod);
-		FakeIt::log(e);
+		FakeIt::handle(e);
 		throw e;
 	}
 

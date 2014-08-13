@@ -48,7 +48,7 @@ struct DemoTests
 	void test1(){
 //
 		Mock<SomeInterface> m;
-		When(CALL(m,foo)).Return(0);
+		When(Method(m,foo)).Return(0);
 		ASSERT_EQUAL(0,m.get().foo(1));
 	}
 
