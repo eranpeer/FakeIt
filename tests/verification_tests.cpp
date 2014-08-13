@@ -15,6 +15,8 @@
 #include "fakeit.hpp"
 #include "mockutils/Formatter.hpp"
 
+using namespace fakeit;
+
 struct A {
 	int state;
 	A() :
