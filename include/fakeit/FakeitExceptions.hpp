@@ -120,11 +120,11 @@ struct SequenceVerificationException: public VerificationException {
 		return _actualSequence;
 	}
 
-	const int expectedCount() const {
+    int expectedCount() const {
 		return _expectedCount;
 	}
 
-	const int actualCount() const {
+    int actualCount() const {
 		return _actualCount;
 	}
 
