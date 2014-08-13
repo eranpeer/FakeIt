@@ -31,7 +31,7 @@ class FakeObject {
     VirtualTable<C, baseclasses...> vtable;
 
     static const size_t SIZE = sizeof(C) - sizeof( VirtualTable<C, baseclasses...> );
-#pragma GCC diagnostic ignore "-Wpedantic"
+#pragma GCC diagnostic ignored "-Wpedantic"
     char instanceArea[ SIZE ? SIZE : 0 ];
 #pragma GCC diagnostic pop
 
