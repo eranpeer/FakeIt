@@ -24,26 +24,29 @@ namespace fakeit {
 #pragma warning( disable : 4200 )
 #endif
 
+
 template<typename C, typename ... baseclasses>
 class FakeObject {
 
-	VirtualTable<C, baseclasses...> vtable;
-	char instanceArea[sizeof(C) -sizeof(VirtualTable<C, baseclasses...>)];
+    VirtualTable<C, baseclasses...> vtable;
 
-	FakeObject(FakeObject const &) = delete;            // undefined
-	FakeObject& operator=(FakeObject const &) = delete; // undefined
+    static const size_t SIZE = sizeof(C) - sizeof( VirtualTable<C, baseclasses...> );
+#pragma GCC diagnostic ignore "-Wpedantic"
+    char instanceArea[ SIZE ? SIZE : 0 ];
+#pragma GCC diagnostic pop
+
+    FakeObject(FakeObject const &) = delete;            // undefined
+    FakeObject& operator=(FakeObject const &) = delete; // undefined
+
 public:
 
-	FakeObject() :
-			vtable(VirtualTable<C, baseclasses...>::nullVTable()) {
-		initializeDataMembersArea();
-	}
+    FakeObject() : vtable(VirtualTable<C, baseclasses...>::nullVTable()) {
+        initializeDataMembersArea();
+    }
 
-	void initializeDataMembersArea() {
-		for (int i = 0; i < (sizeof(C) -sizeof(VirtualTable<C, baseclasses...>)); i++) {
-			instanceArea[i] = (char) 0;
-		}
-	}
+    void initializeDataMembersArea() {
+        for ( int i = 0; i < SIZE; ++i ) instanceArea[i] = (char) 0;
+    }
 
 	void setMethod(unsigned int index, void *method) {
 		vtable.setMethod(index, method);
@@ -57,6 +60,7 @@ public:
 		vtable = t;
 	}
 };
+
 
 #ifdef _WIN32
 #pragma warning( pop )
