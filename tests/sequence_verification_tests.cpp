@@ -17,7 +17,9 @@ struct SequenceVerification: tpunit::TestFixture {
 	SequenceVerification() :
 			tpunit::TestFixture(
 					//
-					TEST(SequenceVerification::verify_concatenated_sequence), TEST(SequenceVerification::verify_repeated_sequence), //
+					TEST(SequenceVerification::verify_concatenated_sequence), //
+					TEST(SequenceVerification::verify_with_user_types), //
+					TEST(SequenceVerification::verify_repeated_sequence), //
 					TEST(SequenceVerification::verify_repeated_sequence_2), //
 					TEST(SequenceVerification::verify_multi_sequences_in_order), //
 					TEST(SequenceVerification::use_only_mocks_that_are_involved_in_verifed_sequence_for_verification), //
@@ -26,10 +28,21 @@ struct SequenceVerification: tpunit::TestFixture {
 	{
 	}
 
+	class UserType {  };
 	struct SomeInterface {
 		virtual int func(int) = 0;
 		virtual void proc(int) = 0;
+		virtual void func2(UserType& a, int b) = 0;
 	};
+
+	void verify_with_user_types() {
+		Mock<SomeInterface> mock;
+		Fake(Method(mock, func2));
+		SomeInterface &i = mock.get();
+		UserType a;
+		i.func2(a, 1);
+		ASSERT_THROW(Verify(Method(mock, func2) * 2), fakeit::VerificationException);
+	}
 
 	void verify_concatenated_sequence() {
 		Mock<SomeInterface> mock;
