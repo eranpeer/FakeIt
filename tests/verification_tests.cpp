@@ -34,12 +34,11 @@ template<> struct Formatter<A> {
 };
 }
 
-using namespace fakeit;
-
 struct BasicVerification: tpunit::TestFixture {
 	BasicVerification() :
 			tpunit::TestFixture(
 			//
+					TEST(BasicVerification::verify_with_matcher), //
 					TEST(BasicVerification::verify_should_not_throw_exception_if_method_was_called), //
 					TEST(BasicVerification::verify_should_throw_VerificationException_if_method_was_not_called), //
 					TEST(BasicVerification::verify_should_throw_VerificationException_if_method_was_not_stubbed), //
@@ -68,6 +67,14 @@ struct BasicVerification: tpunit::TestFixture {
 		virtual void proc2(const A&) = 0;
 		virtual void proc3(const A*) = 0;
 	};
+
+	void verify_with_matcher() {
+		Mock<SomeInterface> mock;
+		When(Method(mock, func).Matching([](...)->bool{return true;})).Return(0);
+		SomeInterface &i = mock.get();
+		i.func(1);
+		ASSERT_THROW(Verify(Method(mock, func).Matching([](...)->bool{return true;}) * 2), fakeit::VerificationException);
+	}
 
 	void verify_should_throw_VerificationException_if_method_was_not_called() {
 		Mock<SomeInterface> mock;

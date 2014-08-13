@@ -31,4 +31,6 @@
 #define When( call ) \
 	When(call)
 
+using namespace fakeit;
+
 #endif // fakeit_h__
