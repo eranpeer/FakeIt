@@ -24,37 +24,29 @@ namespace fakeit {
 #pragma warning( disable : 4200 )
 #endif
 
-template< size_t SIZE >
-struct InstanceArea
-{
-    char instanceArea[ SIZE ];
-
-    void initializeDataMembersArea() {
-        for (int i = 0; i < SIZE; i++) {
-            instanceArea[i] = (char) 0;
-        }
-    }
-};
-
-
-template< >
-struct InstanceArea< 0 >{
-    void initializeDataMembersArea() { }
-};
 
 template<typename C, typename ... baseclasses>
-class FakeObject : public InstanceArea< sizeof(C) - sizeof( VirtualTable<C, baseclasses...> ) > {
+class FakeObject {
 
-	VirtualTable<C, baseclasses...> vtable;
+    VirtualTable<C, baseclasses...> vtable;
+
+    static const size_t SIZE = sizeof(C) - sizeof( VirtualTable<C, baseclasses...> );
+#pragma GCC diagnostic ignore "-Wpedantic"
+    char instanceArea[ SIZE ? SIZE : 0 ];
+#pragma GCC diagnostic pop
 
     FakeObject(FakeObject const &) = delete;            // undefined
     FakeObject& operator=(FakeObject const &) = delete; // undefined
+
 public:
 
     FakeObject() : vtable(VirtualTable<C, baseclasses...>::nullVTable()) {
-        this->initializeDataMembersArea();
-	}
+        initializeDataMembersArea();
+    }
 
+    void initializeDataMembersArea() {
+        for ( int i = 0; i < SIZE; ++i ) instanceArea[i] = (char) 0;
+    }
 
 	void setMethod(unsigned int index, void *method) {
 		vtable.setMethod(index, method);
