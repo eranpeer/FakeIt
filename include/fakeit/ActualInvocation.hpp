@@ -19,6 +19,8 @@
 
 #include "mockutils/Macros.hpp"
 #include "fakeit/Invocation.hpp"
+#include "mockutils/TuplePrinter.hpp"
+
 
 namespace fakeit {
 
@@ -34,6 +36,8 @@ struct ActualInvocation: public virtual Invocation {
 
 	struct Matcher: public virtual Destructable {
 		virtual bool matches(ActualInvocation<arglist...>& actualInvocation) = 0;
+
+		virtual std::string format() const = 0;
 	};
 
 	ActualInvocation(const int ordinal, const Method & method, const arglist&... args) :
@@ -53,6 +57,13 @@ struct ActualInvocation: public virtual Invocation {
 
 	std::shared_ptr<Matcher> getActualMatcher(){
 		return matcher;
+	}
+
+	virtual std::string format() const {
+		std::ostringstream out;
+		out << getMethod().name();
+		print(out,actualArguments);
+		return out.str();
 	}
 
 private:

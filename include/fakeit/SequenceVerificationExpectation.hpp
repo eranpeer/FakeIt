@@ -184,7 +184,7 @@ private:
 
 		ExactVerificationException e(_expectedPattern, actualSequence, _expectedCount, count);
 		e.setFileInfo(_file, _line, _testMethod);
-		fakeit::FakeIt::log(e);
+		fakeit::FakeIt::handle(e);
 		throw e;
 	}
 
@@ -202,7 +202,7 @@ private:
 
 		AtLeastVerificationException e(_expectedPattern, actualSequence, -_expectedCount, count);
 		e.setFileInfo(_file, _line, _testMethod);
-		FakeIt::log(e);
+		FakeIt::handle(e);
 		throw e;
 	}
 

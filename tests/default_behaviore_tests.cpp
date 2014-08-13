@@ -96,23 +96,23 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 	};
 	void scalar_types_should_return_zero() {
 		Mock<ScalarFunctions> mock;
-		Fake(CALL(mock,boolFunc));
-		Fake(CALL(mock,charFunc));
-		Fake(CALL(mock,char16Func));
-		Fake(CALL(mock,char32Func));
-		Fake(CALL(mock,wcharFunc));
-		Fake(CALL(mock,shortFunc));
-		Fake(CALL(mock,intFunc));
-		Fake(CALL(mock,longFunc));
-		Fake(CALL(mock,longLongFunc));
-		Fake(CALL(mock,floatFunc));
-		Fake(CALL(mock,doubleFunc));
-		Fake(CALL(mock,longDoubleFunc));
-		Fake(CALL(mock,enumFunc));
-		Fake(CALL(mock,pIntFunc));
-		Fake(CALL(mock,pScalarFuctionsfunc));
-		Fake(CALL(mock,nullptrFunc));
-		Fake(CALL(mock,pMemberFunc));
+		Fake(Method(mock,boolFunc));
+		Fake(Method(mock,charFunc));
+		Fake(Method(mock,char16Func));
+		Fake(Method(mock,char32Func));
+		Fake(Method(mock,wcharFunc));
+		Fake(Method(mock,shortFunc));
+		Fake(Method(mock,intFunc));
+		Fake(Method(mock,longFunc));
+		Fake(Method(mock,longLongFunc));
+		Fake(Method(mock,floatFunc));
+		Fake(Method(mock,doubleFunc));
+		Fake(Method(mock,longDoubleFunc));
+		Fake(Method(mock,enumFunc));
+		Fake(Method(mock,pIntFunc));
+		Fake(Method(mock,pScalarFuctionsfunc));
+		Fake(Method(mock,nullptrFunc));
+		Fake(Method(mock,pMemberFunc));
 
 		ScalarFunctions &i = mock.get();
 
@@ -146,8 +146,8 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 	void DefaultBeaviorOfVoidFunctionsIsToDoNothing()
 	{
 		Mock<VoidFunctions> mock;
-		Fake(CALL(mock,proc1));
-		Fake(CALL(mock,proc2));
+		Fake(Method(mock,proc1));
+		Fake(Method(mock,proc2));
 		VoidFunctions& i = mock.get();
 		i.proc1();
 		i.proc2(1);
@@ -155,15 +155,15 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 
 	void ReturnByValue_ReturnDefaultConstructedObject() {
 		Mock<DefaultConstructibleFunctions> mock;
-		Fake(CALL(mock,stringfunc));
+		Fake(Method(mock,stringfunc));
 		DefaultConstructibleFunctions& i = mock.get();
 		ASSERT_EQUAL(std::string(), i.stringfunc());
 	}
 
 	void ReturnByReference_ReturnReferenceToDefaultConstructedObject() {
 		Mock<ReferenceFunctions> mock;
-		Fake(CALL(mock,scalarFunc));
-		Fake(CALL(mock,stringFunc));
+		Fake(Method(mock,scalarFunc));
+		Fake(Method(mock,stringFunc));
 		ReferenceFunctions& i = mock.get();
 		ASSERT_EQUAL(0, i.scalarFunc());
 		ASSERT_EQUAL(std::string(), i.stringFunc());
@@ -171,7 +171,7 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 
 	void ReturnByValue_ThrowExceptionIfNotDefaultConstructible() {
 		Mock<NonDefaultConstructibleFunctions> mock;
-		Fake(CALL(mock,notDefaultConstructibleFunc));
+		Fake(Method(mock,notDefaultConstructibleFunc));
 		NonDefaultConstructibleFunctions& i = mock.get();
 		try {
 			i.notDefaultConstructibleFunc();
@@ -186,21 +186,21 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 
 	void ReturnByReference_ReturnReferenceToNullIfNotDefaultConstructible() {
 		Mock<ReferenceFunctions> mock;
-		Fake(CALL(mock,notDefaultConstructibleFunc));
+		Fake(Method(mock,notDefaultConstructibleFunc));
 		ReferenceFunctions& i = mock.get();
 		ASSERT_EQUAL(nullptr, &i.notDefaultConstructibleFunc());
 	}
 
 	void ReturnByReference_ReturnReferenceToNullIfAbstract() {
 		Mock<ReferenceFunctions> mock;
-		Fake(CALL(mock,abstractTypeFunc));
+		Fake(Method(mock,abstractTypeFunc));
 		ReferenceFunctions& i = mock.get();
 		ASSERT_EQUAL(nullptr, &i.abstractTypeFunc());
 	}
 
 	void ReturnPtr_NullPtrIfPtrToAbstract() {
 		Mock<ReferenceFunctions> mock;
-		Fake(CALL(mock,abstractTypeFunc2));
+		Fake(Method(mock,abstractTypeFunc2));
 		ReferenceFunctions& i = mock.get();
 		ASSERT_EQUAL(nullptr, i.abstractTypeFunc2());
 	}
@@ -211,7 +211,7 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 			virtual void foo() = 0;
 		};
 		Mock<SomeClass> mock;
-		Fake(CALL(mock,foo));
+		Fake(Method(mock,foo));
 	}
 
 	void canMockClassWithProtectedConstructor() {
@@ -221,7 +221,7 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 			SomeClass(int a){}
 		};
 		Mock<SomeClass> mock;
-		Fake(CALL(mock,foo));
+		Fake(Method(mock,foo));
 	}
 
 } __DefaultBehaviore;

@@ -37,8 +37,12 @@ struct UnexpectedMethodCallException: public FakeitException {
 		return std::string("UnexpectedMethodCallException: could not find any recorded behavior to support this method call");
 	}
 
-	const Method& getMethod(){
+	const Method& getMethod() const {
 		return _actualInvocation->getMethod();
+	}
+
+	const Invocation& getInvocation() const {
+		return *(_actualInvocation.get());
 	}
 
 private:
@@ -58,9 +62,9 @@ struct VerificationException: public FakeitException {
 		_line = line;
 	}
 
-	const std::string& file(){return _file;}
-	int line(){return _line;}
-	const std::string& 	callingMethod(){ return _callingMethod; }
+	const std::string& file() const {return _file;}
+	int line() const {return _line;}
+	const std::string& 	callingMethod() const { return _callingMethod; }
 
 private:
 	std::string _file;

@@ -9,27 +9,27 @@
 #ifndef FakeIt_h__
 #define FakeIt_h__
 
-#include "fakeit/DefaultLogger.hpp"
+#include "fakeit/DefaultEventHandler.hpp"
 
 namespace fakeit {
 
 struct FakeIt {
 
-	static void log(UnexpectedMethodCallException& e){
-		getLogger().log(e);
+	static void handle(UnexpectedMethodCallException& e){
+		getEventHandler().handle(e);
 	}
 
-	static void log(SequenceVerificationException& e){
-		getLogger().log(e);
+	static void handle(SequenceVerificationException& e){
+		getEventHandler().handle(e);
 	}
 
-	static void log(NoMoreInvocationsVerificationException& e){
-		getLogger().log(e);
+	static void handle(NoMoreInvocationsVerificationException& e){
+		getEventHandler().handle(e);
 	}
 
-	static Logger& getLogger(){
-		static DefaultLogger logger;
-		return logger;
+	static EventHandler& getEventHandler(){
+		static DefaultEventHandler eventHandler;
+		return eventHandler;
 	}
 };
 

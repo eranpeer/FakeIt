@@ -17,13 +17,10 @@
 #include "mockutils/DynamicProxy.hpp"
 #include "fakeit/StubbingImpl.hpp"
 #include "fakeit/DomainObjects.hpp"
-#include "fakeit/DefaultLogger.hpp"
 
 namespace fakeit {
 
 using namespace fakeit;
-
-static DefaultLogger logger;
 
 template<typename C, typename ... baseclasses>
 class Mock: private MockObject<C>, public virtual ActualInvocationsSource {
@@ -38,7 +35,7 @@ private:
 					std::shared_ptr<Invocation> {new ActualInvocation<>(nextInvocationOrdinal(), UnknownMethod::instance())} //
 			){} //
 		} e;
-		FakeIt::log(e);
+		FakeIt::handle(e);
 		throw e;
 	}
 
