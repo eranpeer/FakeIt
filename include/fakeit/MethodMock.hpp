@@ -23,14 +23,9 @@ namespace fakeit {
 
 template<typename R, typename ... arglist>
 struct MethodInvocationMock:
-		//public ActualInvocation<arglist...>::Matcher,
 		public MethodInvocationHandler<R, arglist...> {
 
 	virtual ~MethodInvocationMock() = default;
-
-//	virtual std::string format() const {
-//		return getMatcher()->format();
-//	}
 
 	virtual std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> getMatcher() const = 0;
 };
@@ -132,10 +127,6 @@ struct MethodInvocationMockBase: public virtual MethodInvocationMock<R, arglist.
 
 	R handleMethodInvocation(arglist&... args) override {
 		return invocationHandler->handleMethodInvocation(args...);
-	}
-
-	virtual bool matches(ActualInvocation<arglist...>& actualInvocation) {
-		return matcher->matches(actualInvocation);
 	}
 
 	std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> getMatcher() const override {
