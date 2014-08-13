@@ -30,14 +30,15 @@ struct FakeitException {
 
 struct UnexpectedMethodCallException: public FakeitException {
 
-	UnexpectedMethodCallException(std::shared_ptr<Invocation> actualInvocation) : _actualInvocation (actualInvocation) {
+	UnexpectedMethodCallException(std::shared_ptr<Invocation> actualInvocation) {
+		_actualInvocation = actualInvocation;
 	}
 
 	virtual std::string what() const override {
 		return std::string("UnexpectedMethodCallException: could not find any recorded behavior to support this method call");
 	}
 
-	const Method& getMethod() const {
+	const Method& getMethod() {
 		return _actualInvocation->getMethod();
 	}
 

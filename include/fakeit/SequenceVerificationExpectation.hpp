@@ -43,8 +43,8 @@ private:
 	std::string _testMethod;
 
 	SequenceVerificationExpectation(std::set<const ActualInvocationsSource*>& mocks) : //
-		_involvedMocks{ mocks }, //
-		_expectedPattern{}, //
+		_involvedMocks( mocks ), //
+		_expectedPattern(), //
 		_expectedCount(-1), //
 		_line(0) {
 	}
