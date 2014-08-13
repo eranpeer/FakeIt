@@ -14,6 +14,7 @@ tpunit++main.cpp \
 type_info_tests.cpp \
 verification_tests.cpp \
 remove_const_volatile_tests.cpp \
+functional.cpp \
 spying_tests.cpp \
 verification_error_formatting_tests.cpp 
 
