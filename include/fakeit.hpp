@@ -17,18 +17,18 @@
 	mock[&std::remove_reference<decltype(mock.get())>::type::method].setMethodDetails(#mock,#method)
 
 #define Verify( ... ) \
-        fakeit::Verify( __VA_ARGS__ ).setFileInfo(__FILE__,__LINE__, __func__)
+		Verify( __VA_ARGS__ ).setFileInfo(__FILE__,__LINE__, __func__)
 
 #define Using( ... ) \
-        fakeit::Using( __VA_ARGS__ )
+		Using( __VA_ARGS__ )
 
 #define VerifyNoOtherInvocations( ... ) \
-    fakeit::VerifyNoOtherInvocations( __VA_ARGS__ ).setFileInfo(__FILE__,__LINE__, __func__)
+	VerifyNoOtherInvocations( __VA_ARGS__ ).setFileInfo(__FILE__,__LINE__, __func__)
 
 #define Fake( ... ) \
-    fakeit::Fake( __VA_ARGS__ )
+	Fake( __VA_ARGS__ )
 
 #define When( call ) \
-    fakeit::When(call)
+	When(call)
 
 #endif // fakeit_h__
