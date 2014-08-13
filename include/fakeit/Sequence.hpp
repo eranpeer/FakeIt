@@ -65,6 +65,14 @@ public:
 		return s1.size() + s2.size();
 	}
 
+	const Sequence& getLeft() const {
+		return s1;
+	}
+
+	const Sequence& getRight() const {
+		return s2;
+	}
+
 	void getExpectedSequence(std::vector<Invocation::Matcher*>& into) const override {
 		s1.getExpectedSequence(into);
 		s2.getExpectedSequence(into);
@@ -80,12 +88,12 @@ public:
 
 class RepeatedSequence: public virtual Sequence {
 private:
-	const Sequence &s1;
+	const Sequence &_s;
 	const int times;
 
 protected:
-	RepeatedSequence(const Sequence &s1, const int times) :
-			s1(s1), times(times) {
+	RepeatedSequence(const Sequence &s, const int times) :
+			_s(s), times(times) {
 	}
 
 public:
@@ -94,19 +102,27 @@ public:
 	}
 
 	unsigned int size() const override {
-		return s1.size() * times;
+		return _s.size() * times;
 	}
 
 	friend inline RepeatedSequence operator*(const Sequence &s, int times);
 	friend inline RepeatedSequence operator*(int times, const Sequence &s);
 
 	void getInvolvedMocks(std::set<const ActualInvocationsSource*>& into) const override {
-		s1.getInvolvedMocks(into);
+		_s.getInvolvedMocks(into);
 	}
 
 	void getExpectedSequence(std::vector<Invocation::Matcher*>& into) const override {
 		for (int i = 0; i < times; i++)
-			s1.getExpectedSequence(into);
+			_s.getExpectedSequence(into);
+	}
+
+	int getTimes() const {
+		return times;
+	}
+
+	const Sequence& getSequence() const {
+		return _s;
 	}
 };
 

@@ -17,16 +17,22 @@
 #include "fakeit/DomainObjects.hpp"
 #include "fakeit/ActualInvocation.hpp"
 #include "fakeit/Behavior.hpp"
+#include "fakeit/matchers.hpp"
 
 namespace fakeit {
 
 template<typename R, typename ... arglist>
-struct MethodInvocationMock: public ActualInvocation<arglist...>::Matcher, public MethodInvocationHandler<R, arglist...> {
+struct MethodInvocationMock:
+		//public ActualInvocation<arglist...>::Matcher,
+		public MethodInvocationHandler<R, arglist...> {
 
 	virtual ~MethodInvocationMock() = default;
 
-	virtual std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> getMatcher()= 0;
+//	virtual std::string format() const {
+//		return getMatcher()->format();
+//	}
 
+	virtual std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> getMatcher() const = 0;
 };
 
 class finally {
@@ -132,7 +138,7 @@ struct MethodInvocationMockBase: public virtual MethodInvocationMock<R, arglist.
 		return matcher->matches(actualInvocation);
 	}
 
-	std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> getMatcher() override {
+	std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> getMatcher() const override {
 		return matcher;
 	}
 
@@ -142,65 +148,6 @@ private:
 	std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler;
 };
 
-template<typename ... arglist>
-struct ExpectedArgumentsInvocationMatcher: public ActualInvocation<arglist...>::Matcher {
-
-	virtual ~ExpectedArgumentsInvocationMatcher() = default;
-
-	ExpectedArgumentsInvocationMatcher(const arglist&... args) :
-			expectedArguments(args...) {
-	}
-
-	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
-		if (invocation.getActualMatcher().get() == this)
-			return true;
-		return matches(invocation.getActualArguments());
-	}
-
-private:
-	virtual bool matches(const std::tuple<arglist...>& actualArgs) {
-		return expectedArguments == actualArgs;
-	}
-	const std::tuple<arglist...> expectedArguments;
-};
-
-template<typename ... arglist>
-struct UserDefinedInvocationMatcher: public ActualInvocation<arglist...>::Matcher {
-	virtual ~UserDefinedInvocationMatcher() = default;
-
-	UserDefinedInvocationMatcher(std::function<bool(arglist...)> matcher) :
-			matcher { matcher } {
-	}
-
-	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
-		if (invocation.getActualMatcher().get() == this)
-			return true;
-		return matches(invocation.getActualArguments());
-	}
-private:
-	virtual bool matches(const std::tuple<arglist...>& actualArgs) {
-		return invoke<arglist...>(matcher, std::tuple<arglist...> { actualArgs });
-	}
-	std::function<bool(arglist...)> matcher;
-};
-
-template<typename ... arglist>
-struct DefaultInvocationMatcher: public ActualInvocation<arglist...>::Matcher {
-
-	virtual ~DefaultInvocationMatcher() = default;
-
-	DefaultInvocationMatcher() {
-	}
-
-	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
-		return matches(invocation.getActualArguments());
-	}
-
-private:
-	virtual bool matches(const std::tuple<arglist...>& actualArgs) {
-		return true;
-	}
-};
 
 template<typename C, typename R, typename ... arglist>
 class MethodMock: public virtual MethodInvocationHandler<R, arglist...>, public virtual ActualInvocationsSource {
@@ -237,7 +184,9 @@ class MethodMock: public virtual MethodInvocationHandler<R, arglist...>, public 
 
 	std::shared_ptr<MethodInvocationMock<R, arglist...>> getMethodInvocationMockForActualArgs(ActualInvocation<arglist...>& invocation) {
 		for (auto i = methodInvocationMocks.rbegin(); i != methodInvocationMocks.rend(); ++i) {
-			if ((*i)->matches(invocation)) {
+			std::shared_ptr<MethodInvocationMock<R, arglist...>> curr = *i;
+			MethodInvocationMock<R, arglist...>& im = *curr;
+			if (im.getMatcher()->matches(invocation)) {
 				return (*i);
 			}
 		}
@@ -274,7 +223,7 @@ public:
 		auto methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
 		if (!methodInvocationMock) {
 			UnexpectedMethodCallException e(actualInvoaction); // TODO: should pass the actual invocation here!!
-			FakeIt::log(e);
+			FakeIt::handle(e);
 			throw e;
 		}
 		auto matcher = methodInvocationMock->getMatcher();
@@ -284,7 +233,7 @@ public:
 			return methodInvocationMock->handleMethodInvocation(args...);
 		} catch (NoMoreRecordedBehaviorException&) {
 			UnexpectedMethodCallException e(actualInvoaction); // TODO: should pass the actual invocation here!!
-			FakeIt::log(e);
+			FakeIt::handle(e);
 			throw e;
 		}
 	}

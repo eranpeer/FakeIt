@@ -30,15 +30,21 @@ struct FakeitException {
 
 struct UnexpectedMethodCallException: public FakeitException {
 
-	UnexpectedMethodCallException(std::shared_ptr<Invocation> actualInvocation) : _actualInvocation (actualInvocation) {
+	UnexpectedMethodCallException(std::shared_ptr<Invocation> actualInvocation) {
+		_actualInvocation = actualInvocation;
 	}
 
 	virtual std::string what() const override {
 		return std::string("UnexpectedMethodCallException: could not find any recorded behavior to support this method call");
 	}
 
-	const Method& getMethod(){
+	const Method& getMethod() {
 		return _actualInvocation->getMethod();
+	}
+
+	Invocation& getInvocation() const {
+		fakeit::Invocation & invocation = *_actualInvocation;
+		return invocation;
 	}
 
 private:
@@ -50,6 +56,7 @@ enum class VerificationType {
 };
 
 struct VerificationException: public FakeitException {
+	virtual ~VerificationException() = default;
 	virtual VerificationType verificationType() const = 0;
 
 	void setFileInfo(std::string file, int line, std::string callingMethod) {
@@ -58,9 +65,9 @@ struct VerificationException: public FakeitException {
 		_line = line;
 	}
 
-	const std::string& file(){return _file;}
-	int line(){return _line;}
-	const std::string& 	callingMethod(){ return _callingMethod; }
+	const std::string& file() const {return _file;}
+	int line() const {return _line;}
+	const std::string& 	callingMethod() const { return _callingMethod; }
 
 private:
 	std::string _file;

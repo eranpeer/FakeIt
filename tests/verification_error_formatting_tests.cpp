@@ -61,7 +61,7 @@ struct ErrorFormattingTests: tpunit::TestFixture {
 	void check_atleast_verification_exception() {
 		Mock<SomeInterface> mock;
 		try {
-			auto selector = CALL(mock,foo);
+			auto selector = Method(mock,foo);
 			Verify(selector);
 		} catch (SequenceVerificationException& e) {
 			ASSERT_EQUAL(VerificationType::AtLeast, e.verificationType());
@@ -78,7 +78,7 @@ struct ErrorFormattingTests: tpunit::TestFixture {
 	void check_exact_verification_exception() {
 		Mock<SomeInterface> mock;
 		try {
-			auto selector = CALL(mock,foo);
+			auto selector = Method(mock,foo);
 			Verify(selector).Exactly(Once);
 		} catch (SequenceVerificationException& e) {
 			ASSERT_EQUAL(VerificationType::Exact, e.verificationType());
@@ -95,11 +95,11 @@ struct ErrorFormattingTests: tpunit::TestFixture {
 	void check_no_more_invocations_exception() {
 		Mock<SomeInterface> mock;
 		try {
-			Fake(CALL(mock,foo));
+			Fake(Method(mock,foo));
 			mock.get().foo(1);
 			mock.get().foo(2);
-			Verify(CALL(mock,foo).Using(1));
-			VerifyNoOtherInvocations(CALL(mock,foo));
+			Verify(Method(mock,foo).Using(1));
+			VerifyNoOtherInvocations(Method(mock,foo));
 		} catch (NoMoreInvocationsVerificationException& e) {
 			ASSERT_EQUAL(VerificationType::NoMoreInvocatoins, e.verificationType());
 			ASSERT_EQUAL(2, e.allIvocations().size());
