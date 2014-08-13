@@ -41,8 +41,9 @@ struct UnexpectedMethodCallException: public FakeitException {
 		return _actualInvocation->getMethod();
 	}
 
-	const Invocation& getInvocation() const {
-		return *(_actualInvocation.get());
+	Invocation& getInvocation() const {
+		fakeit::Invocation & invocation = *_actualInvocation;
+		return invocation;
 	}
 
 private:
