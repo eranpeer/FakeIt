@@ -24,26 +24,37 @@ namespace fakeit {
 #pragma warning( disable : 4200 )
 #endif
 
+template< size_t SIZE >
+struct InstanceArea
+{
+    char instanceArea[ SIZE ];
+
+    void initializeDataMembersArea() {
+        for (int i = 0; i < SIZE; i++) {
+            instanceArea[i] = (char) 0;
+        }
+    }
+};
+
+
+template< >
+struct InstanceArea< 0 >{
+    void initializeDataMembersArea() { }
+};
+
 template<typename C, typename ... baseclasses>
-class FakeObject {
+class FakeObject : public InstanceArea< sizeof(C) - sizeof( VirtualTable<C, baseclasses...> ) > {
 
 	VirtualTable<C, baseclasses...> vtable;
-	char instanceArea[sizeof(C) -sizeof(VirtualTable<C, baseclasses...>)];
 
-	FakeObject(FakeObject const &) = delete;            // undefined
-	FakeObject& operator=(FakeObject const &) = delete; // undefined
+    FakeObject(FakeObject const &) = delete;            // undefined
+    FakeObject& operator=(FakeObject const &) = delete; // undefined
 public:
 
-	FakeObject() :
-			vtable(VirtualTable<C, baseclasses...>::nullVTable()) {
-		initializeDataMembersArea();
+    FakeObject() : vtable(VirtualTable<C, baseclasses...>::nullVTable()) {
+        this->initializeDataMembersArea();
 	}
 
-	void initializeDataMembersArea() {
-		for (int i = 0; i < (sizeof(C) -sizeof(VirtualTable<C, baseclasses...>)); i++) {
-			instanceArea[i] = (char) 0;
-		}
-	}
 
 	void setMethod(unsigned int index, void *method) {
 		vtable.setMethod(index, method);
@@ -57,6 +68,7 @@ public:
 		vtable = t;
 	}
 };
+
 
 #ifdef _WIN32
 #pragma warning( pop )
