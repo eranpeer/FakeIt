@@ -18,6 +18,11 @@
 #endif
 
 namespace fakeit {
+// silent GCC compiler warning: iso c++ forbids zero-size array [-Wpedantic]
+#ifdef __GNUG__
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
+
 // silent MSC++ compiler warning: C4200: nonstandard extension used : zero-sized array in struct/union.
 #ifdef _WIN32
 #pragma warning( push )
@@ -31,9 +36,7 @@ class FakeObject {
     VirtualTable<C, baseclasses...> vtable;
 
     static const size_t SIZE = sizeof(C) - sizeof( VirtualTable<C, baseclasses...> );
-#pragma GCC diagnostic ignore "-Wpedantic"
     char instanceArea[ SIZE ? SIZE : 0 ];
-#pragma GCC diagnostic pop
 
     FakeObject(FakeObject const &) = delete;            // undefined
     FakeObject& operator=(FakeObject const &) = delete; // undefined
@@ -61,11 +64,13 @@ public:
 	}
 };
 
-
 #ifdef _WIN32
 #pragma warning( pop )
 #endif
 
+#ifdef __GNUG__
+#pragma GCC diagnostic pop
+#endif
 
 }
 
