@@ -1,17 +1,15 @@
 /*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
-#ifndef DefaultEventHandler_h__
-#define DefaultEventHandler_h__
-
+* Copyright (c) 2014 Eran Pe'er.
+*
+* This program is made available under the terms of the MIT License.
+*
+* Created on August, 2014
+*/
 #include <iostream>
-#include "fakeit/EventHandler.hpp"
 #include "fakeit/ErrorFormatter.hpp"
+
+#ifndef DefaultErrorFormatter_h__
+#define DefaultErrorFormatter_h__
 
 namespace fakeit {
 
@@ -125,32 +123,6 @@ namespace fakeit {
 			return out.str();
 		}
 	};
-}
-
-namespace fakeit {
-
-	struct DefaultEventHandler : public fakeit::EventHandler {
-
-		virtual void handle(UnexpectedMethodCallException& e) override {
-			out << formatter.format(e) << std::endl;
-		}
-
-		virtual void handle(SequenceVerificationException& e) override {
-			out << formatter.format(e) << std::endl;
-		}
-
-		virtual void handle(NoMoreInvocationsVerificationException& e) override {
-			out << formatter.format(e) << std::endl;
-		}
-
-		DefaultEventHandler() :
-			out(std::cout) {
-		}
-	private:
-		DefaultErrorFormatter formatter;
-		std::ostream& out;
-	};
-
 }
 
 #endif
