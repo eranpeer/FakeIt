@@ -14,13 +14,10 @@
 
 #include "fakeit/Sequence.hpp"
 #include "fakeit/DomainObjects.hpp"
+#include "fakeit/ErrorFormatter.hpp"
+
 #include "mockutils/Formatter.hpp"
-
 namespace fakeit {
-
-enum class VerificationType {
-	Exact, AtLeast, NoMoreInvocatoins
-};
 
 struct FakeitException {
 
@@ -41,8 +38,8 @@ struct UnexpectedMethodCallException: public FakeitException {
 	}
 
 	virtual std::string what() const override {
-		//return FakeIt::getErrorFormatter().format(*this);
-		return std::string("UnexpectedMethodCallException: could not find any recorded behavior to support this method call");
+		return getErrorFormatter()->format(*this);
+		//return std::string("UnexpectedMethodCallException: could not find any recorded behavior to support this method call");
 	}
 
 	const Method& getMethod() const {
@@ -58,6 +55,10 @@ private:
 	std::shared_ptr<Invocation> _actualInvocation;
 };
 
+
+enum class VerificationType {
+	Exact, AtLeast, NoMoreInvocatoins
+};
 
 struct VerificationException: public FakeitException {
 	virtual ~VerificationException() = default;

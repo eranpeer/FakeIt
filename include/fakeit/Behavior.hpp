@@ -16,7 +16,6 @@
 
 #include "mockutils/DefaultValue.hpp"
 #include "fakeit/FakeitExceptions.hpp"
-#include "fakeit/FakeIt.hpp"
 
 namespace fakeit {
 
@@ -53,7 +52,9 @@ private:
 
 template<typename R, typename ... arglist>
 struct RepeatForever: public Behavior<R, arglist...> {
+
 	virtual ~RepeatForever() = default;
+
 	RepeatForever(std::function<R(arglist&...)> f) :
 			f(f) {
 	}

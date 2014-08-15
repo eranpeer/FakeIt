@@ -1,25 +1,42 @@
 /*
-* Copyright (c) 2014 Eran Pe'er.
-*
-* This program is made available under the terms of the MIT License.
-*
-* Created on August, 2014
-*/
+ * Copyright (c) 2014 Eran Pe'er.
+ *
+ * This program is made available under the terms of the MIT License.
+ *
+ * Created on August, 2014
+ */
 #ifndef ErrorFormatter_h__
 #define ErrorFormatter_h__
 
 #include <string>
-#include "fakeit/FakeitExceptions.hpp"
 
 namespace fakeit {
 
+class UnexpectedMethodCallException;
+class SequenceVerificationException;
+class NoMoreInvocationsVerificationException;
 
-	struct ErrorFormatter {
-		virtual ~ErrorFormatter() = default;
-		virtual std::string format(const fakeit::UnexpectedMethodCallException& e) = 0;
-		virtual std::string format(const fakeit::SequenceVerificationException& e) = 0;
-		virtual std::string format(const fakeit::NoMoreInvocationsVerificationException& e) = 0;
-	};
+struct ErrorFormatter {
+	virtual ~ErrorFormatter() = default;
+
+	virtual std::string format(const fakeit::UnexpectedMethodCallException& e) const = 0;
+
+	virtual std::string format(const fakeit::SequenceVerificationException& e) const = 0;
+
+	virtual std::string format(const fakeit::NoMoreInvocationsVerificationException& e) const = 0;
+
+private:
+} static * _errorFormatter = nullptr;
+
+
+static void setErrorFormatter(ErrorFormatter * errorFormatter){
+	_errorFormatter = errorFormatter;
+}
+
+static ErrorFormatter* getErrorFormatter() {
+	return _errorFormatter;
+}
+
 }
 
 #endif

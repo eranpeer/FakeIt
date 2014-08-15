@@ -18,6 +18,7 @@
 #include "fakeit/ActualInvocation.hpp"
 #include "fakeit/Behavior.hpp"
 #include "fakeit/matchers.hpp"
+#include "fakeit/FakeIt.hpp"
 
 namespace fakeit {
 

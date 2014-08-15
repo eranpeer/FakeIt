@@ -17,6 +17,7 @@
 #include "mockutils/DynamicProxy.hpp"
 #include "fakeit/StubbingImpl.hpp"
 #include "fakeit/DomainObjects.hpp"
+#include "fakeit/FakeIt.hpp"
 
 namespace fakeit {
 

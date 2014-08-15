@@ -72,10 +72,10 @@ struct BasicStubbing: tpunit::TestFixture {
 			FAIL();
 		} catch(UnexpectedMethodCallException& e)
 		{
-			std::string expectedMsg("UnexpectedMethodCallException: could not find any recorded behavior to support this method call");
+			//std::string expectedMsg("UnexpectedMethodCallException: could not find any recorded behavior to support this method call");
 			std::string expectedName("unknown");
 			ASSERT_EQUAL(expectedName,e.getMethod().name());
-			ASSERT_EQUAL(expectedMsg,to_string(e));
+			//ASSERT_EQUAL(expectedMsg,to_string(e));
 		}
 	}
 

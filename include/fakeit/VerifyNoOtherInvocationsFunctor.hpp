@@ -21,6 +21,7 @@
 
 #include "mockutils/smart_ptr.hpp"
 #include "mockutils/Macros.hpp"
+#include "fakeit/FakeIt.hpp"
 
 namespace fakeit {
 class VerifyNoOtherInvocationsFunctor {
@@ -28,6 +29,7 @@ class VerifyNoOtherInvocationsFunctor {
 public:
 
 	VerifyNoOtherInvocationsFunctor() {
+		FakeIt::initIfNeeded();
 	}
 
 	void operator()() {

@@ -16,6 +16,7 @@
 #include "fakeit/Sequence.hpp"
 #include "fakeit/SortInvocations.hpp"
 #include "fakeit/UsingFunctor.hpp"
+#include "fakeit/FakeIt.hpp"
 #include "fakeit/SequenceVerificationProgress.hpp"
 
 namespace fakeit {
@@ -43,6 +44,7 @@ class VerifyFunctor {
 public:
 
 	VerifyFunctor() {
+		FakeIt::initIfNeeded();
 	}
 
 	template<typename ... list>

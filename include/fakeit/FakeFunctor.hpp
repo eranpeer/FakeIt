@@ -11,6 +11,7 @@
 
 #include "fakeit/Stubbing.hpp"
 #include "fakeit/StubbingImpl.hpp"
+#include "fakeit/FakeIt.hpp"
 
 namespace fakeit {
 
@@ -29,6 +30,7 @@ private:
 public:
 
 	FakeFunctor() {
+		FakeIt::initIfNeeded();
 	}
 
 	template<typename C, typename R, typename ... arglist>

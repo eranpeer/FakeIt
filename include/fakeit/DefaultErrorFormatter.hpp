@@ -17,13 +17,13 @@ namespace fakeit {
 
 	struct DefaultErrorFormatter : public ErrorFormatter {
 
-		virtual std::string format(const UnexpectedMethodCallException& e) override {
+		virtual std::string format(const UnexpectedMethodCallException& e) const override {
 			std::ostringstream out;
 			out << "Unexpected Method Call: " << e.getInvocation().format();
 			return out.str();
 		}
 
-		virtual std::string format(const SequenceVerificationException& e) override {
+		virtual std::string format(const SequenceVerificationException& e) const override {
 			std::ostringstream out;
 			out << e.file() << ":" << e.line() << ": ";
 			out << "VerificationException" << std::endl;
@@ -57,7 +57,7 @@ namespace fakeit {
 			return out.str();
 		}
 
-		virtual std::string format(const NoMoreInvocationsVerificationException& e) override {
+		virtual std::string format(const NoMoreInvocationsVerificationException& e) const override {
 			std::ostringstream out;
 			out << e.file() << ":" << e.line() << ": ";
 			out << "Expected no more invocations!! But the following unverified invocations were found: " << std::endl;

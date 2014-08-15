@@ -29,6 +29,7 @@ class UsingFunctor {
 public:
 
 	UsingFunctor() {
+		FakeIt::initIfNeeded();
 	}
 
 	template<typename ... list>
