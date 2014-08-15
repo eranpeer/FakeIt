@@ -7,6 +7,8 @@
 */
 #include <iostream>
 #include "fakeit/ErrorFormatter.hpp"
+#include "fakeit/FakeitExceptions.hpp"
+#include "fakeit/Sequence.hpp"
 
 #ifndef DefaultErrorFormatter_h__
 #define DefaultErrorFormatter_h__
@@ -15,13 +17,13 @@ namespace fakeit {
 
 	struct DefaultErrorFormatter : public ErrorFormatter {
 
-		virtual std::string format(UnexpectedMethodCallException& e) override {
+		virtual std::string format(const UnexpectedMethodCallException& e) override {
 			std::ostringstream out;
 			out << "Unexpected Method Call: " << e.getInvocation().format();
 			return out.str();
 		}
 
-		virtual std::string format(SequenceVerificationException& e) override {
+		virtual std::string format(const SequenceVerificationException& e) override {
 			std::ostringstream out;
 			out << e.file() << ":" << e.line() << ": ";
 			out << "VerificationException" << std::endl;
@@ -55,7 +57,7 @@ namespace fakeit {
 			return out.str();
 		}
 
-		virtual std::string format(NoMoreInvocationsVerificationException& e) override {
+		virtual std::string format(const NoMoreInvocationsVerificationException& e) override {
 			std::ostringstream out;
 			out << e.file() << ":" << e.line() << ": ";
 			out << "Expected no more invocations!! But the following unverified invocations were found: " << std::endl;

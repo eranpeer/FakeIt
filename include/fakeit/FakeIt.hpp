@@ -10,6 +10,7 @@
 #define FakeIt_h__
 
 #include "fakeit/DefaultEventHandler.hpp"
+#include "fakeit/DefaultErrorFormatter.hpp"
 
 namespace fakeit {
 
@@ -31,6 +32,12 @@ struct FakeIt {
 		static DefaultEventHandler eventHandler;
 		return eventHandler;
 	}
+
+	static ErrorFormatter& getErrorFormatter(){
+		static DefaultErrorFormatter formatter;
+		return formatter;
+	}
+
 };
 
 }

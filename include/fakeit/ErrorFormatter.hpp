@@ -12,11 +12,13 @@
 #include "fakeit/FakeitExceptions.hpp"
 
 namespace fakeit {
+
+
 	struct ErrorFormatter {
 		virtual ~ErrorFormatter() = default;
-		virtual std::string format(UnexpectedMethodCallException& e) = 0;
-		virtual std::string format(SequenceVerificationException& e) = 0;
-		virtual std::string format(NoMoreInvocationsVerificationException& e) = 0;
+		virtual std::string format(const fakeit::UnexpectedMethodCallException& e) = 0;
+		virtual std::string format(const fakeit::SequenceVerificationException& e) = 0;
+		virtual std::string format(const fakeit::NoMoreInvocationsVerificationException& e) = 0;
 	};
 }
 

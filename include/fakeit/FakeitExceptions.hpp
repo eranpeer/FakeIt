@@ -18,7 +18,13 @@
 
 namespace fakeit {
 
+enum class VerificationType {
+	Exact, AtLeast, NoMoreInvocatoins
+};
+
 struct FakeitException {
+
+	virtual ~FakeitException() = default;
 
 	virtual std::string what() const = 0;
 
@@ -35,10 +41,11 @@ struct UnexpectedMethodCallException: public FakeitException {
 	}
 
 	virtual std::string what() const override {
+		//return FakeIt::getErrorFormatter().format(*this);
 		return std::string("UnexpectedMethodCallException: could not find any recorded behavior to support this method call");
 	}
 
-	const Method& getMethod() {
+	const Method& getMethod() const {
 		return _actualInvocation->getMethod();
 	}
 
@@ -51,9 +58,6 @@ private:
 	std::shared_ptr<Invocation> _actualInvocation;
 };
 
-enum class VerificationType {
-	Exact, AtLeast, NoMoreInvocatoins
-};
 
 struct VerificationException: public FakeitException {
 	virtual ~VerificationException() = default;
@@ -95,6 +99,7 @@ struct NoMoreInvocationsVerificationException: public VerificationException {
 	}
 
 	virtual std::string what() const override {
+//		return FakeIt::getErrorFormatter().format(*this);
 		return std::string("VerificationException: expected no more invocations but found ") //
 		.append(std::to_string(unverifedIvocations().size()));
 	}
@@ -136,6 +141,7 @@ struct SequenceVerificationException: public VerificationException {
 	}
 
 	virtual std::string what() const override {
+//		return FakeIt::getErrorFormatter().format(*this);
 		return std::string("VerificationException: expected ") //
 		.append(verificationType() == fakeit::VerificationType::Exact ? "exactly " : "at least ") //
 		.append(std::to_string(expectedCount())) //
