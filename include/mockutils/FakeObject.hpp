@@ -18,32 +18,38 @@
 #endif
 
 namespace fakeit {
+// silent GCC compiler warning: iso c++ forbids zero-size array [-Wpedantic]
+#ifdef __GNUG__
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
+
 // silent MSC++ compiler warning: C4200: nonstandard extension used : zero-sized array in struct/union.
 #ifdef _WIN32
 #pragma warning( push )
 #pragma warning( disable : 4200 )
 #endif
 
+
 template<typename C, typename ... baseclasses>
 class FakeObject {
 
-	VirtualTable<C, baseclasses...> vtable;
-	char instanceArea[sizeof(C) -sizeof(VirtualTable<C, baseclasses...>)];
+    VirtualTable<C, baseclasses...> vtable;
 
-	FakeObject(FakeObject const &) = delete;            // undefined
-	FakeObject& operator=(FakeObject const &) = delete; // undefined
+    static const size_t SIZE = sizeof(C) - sizeof( VirtualTable<C, baseclasses...> );
+    char instanceArea[ SIZE ? SIZE : 0 ];
+
+    FakeObject(FakeObject const &) = delete;            // undefined
+    FakeObject& operator=(FakeObject const &) = delete; // undefined
+
 public:
 
-	FakeObject() :
-			vtable(VirtualTable<C, baseclasses...>::nullVTable()) {
-		initializeDataMembersArea();
-	}
+    FakeObject() : vtable(VirtualTable<C, baseclasses...>::nullVTable()) {
+        initializeDataMembersArea();
+    }
 
-	void initializeDataMembersArea() {
-		for (int i = 0; i < (sizeof(C) -sizeof(VirtualTable<C, baseclasses...>)); i++) {
-			instanceArea[i] = (char) 0;
-		}
-	}
+    void initializeDataMembersArea() {
+        for ( int i = 0; i < SIZE; ++i ) instanceArea[i] = (char) 0;
+    }
 
 	void setMethod(unsigned int index, void *method) {
 		vtable.setMethod(index, method);
@@ -62,6 +68,9 @@ public:
 #pragma warning( pop )
 #endif
 
+#ifdef __GNUG__
+#pragma GCC diagnostic pop
+#endif
 
 }
 

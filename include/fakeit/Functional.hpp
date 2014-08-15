@@ -1,5 +1,14 @@
 namespace fakeit{
 
+template< typename R, typename... Args > class function;
+
+template< typename R, typename... Args >
+class function< R( Args... ) >{
+public:
+    virtual ~function(){}
+    virtual R operator() ( Args&&... ) = 0;
+};
+
 template< class C, typename R, typename... Args >
   class const_member_function;
 
@@ -15,7 +24,9 @@ template< class C, typename R, typename... Args >
       const_member_function( type m ) : _m(m) {}
 
       this_type& operator=( type m ){ _m = m; return *this; }
-      R operator() ( C& c, Args&&... args ){ c.*_m( std::forward<Args>(args)... ); }
+
+      R operator() ( C& c, Args&&... args ) const { c.*_m( std::forward<Args>(args)... ); }
+      //R operator() ( C& c, Args&&... args ) override { c.*_m( std::forward<Args>(args)... ); }
 
       operator bool(){ return _m; }
       type operator*(){ return _m; }
@@ -38,18 +49,19 @@ template< class C, typename R, typename... Args >
       member_function( type m ) : _m(m) {}
 
       this_type& operator=( type m ){ _m = m; return *this; }
-      R operator() ( C& c, Args&&... args ){ c.*_m( std::forward<Args>(args)... ); }
+      R operator() ( C& c, Args&&... args ) { c.*_m( std::forward<Args>(args)... ); }
       operator bool(){ return _m; }
       type operator*(){ return _m; }
     private:
       type _m = nullptr;
   };
 
+
 template< class C, typename R, typename... Args >
   class bound_member_function;
 
 template< class C, typename R, typename... Args >
-  class bound_member_function< C, R( Args... ) > {
+  class bound_member_function< C, R( Args... ) > : public function< R( Args...) > {
     public:
 
       typedef R ( C::*type )( Args... );
@@ -75,7 +87,7 @@ template< class C, typename R, typename... Args >
   class bound_const_member_function;
 
 template< class C, typename R, typename... Args >
-  class bound_const_member_function< C, R( Args... ) > {
+  class bound_const_member_function< C, R( Args... ) > : public function< R( Args...) >  {
     public:
 
       typedef R ( C::*type )( Args... ) const;
@@ -90,7 +102,7 @@ template< class C, typename R, typename... Args >
         return *this;
       }
 
-      R operator() ( Args&&... args ){ _c->*_m( std::forward<Args>(args)... ); }
+      R operator() ( Args&&... args ) override { _c->*_m( std::forward<Args>(args)... ); }
       operator bool(){ return _m && _c; }
     private:
       C* _c;
