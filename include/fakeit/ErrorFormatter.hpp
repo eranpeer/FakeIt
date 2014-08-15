@@ -25,18 +25,17 @@ struct ErrorFormatter {
 
 	virtual std::string format(const fakeit::NoMoreInvocationsVerificationException& e) const = 0;
 
-private:
-} static * _errorFormatter = nullptr;
+};
 
+//static ErrorFormatter* _errorFormatter = nullptr;
 
-static void setErrorFormatter(ErrorFormatter * errorFormatter){
-	_errorFormatter = errorFormatter;
+//static void setErrorFormatter(ErrorFormatter * errorFormatter){
+//	_errorFormatter = errorFormatter;
+//}
+
+//static ErrorFormatter* getErrorFormatter() {
+//	return _errorFormatter;
+//}
+
 }
-
-static ErrorFormatter* getErrorFormatter() {
-	return _errorFormatter;
-}
-
-}
-
 #endif

@@ -30,7 +30,6 @@ private:
 public:
 
 	FakeFunctor() {
-		FakeIt::initIfNeeded();
 	}
 
 	template<typename C, typename R, typename ... arglist>

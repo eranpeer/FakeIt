@@ -44,7 +44,6 @@ class VerifyFunctor {
 public:
 
 	VerifyFunctor() {
-		FakeIt::initIfNeeded();
 	}
 
 	template<typename ... list>

@@ -17,13 +17,6 @@ namespace fakeit {
 
 struct FakeIt {
 
-	static void initIfNeeded(){
-		if (getErrorFormatter())
-			return;
-		static DefaultErrorFormatter formatter;
-		setErrorFormatter(&formatter);
-	}
-
 	static void handle(UnexpectedMethodCallException& e){
 		getEventHandler().handle(e);
 	}

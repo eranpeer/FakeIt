@@ -102,13 +102,11 @@ public:
 	};
 
 	WhenFunctor() {
-		FakeIt::initIfNeeded();
 	}
 
 	template<typename C, typename R, typename ... arglist>
 	ProcedureProgress<C, R, arglist...> operator()(const ProcedureStubbingRoot<C, R, arglist...>& stubbingProgress) {
 		ProcedureStubbingRoot<C, R, arglist...>& rootWithoutConst = const_cast<ProcedureStubbingRoot<C, R, arglist...>&>(stubbingProgress);
-		//return dynamic_cast<FirstProcedureStubbingProgress<R, arglist...>&>(rootWithoutConst);
 		ProcedureProgress<C, R, arglist...> a(rootWithoutConst);
 		return a;
 	}
@@ -116,7 +114,6 @@ public:
 	template<typename C, typename R, typename ... arglist>
 	FunctionProgress<C, R, arglist...> operator()(const FunctionStubbingRoot<C, R, arglist...>& stubbingProgress) {
 		FunctionStubbingRoot<C, R, arglist...>& rootWithoutConst = const_cast<FunctionStubbingRoot<C, R, arglist...>&>(stubbingProgress);
-		//return dynamic_cast<FirstFunctionStubbingProgress<R, arglist...>&>(rootWithoutConst);
 		FunctionProgress<C, R, arglist...> a(rootWithoutConst);
 		return a;
 	}

@@ -17,6 +17,10 @@ namespace fakeit {
 
 	struct DefaultErrorFormatter : public ErrorFormatter {
 
+		~DefaultErrorFormatter(){
+			std::cout << "~DefaultErrorFormatter";
+		}
+
 		virtual std::string format(const UnexpectedMethodCallException& e) const override {
 			std::ostringstream out;
 			out << "Unexpected Method Call: " << e.getInvocation().format();

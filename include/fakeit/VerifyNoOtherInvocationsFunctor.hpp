@@ -29,7 +29,6 @@ class VerifyNoOtherInvocationsFunctor {
 public:
 
 	VerifyNoOtherInvocationsFunctor() {
-		FakeIt::initIfNeeded();
 	}
 
 	void operator()() {
