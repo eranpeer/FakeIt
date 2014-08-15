@@ -11,9 +11,9 @@
 
 namespace fakeit {
 
-class UnexpectedMethodCallException;
-class SequenceVerificationException;
-class NoMoreInvocationsVerificationException;
+struct UnexpectedMethodCallException;
+struct SequenceVerificationException;
+struct NoMoreInvocationsVerificationException;
 
 struct EventHandler {
 
