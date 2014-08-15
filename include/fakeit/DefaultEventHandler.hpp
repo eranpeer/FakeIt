@@ -14,85 +14,15 @@
 
 namespace fakeit {
 
-static std::string formatSequence(const Sequence& val);
+struct DefaultErrorFormatter {
 
-template<> struct Formatter<RepeatedSequence> {
-	static std::string format(const RepeatedSequence& val) {
-		std::ostringstream out;
-		out << formatSequence(val.getSequence()) << " * " << val.getTimes();
-		return out.str();
-	}
-};
-
-template<> struct Formatter<ConcatenatedSequence> {
-	static std::string format(const ConcatenatedSequence& val) {
-		std::ostringstream out;
-		out << formatSequence(val.getLeft()) << " + " << formatSequence(val.getRight());
-		return out.str();
-	}
-};
-
-template<> struct Formatter<Sequence> {
-	static std::string format(const Sequence& val) {
-		std::vector<Invocation::Matcher*> vec;
-		val.getExpectedSequence(vec);
-		return vec[0]->format();
-	}
-};
-
-static std::string formatSequence(const Sequence& val) {
-	const ConcatenatedSequence* cs = dynamic_cast<const ConcatenatedSequence*>(&val);
-	if (cs) {
-		return Formatter<ConcatenatedSequence>::format(*cs);
-	}
-	const RepeatedSequence* rs = dynamic_cast<const RepeatedSequence*>(&val);
-	if (rs) {
-		return Formatter<RepeatedSequence>::format(*rs);
-	}
-
-	return Formatter<Sequence>::format(val);
-}
-
-template<> struct Formatter<UnexpectedMethodCallException> {
-	static std::string format(const UnexpectedMethodCallException& e) {
+	virtual std::string format(UnexpectedMethodCallException& e)  {
 		std::ostringstream out;
 		out << "Unexpected Method Call: " << e.getInvocation().format();
 		return out.str();
 	}
-};
 
-static void formatExpectedCount(std::ostream& out, fakeit::VerificationType verificationType, int expectedCount) {
-	if (verificationType == fakeit::VerificationType::Exact)
-		out <<  "exactly ";
-
-	if (verificationType == fakeit::VerificationType::AtLeast)
-		out << "at least ";
-
-	if (expectedCount == 1)
-		out << "one appearance";
-	else {
-		out << expectedCount << " appearances";
-	}
-}
-
-static void formatInvocationList(std::ostream& out, const std::vector<fakeit::Invocation*>& actualSequence) {
-	unsigned int max_size = actualSequence.size();
-	if (max_size > 5)
-		max_size = 5;
-
-	for (unsigned int i = 0; i < max_size; i++) {
-		auto invocation = actualSequence[i];
-		out << invocation->format();
-		if (i < max_size - 1)
-			out << std::endl;
-	}
-
-	if (actualSequence.size() > max_size)
-		out << std::endl << "...";
-}
-
-template<> struct Formatter<SequenceVerificationException> {
-	static std::string format(const SequenceVerificationException& e) {
+	virtual std::string format(SequenceVerificationException& e) {
 		std::ostringstream out;
 		out << e.file() << ":" << e.line() << ": ";
 		out << "VerificationException" << std::endl;
@@ -102,7 +32,8 @@ template<> struct Formatter<SequenceVerificationException> {
 
 		if (e.expectedPattern().size() == 1 && e.expectedPattern()[0]->size() == 1) {
 			out << " of method: ";
-		} else {
+		}
+		else {
 			out << " of pattern:" << std::endl;
 		}
 
@@ -124,14 +55,72 @@ template<> struct Formatter<SequenceVerificationException> {
 
 		return out.str();
 	}
-};
 
-template<> struct Formatter<NoMoreInvocationsVerificationException> {
-	static std::string format(const NoMoreInvocationsVerificationException& e) {
+	virtual std::string format(NoMoreInvocationsVerificationException& e) {
 		std::ostringstream out;
 		out << e.file() << ":" << e.line() << ": ";
 		out << "Expected no more invocations!! But the following unverified invocations were found: " << std::endl;
 		formatInvocationList(out, e.unverifedIvocations());
+		return out.str();
+	}
+
+private:
+
+	static std::string formatSequence(const Sequence& val) {
+		const ConcatenatedSequence* cs = dynamic_cast<const ConcatenatedSequence*>(&val);
+		if (cs) {
+			return Formatter<ConcatenatedSequence>::format(*cs);
+		}
+		const RepeatedSequence* rs = dynamic_cast<const RepeatedSequence*>(&val);
+		if (rs) {
+			return Formatter<RepeatedSequence>::format(*rs);
+		}
+
+		// This is a leaf sequence. It has exactly one matcher! Format this matcher.
+		std::vector<Invocation::Matcher*> vec;
+		val.getExpectedSequence(vec);
+		return vec[0]->format();
+	}
+
+	static void formatExpectedCount(std::ostream& out, fakeit::VerificationType verificationType, int expectedCount) {
+		if (verificationType == fakeit::VerificationType::Exact)
+			out << "exactly ";
+
+		if (verificationType == fakeit::VerificationType::AtLeast)
+			out << "at least ";
+
+		if (expectedCount == 1)
+			out << "one appearance";
+		else {
+			out << expectedCount << " appearances";
+		}
+	}
+
+	static void formatInvocationList(std::ostream& out, const std::vector<fakeit::Invocation*>& actualSequence) {
+		unsigned int max_size = actualSequence.size();
+		if (max_size > 5)
+			max_size = 5;
+
+		for (unsigned int i = 0; i < max_size; i++) {
+			auto invocation = actualSequence[i];
+			out << invocation->format();
+			if (i < max_size - 1)
+				out << std::endl;
+		}
+
+		if (actualSequence.size() > max_size)
+			out << std::endl << "...";
+	}
+
+	static std::string format(const ConcatenatedSequence& val) {
+		std::ostringstream out;
+		out << formatSequence(val.getLeft()) << " + " << formatSequence(val.getRight());
+		return out.str();
+	}
+
+	static std::string format(const RepeatedSequence& val) {
+		std::ostringstream out;
+		out << formatSequence(val.getSequence()) << " * " << val.getTimes();
 		return out.str();
 	}
 };
@@ -139,21 +128,22 @@ template<> struct Formatter<NoMoreInvocationsVerificationException> {
 struct DefaultEventHandler: public fakeit::EventHandler {
 
 	virtual void handle(UnexpectedMethodCallException& e) override {
-		out << Formatter<decltype(e)>::format(e) << std::endl;
+		out << formatter.format(e) << std::endl;
 	}
 
 	virtual void handle(SequenceVerificationException& e) override {
-		out << Formatter<decltype(e)>::format(e) << std::endl;
+		out << formatter.format(e) << std::endl;
 	}
 
 	virtual void handle(NoMoreInvocationsVerificationException& e) override {
-		out << Formatter<decltype(e)>::format(e) << std::endl;
+		out << formatter.format(e) << std::endl;
 	}
 
 	DefaultEventHandler() :
 			out(std::cout) {
 	}
 private:
+	DefaultErrorFormatter formatter;
 	std::ostream& out;
 };
 
