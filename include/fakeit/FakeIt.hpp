@@ -17,15 +17,15 @@ namespace fakeit {
 
 struct FakeIt {
 
-	static void handle(UnexpectedMethodCallException& e){
+	static void handle(const UnexpectedMethodCallException& e){
 		getEventHandler().handle(e);
 	}
 
-	static void handle(SequenceVerificationException& e){
+	static void handle(const SequenceVerificationException& e){
 		getEventHandler().handle(e);
 	}
 
-	static void handle(NoMoreInvocationsVerificationException& e){
+	static void handle(const NoMoreInvocationsVerificationException& e){
 		getEventHandler().handle(e);
 	}
 
