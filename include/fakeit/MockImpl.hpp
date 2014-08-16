@@ -32,9 +32,9 @@ namespace fakeit {
 		}
 
 		virtual ~MockImpl() {
-			if (_isSpy)
+			if (isSpy)
 				return;
-			FakeObject<C, baseclasses...>* fake = (FakeObject<C, baseclasses...>*) _instance;
+			FakeObject<C, baseclasses...>* fake = (FakeObject<C, baseclasses...>*) instance;
 			delete fake;
 		}
 
@@ -43,27 +43,27 @@ namespace fakeit {
 		*/
 		void getActualInvocations(std::unordered_set<Invocation*>& into) const override {
 			std::vector<ActualInvocationsSource*> vec;
-			_proxy.getMethodMocks(vec);
+			proxy.getMethodMocks(vec);
 			for (ActualInvocationsSource * s : vec) {
 				s->getActualInvocations(into);
 			}
 		}
 
 		void reset() {
-			_proxy.Reset();
-			if (!_isSpy) {
-				FakeObject<C, baseclasses...>* fake = (FakeObject<C, baseclasses...>*) _instance;
+			proxy.Reset();
+			if (!isSpy) {
+				FakeObject<C, baseclasses...>* fake = (FakeObject<C, baseclasses...>*) instance;
 				fake->initializeDataMembersArea();
 			}
 		}
 
 		virtual C& get() override {
-			return _proxy.get();
+			return proxy.get();
 		}
 
 		template<class DATA_TYPE, typename ... arglist>
 		DataMemberStubbingRoot<C, DATA_TYPE> stubDataMember(DATA_TYPE C::*member, const arglist&... ctorargs) {
-			_proxy.stubDataMember(member, ctorargs...);
+			proxy.stubDataMember(member, ctorargs...);
 			return DataMemberStubbingRoot<C, DATA_TYPE>();
 		}
 
@@ -80,9 +80,9 @@ namespace fakeit {
 		}
 
 	private:
-		DynamicProxy<C, baseclasses...> _proxy;
-		C* _instance; //
-		bool _isSpy;
+		DynamicProxy<C, baseclasses...> proxy;
+		C* instance; //
+		bool isSpy;
 
 		template<typename R, typename ... arglist>
 		class MethodStubbingContextImpl : public MethodStubbingContext<C, R, arglist...> {
@@ -95,7 +95,7 @@ namespace fakeit {
 			}
 
 			virtual MethodMock<C, R, arglist...>& getMethodMock() override {
-				return mock.stubMethodIfNotStubbed(mock._proxy, vMethod);
+				return mock.stubMethodIfNotStubbed(mock.proxy, vMethod);
 			}
 
 			virtual void getActualInvocations(std::unordered_set<Invocation*>& into) const override {
@@ -133,7 +133,7 @@ namespace fakeit {
 
 		template<typename R, typename ... arglist>
 		void * getOriginalMethod(R(C::*vMethod)(arglist...)) {
-			auto vt = _proxy.getOriginalVT();
+			auto vt = proxy.getOriginalVT();
 			auto offset = VTUtils::getOffset(vMethod);
 			void * origMethodPtr = vt.getMethod(offset);
 			return origMethodPtr;
@@ -151,7 +151,7 @@ namespace fakeit {
 		}
 
 		MockImpl(C &obj, bool isSpy) :
-			_proxy{ obj }, _instance(&obj), _isSpy(_isSpy) {
+			proxy{ obj }, instance(&obj), isSpy(isSpy) {
 		}
 	};
 }
