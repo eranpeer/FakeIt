@@ -215,7 +215,7 @@ public:
 		auto methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
 		if (!methodInvocationMock) {
 			UnexpectedMethodCallException e(actualInvoaction); // TODO: should pass the actual invocation here!!
-			FakeIt::handle(e);
+			FakeIt::getInstance().handle(e);
 			throw e;
 		}
 		auto matcher = methodInvocationMock->getMatcher();
@@ -225,7 +225,7 @@ public:
 			return methodInvocationMock->handleMethodInvocation(args...);
 		} catch (NoMoreRecordedBehaviorException&) {
 			UnexpectedMethodCallException e(actualInvoaction); // TODO: should pass the actual invocation here!!
-			FakeIt::handle(e);
+			fakeit::FakeIt::getInstance().handle(e);
 			throw e;
 		}
 	}
