@@ -38,17 +38,6 @@ namespace fakeit {
 			delete fake;
 		}
 
-		template<typename R, typename ... arglist>
-		MethodMock<C, R, arglist...>& stubMethodIfNotStubbed(DynamicProxy<C, baseclasses...> &proxy, R(C::*vMethod)(arglist...)) {
-			if (!proxy.isStubbed(vMethod)) {
-				auto methodMock = std::shared_ptr<MethodInvocationHandler<R, arglist...>> { new MethodMock<C, R, arglist...>(*this, vMethod) };
-				proxy.stubMethod(vMethod, methodMock);
-			}
-			Destructable * d = proxy.getMethodMock(vMethod);
-			MethodMock<C, R, arglist...> * methodMock = dynamic_cast<MethodMock<C, R, arglist...> *>(d);
-			return *methodMock;
-		}
-
 		/**
 		* Return all actual invocations of this mock.
 		*/
@@ -90,7 +79,7 @@ namespace fakeit {
 				std::shared_ptr<MethodStubbingContext<C, R, arglist...>>(new MethodStubbingContextImpl<R, arglist...>(*this, vMethod)));
 		}
 
-	protected:
+	private:
 		DynamicProxy<C, baseclasses...> proxy;
 		C* instance; //
 		bool isSpy;
@@ -150,7 +139,16 @@ namespace fakeit {
 			return origMethodPtr;
 		}
 
-	private:
+		template<typename R, typename ... arglist>
+		MethodMock<C, R, arglist...>& stubMethodIfNotStubbed(DynamicProxy<C, baseclasses...> &proxy, R(C::*vMethod)(arglist...)) {
+			if (!proxy.isStubbed(vMethod)) {
+				auto methodMock = std::shared_ptr<MethodInvocationHandler<R, arglist...>> { new MethodMock<C, R, arglist...>(*this, vMethod) };
+				proxy.stubMethod(vMethod, methodMock);
+			}
+			Destructable * d = proxy.getMethodMock(vMethod);
+			MethodMock<C, R, arglist...> * methodMock = dynamic_cast<MethodMock<C, R, arglist...> *>(d);
+			return *methodMock;
+		}
 
 		MockImpl(C &obj, bool isSpy) :
 			proxy{ obj }, instance(&obj), isSpy(isSpy) {
