@@ -26,7 +26,8 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 			TEST(DefaultErrorFormatting::parse_UnmatchedMethodCallException),
 			TEST(DefaultErrorFormatting::parse_Atleast_SequenceVerificationException),
 			TEST(DefaultErrorFormatting::parse_Exact_SequenceVerificationException),
-			TEST(DefaultErrorFormatting::parse_NoMoreInvocationsVerificationException)
+			TEST(DefaultErrorFormatting::parse_NoMoreInvocationsVerificationException),
+			TEST(DefaultErrorFormatting::parse_Matched_UserDefinedMatcher)
 			) //
 	{
 	}
@@ -105,6 +106,22 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 		catch (NoMoreInvocationsVerificationException& e) {
 			std::string expected{ "VerificationException: expected no more invocations but found 1" };
 			ASSERT_EQUAL(expected, to_string(e));
+		}
+	}
+
+
+	void parse_Matched_UserDefinedMatcher() {
+		Mock<SomeInterface> mock;
+		When(Method(mock, func)).Return(0);
+		SomeInterface &i = mock.get();
+		try {
+			Verify(Method(mock, func).Matching([](...){return true; })).Exactly(2);
+			FAIL();
+		}
+		catch (SequenceVerificationException& e)
+		{
+			//std::string expectedMsg("UnexpectedMethodCallException: Unknown method invocation. All used virtual methods must be stubbed!");
+			//ASSERT_EQUAL(expectedMsg, to_string(e));
 		}
 	}
 
