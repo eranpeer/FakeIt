@@ -58,12 +58,6 @@ struct BasicStubbing: tpunit::TestFixture {
 		virtual void proc(int) = 0;
 	};
 
-	template <typename T> std::string to_string(T& val){
-		std::stringstream stream;
-		stream << val;
-		return stream.str();
-	}
-
 	void calling_an_unstubbed_method_should_raise_UnmockedMethodCallException() {
 		Mock<SomeInterface> mock;
 		SomeInterface &i = mock.get();
@@ -72,10 +66,7 @@ struct BasicStubbing: tpunit::TestFixture {
 			FAIL();
 		} catch(UnexpectedMethodCallException& e)
 		{
-			std::string expectedMsg("UnexpectedMethodCallException: could not find any recorded behavior to support this method call");
-			std::string expectedName("unknown");
-			ASSERT_EQUAL(expectedName,e.getMethod().name());
-			ASSERT_EQUAL(expectedMsg,to_string(e));
+			ASSERT_EQUAL(std::string("unknown"),e.getMethod().name());
 		}
 	}
 
@@ -119,8 +110,7 @@ struct BasicStubbing: tpunit::TestFixture {
 			i.func(1);
 			FAIL();
 		} catch(fakeit::UnexpectedMethodCallException &e){
-			std::string expected("mock.func");
-			ASSERT_EQUAL(expected,e.getMethod().name());
+			ASSERT_EQUAL(std::string("mock.func"), e.getMethod().name());
 		}
 	}
 
