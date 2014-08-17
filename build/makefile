@@ -16,8 +16,8 @@ verification_tests.cpp \
 remove_const_volatile_tests.cpp \
 functional.cpp \
 spying_tests.cpp \
-verification_error_formatting_tests.cpp \
-parse_VerificationFailure_AllTypes 
+verification_errors_tests.cpp \
+default_error_formatting_tests.cpp
 
 OBJS += $(subst .cpp,.o,$(CPP_SRCS))
 
