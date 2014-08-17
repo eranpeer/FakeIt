@@ -81,7 +81,7 @@
     <ClCompile Include="stubbing_tests.cpp" />
     <ClCompile Include="tpunit++main.cpp" />
     <ClCompile Include="type_info_tests.cpp" />
-    <ClCompile Include="verification_error_formatting_tests.cpp" />
+    <ClCompile Include="verification_errors_tests.cpp" />
     <ClCompile Include="verification_tests.cpp" />
   </ItemGroup>
   <ItemGroup>
