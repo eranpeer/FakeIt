@@ -27,7 +27,8 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 			TEST(DefaultErrorFormatting::parse_Atleast_SequenceVerificationException),
 			TEST(DefaultErrorFormatting::parse_Exact_SequenceVerificationException),
 			TEST(DefaultErrorFormatting::parse_NoMoreInvocations_VerificationFailure),
-			TEST(DefaultErrorFormatting::parse_VerificationFailure_Unmatched_UserDefinedMatcher)
+			TEST(DefaultErrorFormatting::parse_VerificationFailure_Unmatched_UserDefinedMatcher),
+			TEST(DefaultErrorFormatting::parse_VerificationFailure_AllTypes)
 			) //
 	{
 	}
@@ -41,6 +42,18 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 	struct SomeInterface {
 		virtual int func(int) = 0;
 		virtual void proc(int) = 0;
+
+		virtual int all_types(
+			char, 
+			bool, 
+			int, 
+			unsigned int, 
+			long, 
+			unsigned long, 
+			long long, 
+			unsigned long long, 
+			double, 
+			long double) = 0;
 	};
 
 	void parse_UnmockedMethodCallException() {
@@ -117,6 +130,22 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 		SomeInterface &i = mock.get();
 		try {
 			Verify(Method(mock, func).Matching([](...){return true; })).Exactly(2);
+			FAIL();
+		}
+		catch (SequenceVerificationException& e)
+		{
+			//std::string expectedMsg("UnexpectedMethodCallException: Unknown method invocation. All used virtual methods must be stubbed!");
+			//ASSERT_EQUAL(expectedMsg, to_string(e));
+		}
+	}
+
+	void parse_VerificationFailure_AllTypes() {
+		Mock<SomeInterface> mock;
+		When(Method(mock, all_types)).Return(0);
+		SomeInterface &i = mock.get();
+		try {
+			mock().all_types('a', true, 1, 1, 1, 1, 1, 1, 1, 1);
+			Verify(Method(mock, all_types)).Exactly(2);
 			FAIL();
 		}
 		catch (SequenceVerificationException& e)
