@@ -38,8 +38,13 @@ struct UnexpectedMethodCallException: public FakeitException {
 	}
 
 	virtual std::string what() const override {
+		if (&(_actualInvocation->getMethod()) == &UnknownMethod::instance()) {
+			return std::string("UnexpectedMethodCallException: Unknown method invocation. All used virtual methods must be stubbed!");
+		}
+		else {
+			return std::string("UnexpectedMethodCallException: Could not find any recorded behavior to support this method call");
+		}
 		//return getErrorFormatter()->format(*this);
-		return std::string("UnexpectedMethodCallException: could not find any recorded behavior to support this method call");
 	}
 
 	const Method& getMethod() const {

@@ -40,7 +40,7 @@ struct ActualInvocation: public virtual Invocation {
 		virtual std::string format() const = 0;
 	};
 
-	ActualInvocation(const int ordinal, const Method & method, const arglist&... args) :
+	ActualInvocation(int ordinal, Method & method, const arglist&... args) :
 			Invocation(ordinal, method), actualArguments { args... } {
 	}
 

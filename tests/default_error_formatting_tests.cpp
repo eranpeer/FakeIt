@@ -22,10 +22,11 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 	DefaultErrorFormatting() :
 			tpunit::TestFixture(
 			//
-			TEST(DefaultErrorFormatting::calling_an_unstubbed_method_should_raise_UnmockedMethodCallException),
-			TEST(DefaultErrorFormatting::check_atleast_verification_exception),
-			TEST(DefaultErrorFormatting::check_exact_verification_exception),
-			TEST(DefaultErrorFormatting::check_no_more_invocations_exception)
+			TEST(DefaultErrorFormatting::parse_UnmockedMethodCallException),
+			TEST(DefaultErrorFormatting::parse_UnmatchedMethodCallException),
+			TEST(DefaultErrorFormatting::parse_Atleast_SequenceVerificationException),
+			TEST(DefaultErrorFormatting::parse_Exact_SequenceVerificationException),
+			TEST(DefaultErrorFormatting::parse_NoMoreInvocationsVerificationException)
 			) //
 	{
 	}
@@ -40,7 +41,8 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 		virtual int func(int) = 0;
 		virtual void proc(int) = 0;
 	};
-	void calling_an_unstubbed_method_should_raise_UnmockedMethodCallException() {
+
+	void parse_UnmockedMethodCallException() {
 		Mock<SomeInterface> mock;
 		SomeInterface &i = mock.get();
 		try {
@@ -49,12 +51,26 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 		}
 		catch (UnexpectedMethodCallException& e)
 		{
-			std::string expectedMsg("UnexpectedMethodCallException: could not find any recorded behavior to support this method call");
+			std::string expectedMsg("UnexpectedMethodCallException: Unknown method invocation. All used virtual methods must be stubbed!");
 			ASSERT_EQUAL(expectedMsg, to_string(e));
 		}
 	}
 
-	void check_atleast_verification_exception() {
+	void parse_UnmatchedMethodCallException() {
+		Mock<SomeInterface> mock;
+		SomeInterface &i = mock.get();
+		try {
+			i.func(1);
+			FAIL();
+		}
+		catch (UnexpectedMethodCallException& e)
+		{
+			std::string expectedMsg("UnexpectedMethodCallException: Unknown method invocation. All used virtual methods must be stubbed!");
+			ASSERT_EQUAL(expectedMsg, to_string(e));
+		}
+	}
+
+	void parse_Atleast_SequenceVerificationException() {
 		Mock<SomeInterface> mock;
 		try {
 			Verify(Method(mock, func));
@@ -66,7 +82,7 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 	}
 
 
-	void check_exact_verification_exception() {
+	void parse_Exact_SequenceVerificationException() {
 		Mock<SomeInterface> mock;
 		try {
 			Verify(Method(mock, func)).Exactly(Once);
@@ -77,7 +93,7 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 		}
 	}
 
-	void check_no_more_invocations_exception() {
+	void parse_NoMoreInvocationsVerificationException() {
 		Mock<SomeInterface> mock;
 		try {
 			Fake(Method(mock, func));
