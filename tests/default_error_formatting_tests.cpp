@@ -26,8 +26,8 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 			TEST(DefaultErrorFormatting::parse_UnmatchedMethodCallException),
 			TEST(DefaultErrorFormatting::parse_Atleast_SequenceVerificationException),
 			TEST(DefaultErrorFormatting::parse_Exact_SequenceVerificationException),
-			TEST(DefaultErrorFormatting::parse_NoMoreInvocationsVerificationException),
-			TEST(DefaultErrorFormatting::parse_Matched_UserDefinedMatcher)
+			TEST(DefaultErrorFormatting::parse_NoMoreInvocations_VerificationFailure),
+			TEST(DefaultErrorFormatting::parse_VerificationFailure_Unmatched_UserDefinedMatcher)
 			) //
 	{
 	}
@@ -94,7 +94,7 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 		}
 	}
 
-	void parse_NoMoreInvocationsVerificationException() {
+	void parse_NoMoreInvocations_VerificationFailure() {
 		Mock<SomeInterface> mock;
 		try {
 			Fake(Method(mock, func));
@@ -110,7 +110,7 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 	}
 
 
-	void parse_Matched_UserDefinedMatcher() {
+	void parse_VerificationFailure_Unmatched_UserDefinedMatcher() {
 		Mock<SomeInterface> mock;
 		When(Method(mock, func)).Return(0);
 		SomeInterface &i = mock.get();
