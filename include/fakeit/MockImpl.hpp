@@ -151,7 +151,7 @@ namespace fakeit {
 		}
 
 		MockImpl(C &obj, bool isSpy) :
-			_proxy{ obj }, _instance(&obj), _isSpy(_isSpy) {
+			_proxy{ obj }, _instance(&obj), _isSpy(isSpy) {
 		}
 	};
 }
