@@ -74,7 +74,7 @@ struct ReturnDefaultValue: public Behavior<R, arglist...> {
 	virtual ~ReturnDefaultValue() = default;
 
 	virtual R invoke(arglist&... args) override {
-		return DefaultValue2<R>::value();
+		return DefaultValue<R>::value();
 	}
 
 	virtual bool isDone() override {

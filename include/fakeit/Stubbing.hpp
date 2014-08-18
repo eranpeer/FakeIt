@@ -72,11 +72,11 @@ struct FirstFunctionStubbingProgress {
 
 	FirstFunctionStubbingProgress<R, arglist...>&
 	Return() {
-		return Do([](const arglist&...)->R {return DefaultValue2<R>::value();});
+		return Do([](const arglist&...)->R {return DefaultValue<R>::value();});
 	}
 
 	void AlwaysReturn() {
-		return AlwaysDo([](const arglist&...)->R {return DefaultValue2<R>::value();});
+		return AlwaysDo([](const arglist&...)->R {return DefaultValue<R>::value();});
 	}
 
 	template<typename E>
@@ -145,16 +145,16 @@ struct FirstProcedureStubbingProgress {
 	}
 
 	FirstProcedureStubbingProgress<R, arglist...>& Return() {
-		return Do([](const arglist&...)->R {return DefaultValue2<R>::value();});
+		return Do([](const arglist&...)->R {return DefaultValue<R>::value();});
 	}
 
 	void AlwaysReturn() {
-		return AlwaysDo([](const arglist&...)->R {return DefaultValue2<R>::value();});
+		return AlwaysDo([](const arglist&...)->R {return DefaultValue<R>::value();});
 	}
 
 	FirstProcedureStubbingProgress<R, arglist...>&
 	Return(const Quantifier<R>& q) {
-		auto method = [](const arglist&...)->R {return DefaultValue2<R>::value();};
+		auto method = [](const arglist&...)->R {return DefaultValue<R>::value();};
 		std::shared_ptr<Behavior<R, arglist...>> doMock { new Repeat<R, arglist...>(method, q.quantity) };
 		return DoImpl(doMock);
 	}
