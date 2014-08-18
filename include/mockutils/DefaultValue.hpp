@@ -13,8 +13,9 @@
 
 namespace fakeit {
 
-struct DefaultValueInstatiationException: public std::exception {
+struct DefaultValueInstatiationException {
 	DefaultValueInstatiationException() = default;
+	virtual std::string what() const = 0;
 };
 
 struct DefaultValue {
@@ -38,7 +39,7 @@ struct DefaultValue {
 					&& !std::is_default_constructible<C>::value, C&>::type value() {
 
 		class Exception : public DefaultValueInstatiationException {
-			const char* what() const throw () override {
+			virtual std::string what() const override {
 				return (std::string("Type ") + std::string(typeid(C).name())
 				+ std::string(" is not default constructible. Could not instantiate a default return value")).c_str();
 			}

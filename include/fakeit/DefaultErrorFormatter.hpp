@@ -18,7 +18,6 @@ namespace fakeit {
 	struct DefaultErrorFormatter : public ErrorFormatter {
 
 		~DefaultErrorFormatter(){
-			std::cout << "~DefaultErrorFormatter";
 		}
 
 		virtual std::string format(const UnexpectedMethodCallException& e) const override {
@@ -30,9 +29,9 @@ namespace fakeit {
 		virtual std::string format(const SequenceVerificationException& e) const override {
 			std::ostringstream out;
 			out << e.file() << ":" << e.line() << ": ";
-			out << "VerificationException" << std::endl;
+			out << "Verification error" << std::endl;
 
-			out << "Expected ";
+			out << "Expected: ";
 			formatExpectedCount(out, e.verificationType(), e.expectedCount());
 
 			if (e.expectedPattern().size() == 1 && e.expectedPattern()[0]->size() == 1) {

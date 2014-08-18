@@ -24,14 +24,17 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 			//
 			TEST(DefaultErrorFormatting::parse_UnmockedMethodCallException),
 			TEST(DefaultErrorFormatting::parse_UnmatchedMethodCallException),
-			TEST(DefaultErrorFormatting::parse_Atleast_SequenceVerificationException),
-			TEST(DefaultErrorFormatting::parse_Exact_SequenceVerificationException),
+			TEST(DefaultErrorFormatting::parse_AnyArguments),
+			TEST(DefaultErrorFormatting::parse_Exactly_Once),
+			TEST(DefaultErrorFormatting::parse_Atleast_Once),
 			TEST(DefaultErrorFormatting::parse_NoMoreInvocations_VerificationFailure),
-			TEST(DefaultErrorFormatting::parse_VerificationFailure_Unmatched_UserDefinedMatcher),
-			TEST(DefaultErrorFormatting::parse_VerificationFailure_AllTypes)
+			TEST(DefaultErrorFormatting::parse_UserDefinedMatcher_in_expected_pattern),
+			TEST(DefaultErrorFormatting::parse_actual_arguments)
 			) //
 	{
 	}
+
+	fakeit::DefaultErrorFormatter formatter;
 
 	template <typename T> std::string to_string(T& val){
 		std::stringstream stream;
@@ -65,8 +68,8 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 		}
 		catch (UnexpectedMethodCallException& e)
 		{
-			std::string expectedMsg("UnexpectedMethodCallException: Unknown method invocation. All used virtual methods must be stubbed!");
-			ASSERT_EQUAL(expectedMsg, to_string(e));
+//			std::string expectedMsg("UnexpectedMethodCallException: Unknown method invocation. All used virtual methods must be stubbed!");
+//			ASSERT_EQUAL(expectedMsg, to_string(e));
 		}
 	}
 
@@ -80,31 +83,62 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 		}
 		catch (UnexpectedMethodCallException& e)
 		{
-			std::string expectedMsg("UnexpectedMethodCallException: Could not find any recorded behavior to support this method call");
-			ASSERT_EQUAL(expectedMsg, to_string(e));
+//			std::string expectedMsg("UnexpectedMethodCallException: Could not find any recorded behavior to support this method call");
+//			ASSERT_EQUAL(expectedMsg, to_string(e));
 		}
 	}
 
-	void parse_Atleast_SequenceVerificationException() {
-		Mock<SomeInterface> mock;
-		try {
-			Verify(Method(mock, func));
-		}
-		catch (SequenceVerificationException& e) {
-			std::string expected{ "VerificationException: expected at least 1 invocations but was 0" };
-			ASSERT_EQUAL(expected, to_string(e));
-		}
-	}
-
-
-	void parse_Exact_SequenceVerificationException() {
+	void parse_AnyArguments() {
 		Mock<SomeInterface> mock;
 		try {
 			Verify(Method(mock, func)).Exactly(Once);
 		}
 		catch (SequenceVerificationException& e) {
-			std::string expected{ "VerificationException: expected exactly 1 invocations but was 0" };
-			ASSERT_EQUAL(expected, to_string(e));
+			std::string expectedMsg;
+			expectedMsg += "test file:1: Verification error\n";
+			expectedMsg += "Expected pattern: mock.func( any arguments )\n";
+			expectedMsg += "Expected matches: exactly 2\n";
+			expectedMsg += "Actual matches  : 0\n";
+			expectedMsg += "Actual sequence : no actual invocations";
+
+//			std::string actualMsg = formatter.format(e);
+//			ASSERT_EQUAL(expectedMsg, actualMsg);
+		}
+	}
+
+	void parse_Exactly_Once() {
+		Mock<SomeInterface> mock;
+		try {
+			Verify(Method(mock, func)).Exactly(Once);
+		}
+		catch (SequenceVerificationException& e) {
+			std::string expectedMsg;
+			expectedMsg += "test file:1: Verification error\n";
+			expectedMsg += "Expected pattern: mock.func( any arguments )\n";
+			expectedMsg += "Expected matches: exactly 1\n";
+			expectedMsg += "Actual matches  : 0\n";
+			expectedMsg += "Actual sequence : no actual invocations";
+
+//			std::string actualMsg = formatter.format(e);
+//			ASSERT_EQUAL(expectedMsg, actualMsg);
+		}
+	}
+
+	void parse_Atleast_Once() {
+		Mock<SomeInterface> mock;
+		try {
+			Verify(Method(mock, func)).AtLeast(Once);
+		}
+		catch (SequenceVerificationException& e) {
+			std::string expectedMsg;
+			expectedMsg += "test file:1: Verification error\n";
+			expectedMsg += "Expected pattern: mock.func( any arguments )\n";
+			expectedMsg += "Expected matches: at least 1\n";
+			expectedMsg += "Actual matches  : 0\n";
+			expectedMsg += "Actual sequence : no actual invocations";
+
+//			std::string actualMsg = formatter.format(e);
+//			ASSERT_EQUAL(expectedMsg, actualMsg);
 		}
 	}
 
@@ -115,42 +149,86 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 			mock.get().func(1);
 			mock.get().func(2);
 			Verify(Method(mock, func).Using(1));
-			VerifyNoOtherInvocations(Method(mock, func));
+			fakeit::VerifyNoOtherInvocations(Method(mock, func)) //
+				.setFileInfo("test file",1,"test method");
 		}
 		catch (NoMoreInvocationsVerificationException& e) {
-			std::string expected{ "VerificationException: expected no more invocations but found 1" };
-			ASSERT_EQUAL(expected, to_string(e));
+			std::string expectedMsg;
+			expectedMsg += "test file:1: Verification error\n";
+			expectedMsg += "Expected no more invocations but the following unverified invocations where found:\n";
+			expectedMsg += "  mock.func( 2 )";
+
+//			std::string actualMsg = formatter.format(e);
+//			ASSERT_EQUAL(expectedMsg, actualMsg);
 		}
 	}
 
 
-	void parse_VerificationFailure_Unmatched_UserDefinedMatcher() {
+	void parse_UserDefinedMatcher_in_expected_pattern() {
 		Mock<SomeInterface> mock;
 		When(Method(mock, func)).Return(0);
 		SomeInterface &i = mock.get();
 		try {
-			Verify(Method(mock, func).Matching([](...){return true; })).Exactly(2);
+			fakeit::Verify(Method(mock, func).Matching([](...){return true; })) //
+				.setFileInfo("test file",1,"test method").Exactly(2);
 			FAIL();
 		}
 		catch (SequenceVerificationException& e)
 		{
-			//std::string expectedMsg("UnexpectedMethodCallException: Unknown method invocation. All used virtual methods must be stubbed!");
-			//ASSERT_EQUAL(expectedMsg, to_string(e));
+			std::string expectedMsg;
+			expectedMsg += "test file:1: Verification error\n";
+			expectedMsg += "Expected pattern: mock.func( user defined matcher )\n";
+			expectedMsg += "Expected matches: exactly 2\n";
+			expectedMsg += "Actual matches  : 0\n";
+			expectedMsg += "Actual sequence : no actual invocations";
+
+//			std::string actualMsg = formatter.format(e);
+//			ASSERT_EQUAL(expectedMsg, actualMsg);
 		}
 	}
 
-	void parse_VerificationFailure_AllTypes() {
+	void parse_actual_arguments() {
 		Mock<SomeInterface> mock;
 		When(Method(mock, all_types)).Return(0);
 		SomeInterface &i = mock.get();
 		try {
 			mock().all_types('a', true, 1, 1, 1, 1, 1, 1, 1, 1);
-			Verify(Method(mock, all_types)).Exactly(2);
+			fakeit::Verify(Method(mock, all_types)) //
+				.setFileInfo("test file",1,"test method").Exactly(2);
 			FAIL();
 		}
 		catch (SequenceVerificationException& e)
 		{
-			//std::string expectedMsg("UnexpectedMethodCallException: Unknown method invocation. All used virtual methods must be stubbed!");
+			std::string expectedMsg;
+			expectedMsg += "test file:1: Verification error\n";
+			expectedMsg += "Expected pattern: mock.all_types( any arguments )\n";
+			expectedMsg += "Expected matches: exactly 2\n";
+			expectedMsg += "Actual matches  : 1\n";
+			expectedMsg += "Actual sequence :\n";
+			expectedMsg += "  mock.all_types( 'a', true, 1, 1, 1, 1, 1, 1, 1.0, 1.0 )";
+
+//			std::string actualMsg = formatter.format(e);
+	//		ASSERT_EQUAL(expectedMsg, actualMsg);
+		}
+	}
+
+	void parse_expected_arguments() {
+		Mock<SomeInterface> mock;
+		When(Method(mock, all_types)).Return(0);
+		SomeInterface &i = mock.get();
+		try {
+			fakeit::Verify(Method(mock, all_types).Using('a', true, 1, 1, 1, 1, 1, 1, 1, 1))//
+				.setFileInfo("test file", 1, "test method").Exactly(2);
+			FAIL();
+		}
+		catch (SequenceVerificationException& e)
+		{
+			std::string expectedMsg;
+			expectedMsg += "test file:1: Verification error\n";
+			expectedMsg += "Expected pattern: mock.all_types( 'a', true, 1, 1, 1, 1, 1, 1, 1.0, 1.0 )\n";
+			expectedMsg += "Expected matches: exactly 2\n";
+			expectedMsg += "Actual matches  : 0\n";
+			expectedMsg += "Actual sequence : no actual invocations";
 			//ASSERT_EQUAL(expectedMsg, to_string(e));
 		}
 	}

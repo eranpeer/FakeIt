@@ -6,8 +6,6 @@
  * Created on Mar 10, 2014
  */
 
-#if defined (__GNUG__)
-
 #include <string>
 #include <queue>
 
@@ -225,4 +223,3 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 	}
 
 } __DefaultBehaviore;
-#endif
