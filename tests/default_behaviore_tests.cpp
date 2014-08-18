@@ -94,6 +94,7 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 	};
 	void scalar_types_should_return_zero() {
 		Mock<ScalarFunctions> mock;
+
 		Fake(Method(mock,boolFunc));
 		Fake(Method(mock,charFunc));
 		Fake(Method(mock,char16Func));
@@ -110,7 +111,7 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 		Fake(Method(mock,pIntFunc));
 		Fake(Method(mock,pScalarFuctionsfunc));
 		Fake(Method(mock,nullptrFunc));
-		Fake(Method(mock,pMemberFunc));
+		Fake(Method(mock,pMemberFunc));//
 
 		ScalarFunctions &i = mock.get();
 
