@@ -24,8 +24,11 @@ struct DefaultValue;
 
 
 template<class C>
-struct DefaultValue <C, typename std::enable_if<!std::is_default_constructible<typename std::remove_reference<C>::type>::value>::type> {
-	// this was a reference to abstract type
+struct DefaultValue <C, 
+	typename std::enable_if<
+	!(std::is_default_constructible<typename std::remove_reference<C>::type>::value
+	&& !std::is_abstract<typename std::remove_reference<C>::type>::value)
+	>::type> {
 	static C& value() {
 		if (std::is_reference<C>::value){
 			typename std::remove_reference<C>::type * ptr = nullptr;
@@ -44,7 +47,11 @@ struct DefaultValue <C, typename std::enable_if<!std::is_default_constructible<t
 };
 
 template<class C>
-struct DefaultValue <C, typename std::enable_if<std::is_default_constructible<typename std::remove_reference<C>::type>::value>::type> {
+struct DefaultValue <C, 
+	typename std::enable_if<
+	std::is_default_constructible<typename std::remove_reference<C>::type>::value
+	&& !std::is_abstract<typename std::remove_reference<C>::type>::value
+	>::type> {
 	// this was a reference to abstract type
 	static C& value() {
 		static typename std::remove_reference<C>::type val { };
