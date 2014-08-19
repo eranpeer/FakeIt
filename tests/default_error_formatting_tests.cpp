@@ -121,6 +121,8 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 
 //			std::string actualMsg = formatter.format(e);
 //			ASSERT_EQUAL(expectedMsg, actualMsg);
+			ASSERT_EQUAL(std::string{"VerificationException: expected exactly 1 invocations but was 0"}, e.what());
+
 		}
 	}
 
@@ -136,6 +138,8 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 			expectedMsg += "Expected matches: at least 1\n";
 			expectedMsg += "Actual matches  : 0\n";
 			expectedMsg += "Actual sequence : no actual invocations";
+
+			ASSERT_EQUAL(std::string{"VerificationException: expected at least 1 invocations but was 0"}, e.what());
 
 //			std::string actualMsg = formatter.format(e);
 //			ASSERT_EQUAL(expectedMsg, actualMsg);
