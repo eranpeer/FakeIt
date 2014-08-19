@@ -62,8 +62,8 @@ namespace fakeit {
 
 		virtual std::string format(const NoMoreInvocationsVerificationException& e) const override {
 			std::ostringstream out;
-			out << e.file() << ":" << e.line() << ": ";
-			out << "Expected no more invocations!! But the following unverified invocations were found: " << std::endl;
+			out << e.file() << ":" << e.line() << ": Verification error"<< std::endl;
+			out << "Expected no more invocations!! But the following unverified invocations were found:" << std::endl;
 			formatInvocationList(out, e.unverifedIvocations());
 			return out.str();
 		}
@@ -106,6 +106,7 @@ namespace fakeit {
 				max_size = 5;
 
 			for (unsigned int i = 0; i < max_size; i++) {
+				out << "  ";
 				auto invocation = actualSequence[i];
 				out << invocation->format();
 				if (i < max_size - 1)
@@ -113,7 +114,7 @@ namespace fakeit {
 			}
 
 			if (actualSequence.size() > max_size)
-				out << std::endl << "...";
+				out << std::endl << "  ...";
 		}
 
 		static std::string format(const ConcatenatedSequence& val) {

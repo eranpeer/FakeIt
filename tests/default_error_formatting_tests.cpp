@@ -155,11 +155,12 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 		catch (NoMoreInvocationsVerificationException& e) {
 			std::string expectedMsg;
 			expectedMsg += "test file:1: Verification error\n";
-			expectedMsg += "Expected no more invocations but the following unverified invocations where found:\n";
-			expectedMsg += "  mock.func( 2 )";
+			expectedMsg += "Expected no more invocations!! But the following unverified invocations were found:\n";
+			expectedMsg += "  mock.func(2)";//
 
-//			std::string actualMsg = formatter.format(e);
-//			ASSERT_EQUAL(expectedMsg, actualMsg);
+			std::string actualMsg = formatter.format(e);//
+			ASSERT_EQUAL(expectedMsg, actualMsg);
+			ASSERT_EQUAL(std::string{"VerificationException: expected no more invocations but found 1"}, e.what());
 		}
 	}
 
