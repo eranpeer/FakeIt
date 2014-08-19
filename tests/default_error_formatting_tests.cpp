@@ -68,8 +68,8 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 		}
 		catch (UnexpectedMethodCallException& e)
 		{
-//			std::string expectedMsg("UnexpectedMethodCallException: Unknown method invocation. All used virtual methods must be stubbed!");
-//			ASSERT_EQUAL(expectedMsg, to_string(e));
+			std::string expectedMsg("UnexpectedMethodCallException: Unknown method invocation. All used virtual methods must be stubbed!");
+			ASSERT_EQUAL(expectedMsg, to_string(e));
 		}
 	}
 
@@ -83,8 +83,8 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 		}
 		catch (UnexpectedMethodCallException& e)
 		{
-//			std::string expectedMsg("UnexpectedMethodCallException: Could not find any recorded behavior to support this method call");
-//			ASSERT_EQUAL(expectedMsg, to_string(e));
+			std::string expectedMsg("UnexpectedMethodCallException: Could not find any recorded behavior to support this method call");
+			ASSERT_EQUAL(expectedMsg, to_string(e));
 		}
 	}
 
