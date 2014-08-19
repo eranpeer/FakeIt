@@ -19,9 +19,15 @@ struct DefaultValueInstatiationException {
 };
 
 template<class C>
-struct is_constructible_type{
-	static const bool value = std::is_default_constructible<typename std::remove_reference<C>::type>::value
-	&& !std::is_abstract<typename std::remove_reference<C>::type>::value;
+struct naked_type {
+	typedef typename std::remove_reference<C>::type type;
+};
+
+template<class C>
+struct is_constructible_type {
+	static const bool value =
+			std::is_default_constructible<typename naked_type<C>::type>::value
+			&& !std::is_abstract<typename naked_type<C>::type>::value;
 };
 
 template<class C, class Enable = void>
@@ -31,7 +37,7 @@ template<class C>
 struct DefaultValue <C, typename std::enable_if<!is_constructible_type<C>::value>::type> {
 	static C& value() {
 		if (std::is_reference<C>::value){
-			typename std::remove_reference<C>::type * ptr = nullptr;
+			typename naked_type<C>::type * ptr = nullptr;
 			return *ptr;
 		}
 
@@ -49,7 +55,7 @@ struct DefaultValue <C, typename std::enable_if<!is_constructible_type<C>::value
 template<class C>
 struct DefaultValue <C, typename std::enable_if<is_constructible_type<C>::value>::type> {
 	static C& value() {
-		static typename std::remove_reference<C>::type val { };
+		static typename naked_type<C>::type val { };
 		return val;
 	}
 };
@@ -114,6 +120,12 @@ template<> struct DefaultValue<long> {
 template<> struct DefaultValue<long long> {
 	static long long& value() {
 		static long long value { 0 };
+		return value;
+	}
+};
+template<> struct DefaultValue<std::string> {
+	static std::string& value() {
+		static std::string value {};
 		return value;
 	}
 };
