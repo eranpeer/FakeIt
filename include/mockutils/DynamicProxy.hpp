@@ -109,6 +109,13 @@ private:
 	class MethodProxyCreator {
 	private:
 
+		static DynamicProxy<C, baseclasses...> * getDynamicProxy(void * methodProxy){
+			C* instance = (C*)methodProxy;
+			VirtualTable<C,baseclasses...> & vt = VirtualTable<C,baseclasses...>::getVTable(*instance);
+			DynamicProxy<C, baseclasses...> * dynamicProxy = (DynamicProxy<C, baseclasses...> *)vt.getCookie();
+			return dynamicProxy;
+		}
+
 		template<unsigned int OFFSET>
 		struct VirtualMethodProxy: public MethodProxy<R, arglist...> {
 			unsigned int getOffset() override {
@@ -121,9 +128,7 @@ private:
 
 		private:
 			R methodProxy(arglist ... args) {
-				C* instance = (C*)this;
-				VirtualTable<C,baseclasses...> & vt = VirtualTable<C,baseclasses...>::getVTable(*instance);
-				DynamicProxy<C, baseclasses...> * dynamicProxy = (DynamicProxy<C, baseclasses...> *)vt.getCookie();
+				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
 				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(
 						OFFSET);
 				return methodMock->handleMethodInvocation(args...);
