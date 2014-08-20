@@ -105,16 +105,16 @@ struct DynamicProxy {
 
 private:
 
+	static DynamicProxy<C, baseclasses...> * getDynamicProxy(void * methodProxy){
+		C* instance = (C*)methodProxy;
+		VirtualTable<C,baseclasses...> & vt = VirtualTable<C,baseclasses...>::getVTable(*instance);
+		DynamicProxy<C, baseclasses...> * dynamicProxy = (DynamicProxy<C, baseclasses...> *)vt.getCookie();
+		return dynamicProxy;
+	}
+
 	template<typename R, typename ... arglist>
 	class MethodProxyCreator {
 	private:
-
-		static DynamicProxy<C, baseclasses...> * getDynamicProxy(void * methodProxy){
-			C* instance = (C*)methodProxy;
-			VirtualTable<C,baseclasses...> & vt = VirtualTable<C,baseclasses...>::getVTable(*instance);
-			DynamicProxy<C, baseclasses...> * dynamicProxy = (DynamicProxy<C, baseclasses...> *)vt.getCookie();
-			return dynamicProxy;
-		}
 
 		template<unsigned int OFFSET>
 		struct VirtualMethodProxy: public MethodProxy<R, arglist...> {
