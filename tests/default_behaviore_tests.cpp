@@ -111,7 +111,7 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 		Fake(Method(mock,pIntFunc));
 		Fake(Method(mock,pScalarFuctionsfunc));
 		Fake(Method(mock,nullptrFunc));
-		Fake(Method(mock,pMemberFunc));
+		Fake(Method(mock,pMemberFunc));//
 
 		ScalarFunctions &i = mock.get();
 
