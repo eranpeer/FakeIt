@@ -18,6 +18,7 @@
 #include "fakeit/ActualInvocation.hpp"
 #include "fakeit/Behavior.hpp"
 #include "fakeit/matchers.hpp"
+#include "fakeit/FakeIt.hpp"
 
 namespace fakeit {
 
@@ -207,14 +208,21 @@ public:
 		methodInvocationMocks.clear();
 	}
 
+
 	R handleMethodInvocation(arglist&... args) override {
+
+		struct UnmatchedMethodInvocation : public UnexpectedMethodCallException {
+			UnmatchedMethodInvocation(std::shared_ptr<Invocation> actualInvocation) : //
+			UnexpectedMethodCallException(actualInvocation){} //
+		};
+
 		int ordinal = nextInvocationOrdinal();
 		auto actualInvoaction = std::shared_ptr<ActualInvocation<arglist...>> {new ActualInvocation<arglist...>(ordinal, this->getMethod(),
 					args...)};
 		auto methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
 		if (!methodInvocationMock) {
-			UnexpectedMethodCallException e(actualInvoaction); // TODO: should pass the actual invocation here!!
-			FakeIt::handle(e);
+			UnmatchedMethodInvocation e(actualInvoaction);
+			FakeIt::getInstance().handle(e);
 			throw e;
 		}
 		auto matcher = methodInvocationMock->getMatcher();
@@ -223,8 +231,8 @@ public:
 		try {
 			return methodInvocationMock->handleMethodInvocation(args...);
 		} catch (NoMoreRecordedBehaviorException&) {
-			UnexpectedMethodCallException e(actualInvoaction); // TODO: should pass the actual invocation here!!
-			FakeIt::handle(e);
+			UnmatchedMethodInvocation e(actualInvoaction);
+			fakeit::FakeIt::getInstance().handle(e);
 			throw e;
 		}
 	}

@@ -6,8 +6,6 @@
  * Created on Mar 10, 2014
  */
 
-#if defined (__GNUG__)
-
 #include <string>
 #include <queue>
 
@@ -96,6 +94,7 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 	};
 	void scalar_types_should_return_zero() {
 		Mock<ScalarFunctions> mock;
+
 		Fake(Method(mock,boolFunc));
 		Fake(Method(mock,charFunc));
 		Fake(Method(mock,char16Func));
@@ -225,4 +224,3 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 	}
 
 } __DefaultBehaviore;
-#endif

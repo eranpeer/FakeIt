@@ -13,32 +13,36 @@
 
 namespace fakeit {
 
-struct DefaultValueInstatiationException: public std::exception {
-	DefaultValueInstatiationException() = default;
+struct DefaultValueInstatiationException {
+	virtual ~DefaultValueInstatiationException() = default;
+	virtual std::string what() const = 0;
 };
 
-struct DefaultValue {
+template<class C>
+struct naked_type {
+	typedef typename std::remove_reference<C>::type type;
+};
 
-	template<typename C>
-	static typename std::enable_if<std::is_void<C>::value, C>::type value() {
-	}
+template<class C>
+struct is_constructible_type {
+	static const bool value =
+			std::is_default_constructible<typename naked_type<C>::type>::value
+			&& !std::is_abstract<typename naked_type<C>::type>::value;
+};
 
-	template<typename C>
-	static typename std::enable_if<
-		!std::is_void<C>::value && !std::is_reference<C>::value && !std::is_abstract<C>::value
-					&& std::is_default_constructible<C>::value, C&>::type value() {
-		static C val { };
-		return val;
-	}
+template<class C, class Enable = void>
+struct DefaultValue;
 
-	// Can't create default value of an a non default constructible type.
-	template<typename C>
-	static typename std::enable_if<
-			!std::is_void<C>::value && !std::is_reference<C>::value
-					&& !std::is_default_constructible<C>::value, C&>::type value() {
+template<class C>
+struct DefaultValue <C, typename std::enable_if<!is_constructible_type<C>::value>::type> {
+	static C& value() {
+		if (std::is_reference<C>::value){
+			typename naked_type<C>::type * ptr = nullptr;
+			return *ptr;
+		}
 
 		class Exception : public DefaultValueInstatiationException {
-			const char* what() const throw () override {
+			virtual std::string what() const override {
 				return (std::string("Type ") + std::string(typeid(C).name())
 				+ std::string(" is not default constructible. Could not instantiate a default return value")).c_str();
 			}
@@ -46,25 +50,84 @@ struct DefaultValue {
 
 		throw Exception();
 	}
+};
 
-	template<typename REF>
-	static typename std::enable_if<
-		std::is_reference<REF>::value && 
-		std::is_default_constructible<typename std::remove_reference<REF>::type>::value &&
-		!std::is_abstract<typename std::remove_reference<REF>::type>::value,
-		REF>::type value() {
-		return DefaultValue::value<typename std::remove_reference<REF>::type>();
+template<class C>
+struct DefaultValue <C, typename std::enable_if<is_constructible_type<C>::value>::type> {
+	static C& value() {
+		static typename naked_type<C>::type val { };
+		return val;
 	}
+};
 
-	template<typename REF>
-	static typename std::enable_if<
-		std::is_reference<REF>::value
-		&& (!std::is_default_constructible<typename std::remove_reference<REF>::type>::value
-		|| std::is_abstract<typename std::remove_reference<REF>::type>::value),
-		REF>::type value() {
-			typename std::remove_reference<REF>::type * ptr = nullptr;
-			return *ptr;
-		}
+
+template<> struct DefaultValue<void> {
+	static void value() {
+		return;
+	}
+};
+
+template<> struct DefaultValue<bool> {
+	static bool& value() {
+		static bool value { false };
+		return value;
+	}
+};
+
+template<> struct DefaultValue<char> {
+	static char& value() {
+		static char value { 0 };
+		return value;
+	}
+};
+
+template<> struct DefaultValue<char16_t> {
+	static char16_t& value() {
+		static char16_t value { 0 };
+		return value;
+	}
+};
+template<> struct DefaultValue<char32_t> {
+	static char32_t& value() {
+		static char32_t value { 0 };
+		return value;
+	}
+};
+template<> struct DefaultValue<wchar_t> {
+	static wchar_t& value() {
+		static wchar_t value { 0 };
+		return value;
+	}
+};
+template<> struct DefaultValue<short> {
+	static short& value() {
+		static short value { 0 };
+		return value;
+	}
+};
+template<> struct DefaultValue<int> {
+	static int& value() {
+		static int value { 0 };
+		return value;
+	}
+};
+template<> struct DefaultValue<long> {
+	static long& value() {
+		static long value { 0 };
+		return value;
+	}
+};
+template<> struct DefaultValue<long long> {
+	static long long& value() {
+		static long long value { 0 };
+		return value;
+	}
+};
+template<> struct DefaultValue<std::string> {
+	static std::string& value() {
+		static std::string value {};
+		return value;
+	}
 };
 
 }

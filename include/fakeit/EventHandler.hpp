@@ -9,19 +9,21 @@
 #ifndef EventHandler_h__
 #define EventHandler_h__
 
-#include "fakeit/FakeitExceptions.hpp"
-
 namespace fakeit {
+
+struct UnexpectedMethodCallException;
+struct SequenceVerificationException;
+struct NoMoreInvocationsVerificationException;
 
 struct EventHandler {
 
 	virtual ~EventHandler() = default;
 
-	virtual void handle(UnexpectedMethodCallException& e) = 0;
+	virtual void handle(const UnexpectedMethodCallException& e) = 0;
 
-	virtual void handle(SequenceVerificationException& e) = 0;
+	virtual void handle(const SequenceVerificationException& e) = 0;
 
-	virtual void handle(NoMoreInvocationsVerificationException& e) = 0;
+	virtual void handle(const NoMoreInvocationsVerificationException& e) = 0;
 
 };
 

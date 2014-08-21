@@ -60,7 +60,7 @@ class VerifyNoOtherInvocationsVerificationProgress {
 
 				NoMoreInvocationsVerificationException e(sortedActualIvocations, sortedNonVerifedIvocations);
 				e.setFileInfo(_file, _line, _callingMethod);
-				fakeit::FakeIt::handle(e);
+				fakeit::FakeIt::getInstance().handle(e);
 				throw e;
 			}
 		}

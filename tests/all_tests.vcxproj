@@ -45,6 +45,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/bigobj</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -66,6 +67,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="default_behaviore_tests.cpp" />
+    <ClCompile Include="default_error_formatting_tests.cpp" />
     <ClCompile Include="exampls.cpp" />
     <ClCompile Include="gcc_stubbing_multiple_values_tests.cpp" />
     <ClCompile Include="gcc_type_info_tests.cpp" />
@@ -80,7 +82,7 @@
     <ClCompile Include="stubbing_tests.cpp" />
     <ClCompile Include="tpunit++main.cpp" />
     <ClCompile Include="type_info_tests.cpp" />
-    <ClCompile Include="verification_error_formatting_tests.cpp" />
+    <ClCompile Include="verification_errors_tests.cpp" />
     <ClCompile Include="verification_tests.cpp" />
   </ItemGroup>
   <ItemGroup>

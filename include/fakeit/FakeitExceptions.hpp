@@ -14,11 +14,14 @@
 
 #include "fakeit/Sequence.hpp"
 #include "fakeit/DomainObjects.hpp"
-#include "mockutils/Formatter.hpp"
+#include "fakeit/ErrorFormatter.hpp"
 
+#include "mockutils/Formatter.hpp"
 namespace fakeit {
 
 struct FakeitException {
+
+	virtual ~FakeitException() = default;
 
 	virtual std::string what() const = 0;
 
@@ -35,10 +38,16 @@ struct UnexpectedMethodCallException: public FakeitException {
 	}
 
 	virtual std::string what() const override {
-		return std::string("UnexpectedMethodCallException: could not find any recorded behavior to support this method call");
+		if (&(_actualInvocation->getMethod()) == &UnknownMethod::instance()) {
+			return std::string("UnexpectedMethodCallException: Unknown method invocation. All used virtual methods must be stubbed!");
+		}
+		else {
+			return std::string("UnexpectedMethodCallException: Could not find any recorded behavior to support this method call");
+		}
+		//return getErrorFormatter()->format(*this);
 	}
 
-	const Method& getMethod() {
+	const Method& getMethod() const {
 		return _actualInvocation->getMethod();
 	}
 
@@ -50,6 +59,7 @@ struct UnexpectedMethodCallException: public FakeitException {
 private:
 	std::shared_ptr<Invocation> _actualInvocation;
 };
+
 
 enum class VerificationType {
 	Exact, AtLeast, NoMoreInvocatoins
@@ -95,6 +105,7 @@ struct NoMoreInvocationsVerificationException: public VerificationException {
 	}
 
 	virtual std::string what() const override {
+//		return getErrorFormatter()->format(*this);
 		return std::string("VerificationException: expected no more invocations but found ") //
 		.append(std::to_string(unverifedIvocations().size()));
 	}
@@ -136,6 +147,7 @@ struct SequenceVerificationException: public VerificationException {
 	}
 
 	virtual std::string what() const override {
+//		return getErrorFormatter()->format(*this);
 		return std::string("VerificationException: expected ") //
 		.append(verificationType() == fakeit::VerificationType::Exact ? "exactly " : "at least ") //
 		.append(std::to_string(expectedCount())) //

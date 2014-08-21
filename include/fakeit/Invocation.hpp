@@ -22,7 +22,7 @@ namespace fakeit {
 
 struct Invocation {
 
-	Invocation(const int ordinal, const Method & method) :
+	Invocation(int ordinal, Method & method) :
 			ordinal(ordinal), method(method), _isVerified(false) {
 	}
 
@@ -32,7 +32,7 @@ struct Invocation {
 		return ordinal;
 	}
 
-	const Method & getMethod() const {
+	Method & getMethod() const {
 		return method;
 	}
 
@@ -56,7 +56,7 @@ struct Invocation {
 
 private:
 	const int ordinal;
-	const Method & method;
+	Method & method;
 	bool _isVerified;
 };
 

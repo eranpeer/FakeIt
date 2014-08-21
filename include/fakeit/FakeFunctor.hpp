@@ -11,6 +11,7 @@
 
 #include "fakeit/Stubbing.hpp"
 #include "fakeit/StubbingImpl.hpp"
+#include "fakeit/FakeIt.hpp"
 
 namespace fakeit {
 
