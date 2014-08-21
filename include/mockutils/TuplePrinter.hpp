@@ -35,7 +35,7 @@ struct TuplePrinter<Tuple, 1> {
 
 template<class Tuple>
 struct TuplePrinter<Tuple, 0> {
-	static void print(std::ostream &strm, const Tuple& t) {
+    static void print(std::ostream &, const Tuple& ) {
 	}
 };
 

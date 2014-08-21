@@ -89,7 +89,7 @@ struct DefaultInvocationMatcher: public ActualInvocation<arglist...>::Matcher {
 	}
 
 private:
-	virtual bool matches(const std::tuple<arglist...>& actualArgs) {
+    virtual bool matches(const std::tuple<arglist...>& ) {
 		return true;
 	}
 };

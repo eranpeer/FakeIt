@@ -85,7 +85,7 @@ private:
 		return collectSequences(vec, tail...);
 	}
 
-	void collectActualInvocations(std::vector<Sequence*>& expectedPattern, std::unordered_set<Invocation*>& actualIvocations) {
+    void collectActualInvocations(std::vector<Sequence*>& , std::unordered_set<Invocation*>& actualIvocations) {
 		for (auto mock : _involvedMocks) {
 			mock->getActualInvocations(actualIvocations);
 		}

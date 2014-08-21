@@ -22,7 +22,7 @@ namespace fakeit {
 
 class VerifyFunctor {
 
-	void collectSequences(std::vector<Sequence*>& vec) {
+    void collectSequences(std::vector<Sequence*>& ) {
 	}
 
 	template<typename ... list>
