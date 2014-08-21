@@ -148,7 +148,7 @@ struct VirtualTable {
 	void copyFrom(VirtualTable<C, baseclasses...>& from) {
 		int size = VTUtils::getVTSize<C>();
 		firstMethod[-1] = from.firstMethod[-1]; // copy object locator
-		for (int i = 0; i < size; i++) {
+		for (size_t i = 0; i < size; i++) {
 			firstMethod[i] = from.getMethod(i);
 		}
 	}

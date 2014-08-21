@@ -376,9 +376,9 @@ private:
 				return methodMock->handleMethodInvocation(args...);
 			}
 
-		struct VirtualMethodProxy2: public MethodProxy<R, arglist...> {
+		struct VirtualMethodProxy: public MethodProxy<R, arglist...> {
 
-			VirtualMethodProxy2(unsigned int offset, R(MethodProxyCreator::*vMethod)(arglist...)):
+			VirtualMethodProxy(unsigned int offset, R(MethodProxyCreator::*vMethod)(arglist...)):
 			_vMethod(vMethod), _offset(offset) {
 			}
 
@@ -420,154 +420,154 @@ private:
 			MethodProxy<R,arglist...>* proxy = nullptr;
 			switch (offset) {
 				case 0:
-				proxy = new VirtualMethodProxy2(0, &MethodProxyCreator::methodProxy0);
+				proxy = new VirtualMethodProxy(0, &MethodProxyCreator::methodProxy0);
 				break;
 				case 1:
-				proxy = new VirtualMethodProxy2(1, &MethodProxyCreator::methodProxy1);
+				proxy = new VirtualMethodProxy(1, &MethodProxyCreator::methodProxy1);
 				break;
 				case 2:
-				proxy = new VirtualMethodProxy2(2, &MethodProxyCreator::methodProxy2);
+				proxy = new VirtualMethodProxy(2, &MethodProxyCreator::methodProxy2);
 				break;
 				case 3:
-					proxy = new VirtualMethodProxy2(3, &MethodProxyCreator::methodProxy3);
+					proxy = new VirtualMethodProxy(3, &MethodProxyCreator::methodProxy3);
 				break;
 				case 4:
-					proxy = new VirtualMethodProxy2(4, &MethodProxyCreator::methodProxy4);
+					proxy = new VirtualMethodProxy(4, &MethodProxyCreator::methodProxy4);
 				break;
 				case 5:
-					proxy = new VirtualMethodProxy2(5, &MethodProxyCreator::methodProxy5);
+					proxy = new VirtualMethodProxy(5, &MethodProxyCreator::methodProxy5);
 				break;
 				case 6:
-					proxy = new VirtualMethodProxy2(6, &MethodProxyCreator::methodProxy6);
+					proxy = new VirtualMethodProxy(6, &MethodProxyCreator::methodProxy6);
 				break;
 				case 7:
-					proxy = new VirtualMethodProxy2(7, &MethodProxyCreator::methodProxy7);
+					proxy = new VirtualMethodProxy(7, &MethodProxyCreator::methodProxy7);
 				break;
 				case 8:
-					proxy = new VirtualMethodProxy2(8, &MethodProxyCreator::methodProxy8);
+					proxy = new VirtualMethodProxy(8, &MethodProxyCreator::methodProxy8);
 				break;
 				case 9:
-					proxy = new VirtualMethodProxy2(9, &MethodProxyCreator::methodProxy9);
+					proxy = new VirtualMethodProxy(9, &MethodProxyCreator::methodProxy9);
 				break;
 				case 10:
-					proxy = new VirtualMethodProxy2(10, &MethodProxyCreator::methodProxy10);
+					proxy = new VirtualMethodProxy(10, &MethodProxyCreator::methodProxy10);
 				break;
 				case 11:
-					proxy = new VirtualMethodProxy2(11, &MethodProxyCreator::methodProxy11);
+					proxy = new VirtualMethodProxy(11, &MethodProxyCreator::methodProxy11);
 				break;
 				case 12:
-					proxy = new VirtualMethodProxy2(12, &MethodProxyCreator::methodProxy12);
+					proxy = new VirtualMethodProxy(12, &MethodProxyCreator::methodProxy12);
 				break;
 				case 13:
-					proxy = new VirtualMethodProxy2(13, &MethodProxyCreator::methodProxy13);
+					proxy = new VirtualMethodProxy(13, &MethodProxyCreator::methodProxy13);
 				break;
 				case 14:
-					proxy = new VirtualMethodProxy2(14, &MethodProxyCreator::methodProxy14);
+					proxy = new VirtualMethodProxy(14, &MethodProxyCreator::methodProxy14);
 				break;
 				case 15:
-					proxy = new VirtualMethodProxy2(15, &MethodProxyCreator::methodProxy15);
+					proxy = new VirtualMethodProxy(15, &MethodProxyCreator::methodProxy15);
 				break;
 				case 16:
-					proxy = new VirtualMethodProxy2(16, &MethodProxyCreator::methodProxy16);
+					proxy = new VirtualMethodProxy(16, &MethodProxyCreator::methodProxy16);
 				break;
 				case 17:
-					proxy = new VirtualMethodProxy2(17, &MethodProxyCreator::methodProxy17);
+					proxy = new VirtualMethodProxy(17, &MethodProxyCreator::methodProxy17);
 				break;
 				case 18:
-					proxy = new VirtualMethodProxy2(18, &MethodProxyCreator::methodProxy18);
+					proxy = new VirtualMethodProxy(18, &MethodProxyCreator::methodProxy18);
 				break;
 				case 19:
-					proxy = new VirtualMethodProxy2(19, &MethodProxyCreator::methodProxy19);
+					proxy = new VirtualMethodProxy(19, &MethodProxyCreator::methodProxy19);
 				break;
 				case 20:
-					proxy = new VirtualMethodProxy2(20, &MethodProxyCreator::methodProxy20);
+					proxy = new VirtualMethodProxy(20, &MethodProxyCreator::methodProxy20);
 				break;
 				case 21:
-					proxy = new VirtualMethodProxy2(21, &MethodProxyCreator::methodProxy21);
+					proxy = new VirtualMethodProxy(21, &MethodProxyCreator::methodProxy21);
 				break;
 				case 22:
-					proxy = new VirtualMethodProxy2(22, &MethodProxyCreator::methodProxy22);
+					proxy = new VirtualMethodProxy(22, &MethodProxyCreator::methodProxy22);
 				break;
 				case 23:
-					proxy = new VirtualMethodProxy2(23, &MethodProxyCreator::methodProxy23);
+					proxy = new VirtualMethodProxy(23, &MethodProxyCreator::methodProxy23);
 				break;
 				case 24:
-					proxy = new VirtualMethodProxy2(24, &MethodProxyCreator::methodProxy24);
+					proxy = new VirtualMethodProxy(24, &MethodProxyCreator::methodProxy24);
 				break;
 				case 25:
-					proxy = new VirtualMethodProxy2(25, &MethodProxyCreator::methodProxy25);
+					proxy = new VirtualMethodProxy(25, &MethodProxyCreator::methodProxy25);
 				break;
 				case 26:
-					proxy = new VirtualMethodProxy2(26, &MethodProxyCreator::methodProxy26);
+					proxy = new VirtualMethodProxy(26, &MethodProxyCreator::methodProxy26);
 				break;
 				case 27:
-					proxy = new VirtualMethodProxy2(27, &MethodProxyCreator::methodProxy27);
+					proxy = new VirtualMethodProxy(27, &MethodProxyCreator::methodProxy27);
 				break;
 				case 28:
-					proxy = new VirtualMethodProxy2(28, &MethodProxyCreator::methodProxy28);
+					proxy = new VirtualMethodProxy(28, &MethodProxyCreator::methodProxy28);
 				break;
 				case 29:
-					proxy = new VirtualMethodProxy2(29, &MethodProxyCreator::methodProxy29);
+					proxy = new VirtualMethodProxy(29, &MethodProxyCreator::methodProxy29);
 				break;
 				case 30:
-					proxy = new VirtualMethodProxy2(30, &MethodProxyCreator::methodProxy30);
+					proxy = new VirtualMethodProxy(30, &MethodProxyCreator::methodProxy30);
 				break;
 				case 31:
-					proxy = new VirtualMethodProxy2(31, &MethodProxyCreator::methodProxy31);
+					proxy = new VirtualMethodProxy(31, &MethodProxyCreator::methodProxy31);
 				break;
 				case 32:
-					proxy = new VirtualMethodProxy2(32, &MethodProxyCreator::methodProxy32);
+					proxy = new VirtualMethodProxy(32, &MethodProxyCreator::methodProxy32);
 				break;
 				case 33:
-					proxy = new VirtualMethodProxy2(33, &MethodProxyCreator::methodProxy33);
+					proxy = new VirtualMethodProxy(33, &MethodProxyCreator::methodProxy33);
 				break;
 				case 34:
-					proxy = new VirtualMethodProxy2(34, &MethodProxyCreator::methodProxy34);
+					proxy = new VirtualMethodProxy(34, &MethodProxyCreator::methodProxy34);
 				break;
 				case 35:
-					proxy = new VirtualMethodProxy2(35, &MethodProxyCreator::methodProxy35);
+					proxy = new VirtualMethodProxy(35, &MethodProxyCreator::methodProxy35);
 				break;
 				case 36:
-					proxy = new VirtualMethodProxy2(36, &MethodProxyCreator::methodProxy36);
+					proxy = new VirtualMethodProxy(36, &MethodProxyCreator::methodProxy36);
 				break;
 				case 37:
-					proxy = new VirtualMethodProxy2(37, &MethodProxyCreator::methodProxy37);
+					proxy = new VirtualMethodProxy(37, &MethodProxyCreator::methodProxy37);
 				break;
 				case 38:
-					proxy = new VirtualMethodProxy2(38, &MethodProxyCreator::methodProxy38);
+					proxy = new VirtualMethodProxy(38, &MethodProxyCreator::methodProxy38);
 				break;
 				case 39:
-					proxy = new VirtualMethodProxy2(39, &MethodProxyCreator::methodProxy39);
+					proxy = new VirtualMethodProxy(39, &MethodProxyCreator::methodProxy39);
 				break;
 				case 40:
-					proxy = new VirtualMethodProxy2(40, &MethodProxyCreator::methodProxy40);
+					proxy = new VirtualMethodProxy(40, &MethodProxyCreator::methodProxy40);
 				break;
 				case 41:
-					proxy = new VirtualMethodProxy2(41, &MethodProxyCreator::methodProxy41);
+					proxy = new VirtualMethodProxy(41, &MethodProxyCreator::methodProxy41);
 				break;
 				case 42:
-					proxy = new VirtualMethodProxy2(42, &MethodProxyCreator::methodProxy42);
+					proxy = new VirtualMethodProxy(42, &MethodProxyCreator::methodProxy42);
 				break;
 				case 43:
-					proxy = new VirtualMethodProxy2(43, &MethodProxyCreator::methodProxy43);
+					proxy = new VirtualMethodProxy(43, &MethodProxyCreator::methodProxy43);
 				break;
 				case 44:
-					proxy = new VirtualMethodProxy2(44, &MethodProxyCreator::methodProxy44);
+					proxy = new VirtualMethodProxy(44, &MethodProxyCreator::methodProxy44);
 				break;
 				case 45:
-					proxy = new VirtualMethodProxy2(45, &MethodProxyCreator::methodProxy45);
+					proxy = new VirtualMethodProxy(45, &MethodProxyCreator::methodProxy45);
 				break;
 				case 46:
-					proxy = new VirtualMethodProxy2(46, &MethodProxyCreator::methodProxy46);
+					proxy = new VirtualMethodProxy(46, &MethodProxyCreator::methodProxy46);
 				break;
 				case 47:
-					proxy = new VirtualMethodProxy2(47, &MethodProxyCreator::methodProxy47);
+					proxy = new VirtualMethodProxy(47, &MethodProxyCreator::methodProxy47);
 				break;
 				case 48:
-					proxy = new VirtualMethodProxy2(48, &MethodProxyCreator::methodProxy48);
+					proxy = new VirtualMethodProxy(48, &MethodProxyCreator::methodProxy48);
 				break;
 				case 49:
-					proxy = new VirtualMethodProxy2(49, &MethodProxyCreator::methodProxy49);
+					proxy = new VirtualMethodProxy(49, &MethodProxyCreator::methodProxy49);
 				break;
 			}
 			return proxy;
