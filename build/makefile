@@ -26,6 +26,9 @@ all: fakeit_test_application
 
 coverage: fakeit_test_application_with_coverage
 
+check: fakeit_test_application
+	./fakeit_tests.exe
+
 fakeit_test_application: $(OBJS) 
 	@echo 'Building test application: fakeit_tests.exe'
 	@echo 'Invoking: GCC C++ Linker'
