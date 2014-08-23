@@ -114,267 +114,162 @@ private:
 	class MethodProxyCreator {
 	private:
 
-		template<std::size_t N>
-		R methodProxyX(arglist ... args) {
-			DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-			MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(N);
+		R methodProxy(unsigned int index, arglist& ... args) {
+			DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);
+			MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(index);
 			return methodMock->handleMethodInvocation(args...);
 		}
 
 		R methodProxy0(arglist ... args) {
-			DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-			MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(0);
-			return methodMock->handleMethodInvocation(args...);
+			return methodProxy(0, args...);
 		}
-
 		R methodProxy1(arglist ... args) {
-			DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-			MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(1);
-			return methodMock->handleMethodInvocation(args...);
+			return methodProxy(1, args...);
 		}
-
 		R methodProxy2(arglist ... args) {
-			DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-			MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(2);
-			return methodMock->handleMethodInvocation(args...);
+			return methodProxy(2, args...);
 		}
-
 		R methodProxy3(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(3);
-				return methodMock->handleMethodInvocation(args...);
-			}
-
+			return methodProxy(3, args...);
+		}
 		R methodProxy4(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(4);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(4, args...);
+		}
 		R methodProxy5(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(5);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(5, args...);
+		}
 		R methodProxy6(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(6);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(6, args...);
+		}
 		R methodProxy7(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(7);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(7, args...);
+		}
 		R methodProxy8(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(8);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(8, args...);
+		}
 		R methodProxy9(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(9);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(9, args...);
+		}
 		R methodProxy10(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(10);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(10, args...);
+		}
 		R methodProxy11(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(11);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(11, args...);
+		}
 		R methodProxy12(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(12);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(12, args...);
+		}
 		R methodProxy13(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(13);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(13, args...);
+		}
 		R methodProxy14(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(14);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(14, args...);
+		}
 		R methodProxy15(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(15);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(15, args...);
+		}
 		R methodProxy16(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(16);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(16, args...);
+		}
 		R methodProxy17(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(17);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(17, args...);
+		}
 		R methodProxy18(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(18);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(18, args...);
+		}
 		R methodProxy19(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(19);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(19, args...);
+		}
 		R methodProxy20(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(20);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(20, args...);
+		}
 		R methodProxy21(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(21);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(21, args...);
+		}
 		R methodProxy22(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(22);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(22, args...);
+		}
 		R methodProxy23(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(23);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(23, args...);
+		}
 		R methodProxy24(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(24);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(24, args...);
+		}
 		R methodProxy25(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(25);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(25, args...);
+		}
 		R methodProxy26(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(26);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(26, args...);
+		}
 		R methodProxy27(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(27);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(27, args...);
+		}
 		R methodProxy28(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(28);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(28, args...);
+		}
 		R methodProxy29(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(29);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(29, args...);
+		}
 		R methodProxy30(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(30);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(30, args...);
+		}
 		R methodProxy31(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(31);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(31, args...);
+		}
 		R methodProxy32(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(32);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(32, args...);
+		}
 		R methodProxy33(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(33);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(33, args...);
+		}
 		R methodProxy34(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(34);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(34, args...);
+		}
 		R methodProxy35(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(35);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(35, args...);
+		}
 		R methodProxy36(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(36);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(36, args...);
+		}
 		R methodProxy37(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(37);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(37, args...);
+		}
 		R methodProxy38(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(38);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(38, args...);
+		}
 		R methodProxy39(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(39);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(39, args...);
+		}
 		R methodProxy40(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(40);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(40, args...);
+		}
 		R methodProxy41(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(41);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(41, args...);
+		}
 		R methodProxy42(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(42);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(42, args...);
+		}
 		R methodProxy43(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(43);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(43, args...);
+		}
 		R methodProxy44(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(44);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(44, args...);
+		}
 		R methodProxy45(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(45);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(45, args...);
+		}
 		R methodProxy46(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(46);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(46, args...);
+		}
 		R methodProxy47(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(47);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(47, args...);
+		}
 		R methodProxy48(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(48);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(48, args...);
+		}
 		R methodProxy49(arglist ... args) {
-				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(49);
-				return methodMock->handleMethodInvocation(args...);
-			}
+			return methodProxy(49, args...);
+		}
 
 		struct VirtualMethodProxy: public MethodProxy<R, arglist...> {
 
@@ -395,25 +290,6 @@ private:
 			unsigned int _offset;
 		};
 
-//		template<unsigned int OFFSET>
-//		struct VirtualMethodProxy: public MethodProxy<R, arglist...> {
-//			unsigned int getOffset() override {
-//				return OFFSET;
-//			}
-//
-//			void * getProxy() override {
-//				return union_cast<void *>(&VirtualMethodProxy::methodProxy);
-//			}
-//
-//		private:
-//			R methodProxy(arglist ... args) {
-//				DynamicProxy<C, baseclasses...> * dynamicProxy = getDynamicProxy(this);;
-//				MethodInvocationHandler<R, arglist...> * methodMock = dynamicProxy->getMethodMock<MethodInvocationHandler<R, arglist...> *>(
-//						OFFSET);
-//				return methodMock->handleMethodInvocation(args...);
-//			}
-//		};
-
 	public:
 
 		MethodProxy<R,arglist...>* createMethodProxy(unsigned int offset) {
@@ -429,145 +305,145 @@ private:
 				proxy = new VirtualMethodProxy(2, &MethodProxyCreator::methodProxy2);
 				break;
 				case 3:
-					proxy = new VirtualMethodProxy(3, &MethodProxyCreator::methodProxy3);
+				proxy = new VirtualMethodProxy(3, &MethodProxyCreator::methodProxy3);
 				break;
 				case 4:
-					proxy = new VirtualMethodProxy(4, &MethodProxyCreator::methodProxy4);
+				proxy = new VirtualMethodProxy(4, &MethodProxyCreator::methodProxy4);
 				break;
 				case 5:
-					proxy = new VirtualMethodProxy(5, &MethodProxyCreator::methodProxy5);
+				proxy = new VirtualMethodProxy(5, &MethodProxyCreator::methodProxy5);
 				break;
 				case 6:
-					proxy = new VirtualMethodProxy(6, &MethodProxyCreator::methodProxy6);
+				proxy = new VirtualMethodProxy(6, &MethodProxyCreator::methodProxy6);
 				break;
 				case 7:
-					proxy = new VirtualMethodProxy(7, &MethodProxyCreator::methodProxy7);
+				proxy = new VirtualMethodProxy(7, &MethodProxyCreator::methodProxy7);
 				break;
 				case 8:
-					proxy = new VirtualMethodProxy(8, &MethodProxyCreator::methodProxy8);
+				proxy = new VirtualMethodProxy(8, &MethodProxyCreator::methodProxy8);
 				break;
 				case 9:
-					proxy = new VirtualMethodProxy(9, &MethodProxyCreator::methodProxy9);
+				proxy = new VirtualMethodProxy(9, &MethodProxyCreator::methodProxy9);
 				break;
 				case 10:
-					proxy = new VirtualMethodProxy(10, &MethodProxyCreator::methodProxy10);
+				proxy = new VirtualMethodProxy(10, &MethodProxyCreator::methodProxy10);
 				break;
 				case 11:
-					proxy = new VirtualMethodProxy(11, &MethodProxyCreator::methodProxy11);
+				proxy = new VirtualMethodProxy(11, &MethodProxyCreator::methodProxy11);
 				break;
 				case 12:
-					proxy = new VirtualMethodProxy(12, &MethodProxyCreator::methodProxy12);
+				proxy = new VirtualMethodProxy(12, &MethodProxyCreator::methodProxy12);
 				break;
 				case 13:
-					proxy = new VirtualMethodProxy(13, &MethodProxyCreator::methodProxy13);
+				proxy = new VirtualMethodProxy(13, &MethodProxyCreator::methodProxy13);
 				break;
 				case 14:
-					proxy = new VirtualMethodProxy(14, &MethodProxyCreator::methodProxy14);
+				proxy = new VirtualMethodProxy(14, &MethodProxyCreator::methodProxy14);
 				break;
 				case 15:
-					proxy = new VirtualMethodProxy(15, &MethodProxyCreator::methodProxy15);
+				proxy = new VirtualMethodProxy(15, &MethodProxyCreator::methodProxy15);
 				break;
 				case 16:
-					proxy = new VirtualMethodProxy(16, &MethodProxyCreator::methodProxy16);
+				proxy = new VirtualMethodProxy(16, &MethodProxyCreator::methodProxy16);
 				break;
 				case 17:
-					proxy = new VirtualMethodProxy(17, &MethodProxyCreator::methodProxy17);
+				proxy = new VirtualMethodProxy(17, &MethodProxyCreator::methodProxy17);
 				break;
 				case 18:
-					proxy = new VirtualMethodProxy(18, &MethodProxyCreator::methodProxy18);
+				proxy = new VirtualMethodProxy(18, &MethodProxyCreator::methodProxy18);
 				break;
 				case 19:
-					proxy = new VirtualMethodProxy(19, &MethodProxyCreator::methodProxy19);
+				proxy = new VirtualMethodProxy(19, &MethodProxyCreator::methodProxy19);
 				break;
 				case 20:
-					proxy = new VirtualMethodProxy(20, &MethodProxyCreator::methodProxy20);
+				proxy = new VirtualMethodProxy(20, &MethodProxyCreator::methodProxy20);
 				break;
 				case 21:
-					proxy = new VirtualMethodProxy(21, &MethodProxyCreator::methodProxy21);
+				proxy = new VirtualMethodProxy(21, &MethodProxyCreator::methodProxy21);
 				break;
 				case 22:
-					proxy = new VirtualMethodProxy(22, &MethodProxyCreator::methodProxy22);
+				proxy = new VirtualMethodProxy(22, &MethodProxyCreator::methodProxy22);
 				break;
 				case 23:
-					proxy = new VirtualMethodProxy(23, &MethodProxyCreator::methodProxy23);
+				proxy = new VirtualMethodProxy(23, &MethodProxyCreator::methodProxy23);
 				break;
 				case 24:
-					proxy = new VirtualMethodProxy(24, &MethodProxyCreator::methodProxy24);
+				proxy = new VirtualMethodProxy(24, &MethodProxyCreator::methodProxy24);
 				break;
 				case 25:
-					proxy = new VirtualMethodProxy(25, &MethodProxyCreator::methodProxy25);
+				proxy = new VirtualMethodProxy(25, &MethodProxyCreator::methodProxy25);
 				break;
 				case 26:
-					proxy = new VirtualMethodProxy(26, &MethodProxyCreator::methodProxy26);
+				proxy = new VirtualMethodProxy(26, &MethodProxyCreator::methodProxy26);
 				break;
 				case 27:
-					proxy = new VirtualMethodProxy(27, &MethodProxyCreator::methodProxy27);
+				proxy = new VirtualMethodProxy(27, &MethodProxyCreator::methodProxy27);
 				break;
 				case 28:
-					proxy = new VirtualMethodProxy(28, &MethodProxyCreator::methodProxy28);
+				proxy = new VirtualMethodProxy(28, &MethodProxyCreator::methodProxy28);
 				break;
 				case 29:
-					proxy = new VirtualMethodProxy(29, &MethodProxyCreator::methodProxy29);
+				proxy = new VirtualMethodProxy(29, &MethodProxyCreator::methodProxy29);
 				break;
 				case 30:
-					proxy = new VirtualMethodProxy(30, &MethodProxyCreator::methodProxy30);
+				proxy = new VirtualMethodProxy(30, &MethodProxyCreator::methodProxy30);
 				break;
 				case 31:
-					proxy = new VirtualMethodProxy(31, &MethodProxyCreator::methodProxy31);
+				proxy = new VirtualMethodProxy(31, &MethodProxyCreator::methodProxy31);
 				break;
 				case 32:
-					proxy = new VirtualMethodProxy(32, &MethodProxyCreator::methodProxy32);
+				proxy = new VirtualMethodProxy(32, &MethodProxyCreator::methodProxy32);
 				break;
 				case 33:
-					proxy = new VirtualMethodProxy(33, &MethodProxyCreator::methodProxy33);
+				proxy = new VirtualMethodProxy(33, &MethodProxyCreator::methodProxy33);
 				break;
 				case 34:
-					proxy = new VirtualMethodProxy(34, &MethodProxyCreator::methodProxy34);
+				proxy = new VirtualMethodProxy(34, &MethodProxyCreator::methodProxy34);
 				break;
 				case 35:
-					proxy = new VirtualMethodProxy(35, &MethodProxyCreator::methodProxy35);
+				proxy = new VirtualMethodProxy(35, &MethodProxyCreator::methodProxy35);
 				break;
 				case 36:
-					proxy = new VirtualMethodProxy(36, &MethodProxyCreator::methodProxy36);
+				proxy = new VirtualMethodProxy(36, &MethodProxyCreator::methodProxy36);
 				break;
 				case 37:
-					proxy = new VirtualMethodProxy(37, &MethodProxyCreator::methodProxy37);
+				proxy = new VirtualMethodProxy(37, &MethodProxyCreator::methodProxy37);
 				break;
 				case 38:
-					proxy = new VirtualMethodProxy(38, &MethodProxyCreator::methodProxy38);
+				proxy = new VirtualMethodProxy(38, &MethodProxyCreator::methodProxy38);
 				break;
 				case 39:
-					proxy = new VirtualMethodProxy(39, &MethodProxyCreator::methodProxy39);
+				proxy = new VirtualMethodProxy(39, &MethodProxyCreator::methodProxy39);
 				break;
 				case 40:
-					proxy = new VirtualMethodProxy(40, &MethodProxyCreator::methodProxy40);
+				proxy = new VirtualMethodProxy(40, &MethodProxyCreator::methodProxy40);
 				break;
 				case 41:
-					proxy = new VirtualMethodProxy(41, &MethodProxyCreator::methodProxy41);
+				proxy = new VirtualMethodProxy(41, &MethodProxyCreator::methodProxy41);
 				break;
 				case 42:
-					proxy = new VirtualMethodProxy(42, &MethodProxyCreator::methodProxy42);
+				proxy = new VirtualMethodProxy(42, &MethodProxyCreator::methodProxy42);
 				break;
 				case 43:
-					proxy = new VirtualMethodProxy(43, &MethodProxyCreator::methodProxy43);
+				proxy = new VirtualMethodProxy(43, &MethodProxyCreator::methodProxy43);
 				break;
 				case 44:
-					proxy = new VirtualMethodProxy(44, &MethodProxyCreator::methodProxy44);
+				proxy = new VirtualMethodProxy(44, &MethodProxyCreator::methodProxy44);
 				break;
 				case 45:
-					proxy = new VirtualMethodProxy(45, &MethodProxyCreator::methodProxy45);
+				proxy = new VirtualMethodProxy(45, &MethodProxyCreator::methodProxy45);
 				break;
 				case 46:
-					proxy = new VirtualMethodProxy(46, &MethodProxyCreator::methodProxy46);
+				proxy = new VirtualMethodProxy(46, &MethodProxyCreator::methodProxy46);
 				break;
 				case 47:
-					proxy = new VirtualMethodProxy(47, &MethodProxyCreator::methodProxy47);
+				proxy = new VirtualMethodProxy(47, &MethodProxyCreator::methodProxy47);
 				break;
 				case 48:
-					proxy = new VirtualMethodProxy(48, &MethodProxyCreator::methodProxy48);
+				proxy = new VirtualMethodProxy(48, &MethodProxyCreator::methodProxy48);
 				break;
 				case 49:
-					proxy = new VirtualMethodProxy(49, &MethodProxyCreator::methodProxy49);
+				proxy = new VirtualMethodProxy(49, &MethodProxyCreator::methodProxy49);
 				break;
 			}
 			return proxy;
