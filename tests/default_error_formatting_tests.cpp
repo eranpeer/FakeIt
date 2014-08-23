@@ -172,7 +172,7 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 	void parse_UserDefinedMatcher_in_expected_pattern() {
 		Mock<SomeInterface> mock;
 		When(Method(mock, func)).Return(0);
-		SomeInterface &i = mock.get();
+		//SomeInterface &i = mock.get();
 		try {
 			fakeit::Verify(Method(mock, func).Matching([](...){return true; })) //
 				.setFileInfo("test file",1,"test method").Exactly(2);
@@ -195,7 +195,7 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 	void parse_actual_arguments() {
 		Mock<SomeInterface> mock;
 		When(Method(mock, all_types)).Return(0);
-		SomeInterface &i = mock.get();
+		//SomeInterface &i = mock.get();
 		try {
 			mock().all_types('a', true, 1, 1, 1, 1, 1, 1, 1, 1);
 			fakeit::Verify(Method(mock, all_types)) //
@@ -220,7 +220,7 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 	void parse_expected_arguments() {
 		Mock<SomeInterface> mock;
 		When(Method(mock, all_types)).Return(0);
-		SomeInterface &i = mock.get();
+		//SomeInterface &i = mock.get();
 		try {
 			fakeit::Verify(Method(mock, all_types).Using('a', true, 1, 1, 1, 1, 1, 1, 1, 1))//
 				.setFileInfo("test file", 1, "test method").Exactly(2);

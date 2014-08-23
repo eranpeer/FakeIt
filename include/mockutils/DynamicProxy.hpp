@@ -21,7 +21,6 @@
 #include "mockutils/gcc/VirtualTable.hpp"
 #endif
 
-#include "mockutils/MethodProxy.hpp"
 #include "mockutils/union_cast.hpp"
 #include "mockutils/MethodInvocationHandler.hpp"
 #include "mockutils/VTUtils.hpp"
@@ -31,6 +30,25 @@ namespace fakeit {
 
 template<typename C, typename ... baseclasses>
 struct DynamicProxy {
+
+	struct MethodProxy {
+
+		MethodProxy(unsigned int offset, void * vMethod):
+			_vMethod(vMethod), _offset(offset) {
+		}
+
+		unsigned int getOffset() {
+			return _offset;
+		}
+
+		void * getProxy() {
+			return union_cast<void *>(_vMethod);
+		}
+
+	private:
+		void * _vMethod;
+		unsigned int _offset;
+	};
 
 	static_assert(std::is_polymorphic<C>::value, "DynamicProxy requires a polymorphic type");
 
@@ -58,7 +76,7 @@ struct DynamicProxy {
 	template<typename R, typename ... arglist>
 	void stubMethod(R (C::*vMethod)(arglist...), std::shared_ptr<MethodInvocationHandler<R, arglist...>> methodInvocationHandler) {
 		MethodProxyCreator<R, arglist...> creator;
-		std::shared_ptr<MethodProxy<R, arglist...>> methodProxy = creator.createMethodProxy(vMethod);
+		std::shared_ptr<MethodProxy> methodProxy = creator.createMethodProxy(vMethod);
 		bind(methodProxy, methodInvocationHandler);
 	}
 
@@ -271,188 +289,173 @@ private:
 			return methodProxy(49, args...);
 		}
 
-		struct VirtualMethodProxy: public MethodProxy<R, arglist...> {
-
-			VirtualMethodProxy(unsigned int offset, R(MethodProxyCreator::*vMethod)(arglist...)):
-			_vMethod(vMethod), _offset(offset) {
-			}
-
-			unsigned int getOffset() override {
-				return _offset;
-			}
-
-			void * getProxy() override {
-				return union_cast<void *>(_vMethod);
-			}
-
-		private:
-			R(MethodProxyCreator::*_vMethod)(arglist...);
-			unsigned int _offset;
-		};
+		MethodProxy * newMethodProxy(unsigned int offset, R(MethodProxyCreator::*vMethod)(arglist...)){
+			return new MethodProxy(offset, union_cast<void *>(vMethod));
+		}
 
 	public:
 
-		MethodProxy<R,arglist...>* createMethodProxy(unsigned int offset) {
-			MethodProxy<R,arglist...>* proxy = nullptr;
+		MethodProxy* createMethodProxy(unsigned int offset) {
+			MethodProxy* proxy = nullptr;
 			switch (offset) {
 				case 0:
-				proxy = new VirtualMethodProxy(0, &MethodProxyCreator::methodProxy0);
+				proxy = newMethodProxy(0, &MethodProxyCreator::methodProxy0);
 				break;
 				case 1:
-				proxy = new VirtualMethodProxy(1, &MethodProxyCreator::methodProxy1);
+				proxy = newMethodProxy(1, &MethodProxyCreator::methodProxy1);
 				break;
 				case 2:
-				proxy = new VirtualMethodProxy(2, &MethodProxyCreator::methodProxy2);
+				proxy = newMethodProxy(2, &MethodProxyCreator::methodProxy2);
 				break;
 				case 3:
-				proxy = new VirtualMethodProxy(3, &MethodProxyCreator::methodProxy3);
+				proxy = newMethodProxy(3, &MethodProxyCreator::methodProxy3);
 				break;
 				case 4:
-				proxy = new VirtualMethodProxy(4, &MethodProxyCreator::methodProxy4);
+				proxy = newMethodProxy(4, &MethodProxyCreator::methodProxy4);
 				break;
 				case 5:
-				proxy = new VirtualMethodProxy(5, &MethodProxyCreator::methodProxy5);
+				proxy = newMethodProxy(5, &MethodProxyCreator::methodProxy5);
 				break;
 				case 6:
-				proxy = new VirtualMethodProxy(6, &MethodProxyCreator::methodProxy6);
+				proxy = newMethodProxy(6, &MethodProxyCreator::methodProxy6);
 				break;
 				case 7:
-				proxy = new VirtualMethodProxy(7, &MethodProxyCreator::methodProxy7);
+				proxy = newMethodProxy(7, &MethodProxyCreator::methodProxy7);
 				break;
 				case 8:
-				proxy = new VirtualMethodProxy(8, &MethodProxyCreator::methodProxy8);
+				proxy = newMethodProxy(8, &MethodProxyCreator::methodProxy8);
 				break;
 				case 9:
-				proxy = new VirtualMethodProxy(9, &MethodProxyCreator::methodProxy9);
+				proxy = newMethodProxy(9, &MethodProxyCreator::methodProxy9);
 				break;
 				case 10:
-				proxy = new VirtualMethodProxy(10, &MethodProxyCreator::methodProxy10);
+				proxy = newMethodProxy(10, &MethodProxyCreator::methodProxy10);
 				break;
 				case 11:
-				proxy = new VirtualMethodProxy(11, &MethodProxyCreator::methodProxy11);
+				proxy = newMethodProxy(11, &MethodProxyCreator::methodProxy11);
 				break;
 				case 12:
-				proxy = new VirtualMethodProxy(12, &MethodProxyCreator::methodProxy12);
+				proxy = newMethodProxy(12, &MethodProxyCreator::methodProxy12);
 				break;
 				case 13:
-				proxy = new VirtualMethodProxy(13, &MethodProxyCreator::methodProxy13);
+				proxy = newMethodProxy(13, &MethodProxyCreator::methodProxy13);
 				break;
 				case 14:
-				proxy = new VirtualMethodProxy(14, &MethodProxyCreator::methodProxy14);
+				proxy = newMethodProxy(14, &MethodProxyCreator::methodProxy14);
 				break;
 				case 15:
-				proxy = new VirtualMethodProxy(15, &MethodProxyCreator::methodProxy15);
+				proxy = newMethodProxy(15, &MethodProxyCreator::methodProxy15);
 				break;
 				case 16:
-				proxy = new VirtualMethodProxy(16, &MethodProxyCreator::methodProxy16);
+				proxy = newMethodProxy(16, &MethodProxyCreator::methodProxy16);
 				break;
 				case 17:
-				proxy = new VirtualMethodProxy(17, &MethodProxyCreator::methodProxy17);
+				proxy = newMethodProxy(17, &MethodProxyCreator::methodProxy17);
 				break;
 				case 18:
-				proxy = new VirtualMethodProxy(18, &MethodProxyCreator::methodProxy18);
+				proxy = newMethodProxy(18, &MethodProxyCreator::methodProxy18);
 				break;
 				case 19:
-				proxy = new VirtualMethodProxy(19, &MethodProxyCreator::methodProxy19);
+				proxy = newMethodProxy(19, &MethodProxyCreator::methodProxy19);
 				break;
 				case 20:
-				proxy = new VirtualMethodProxy(20, &MethodProxyCreator::methodProxy20);
+				proxy = newMethodProxy(20, &MethodProxyCreator::methodProxy20);
 				break;
 				case 21:
-				proxy = new VirtualMethodProxy(21, &MethodProxyCreator::methodProxy21);
+				proxy = newMethodProxy(21, &MethodProxyCreator::methodProxy21);
 				break;
 				case 22:
-				proxy = new VirtualMethodProxy(22, &MethodProxyCreator::methodProxy22);
+				proxy = newMethodProxy(22, &MethodProxyCreator::methodProxy22);
 				break;
 				case 23:
-				proxy = new VirtualMethodProxy(23, &MethodProxyCreator::methodProxy23);
+				proxy = newMethodProxy(23, &MethodProxyCreator::methodProxy23);
 				break;
 				case 24:
-				proxy = new VirtualMethodProxy(24, &MethodProxyCreator::methodProxy24);
+				proxy = newMethodProxy(24, &MethodProxyCreator::methodProxy24);
 				break;
 				case 25:
-				proxy = new VirtualMethodProxy(25, &MethodProxyCreator::methodProxy25);
+				proxy = newMethodProxy(25, &MethodProxyCreator::methodProxy25);
 				break;
 				case 26:
-				proxy = new VirtualMethodProxy(26, &MethodProxyCreator::methodProxy26);
+				proxy = newMethodProxy(26, &MethodProxyCreator::methodProxy26);
 				break;
 				case 27:
-				proxy = new VirtualMethodProxy(27, &MethodProxyCreator::methodProxy27);
+				proxy = newMethodProxy(27, &MethodProxyCreator::methodProxy27);
 				break;
 				case 28:
-				proxy = new VirtualMethodProxy(28, &MethodProxyCreator::methodProxy28);
+				proxy = newMethodProxy(28, &MethodProxyCreator::methodProxy28);
 				break;
 				case 29:
-				proxy = new VirtualMethodProxy(29, &MethodProxyCreator::methodProxy29);
+				proxy = newMethodProxy(29, &MethodProxyCreator::methodProxy29);
 				break;
 				case 30:
-				proxy = new VirtualMethodProxy(30, &MethodProxyCreator::methodProxy30);
+				proxy = newMethodProxy(30, &MethodProxyCreator::methodProxy30);
 				break;
 				case 31:
-				proxy = new VirtualMethodProxy(31, &MethodProxyCreator::methodProxy31);
+				proxy = newMethodProxy(31, &MethodProxyCreator::methodProxy31);
 				break;
 				case 32:
-				proxy = new VirtualMethodProxy(32, &MethodProxyCreator::methodProxy32);
+				proxy = newMethodProxy(32, &MethodProxyCreator::methodProxy32);
 				break;
 				case 33:
-				proxy = new VirtualMethodProxy(33, &MethodProxyCreator::methodProxy33);
+				proxy = newMethodProxy(33, &MethodProxyCreator::methodProxy33);
 				break;
 				case 34:
-				proxy = new VirtualMethodProxy(34, &MethodProxyCreator::methodProxy34);
+				proxy = newMethodProxy(34, &MethodProxyCreator::methodProxy34);
 				break;
 				case 35:
-				proxy = new VirtualMethodProxy(35, &MethodProxyCreator::methodProxy35);
+				proxy = newMethodProxy(35, &MethodProxyCreator::methodProxy35);
 				break;
 				case 36:
-				proxy = new VirtualMethodProxy(36, &MethodProxyCreator::methodProxy36);
+				proxy = newMethodProxy(36, &MethodProxyCreator::methodProxy36);
 				break;
 				case 37:
-				proxy = new VirtualMethodProxy(37, &MethodProxyCreator::methodProxy37);
+				proxy = newMethodProxy(37, &MethodProxyCreator::methodProxy37);
 				break;
 				case 38:
-				proxy = new VirtualMethodProxy(38, &MethodProxyCreator::methodProxy38);
+				proxy = newMethodProxy(38, &MethodProxyCreator::methodProxy38);
 				break;
 				case 39:
-				proxy = new VirtualMethodProxy(39, &MethodProxyCreator::methodProxy39);
+				proxy = newMethodProxy(39, &MethodProxyCreator::methodProxy39);
 				break;
 				case 40:
-				proxy = new VirtualMethodProxy(40, &MethodProxyCreator::methodProxy40);
+				proxy = newMethodProxy(40, &MethodProxyCreator::methodProxy40);
 				break;
 				case 41:
-				proxy = new VirtualMethodProxy(41, &MethodProxyCreator::methodProxy41);
+				proxy = newMethodProxy(41, &MethodProxyCreator::methodProxy41);
 				break;
 				case 42:
-				proxy = new VirtualMethodProxy(42, &MethodProxyCreator::methodProxy42);
+				proxy = newMethodProxy(42, &MethodProxyCreator::methodProxy42);
 				break;
 				case 43:
-				proxy = new VirtualMethodProxy(43, &MethodProxyCreator::methodProxy43);
+				proxy = newMethodProxy(43, &MethodProxyCreator::methodProxy43);
 				break;
 				case 44:
-				proxy = new VirtualMethodProxy(44, &MethodProxyCreator::methodProxy44);
+				proxy = newMethodProxy(44, &MethodProxyCreator::methodProxy44);
 				break;
 				case 45:
-				proxy = new VirtualMethodProxy(45, &MethodProxyCreator::methodProxy45);
+				proxy = newMethodProxy(45, &MethodProxyCreator::methodProxy45);
 				break;
 				case 46:
-				proxy = new VirtualMethodProxy(46, &MethodProxyCreator::methodProxy46);
+				proxy = newMethodProxy(46, &MethodProxyCreator::methodProxy46);
 				break;
 				case 47:
-				proxy = new VirtualMethodProxy(47, &MethodProxyCreator::methodProxy47);
+				proxy = newMethodProxy(47, &MethodProxyCreator::methodProxy47);
 				break;
 				case 48:
-				proxy = new VirtualMethodProxy(48, &MethodProxyCreator::methodProxy48);
+				proxy = newMethodProxy(48, &MethodProxyCreator::methodProxy48);
 				break;
 				case 49:
-				proxy = new VirtualMethodProxy(49, &MethodProxyCreator::methodProxy49);
+				proxy = newMethodProxy(49, &MethodProxyCreator::methodProxy49);
 				break;
 			}
 			return proxy;
 		}
 
-		std::shared_ptr<MethodProxy<R, arglist...>> createMethodProxy(R (C::*vMethod)(arglist...)) {
+		std::shared_ptr<MethodProxy> createMethodProxy(R (C::*vMethod)(arglist...)) {
 			auto offset = getOffset(vMethod);
-			MethodProxy<R, arglist...>* rv = createMethodProxy(offset);
-			return std::shared_ptr<MethodProxy<R, arglist...>> {rv};
+			MethodProxy* rv = createMethodProxy(offset);
+			return std::shared_ptr<MethodProxy> {rv};
 		}
 
 		static unsigned int getOffset(R (C::*vMethod)(arglist...)) {
@@ -497,7 +500,7 @@ private:
 	}
 
 	template<typename R, typename ... arglist>
-	void bind(std::shared_ptr<MethodProxy<R, arglist...>> methodProxy,
+	void bind(std::shared_ptr<MethodProxy> methodProxy,
 			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {
 		auto offset = methodProxy->getOffset();
 		getFake().setMethod(offset, methodProxy->getProxy());
