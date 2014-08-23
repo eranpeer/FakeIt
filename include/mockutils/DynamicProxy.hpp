@@ -295,7 +295,7 @@ private:
 	public:
 
 		MethodProxy createMethodProxy(unsigned int offset) {
-			R(MethodProxyCreator::*vMethod)(arglist...);
+			R(MethodProxyCreator::*vMethod)(arglist...) = 0;
 			switch (offset) {
 				case 0:
 				vMethod = &MethodProxyCreator::methodProxy0;
