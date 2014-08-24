@@ -26,9 +26,11 @@
 namespace fakeit {
 class VerifyNoOtherInvocationsFunctor {
 
+	FakeIt& _fakeit;
+
 public:
 
-	VerifyNoOtherInvocationsFunctor() {
+	VerifyNoOtherInvocationsFunctor(FakeIt& fakeit):_fakeit(fakeit) {
 	}
 
 	void operator()() {
@@ -39,11 +41,10 @@ public:
 		std::set<const ActualInvocationsSource*> invocationSources;
 		invocationSources.insert(&head);
 		collectInvocationSources(invocationSources, tail...);
-		VerifyNoOtherInvocationsVerificationProgress progress{invocationSources};
+		VerifyNoOtherInvocationsVerificationProgress progress{_fakeit,invocationSources};
 		return progress;
 	}
-}
-static VerifyNoOtherInvocations;
+};
 
 }
 

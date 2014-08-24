@@ -158,7 +158,8 @@ struct VirtualTable {
 
 	void dispose() {
 		firstMethod--; // skip objectLocator
-		firstMethod--; // skip cookie
+		firstMethod--; // skip cookie 0
+		firstMethod--; // skip cookie 1
 		delete[] firstMethod;
 	}
 
@@ -181,12 +182,13 @@ struct VirtualTable {
 		}
 	}
 
-	void* getCookie(){
-		return firstMethod[-2];
+
+	void* getCookie(int index){
+		return firstMethod[-2 - index];
 	}
 
-	void setCookie(void * value){
-		firstMethod[-2] = value;
+	void setCookie(int index, void * value){
+		firstMethod[-2 - index] = value;
 	}
 
 	Handle createHandle() {
@@ -205,10 +207,11 @@ private:
 
 	static void ** buildVTArray(){
 		int size = VTUtils::getVTSize<C>();
-		auto array = new void*[size + 2] {};
+		auto array = new void*[size + 3] {};
 		RTTICompleteObjectLocator<C, baseclasses...> * objectLocator = new RTTICompleteObjectLocator<C, baseclasses...>(typeid(C));
-		array[1] = objectLocator; // initialize RTTICompleteObjectLocator pointer
-		array++; // skip cookie
+		array[2] = objectLocator; // initialize RTTICompleteObjectLocator pointer
+		array++; // skip cookie 1
+		array++; // skip cookie 0
 		array++; // skip object locator
 		return array;
 	}

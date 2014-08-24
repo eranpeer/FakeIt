@@ -5,7 +5,10 @@
 #include "fakeit/SequenceVerificationExpectation.hpp"
 #include "mockutils/smart_ptr.hpp"
 
+
 namespace fakeit {
+
+	class FakeIt;
 
 	class SequenceVerificationProgress {
 
@@ -17,8 +20,8 @@ namespace fakeit {
 		SequenceVerificationProgress(SequenceVerificationExpectation * ptr) :ptr(ptr){
 		}
 
-		SequenceVerificationProgress(std::set<const ActualInvocationsSource*>& sources) :
-			SequenceVerificationProgress(new SequenceVerificationExpectation(sources)){
+		SequenceVerificationProgress(FakeIt& fakeit, std::set<const ActualInvocationsSource*>& sources) :
+			SequenceVerificationProgress(new SequenceVerificationExpectation(fakeit, sources)){
 		}
 
 		virtual void verifyInvocations(const int times) {

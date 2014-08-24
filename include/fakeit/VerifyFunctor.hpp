@@ -23,6 +23,8 @@ namespace fakeit {
 
 class VerifyFunctor {
 
+	FakeIt& _fakeit;
+
 	void collectSequences(std::vector<Sequence*>& vec) {
 	}
 
@@ -43,20 +45,19 @@ class VerifyFunctor {
 
 public:
 
-	VerifyFunctor() {
+	VerifyFunctor(FakeIt& fakeit):_fakeit(fakeit) {
 	}
 
 	template<typename ... list>
 	SequenceVerificationProgress operator()(const Sequence& sequence, const list&... tail) {
 		std::set<const ActualInvocationsSource*> invlovedMocks;
 		collectInvolvedMocks(invlovedMocks, sequence, tail...);
-		SequenceVerificationProgress progress(invlovedMocks);
+		SequenceVerificationProgress progress(_fakeit, invlovedMocks);
 		progress.Verify(sequence, tail...);
 		return progress;
 	}
 
-}
-static Verify;
+};
 
 }
 

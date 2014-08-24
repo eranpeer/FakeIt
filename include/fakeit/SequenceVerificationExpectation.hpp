@@ -3,6 +3,7 @@
 
 #include "fakeit/FakeitExceptions.hpp"
 #include "mockutils/smart_ptr.hpp"
+#include "fakeit/FakeIt.hpp"
 
 namespace fakeit {
 
@@ -34,6 +35,7 @@ struct SequenceVerificationExpectation {
 
 private:
 
+	FakeIt& _fakeit;
 	std::set<const ActualInvocationsSource*> _involvedMocks;
 	std::vector<Sequence*> _expectedPattern;
 	int _expectedCount;
@@ -42,7 +44,8 @@ private:
 	int _line;
 	std::string _testMethod;
 
-	SequenceVerificationExpectation(std::set<const ActualInvocationsSource*>& mocks) : //
+	SequenceVerificationExpectation(FakeIt& fakeit, std::set<const ActualInvocationsSource*>& mocks) : //
+		_fakeit(fakeit),
 		_involvedMocks( mocks ), //
 		_expectedPattern(), //
 		_expectedCount(-1), //
@@ -184,7 +187,7 @@ private:
 
 		ExactVerificationException e(_expectedPattern, actualSequence, _expectedCount, count);
 		e.setFileInfo(_file, _line, _testMethod);
-		fakeit::FakeIt::getInstance().handle(e);
+		_fakeit.handle(e);
 		throw e;
 	}
 
@@ -202,7 +205,7 @@ private:
 
 		AtLeastVerificationException e(_expectedPattern, actualSequence, -_expectedCount, count);
 		e.setFileInfo(_file, _line, _testMethod);
-		fakeit::FakeIt::getInstance().handle(e);
+		_fakeit.handle(e);
 		throw e;
 	}
 

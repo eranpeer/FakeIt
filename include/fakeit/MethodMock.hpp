@@ -160,11 +160,11 @@ class MethodMock: public virtual MethodInvocationHandler<R, arglist...>, public 
 		}
 	};
 
-	MockObject<C>& mock;
-	R (C::*vMethod)(arglist...);
-	MethodImpl method;
-	std::vector<std::shared_ptr<MethodInvocationMock<R, arglist...>>>methodInvocationMocks;
-	std::vector<std::shared_ptr<ActualInvocation<arglist...>>> actualInvocations;
+	MockObject<C>& _mock;
+	R (C::*_vMethod)(arglist...);
+	MethodImpl _method;
+	std::vector<std::shared_ptr<MethodInvocationMock<R, arglist...>>>_methodInvocationMocks;
+	std::vector<std::shared_ptr<ActualInvocation<arglist...>>> _actualInvocations;
 
 	std::shared_ptr<MethodInvocationMockBase<R, arglist...>> buildMethodInvocationMock(
 			std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> invocationMatcher,
@@ -175,7 +175,7 @@ class MethodMock: public virtual MethodInvocationHandler<R, arglist...>, public 
 	}
 
 	std::shared_ptr<MethodInvocationMock<R, arglist...>> getMethodInvocationMockForActualArgs(ActualInvocation<arglist...>& invocation) {
-		for (auto i = methodInvocationMocks.rbegin(); i != methodInvocationMocks.rend(); ++i) {
+		for (auto i = _methodInvocationMocks.rbegin(); i != _methodInvocationMocks.rend(); ++i) {
 			std::shared_ptr<MethodInvocationMock<R, arglist...>> curr = *i;
 			MethodInvocationMock<R, arglist...>& im = *curr;
 			if (im.getMatcher()->matches(invocation)) {
@@ -188,24 +188,24 @@ class MethodMock: public virtual MethodInvocationHandler<R, arglist...>, public 
 public:
 
 	MethodMock(MockObject<C>& mock, R (C::*vMethod)(arglist...)) :
-	mock(mock), vMethod(vMethod), method {typeid(vMethod).name()} {
+	_mock(mock), _vMethod(vMethod), _method {typeid(vMethod).name()} {
 	}
 
 	virtual ~MethodMock() {
 	}
 
 	Method& getMethod() {
-		return method;
+		return _method;
 	}
 
 	void stubMethodInvocation(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> invocationMatcher,
 			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {
 		auto mock = buildMethodInvocationMock(invocationMatcher, invocationHandler);
-		methodInvocationMocks.push_back(mock);
+		_methodInvocationMocks.push_back(mock);
 	}
 
 	void clear() {
-		methodInvocationMocks.clear();
+		_methodInvocationMocks.clear();
 	}
 
 
@@ -222,17 +222,17 @@ public:
 		auto methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
 		if (!methodInvocationMock) {
 			UnmatchedMethodInvocation e(actualInvoaction);
-			FakeIt::getInstance().handle(e);
+			_mock.getFakeIt().handle(e);
 			throw e;
 		}
 		auto matcher = methodInvocationMock->getMatcher();
 		actualInvoaction->setActualMatcher(matcher);
-		actualInvocations.push_back(actualInvoaction);
+		_actualInvocations.push_back(actualInvoaction);
 		try {
 			return methodInvocationMock->handleMethodInvocation(args...);
 		} catch (NoMoreRecordedBehaviorException&) {
 			UnmatchedMethodInvocation e(actualInvoaction);
-			fakeit::FakeIt::getInstance().handle(e);
+			_mock.getFakeIt().handle(e);
 			throw e;
 		}
 	}
@@ -240,7 +240,7 @@ public:
 	std::vector<std::shared_ptr<ActualInvocation<arglist...>> > getActualInvocations(
 			typename ActualInvocation<arglist...>::Matcher& matcher) {
 		std::vector < std::shared_ptr<ActualInvocation<arglist...>> > result;
-		for (auto actualInvocation : actualInvocations) {
+		for (auto actualInvocation : _actualInvocations) {
 			if (matcher.matches(*actualInvocation)) {
 				result.push_back(actualInvocation);
 			}
@@ -249,14 +249,14 @@ public:
 	}
 
 	void getActualInvocations(std::unordered_set<Invocation*>& into) const {
-		for (auto invocation : actualInvocations) {
+		for (auto invocation : _actualInvocations) {
 			into.insert(invocation.get());
 		}
 	}
 
 	void setMethodDetails(const std::string& mockName, const std::string& methodName) {
 		const std::string fullName {mockName + "." + methodName};
-		method.setName(fullName);
+		_method.setName(fullName);
 	}
 
 };

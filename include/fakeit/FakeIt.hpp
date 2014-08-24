@@ -9,36 +9,31 @@
 #ifndef FakeIt_h__
 #define FakeIt_h__
 
-#include "fakeit/DefaultEventHandler.hpp"
-#include "fakeit/DefaultErrorFormatter.hpp"
-
+#include "fakeit/EventHandler.hpp"
+#include "fakeit/ErrorFormatter.hpp"
 namespace fakeit {
-
 
 struct FakeIt {
 
-	void handle(const UnexpectedMethodCallException& e){
-		getEventHandler().handle(e);
+	virtual ~FakeIt() = default;
+
+	void handle(const UnexpectedMethodCallException& e) {
+		auto& eh = getEventHandler();
+		eh.handle(e);
 	}
 
-	void handle(const SequenceVerificationException& e){
-		getEventHandler().handle(e);
+	void handle(const SequenceVerificationException& e) {
+		auto& eh = getEventHandler();
+		eh.handle(e);
 	}
 
-	void handle(const NoMoreInvocationsVerificationException& e){
-		getEventHandler().handle(e);
+	void handle(const NoMoreInvocationsVerificationException& e) {
+		auto& eh = getEventHandler();
+		eh.handle(e);
 	}
 
-	static FakeIt& getInstance(){
-		static FakeIt instance;
-		return instance;
-	}
-
-private:
-	static EventHandler& getEventHandler(){
-		static DefaultEventHandler eventHandler;
-		return eventHandler;
-	}
+	virtual EventHandler& getEventHandler() = 0;
+	virtual ErrorFormatter& getErrorFormatter() = 0;
 
 };
 

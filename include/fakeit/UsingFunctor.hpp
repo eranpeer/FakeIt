@@ -25,10 +25,11 @@ namespace fakeit {
 class UsingFunctor {
 
 	friend class VerifyFunctor;
+	FakeIt& _fakeit;
 
 public:
 
-	UsingFunctor() {
+	UsingFunctor(FakeIt& fakeit):_fakeit(fakeit) {
 	}
 
 	template<typename ... list>
@@ -36,12 +37,11 @@ public:
 		std::set<const ActualInvocationsSource*> allMocks;
 		allMocks.insert(&head);
 		collectInvocationSources(allMocks, tail...);
-		SequenceVerificationProgress progress (allMocks);
+		SequenceVerificationProgress progress (_fakeit, allMocks);
 		return progress;
 	}
 
-}
-static Using;
+};
 
 }
 

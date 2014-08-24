@@ -36,7 +36,7 @@ struct DynamicProxy {
 	DynamicProxy(C& instance) :
 			instance(instance), originalVT(VirtualTable<C, baseclasses...>::getVTable(instance).createHandle()), methodMocks() {
 		cloneVt.copyFrom(originalVT.restore());
-		cloneVt.setCookie(this);
+		cloneVt.setCookie(0, this);
 		getFake().setVirtualTable(cloneVt);
 	}
 
@@ -123,7 +123,7 @@ private:
 	static DynamicProxy<C, baseclasses...> * getDynamicProxy(void * methodProxy) {
 		C* instance = (C*)methodProxy;
 		VirtualTable<C,baseclasses...> & vt = VirtualTable<C,baseclasses...>::getVTable(*instance);
-		DynamicProxy<C, baseclasses...> * dynamicProxy = (DynamicProxy<C, baseclasses...> *)vt.getCookie();
+		DynamicProxy<C, baseclasses...> * dynamicProxy = (DynamicProxy<C, baseclasses...> *)vt.getCookie(0);
 		return dynamicProxy;
 	}
 

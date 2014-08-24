@@ -58,9 +58,10 @@ struct VirtualTable {
 	}
 
 	void dispose() {
-		firstMethod--;
-		firstMethod--;
-		firstMethod--;
+		firstMethod--; // type_info
+		firstMethod--; // top_offset
+		firstMethod--; // cookie 0
+		firstMethod--; // cookie 1
 		delete[] firstMethod;
 	}
 
@@ -87,12 +88,12 @@ struct VirtualTable {
 		return (const std::type_info*) (firstMethod[-1]);
 	}
 
-	void* getCookie() {
-		return firstMethod[-3];
+	void* getCookie(int index) {
+		return firstMethod[-3 - index];
 	}
 
-	void setCookie(void * value) {
-		firstMethod[-3] = value;
+	void setCookie(int index, void * value) {
+		firstMethod[-3 - index] = value;
 	}
 
 	Handle createHandle() {
@@ -106,9 +107,10 @@ private:
 
 	static void ** buildVTArray() {
 		int size = VTUtils::getVTSize<C>();
-		auto array = new void*[size + 3] { };
-		array[2] = (void*) &typeid(C);
-		array++; // skip cookie
+		auto array = new void*[size + 4] { };
+		array[3] = (void*) &typeid(C);
+		array++; // skip cookie 1
+		array++; // skip cookie 0
 		array++; // skip top_offset
 		array++; // skip type_info ptr
 		return array;
