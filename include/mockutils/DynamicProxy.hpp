@@ -31,25 +31,6 @@ namespace fakeit {
 template<typename C, typename ... baseclasses>
 struct DynamicProxy {
 
-	struct MethodProxy {
-
-		MethodProxy(unsigned int offset, void * vMethod) :
-				_vMethod(vMethod), _offset(offset) {
-		}
-
-		unsigned int getOffset() const {
-			return _offset;
-		}
-
-		void * getProxy() const {
-			return union_cast<void *>(_vMethod);
-		}
-
-	private:
-		void * _vMethod;
-		unsigned int _offset;
-	};
-
 	static_assert(std::is_polymorphic<C>::value, "DynamicProxy requires a polymorphic type");
 
 	DynamicProxy(C& instance) :
@@ -119,6 +100,25 @@ struct DynamicProxy {
 	}
 
 private:
+
+	struct MethodProxy {
+
+		MethodProxy(unsigned int offset, void * vMethod) :
+				_vMethod(vMethod), _offset(offset) {
+		}
+
+		unsigned int getOffset() const {
+			return _offset;
+		}
+
+		void * getProxy() const {
+			return union_cast<void *>(_vMethod);
+		}
+
+	private:
+		void * _vMethod;
+		unsigned int _offset;
+	};
 
 	static DynamicProxy<C, baseclasses...> * getDynamicProxy(void * methodProxy) {
 		C* instance = (C*)methodProxy;
