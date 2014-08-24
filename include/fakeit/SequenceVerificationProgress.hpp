@@ -8,7 +8,7 @@
 
 namespace fakeit {
 
-	class FakeIt;
+	struct FakeIt;
 
 	class SequenceVerificationProgress {
 

@@ -13,7 +13,7 @@
 
 namespace fakeit {
 
-class FakeIt;
+struct FakeIt;
 
 template<typename C>
 struct MockObject {
