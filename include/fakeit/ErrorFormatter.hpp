@@ -19,11 +19,11 @@ struct NoMoreInvocationsVerificationException;
 struct ErrorFormatter {
 	virtual ~ErrorFormatter() = default;
 
-	virtual std::string format(const fakeit::UnexpectedMethodCallException& e) const = 0;
+	virtual std::string format(const fakeit::UnexpectedMethodCallException& e) = 0;
 
-	virtual std::string format(const fakeit::SequenceVerificationException& e) const = 0;
+	virtual std::string format(const fakeit::SequenceVerificationException& e) = 0;
 
-	virtual std::string format(const fakeit::NoMoreInvocationsVerificationException& e) const = 0;
+	virtual std::string format(const fakeit::NoMoreInvocationsVerificationException& e) = 0;
 
 };
 

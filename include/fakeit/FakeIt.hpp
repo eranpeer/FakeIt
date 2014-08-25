@@ -13,29 +13,44 @@
 #include "fakeit/ErrorFormatter.hpp"
 namespace fakeit {
 
-struct FakeIt {
+	struct FakeIt : public EventHandler, public ErrorFormatter {
 
-	virtual ~FakeIt() = default;
+		virtual ~FakeIt() = default;
 
-	void handle(const UnexpectedMethodCallException& e) {
-		auto& eh = getEventHandler();
-		eh.handle(e);
-	}
+		void handle(const UnexpectedMethodCallException& e) {
+			auto& eh = getEventHandler();
+			eh.handle(e);
+		}
 
-	void handle(const SequenceVerificationException& e) {
-		auto& eh = getEventHandler();
-		eh.handle(e);
-	}
+		void handle(const SequenceVerificationException& e) {
+			auto& eh = getEventHandler();
+			eh.handle(e);
+		}
 
-	void handle(const NoMoreInvocationsVerificationException& e) {
-		auto& eh = getEventHandler();
-		eh.handle(e);
-	}
+		void handle(const NoMoreInvocationsVerificationException& e) {
+			auto& eh = getEventHandler();
+			eh.handle(e);
+		}
 
-	virtual EventHandler& getEventHandler() = 0;
-	virtual ErrorFormatter& getErrorFormatter() = 0;
+		std::string format(const fakeit::UnexpectedMethodCallException& e) {
+			auto& eh = getErrorFormatter();
+			return eh.format(e);
+		}
 
-};
+		std::string format(const fakeit::SequenceVerificationException& e) {
+			auto& eh = getErrorFormatter();
+			return eh.format(e);
+		}
+
+		std::string format(const fakeit::NoMoreInvocationsVerificationException& e)  {
+			auto& eh = getErrorFormatter();
+			return eh.format(e);
+		}
+
+	protected:
+		virtual EventHandler& getEventHandler() = 0;
+		virtual ErrorFormatter& getErrorFormatter() = 0;
+	};
 
 }
 

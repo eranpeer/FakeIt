@@ -212,8 +212,8 @@ public:
 	R handleMethodInvocation(arglist&... args) override {
 
 		struct UnmatchedMethodInvocation : public UnexpectedMethodCallException {
-			UnmatchedMethodInvocation(std::shared_ptr<Invocation> actualInvocation) : //
-			UnexpectedMethodCallException(actualInvocation){} //
+			UnmatchedMethodInvocation(ErrorFormatter& ef, std::shared_ptr<Invocation> actualInvocation) : //
+			UnexpectedMethodCallException(ef, actualInvocation){} //
 		};
 
 		int ordinal = nextInvocationOrdinal();
@@ -221,7 +221,7 @@ public:
 					args...)};
 		auto methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
 		if (!methodInvocationMock) {
-			UnmatchedMethodInvocation e(actualInvoaction);
+			UnmatchedMethodInvocation e(_mock.getFakeIt(), actualInvoaction);
 			_mock.getFakeIt().handle(e);
 			throw e;
 		}
@@ -231,7 +231,7 @@ public:
 		try {
 			return methodInvocationMock->handleMethodInvocation(args...);
 		} catch (NoMoreRecordedBehaviorException&) {
-			UnmatchedMethodInvocation e(actualInvoaction);
+			UnmatchedMethodInvocation e(_mock.getFakeIt(), actualInvoaction);
 			_mock.getFakeIt().handle(e);
 			throw e;
 		}

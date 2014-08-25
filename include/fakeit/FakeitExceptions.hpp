@@ -33,7 +33,11 @@ struct FakeitException {
 
 struct UnexpectedMethodCallException: public FakeitException {
 
-	UnexpectedMethodCallException(std::shared_ptr<Invocation> actualInvocation) {
+	UnexpectedMethodCallException(
+		ErrorFormatter& formatter, 
+		std::shared_ptr<Invocation> actualInvocation):
+			_formatter(formatter) 
+	{
 		_actualInvocation = actualInvocation;
 	}
 
@@ -57,6 +61,7 @@ struct UnexpectedMethodCallException: public FakeitException {
 	}
 
 private:
+	ErrorFormatter& _formatter;
 	std::shared_ptr<Invocation> _actualInvocation;
 };
 
@@ -86,10 +91,15 @@ private:
 };
 
 struct NoMoreInvocationsVerificationException: public VerificationException {
+	
 	NoMoreInvocationsVerificationException( //
+			ErrorFormatter& formatter, //
 			std::vector<Invocation*>& allIvocations, //
 			std::vector<Invocation*>& unverifedIvocations) : //
-			VerificationException(), _allIvocations(allIvocations), _unverifedIvocations(unverifedIvocations) { //
+			VerificationException(), // 
+			_formatter(formatter),  //
+			_allIvocations(allIvocations), // 
+			_unverifedIvocations(unverifedIvocations) { //
 	}
 
 	virtual VerificationType verificationType() const override {
@@ -111,6 +121,7 @@ struct NoMoreInvocationsVerificationException: public VerificationException {
 	}
 
 private:
+	ErrorFormatter& _formatter;
 	const std::vector<Invocation*> _allIvocations;
 	const std::vector<Invocation*> _unverifedIvocations;
 };
@@ -118,11 +129,13 @@ private:
 
 struct SequenceVerificationException: public VerificationException {
 	SequenceVerificationException( //
+			ErrorFormatter& formatter, //
 			std::vector<Sequence*>& expectedPattern, //
 			std::vector<Invocation*>& actualSequence, //
 			int expectedCount, //
 			int actualCount) : //
 			VerificationException(), //
+			_formatter(formatter), //
 			_expectedPattern(expectedPattern), //
 			_actualSequence(actualSequence), //
 			_expectedCount(expectedCount), //
@@ -156,6 +169,7 @@ struct SequenceVerificationException: public VerificationException {
 	}
 
 private:
+	ErrorFormatter& _formatter;
 	const std::vector<Sequence*> _expectedPattern;
 	const std::vector<Invocation*> _actualSequence;
 	const int _expectedCount;

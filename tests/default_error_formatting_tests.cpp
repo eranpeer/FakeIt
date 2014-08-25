@@ -93,7 +93,7 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 		try {
 			Verify(Method(mock, func)).Exactly(Once);
 		}
-		catch (SequenceVerificationException& e) {
+		catch (SequenceVerificationException&) {
 			std::string expectedMsg;
 			expectedMsg += "test file:1: Verification error\n";
 			expectedMsg += "Expected pattern: mock.func( any arguments )\n";
@@ -178,7 +178,7 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 				.setFileInfo("test file",1,"test method").Exactly(2);
 			FAIL();
 		}
-		catch (SequenceVerificationException& e)
+		catch (SequenceVerificationException&)
 		{
 			std::string expectedMsg;
 			expectedMsg += "test file:1: Verification error\n";
@@ -202,7 +202,7 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 				.setFileInfo("test file",1,"test method").Exactly(2);
 			FAIL();
 		}
-		catch (SequenceVerificationException& e)
+		catch (SequenceVerificationException&)
 		{
 			std::string expectedMsg;
 			expectedMsg += "test file:1: Verification error\n";
@@ -226,7 +226,7 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 				.setFileInfo("test file", 1, "test method").Exactly(2);
 			FAIL();
 		}
-		catch (SequenceVerificationException& e)
+		catch (SequenceVerificationException&)
 		{
 			std::string expectedMsg;
 			expectedMsg += "test file:1: Verification error\n";

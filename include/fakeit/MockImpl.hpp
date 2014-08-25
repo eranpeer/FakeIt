@@ -129,14 +129,15 @@ private:
 	}
 
 	void unmocked() {
+		auto& fakeit = getMockImpl(this)->_fakeit;
 		struct UnmockedMethodInvocation: public UnexpectedMethodCallException {
-			UnmockedMethodInvocation() :
-					UnexpectedMethodCallException( //
+			UnmockedMethodInvocation(ErrorFormatter & ef) :
+					UnexpectedMethodCallException(ef, //
 							std::shared_ptr<Invocation> { new ActualInvocation<>(nextInvocationOrdinal(), UnknownMethod::instance()) } //
 							) {
 			} //
-		} e;
-		getMockImpl(this)->_fakeit.handle(e);
+		} e(fakeit);
+		fakeit.handle(e);
 		throw e;
 	}
 

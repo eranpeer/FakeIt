@@ -62,7 +62,7 @@ class VerifyNoOtherInvocationsVerificationProgress {
 				std::vector<Invocation*> sortedActualIvocations;
 				sortByInvocationOrder(actualInvocations, sortedActualIvocations);
 
-				NoMoreInvocationsVerificationException e(sortedActualIvocations, sortedNonVerifedIvocations);
+				NoMoreInvocationsVerificationException e(_fakeit, sortedActualIvocations, sortedNonVerifedIvocations);
 				e.setFileInfo(_file, _line, _callingMethod);
 				_fakeit.handle(e);
 				throw e;

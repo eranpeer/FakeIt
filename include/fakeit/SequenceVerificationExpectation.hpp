@@ -175,9 +175,9 @@ private:
 	void throwExactVerificationException(std::vector<Invocation*> actualSequence, int count) {
 		struct ExactVerificationException : public SequenceVerificationException {
 
-			ExactVerificationException(std::vector<Sequence*>& expectedPattern, std::vector<Invocation*>& actualSequence,
+			ExactVerificationException(ErrorFormatter& ef, std::vector<Sequence*>& expectedPattern, std::vector<Invocation*>& actualSequence,
 			int expectedCount, int actualCount) :
-			SequenceVerificationException(expectedPattern, actualSequence, expectedCount, actualCount) {
+			SequenceVerificationException(ef, expectedPattern, actualSequence, expectedCount, actualCount) {
 			}
 
 			virtual VerificationType verificationType()const override {
@@ -185,7 +185,7 @@ private:
 			}
 		};
 
-		ExactVerificationException e(_expectedPattern, actualSequence, _expectedCount, count);
+		ExactVerificationException e(_fakeit, _expectedPattern, actualSequence, _expectedCount, count);
 		e.setFileInfo(_file, _line, _testMethod);
 		_fakeit.handle(e);
 		throw e;
@@ -193,9 +193,9 @@ private:
 
 	void throwAtLeastVerificationException(std::vector<Invocation*> actualSequence, int count) {
 		struct AtLeastVerificationException : public SequenceVerificationException {
-			AtLeastVerificationException(std::vector<Sequence*>& expectedPattern, std::vector<Invocation*>& actualSequence,
+			AtLeastVerificationException(ErrorFormatter& ef, std::vector<Sequence*>& expectedPattern, std::vector<Invocation*>& actualSequence,
 			int expectedCount, int actualCount) :
-			SequenceVerificationException(expectedPattern, actualSequence, expectedCount, actualCount) {
+			SequenceVerificationException(ef, expectedPattern, actualSequence, expectedCount, actualCount) {
 			}
 
 			virtual VerificationType verificationType()const override {
@@ -203,7 +203,7 @@ private:
 			}
 		};
 
-		AtLeastVerificationException e(_expectedPattern, actualSequence, -_expectedCount, count);
+		AtLeastVerificationException e(_fakeit, _expectedPattern, actualSequence, -_expectedCount, count);
 		e.setFileInfo(_file, _line, _testMethod);
 		_fakeit.handle(e);
 		throw e;

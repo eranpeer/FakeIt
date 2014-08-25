@@ -25,6 +25,8 @@ struct DefaultFakeit: public FakeIt {
 		return instance;
 	}
 
+protected:
+	
 	EventHandler& getEventHandler() override {
 		return eventHandler;
 	}

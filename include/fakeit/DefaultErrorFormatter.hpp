@@ -20,13 +20,13 @@ namespace fakeit {
 		~DefaultErrorFormatter(){
 		}
 
-		virtual std::string format(const UnexpectedMethodCallException& e) const override {
+		virtual std::string format(const UnexpectedMethodCallException& e) override {
 			std::ostringstream out;
 			out << "Unexpected Method Call: " << e.getInvocation().format();
 			return out.str();
 		}
 
-		virtual std::string format(const SequenceVerificationException& e) const override {
+		virtual std::string format(const SequenceVerificationException& e) override {
 			std::ostringstream out;
 			out << e.file() << ":" << e.line() << ": ";
 			out << "Verification error" << std::endl;
@@ -60,7 +60,7 @@ namespace fakeit {
 			return out.str();
 		}
 
-		virtual std::string format(const NoMoreInvocationsVerificationException& e) const override {
+		virtual std::string format(const NoMoreInvocationsVerificationException& e) override {
 			std::ostringstream out;
 			out << e.file() << ":" << e.line() << ": Verification error"<< std::endl;
 			out << "Expected no more invocations!! But the following unverified invocations were found:" << std::endl;
