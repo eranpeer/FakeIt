@@ -173,39 +173,25 @@ private:
 	}
 
 	void throwExactVerificationException(std::vector<Invocation*> actualSequence, int count) {
-		struct ExactVerificationException : public SequenceVerificationException {
 
-			ExactVerificationException(ErrorFormatter& ef, std::vector<Sequence*>& expectedPattern, std::vector<Invocation*>& actualSequence,
-			int expectedCount, int actualCount) :
-			SequenceVerificationException(ef, expectedPattern, actualSequence, expectedCount, actualCount) {
-			}
+		SequenceVerificationEvent evt(VerificationType::Exact, _expectedPattern, actualSequence, _expectedCount, count);
+		evt.setFileInfo(_file, _line, _testMethod);
+		_fakeit.handle(evt);
 
-			virtual VerificationType verificationType()const override {
-				return VerificationType::Exact;
-			}
-		};
-
-		ExactVerificationException e(_fakeit, _expectedPattern, actualSequence, _expectedCount, count);
+		std::string format{_fakeit.format(evt)};
+		SequenceVerificationException e(format);
 		e.setFileInfo(_file, _line, _testMethod);
-		_fakeit.handle(e);
 		throw e;
 	}
 
 	void throwAtLeastVerificationException(std::vector<Invocation*> actualSequence, int count) {
-		struct AtLeastVerificationException : public SequenceVerificationException {
-			AtLeastVerificationException(ErrorFormatter& ef, std::vector<Sequence*>& expectedPattern, std::vector<Invocation*>& actualSequence,
-			int expectedCount, int actualCount) :
-			SequenceVerificationException(ef, expectedPattern, actualSequence, expectedCount, actualCount) {
-			}
+		SequenceVerificationEvent evt(VerificationType::AtLeast, _expectedPattern, actualSequence, -_expectedCount, count);
+		evt.setFileInfo(_file, _line, _testMethod);
+		_fakeit.handle(evt);
 
-			virtual VerificationType verificationType()const override {
-				return VerificationType::AtLeast;
-			}
-		};
-
-		AtLeastVerificationException e(_fakeit, _expectedPattern, actualSequence, -_expectedCount, count);
+		std::string format (_fakeit.format(evt));
+		SequenceVerificationException e(format);
 		e.setFileInfo(_file, _line, _testMethod);
-		_fakeit.handle(e);
 		throw e;
 	}
 

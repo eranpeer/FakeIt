@@ -19,60 +19,25 @@
 #include "mockutils/Formatter.hpp"
 namespace fakeit {
 
-struct FakeitException {
-
-	virtual ~FakeitException() = default;
-
-	virtual std::string what() const = 0;
-
-	friend std::ostream & operator<<(std::ostream &os, const FakeitException& val) {
-		os << val.what();
-		return os;
-	}
-};
-
-struct UnexpectedMethodCallException: public FakeitException {
-
-	UnexpectedMethodCallException(
-		ErrorFormatter& formatter, 
-		std::shared_ptr<Invocation> actualInvocation):
-			_formatter(formatter) 
-	{
-		_actualInvocation = actualInvocation;
-	}
-
-	virtual std::string what() const override {
-		if (&(_actualInvocation->getMethod()) == &UnknownMethod::instance()) {
-			return std::string("UnexpectedMethodCallException: Unknown method invocation. All used virtual methods must be stubbed!");
-		}
-		else {
-			return std::string("UnexpectedMethodCallException: Could not find any recorded behavior to support this method call");
-		}
-		//return getErrorFormatter()->format(*this);
-	}
-
-	const Method& getMethod() const {
-		return _actualInvocation->getMethod();
-	}
-
-	Invocation& getInvocation() const {
-		fakeit::Invocation & invocation = *_actualInvocation;
-		return invocation;
-	}
-
-private:
-	ErrorFormatter& _formatter;
-	std::shared_ptr<Invocation> _actualInvocation;
-};
-
-
 enum class VerificationType {
 	Exact, AtLeast, NoMoreInvocatoins
 };
 
-struct VerificationException: public FakeitException {
-	virtual ~VerificationException() = default;
-	virtual VerificationType verificationType() const = 0;
+enum class UnexpectedType {
+	Unmocked, Unmatched
+};
+
+struct VerificationEvent {
+
+	VerificationEvent(VerificationType verificationType) :
+			_verificationType(verificationType), _line(0) {
+	}
+
+	virtual ~VerificationEvent() = default;
+
+	VerificationType verificationType() const {
+		return _verificationType;
+	}
 
 	void setFileInfo(std::string file, int line, std::string callingMethod) {
 		_file = file;
@@ -80,30 +45,33 @@ struct VerificationException: public FakeitException {
 		_line = line;
 	}
 
-	const std::string& file() const {return _file;}
-	int line() const {return _line;}
-	const std::string& 	callingMethod() const { return _callingMethod; }
+	const std::string& file() const {
+		return _file;
+	}
+	int line() const {
+		return _line;
+	}
+	const std::string& callingMethod() const {
+		return _callingMethod;
+	}
 
 private:
+	VerificationType _verificationType;
 	std::string _file;
 	int _line;
 	std::string _callingMethod;
 };
 
-struct NoMoreInvocationsVerificationException: public VerificationException {
-	
-	NoMoreInvocationsVerificationException( //
-			ErrorFormatter& formatter, //
+struct NoMoreInvocationsVerificationEvent: public VerificationEvent {
+
+	~NoMoreInvocationsVerificationEvent() = default;
+
+	NoMoreInvocationsVerificationEvent( //
 			std::vector<Invocation*>& allIvocations, //
 			std::vector<Invocation*>& unverifedIvocations) : //
-			VerificationException(), // 
-			_formatter(formatter),  //
-			_allIvocations(allIvocations), // 
+			VerificationEvent(VerificationType::NoMoreInvocatoins), //
+			_allIvocations(allIvocations), //
 			_unverifedIvocations(unverifedIvocations) { //
-	}
-
-	virtual VerificationType verificationType() const override {
-		return VerificationType::NoMoreInvocatoins;
 	}
 
 	const std::vector<Invocation*>& allIvocations() const {
@@ -114,28 +82,21 @@ struct NoMoreInvocationsVerificationException: public VerificationException {
 		return _unverifedIvocations;
 	}
 
-	virtual std::string what() const override {
-//		return getErrorFormatter()->format(*this);
-		return std::string("VerificationException: expected no more invocations but found ") //
-		.append(std::to_string(unverifedIvocations().size()));
-	}
-
 private:
-	ErrorFormatter& _formatter;
 	const std::vector<Invocation*> _allIvocations;
 	const std::vector<Invocation*> _unverifedIvocations;
 };
 
+struct SequenceVerificationEvent: public VerificationEvent {
 
-struct SequenceVerificationException: public VerificationException {
-	SequenceVerificationException( //
-			ErrorFormatter& formatter, //
+	~SequenceVerificationEvent() = default;
+
+	SequenceVerificationEvent(VerificationType verificationType, //
 			std::vector<Sequence*>& expectedPattern, //
 			std::vector<Invocation*>& actualSequence, //
 			int expectedCount, //
 			int actualCount) : //
-			VerificationException(), //
-			_formatter(formatter), //
+			VerificationEvent(verificationType), //
 			_expectedPattern(expectedPattern), //
 			_actualSequence(actualSequence), //
 			_expectedCount(expectedCount), //
@@ -151,29 +112,114 @@ struct SequenceVerificationException: public VerificationException {
 		return _actualSequence;
 	}
 
-    int expectedCount() const {
+	int expectedCount() const {
 		return _expectedCount;
 	}
 
-    int actualCount() const {
+	int actualCount() const {
 		return _actualCount;
 	}
 
-	virtual std::string what() const override {
-//		return getErrorFormatter()->format(*this);
-		return std::string("VerificationException: expected ") //
-		.append(verificationType() == fakeit::VerificationType::Exact ? "exactly " : "at least ") //
-		.append(std::to_string(expectedCount())) //
-		.append(" invocations but was ") //
-		.append(std::to_string(actualCount()));
-	}
-
 private:
-	ErrorFormatter& _formatter;
 	const std::vector<Sequence*> _expectedPattern;
 	const std::vector<Invocation*> _actualSequence;
 	const int _expectedCount;
 	const int _actualCount;
+};
+
+struct FakeitException {
+
+	virtual ~FakeitException() = default;
+
+	virtual std::string what() const = 0;
+
+	friend std::ostream & operator<<(std::ostream &os, const FakeitException& val) {
+		os << val.what();
+		return os;
+	}
+};
+
+struct UnexpectedMethodCallEvent {
+	UnexpectedMethodCallEvent(UnexpectedType unexpectedType, const Invocation& invocation) :
+			_unexpectedType(unexpectedType), _invocation(invocation) {
+	}
+
+	const Invocation& getInvocation() const {
+		return _invocation;
+	}
+
+	UnexpectedType getUnexpectedType() const {
+		return _unexpectedType;
+	}
+
+	const UnexpectedType _unexpectedType;
+	const Invocation& _invocation;
+};
+
+struct UnexpectedMethodCallException: public FakeitException {
+
+	UnexpectedMethodCallException(std::string format) :
+			_format(format) {
+	}
+
+	virtual std::string what() const override {
+		return _format;
+	}
+
+private:
+	std::string _format;
+};
+
+struct VerificationException: public FakeitException {
+	virtual ~VerificationException() = default;
+
+	void setFileInfo(std::string file, int line, std::string callingMethod) {
+		_file = file;
+		_callingMethod = callingMethod;
+		_line = line;
+	}
+
+	const std::string& file() const {
+		return _file;
+	}
+	int line() const {
+		return _line;
+	}
+	const std::string& callingMethod() const {
+		return _callingMethod;
+	}
+
+private:
+	std::string _file;
+	int _line;
+	std::string _callingMethod;
+};
+
+struct NoMoreInvocationsVerificationException: public VerificationException {
+
+	NoMoreInvocationsVerificationException(std::string format) : //
+			_format(format) { //
+	}
+
+	virtual std::string what() const override {
+		return _format;
+	}
+private:
+	std::string _format;
+};
+
+struct SequenceVerificationException: public VerificationException {
+	SequenceVerificationException(const std::string& format) : //
+			_format(format) //
+	{
+	}
+
+	virtual std::string what() const override {
+		return _format;
+	}
+
+private:
+	std::string _format;
 };
 
 }

@@ -211,18 +211,16 @@ public:
 
 	R handleMethodInvocation(arglist&... args) override {
 
-		struct UnmatchedMethodInvocation : public UnexpectedMethodCallException {
-			UnmatchedMethodInvocation(ErrorFormatter& ef, std::shared_ptr<Invocation> actualInvocation) : //
-			UnexpectedMethodCallException(ef, actualInvocation){} //
-		};
-
 		int ordinal = nextInvocationOrdinal();
 		auto actualInvoaction = std::shared_ptr<ActualInvocation<arglist...>> {new ActualInvocation<arglist...>(ordinal, this->getMethod(),
 					args...)};
 		auto methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
 		if (!methodInvocationMock) {
-			UnmatchedMethodInvocation e(_mock.getFakeIt(), actualInvoaction);
-			_mock.getFakeIt().handle(e);
+			UnexpectedMethodCallEvent event(UnexpectedType::Unmatched, *actualInvoaction);
+			_mock.getFakeIt().handle(event);
+
+			std::string format{_mock.getFakeIt().format(event)};
+			UnexpectedMethodCallException e(format);
 			throw e;
 		}
 		auto matcher = methodInvocationMock->getMatcher();
@@ -231,15 +229,18 @@ public:
 		try {
 			return methodInvocationMock->handleMethodInvocation(args...);
 		} catch (NoMoreRecordedBehaviorException&) {
-			UnmatchedMethodInvocation e(_mock.getFakeIt(), actualInvoaction);
-			_mock.getFakeIt().handle(e);
+			UnexpectedMethodCallEvent event(UnexpectedType::Unmatched, *actualInvoaction);
+			_mock.getFakeIt().handle(event);
+
+			std::string format{_mock.getFakeIt().format(event)};
+			UnexpectedMethodCallException e(format);
 			throw e;
 		}
 	}
 
 	std::vector<std::shared_ptr<ActualInvocation<arglist...>> > getActualInvocations(
 			typename ActualInvocation<arglist...>::Matcher& matcher) {
-		std::vector < std::shared_ptr<ActualInvocation<arglist...>> > result;
+		std::vector<std::shared_ptr<ActualInvocation<arglist...>>> result;
 		for (auto actualInvocation : _actualInvocations) {
 			if (matcher.matches(*actualInvocation)) {
 				result.push_back(actualInvocation);

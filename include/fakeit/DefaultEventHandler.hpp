@@ -18,15 +18,15 @@ namespace fakeit {
 
 	struct DefaultEventHandler : public fakeit::EventHandler {
 
-		virtual void handle(const UnexpectedMethodCallException& e) override {
+		virtual void handle(const UnexpectedMethodCallEvent& e) override {
 			out << formatter.format(e) << std::endl;
 		}
 
-		virtual void handle(const SequenceVerificationException& e) override {
+		virtual void handle(const SequenceVerificationEvent& e) override {
 			out << formatter.format(e) << std::endl;
 		}
 
-		virtual void handle(const NoMoreInvocationsVerificationException& e) override {
+		virtual void handle(const NoMoreInvocationsVerificationEvent& e) override {
 			out << formatter.format(e) << std::endl;
 		}
 

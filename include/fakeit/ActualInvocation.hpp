@@ -32,11 +32,10 @@ static int nextInvocationOrdinal(){
 
 
 template<typename ... arglist>
-struct ActualInvocation: public virtual Invocation {
+struct ActualInvocation: public Invocation {
 
 	struct Matcher: public virtual Destructable {
 		virtual bool matches(ActualInvocation<arglist...>& actualInvocation) = 0;
-
 		virtual std::string format() const = 0;
 	};
 

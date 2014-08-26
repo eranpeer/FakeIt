@@ -17,32 +17,32 @@ namespace fakeit {
 
 		virtual ~FakeIt() = default;
 
-		void handle(const UnexpectedMethodCallException& e) {
+		void handle(const UnexpectedMethodCallEvent& e) {
 			auto& eh = getEventHandler();
 			eh.handle(e);
 		}
 
-		void handle(const SequenceVerificationException& e) {
+		void handle(const SequenceVerificationEvent& e) {
 			auto& eh = getEventHandler();
 			eh.handle(e);
 		}
 
-		void handle(const NoMoreInvocationsVerificationException& e) {
+		void handle(const NoMoreInvocationsVerificationEvent& e) {
 			auto& eh = getEventHandler();
 			eh.handle(e);
 		}
 
-		std::string format(const fakeit::UnexpectedMethodCallException& e) {
+		std::string format(const fakeit::UnexpectedMethodCallEvent& e) {
 			auto& eh = getErrorFormatter();
 			return eh.format(e);
 		}
 
-		std::string format(const fakeit::SequenceVerificationException& e) {
+		std::string format(const fakeit::SequenceVerificationEvent& e) {
 			auto& eh = getErrorFormatter();
 			return eh.format(e);
 		}
 
-		std::string format(const fakeit::NoMoreInvocationsVerificationException& e)  {
+		std::string format(const fakeit::NoMoreInvocationsVerificationEvent& e)  {
 			auto& eh = getErrorFormatter();
 			return eh.format(e);
 		}

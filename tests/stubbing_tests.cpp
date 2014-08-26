@@ -66,7 +66,6 @@ struct BasicStubbing: tpunit::TestFixture {
 			FAIL();
 		} catch(UnexpectedMethodCallException& e)
 		{
-			ASSERT_EQUAL(std::string("unknown"),e.getMethod().name());
 		}
 	}
 
@@ -110,7 +109,6 @@ struct BasicStubbing: tpunit::TestFixture {
 			i.func(1);
 			FAIL();
 		} catch(fakeit::UnexpectedMethodCallException &e){
-			ASSERT_EQUAL(std::string("mock.func"), e.getMethod().name());
 		}
 	}
 

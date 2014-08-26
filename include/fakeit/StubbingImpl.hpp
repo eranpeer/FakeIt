@@ -125,7 +125,8 @@ public:
 	}
 
 	void getActualInvocations(std::unordered_set<Invocation*>& into) const override {
-		std::vector<std::shared_ptr<ActualInvocation<arglist...>>>actualInvocations = stubbingContext->getMethodMock().getActualInvocations(*invocationMatcher);
+		std::vector<std::shared_ptr<ActualInvocation<arglist...>>>actualInvocations =
+				stubbingContext->getMethodMock().getActualInvocations(*invocationMatcher);
 		for (auto i : actualInvocations) {
 			Invocation* ai = i.get();
 			into.insert(ai);
