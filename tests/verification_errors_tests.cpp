@@ -63,7 +63,7 @@ struct ErrorFormattingTests: tpunit::TestFixture {
 		try {
 			auto selector = Method(mock,foo);
 			Verify(selector);
-		} catch (SequenceVerificationException& e) {
+		} catch (SequenceVerificationException& ) {
 //			ASSERT_EQUAL(VerificationType::AtLeast, e.verificationType());
 //			ASSERT_EQUAL(0, e.actualCount());
 //			ASSERT_EQUAL(1, e.expectedCount());
@@ -77,7 +77,7 @@ struct ErrorFormattingTests: tpunit::TestFixture {
 		try {
 			auto selector = Method(mock,foo);
 			Verify(selector).Exactly(Once);
-		} catch (SequenceVerificationException& e) {
+		} catch (SequenceVerificationException& ) {
 //			ASSERT_EQUAL(VerificationType::Exact, e.verificationType());
 //			ASSERT_EQUAL(0, e.actualCount());
 //			ASSERT_EQUAL(1, e.expectedCount());
@@ -94,7 +94,7 @@ struct ErrorFormattingTests: tpunit::TestFixture {
 			mock.get().foo(2);
 			Verify(Method(mock,foo).Using(1));
 			VerifyNoOtherInvocations(Method(mock,foo));
-		} catch (NoMoreInvocationsVerificationException& e) {
+		} catch (NoMoreInvocationsVerificationException&) {
 //			ASSERT_EQUAL(VerificationType::NoMoreInvocatoins, e.verificationType());
 //			ASSERT_EQUAL(2, e.allIvocations().size());
 //			ASSERT_EQUAL(1, e.unverifedIvocations().size());

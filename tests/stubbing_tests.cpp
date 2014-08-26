@@ -64,7 +64,7 @@ struct BasicStubbing: tpunit::TestFixture {
 		try {
 			i.func(1);
 			FAIL();
-		} catch(UnexpectedMethodCallException& e)
+		} catch(UnexpectedMethodCallException&)
 		{
 		}
 	}
@@ -108,7 +108,7 @@ struct BasicStubbing: tpunit::TestFixture {
 		try{
 			i.func(1);
 			FAIL();
-		} catch(fakeit::UnexpectedMethodCallException &e){
+		} catch(fakeit::UnexpectedMethodCallException &){
 		}
 	}
 
