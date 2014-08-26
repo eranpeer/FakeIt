@@ -205,11 +205,11 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 			expectedMsg += "Expected pattern: mock.all_types( any arguments )\n";
 			expectedMsg += "Expected matches: exactly 2\n";
 			expectedMsg += "Actual matches  : 1\n";
-			expectedMsg += "Actual sequence : total of 1 actual invocations:";
-			expectedMsg += "  mock.all_types(?, true, 1, 1, 1, 1, 1, 1, 1.0, 1.0)";
+			expectedMsg += "Actual sequence : total of 1 actual invocations:\n";
+			expectedMsg += "  mock.all_types(?, true, 1, 1, 1, 1, 1, 1, 1.000000, 1.000000)";
 
 			std::string actualMsg {to_string(e)};
-			//ASSERT_EQUAL(expectedMsg, actualMsg);
+			ASSERT_EQUAL(expectedMsg, actualMsg);
 		}
 	}
 
