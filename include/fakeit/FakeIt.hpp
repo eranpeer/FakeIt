@@ -15,8 +15,6 @@ namespace fakeit {
 
 	struct FakeIt : public EventHandler, public ErrorFormatter {
 
-		virtual ~FakeIt() = default;
-
 		void handle(const UnexpectedMethodCallEvent& e) {
 			auto& eh = getEventHandler();
 			eh.handle(e);

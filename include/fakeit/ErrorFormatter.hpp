@@ -17,7 +17,6 @@ struct SequenceVerificationEvent;
 struct NoMoreInvocationsVerificationEvent;
 
 struct ErrorFormatter {
-	virtual ~ErrorFormatter() = default;
 
 	virtual std::string format(const fakeit::UnexpectedMethodCallEvent& e) = 0;
 
@@ -26,16 +25,6 @@ struct ErrorFormatter {
 	virtual std::string format(const fakeit::NoMoreInvocationsVerificationEvent& e) = 0;
 
 };
-
-//static ErrorFormatter* _errorFormatter = nullptr;
-
-//static void setErrorFormatter(ErrorFormatter * errorFormatter){
-//	_errorFormatter = errorFormatter;
-//}
-
-//static ErrorFormatter* getErrorFormatter() {
-//	return _errorFormatter;
-//}
 
 }
 #endif

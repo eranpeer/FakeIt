@@ -22,19 +22,17 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 	DefaultErrorFormatting() :
 			tpunit::TestFixture(
 			//
-			TEST(DefaultErrorFormatting::parse_UnmockedMethodCallException),
-			TEST(DefaultErrorFormatting::parse_UnmatchedMethodCallException),
-			TEST(DefaultErrorFormatting::parse_AnyArguments),
-			TEST(DefaultErrorFormatting::parse_Exactly_Once),
-			TEST(DefaultErrorFormatting::parse_Atleast_Once),
-			TEST(DefaultErrorFormatting::parse_NoMoreInvocations_VerificationFailure),
-			TEST(DefaultErrorFormatting::parse_UserDefinedMatcher_in_expected_pattern),
-			TEST(DefaultErrorFormatting::parse_actual_arguments)
+			TEST(DefaultErrorFormatting::format_UnmockedMethodCallEvent),
+			TEST(DefaultErrorFormatting::format_UnmatchedMethodCallEvent),
+			TEST(DefaultErrorFormatting::format_AnyArguments),
+			TEST(DefaultErrorFormatting::format_Exactly_Once),
+			TEST(DefaultErrorFormatting::format_Atleast_Once),
+			TEST(DefaultErrorFormatting::format_NoMoreInvocations_VerificationFailure),
+			TEST(DefaultErrorFormatting::format_UserDefinedMatcher_in_expected_pattern),
+			TEST(DefaultErrorFormatting::format_actual_arguments)
 			) //
 	{
 	}
-
-	fakeit::DefaultErrorFormatter formatter;
 
 	template <typename T> std::string to_string(T& val){
 		std::stringstream stream;
@@ -59,7 +57,7 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 			long double) = 0;
 	};
 
-	void parse_UnmockedMethodCallException() {
+	void format_UnmockedMethodCallEvent() {
 		Mock<SomeInterface> mock;
 		SomeInterface &i = mock.get();
 		try {
@@ -74,7 +72,7 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 		}
 	}
 
-	void parse_UnmatchedMethodCallException() {
+	void format_UnmatchedMethodCallEvent() {
 		Mock<SomeInterface> mock;
 		Fake(Method(mock,func).Using(3));
 		SomeInterface &i = mock.get();
@@ -90,7 +88,7 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 		}
 	}
 
-	void parse_AnyArguments() {
+	void format_AnyArguments() {
 		Mock<SomeInterface> mock;
 		try {
 			fakeit::Verify(Method(mock, func)).setFileInfo("test file",1,"test method").Exactly(Once);
@@ -107,7 +105,7 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 		}
 	}
 
-	void parse_Exactly_Once() {
+	void format_Exactly_Once() {
 		Mock<SomeInterface> mock;
 		try {
 			fakeit::Verify(Method(mock, func)).setFileInfo("test file",1,"test method").Exactly(Once);
@@ -125,7 +123,7 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 		}
 	}
 
-	void parse_Atleast_Once() {
+	void format_Atleast_Once() {
 		Mock<SomeInterface> mock;
 		try {
 			fakeit::Verify(Method(mock, func)).setFileInfo("test file",1,"test method").AtLeast(Once);
@@ -143,7 +141,7 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 		}
 	}
 
-	void parse_NoMoreInvocations_VerificationFailure() {
+	void format_NoMoreInvocations_VerificationFailure() {
 		Mock<SomeInterface> mock;
 		try {
 			Fake(Method(mock, func));
@@ -165,7 +163,7 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 	}
 
 
-	void parse_UserDefinedMatcher_in_expected_pattern() {
+	void format_UserDefinedMatcher_in_expected_pattern() {
 		Mock<SomeInterface> mock;
 		When(Method(mock, func)).Return(0);
 		//SomeInterface &i = mock.get();
@@ -188,7 +186,7 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 		}
 	}
 
-	void parse_actual_arguments() {
+	void format_actual_arguments() {
 		Mock<SomeInterface> mock;
 		When(Method(mock, all_types)).Return(0);
 		//SomeInterface &i = mock.get();

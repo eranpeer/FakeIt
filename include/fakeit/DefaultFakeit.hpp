@@ -20,24 +20,37 @@ namespace fakeit {
 
 struct DefaultFakeit: public FakeIt {
 
+	DefaultFakeit() :_customFormatter(nullptr){}
+
 	static DefaultFakeit& getInstance() {
 		static DefaultFakeit instance;
 		return instance;
 	}
 
+	void setCustomErrorFormatter(ErrorFormatter& userDefinedFormatter) {
+		_customFormatter = &userDefinedFormatter;
+	}
+
+	void clearCustomErrorFormatter() {
+		_customFormatter = nullptr;
+	}
+
 protected:
 	
 	EventHandler& getEventHandler() override {
-		return eventHandler;
+		return _eventHandler;
 	}
 
 	ErrorFormatter& getErrorFormatter() override {
-		return formatter;
+		if (_customFormatter)
+			return *_customFormatter;
+		return _formatter;
 	}
 
 private:
-	DefaultEventHandler eventHandler;
-	DefaultErrorFormatter formatter;
+	DefaultEventHandler _eventHandler;
+	DefaultErrorFormatter _formatter;
+	ErrorFormatter * _customFormatter;
 };
 
 static UsingFunctor Using (DefaultFakeit::getInstance());
