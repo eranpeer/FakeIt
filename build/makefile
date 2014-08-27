@@ -17,8 +17,8 @@ remove_const_volatile_tests.cpp \
 functional.cpp \
 spying_tests.cpp \
 verification_errors_tests.cpp \
-default_error_formatting_tests.cpp \
-custom_error_formatting_tests.cpp 
+default_event_formatting_tests.cpp \
+custom_event_formatting_tests.cpp 
 
 OBJS += $(subst .cpp,.o,$(CPP_SRCS))
 
