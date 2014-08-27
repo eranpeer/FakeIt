@@ -10,7 +10,7 @@
 #define DefaultFakeit_h__
 
 #include "fakeit/FakeitContext.hpp"
-#include "fakeit/DefaultEventHandler.hpp"
+#include "fakeit/DefaultEventLogger.hpp"
 #include "fakeit/DefaultErrorFormatter.hpp"
 #include "fakeit/UsingFunctor.hpp"
 #include "fakeit/VerifyFunctor.hpp"
