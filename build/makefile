@@ -18,7 +18,8 @@ functional.cpp \
 spying_tests.cpp \
 verification_errors_tests.cpp \
 default_event_formatting_tests.cpp \
-custom_event_formatting_tests.cpp 
+custom_event_formatting_tests.cpp \
+custom_testing_framework_tests.cpp 
 
 OBJS += $(subst .cpp,.o,$(CPP_SRCS))
 

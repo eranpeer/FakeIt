@@ -17,19 +17,18 @@
 
 using namespace fakeit;
 
-
-struct DefaultErrorFormatting: tpunit::TestFixture {
-	DefaultErrorFormatting() :
+struct DefaultEventFormatting: tpunit::TestFixture {
+	DefaultEventFormatting() :
 			tpunit::TestFixture(
 			//
-			TEST(DefaultErrorFormatting::format_UnmockedMethodCallEvent),
-			TEST(DefaultErrorFormatting::format_UnmatchedMethodCallEvent),
-			TEST(DefaultErrorFormatting::format_AnyArguments),
-			TEST(DefaultErrorFormatting::format_Exactly_Once),
-			TEST(DefaultErrorFormatting::format_Atleast_Once),
-			TEST(DefaultErrorFormatting::format_NoMoreInvocations_VerificationFailure),
-			TEST(DefaultErrorFormatting::format_UserDefinedMatcher_in_expected_pattern),
-			TEST(DefaultErrorFormatting::format_actual_arguments)
+			TEST(DefaultEventFormatting::format_UnmockedMethodCallEvent),
+			TEST(DefaultEventFormatting::format_UnmatchedMethodCallEvent),
+			TEST(DefaultEventFormatting::format_AnyArguments),
+			TEST(DefaultEventFormatting::format_Exactly_Once),
+			TEST(DefaultEventFormatting::format_Atleast_Once),
+			TEST(DefaultEventFormatting::format_NoMoreInvocations_VerificationFailure),
+			TEST(DefaultEventFormatting::format_UserDefinedMatcher_in_expected_pattern),
+			TEST(DefaultEventFormatting::format_actual_arguments)
 			) //
 	{
 	}
@@ -234,4 +233,4 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 		}
 	}
 
-} __DefaultErrorFormatting;
+} __DefaultEventFormatting;
