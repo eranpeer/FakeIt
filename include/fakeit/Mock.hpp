@@ -24,10 +24,10 @@ public:
 
 	static_assert(std::is_polymorphic<C>::value, "Can only mock a polymorphic type");
 
-	Mock() : impl(DefaultFakeit::getInstance()) {
+	Mock() : impl(Fakeit) {
 	}
 
-	Mock(C &obj) :impl(DefaultFakeit::getInstance(), obj) {
+	Mock(C &obj) :impl(Fakeit, obj) {
 	}
 
 	virtual C& get() {
