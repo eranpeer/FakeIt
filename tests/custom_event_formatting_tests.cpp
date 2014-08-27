@@ -17,18 +17,18 @@
 
 using namespace fakeit;
 
-struct CustomErrorFormatting : tpunit::TestFixture {
-	CustomErrorFormatting() :
+struct CustomEventFormatting : tpunit::TestFixture {
+	CustomEventFormatting() :
 	tpunit::TestFixture(
 	//
-	TEST(CustomErrorFormatting::format_UnexpectedMethodCallEvent),
-	TEST(CustomErrorFormatting::format_SequenceVerificationEvent),
-	TEST(CustomErrorFormatting::format_NoMoreInvocationsVerificationEvent)
+	TEST(CustomEventFormatting::format_UnexpectedMethodCallEvent),
+	TEST(CustomEventFormatting::format_SequenceVerificationEvent),
+	TEST(CustomEventFormatting::format_NoMoreInvocationsVerificationEvent)
 	) //
 	{
 	}
 
-	class CustomErrorFormatter : public ErrorFormatter {
+	class CustomEventFormatter : public ErrorFormatter {
 
 		virtual std::string format(const fakeit::UnexpectedMethodCallEvent& e) {
 			return{ "UnexpectedMethodCallEvent" };
@@ -70,7 +70,7 @@ struct CustomErrorFormatting : tpunit::TestFixture {
 	};
 
 	static void setup() {
-		static CustomErrorFormatter formatter;
+		static CustomEventFormatter formatter;
 		Fakeit.setCustomEventFormatter(formatter);
 	}
 
