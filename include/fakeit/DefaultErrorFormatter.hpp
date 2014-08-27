@@ -7,8 +7,7 @@
  */
 #include <iostream>
 #include "fakeit/ErrorFormatter.hpp"
-#include "fakeit/FakeitExceptions.hpp"
-#include "fakeit/Sequence.hpp"
+#include "fakeit/FakeitEvents.hpp"
 
 #ifndef DefaultErrorFormatter_h__
 #define DefaultErrorFormatter_h__
