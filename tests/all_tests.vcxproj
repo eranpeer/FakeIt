@@ -66,6 +66,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="custom_testing_framework_tests.cpp" />
     <ClCompile Include="default_behaviore_tests.cpp" />
     <ClCompile Include="default_event_formatting_tests.cpp" />
     <ClCompile Include="gcc_stubbing_multiple_values_tests.cpp" />
