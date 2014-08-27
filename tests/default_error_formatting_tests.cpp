@@ -66,7 +66,8 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 		}
 		catch (UnexpectedMethodCallException& e)
 		{
-			std::string expectedMsg{"Unexpected method invocation: An unmocked method was invoked. All used virtual methods must be stubbed!"};
+			std::string expectedMsg{"Unexpected method invocation: unknown()\n"};
+			expectedMsg +=	"  An unmocked method was invoked. All used virtual methods must be stubbed!";
 			std::string actual{to_string(e)};
 			ASSERT_EQUAL(expectedMsg, actual);
 		}

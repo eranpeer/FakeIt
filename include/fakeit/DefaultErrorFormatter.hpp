@@ -23,11 +23,11 @@ struct DefaultErrorFormatter: public ErrorFormatter {
 	virtual std::string format(const UnexpectedMethodCallEvent& e) override {
 		std::ostringstream out;
 		out << "Unexpected method invocation: ";
+		out << e.getInvocation().format() << std::endl;
 		if (UnexpectedType::Unmatched == e.getUnexpectedType()) {
-			out << e.getInvocation().format() << std::endl;
 			out << "  Could not find any recorded behavior to support this method call.";
 		} else {
-			out << "An unmocked method was invoked. All used virtual methods must be stubbed!";
+			out << "  An unmocked method was invoked. All used virtual methods must be stubbed!";
 		}
 		return out.str();
 	}
@@ -46,7 +46,7 @@ struct DefaultErrorFormatter: public ErrorFormatter {
 
 		out << "Expected pattern: ";
 		const std::vector<fakeit::Sequence*> expectedPattern = e.expectedPattern();
-		out<< formatExpectedPattern(expectedPattern) << std::endl;
+		out << formatExpectedPattern(expectedPattern) << std::endl;
 
 		out << "Expected matches: ";
 		formatExpectedCount(out, e.verificationType(), e.expectedCount());
@@ -56,7 +56,7 @@ struct DefaultErrorFormatter: public ErrorFormatter {
 
 		auto actualSequence = e.actualSequence();
 		out << "Actual sequence : total of " << actualSequence.size() << " actual invocations";
-		if (actualSequence.size() == 0){
+		if (actualSequence.size() == 0) {
 			out << ".";
 		} else {
 			out << ":" << std::endl;
