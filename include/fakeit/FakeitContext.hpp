@@ -29,6 +29,7 @@ namespace fakeit {
 		}
 
 		void handle(const NoMoreInvocationsVerificationEvent& e) {
+			fireEvent(e);
 			auto& eh = getTestingFrameworkEventHandler();
 			eh.handle(e);
 		}
