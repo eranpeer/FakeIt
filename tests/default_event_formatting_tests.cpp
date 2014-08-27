@@ -17,7 +17,6 @@
 
 using namespace fakeit;
 
-
 struct DefaultEventFormatting: tpunit::TestFixture {
 	DefaultEventFormatting() :
 			tpunit::TestFixture(
