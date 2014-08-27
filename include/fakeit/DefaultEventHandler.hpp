@@ -16,7 +16,7 @@
 
 namespace fakeit {
 
-	struct DefaultEventHandler : public fakeit::EventHandler {
+	struct DefaultEventLogger : public fakeit::EventHandler {
 
 		virtual void handle(const UnexpectedMethodCallEvent& e) override {
 			out << formatter.format(e) << std::endl;
@@ -30,7 +30,7 @@ namespace fakeit {
 			out << formatter.format(e) << std::endl;
 		}
 
-		DefaultEventHandler() :
+		DefaultEventLogger() :
 			out(std::cout) {
 		}
 	private:

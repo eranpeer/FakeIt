@@ -97,12 +97,6 @@ private:
 			out << "at least ";
 
 		out << expectedCount;
-
-//		if (expectedCount == 1)
-//			out << "one appearance";
-//		else {
-//			out << expectedCount << " appearances";
-//		}
 	}
 
 	static void formatInvocationList(std::ostream& out, const std::vector<fakeit::Invocation*>& actualSequence) {

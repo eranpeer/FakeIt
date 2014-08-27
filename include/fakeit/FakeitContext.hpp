@@ -13,20 +13,20 @@
 #include "fakeit/ErrorFormatter.hpp"
 namespace fakeit {
 
-	struct FakeitContext : public EventHandler, public ErrorFormatter {
+	struct FakeitContext : private EventHandler, private ErrorFormatter {
 
 		void handle(const UnexpectedMethodCallEvent& e) {
-			auto& eh = getEventHandler();
+			auto& eh = getTestingFrameworkEventHandler();
 			eh.handle(e);
 		}
 
 		void handle(const SequenceVerificationEvent& e) {
-			auto& eh = getEventHandler();
+			auto& eh = getTestingFrameworkEventHandler();
 			eh.handle(e);
 		}
 
 		void handle(const NoMoreInvocationsVerificationEvent& e) {
-			auto& eh = getEventHandler();
+			auto& eh = getTestingFrameworkEventHandler();
 			eh.handle(e);
 		}
 
@@ -46,7 +46,7 @@ namespace fakeit {
 		}
 
 	protected:
-		virtual EventHandler& getEventHandler() = 0;
+		virtual EventHandler& getTestingFrameworkEventHandler() = 0;
 		virtual ErrorFormatter& getErrorFormatter() = 0;
 	};
 

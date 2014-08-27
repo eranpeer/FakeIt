@@ -27,8 +27,8 @@ struct DefaultFakeit: public FakeitContext {
 		return instance;
 	}
 
-	void setCustomErrorFormatter(ErrorFormatter& userDefinedFormatter) {
-		_customFormatter = &userDefinedFormatter;
+	void setCustomErrorFormatter(fakeit::ErrorFormatter& customErrorFormatter) {
+		_customFormatter = &customErrorFormatter;
 	}
 
 	void clearCustomErrorFormatter() {
@@ -37,20 +37,20 @@ struct DefaultFakeit: public FakeitContext {
 
 protected:
 	
-	EventHandler& getEventHandler() override {
+	fakeit::EventHandler& getTestingFrameworkEventHandler() override {
 		return _eventHandler;
 	}
 
-	ErrorFormatter& getErrorFormatter() override {
+	fakeit::ErrorFormatter& getErrorFormatter() override {
 		if (_customFormatter)
 			return *_customFormatter;
 		return _formatter;
 	}
 
 private:
-	DefaultEventHandler _eventHandler;
+	DefaultEventLogger _eventHandler;
 	DefaultErrorFormatter _formatter;
-	ErrorFormatter * _customFormatter;
+	fakeit::ErrorFormatter * _customFormatter;
 };
 
 static DefaultFakeit& Fakeit = DefaultFakeit::getInstance();
