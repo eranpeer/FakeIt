@@ -6,15 +6,15 @@
  * Created on August, 2014
  */
 #include <iostream>
-#include "fakeit/ErrorFormatter.hpp"
+#include "fakeit/EventFormatter.hpp"
 #include "fakeit/FakeitEvents.hpp"
 
-#ifndef DefaultErrorFormatter_h__
-#define DefaultErrorFormatter_h__
+#ifndef DefaultEventFormatter_h__
+#define DefaultEventFormatter_h__
 
 namespace fakeit {
 
-struct DefaultErrorFormatter: public ErrorFormatter {
+struct DefaultEventFormatter: public EventFormatter {
 
 	virtual std::string format(const UnexpectedMethodCallEvent& e) override {
 		std::ostringstream out;

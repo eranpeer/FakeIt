@@ -10,11 +10,11 @@
 #define FakeitContext_h__
 #include <vector>
 #include "fakeit/EventHandler.hpp"
-#include "fakeit/ErrorFormatter.hpp"
+#include "fakeit/EventFormatter.hpp"
 
 namespace fakeit {
 
-	struct FakeitContext : private EventHandler, private ErrorFormatter {
+	struct FakeitContext : private EventHandler, protected EventFormatter {
 
 		void handle(const UnexpectedMethodCallEvent& e) {
 			fireEvent(e);
@@ -34,17 +34,17 @@ namespace fakeit {
 		}
 
 		std::string format(const fakeit::UnexpectedMethodCallEvent& e) {
-			auto& eh = getErrorFormatter();
+			auto& eh = getEventFormatter();
 			return eh.format(e);
 		}
 
 		std::string format(const fakeit::SequenceVerificationEvent& e) {
-			auto& eh = getErrorFormatter();
+			auto& eh = getEventFormatter();
 			return eh.format(e);
 		}
 
 		std::string format(const fakeit::NoMoreInvocationsVerificationEvent& e)  {
-			auto& eh = getErrorFormatter();
+			auto& eh = getEventFormatter();
 			return eh.format(e);
 		}
 
@@ -54,7 +54,7 @@ namespace fakeit {
 
 	protected:
 		virtual EventHandler& getTestingFrameworkEventHandler() = 0;
-		virtual ErrorFormatter& getErrorFormatter() = 0;
+		virtual EventFormatter& getEventFormatter() = 0;
 	private:
 		std::vector<EventHandler*> _eventListeners;
 

@@ -5,8 +5,8 @@
  *
  * Created on August, 2014
  */
-#ifndef ErrorFormatter_h__
-#define ErrorFormatter_h__
+#ifndef EventFormatter_h__
+#define EventFormatter_h__
 
 #include <string>
 
@@ -16,7 +16,7 @@ struct UnexpectedMethodCallEvent;
 struct SequenceVerificationEvent;
 struct NoMoreInvocationsVerificationEvent;
 
-struct ErrorFormatter {
+struct EventFormatter {
 
 	virtual std::string format(const fakeit::UnexpectedMethodCallEvent& e) = 0;
 

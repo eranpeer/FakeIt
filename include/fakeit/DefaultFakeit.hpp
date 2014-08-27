@@ -11,7 +11,7 @@
 
 #include "fakeit/FakeitContext.hpp"
 #include "fakeit/DefaultEventLogger.hpp"
-#include "fakeit/DefaultErrorFormatter.hpp"
+#include "fakeit/DefaultEventFormatter.hpp"
 #include "fakeit/UsingFunctor.hpp"
 #include "fakeit/VerifyFunctor.hpp"
 #include "fakeit/VerifyNoOtherInvocationsFunctor.hpp"
@@ -20,7 +20,7 @@ namespace fakeit {
 
 struct DefaultFakeit: public FakeitContext {
 
-	DefaultFakeit() :_customFormatter(nullptr), _customTestingFrameworkEventHandler(nullptr) {
+	DefaultFakeit() : _eventLogger(*this), _customFormatter(nullptr),_customTestingFrameworkEventHandler(nullptr) {
 		addEventHandler(_eventLogger);
 	}
 
@@ -29,7 +29,7 @@ struct DefaultFakeit: public FakeitContext {
 		return instance;
 	}
 
-	void setCustomEventFormatter(fakeit::ErrorFormatter& customErrorFormatter) {
+	void setCustomEventFormatter(fakeit::EventFormatter& customErrorFormatter) {
 		_customFormatter = &customErrorFormatter;
 	}
 
@@ -53,17 +53,13 @@ protected:
 		return _nullTestingFrameworkEventHandler;
 	}
 
-	fakeit::ErrorFormatter& getErrorFormatter() override {
+	fakeit::EventFormatter& getEventFormatter() override {
 		if (_customFormatter)
 			return *_customFormatter;
 		return _formatter;
 	}
 
 private:
-	DefaultEventLogger _eventLogger;
-	DefaultErrorFormatter _formatter;
-	fakeit::ErrorFormatter * _customFormatter;
-
 	class NullEventHandler : public fakeit::EventHandler {
 
 		virtual void handle(const UnexpectedMethodCallEvent& e) {}
@@ -73,9 +69,11 @@ private:
 		virtual void handle(const NoMoreInvocationsVerificationEvent& e) {}
 	};
 
+	DefaultEventLogger _eventLogger;
+	DefaultEventFormatter _formatter;
+	fakeit::EventFormatter * _customFormatter;
 	NullEventHandler _nullTestingFrameworkEventHandler;
 	fakeit::EventHandler* _customTestingFrameworkEventHandler;
-
 };
 
 static DefaultFakeit& Fakeit = DefaultFakeit::getInstance();

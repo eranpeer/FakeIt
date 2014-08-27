@@ -28,7 +28,7 @@ struct CustomEventFormatting : tpunit::TestFixture {
 	{
 	}
 
-	class CustomEventFormatter : public ErrorFormatter {
+	class CustomEventFormatter : public EventFormatter {
 
 		virtual std::string format(const fakeit::UnexpectedMethodCallEvent& e) {
 			return{ "UnexpectedMethodCallEvent" };

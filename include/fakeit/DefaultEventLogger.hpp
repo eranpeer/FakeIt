@@ -11,31 +11,30 @@
 
 #include <iostream>
 #include "fakeit/EventHandler.hpp"
-#include "fakeit/DefaultErrorFormatter.hpp"
+#include "fakeit/DefaultEventFormatter.hpp"
 #include "fakeit/FakeitExceptions.hpp"
 
 namespace fakeit {
 
 	struct DefaultEventLogger : public fakeit::EventHandler {
 
+		DefaultEventLogger(EventFormatter& formatter):_formatter(formatter),_out(std::cout){}
+
 		virtual void handle(const UnexpectedMethodCallEvent& e) override {
-			out << formatter.format(e) << std::endl;
+			_out << _formatter.format(e) << std::endl;
 		}
 
 		virtual void handle(const SequenceVerificationEvent& e) override {
-			out << formatter.format(e) << std::endl;
+			_out << _formatter.format(e) << std::endl;
 		}
 
 		virtual void handle(const NoMoreInvocationsVerificationEvent& e) override {
-			out << formatter.format(e) << std::endl;
+			_out << _formatter.format(e) << std::endl;
 		}
 
-		DefaultEventLogger() :
-			out(std::cout) {
-		}
 	private:
-		DefaultErrorFormatter formatter;
-		std::ostream& out;
+		EventFormatter& _formatter;
+		std::ostream& _out;
 	};
 
 }
