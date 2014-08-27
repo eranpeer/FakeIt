@@ -8,7 +8,7 @@
 
 namespace fakeit {
 
-	struct FakeIt;
+	struct FakeitContext;
 
 	class SequenceVerificationProgress {
 
@@ -20,7 +20,7 @@ namespace fakeit {
 		SequenceVerificationProgress(SequenceVerificationExpectation * ptr) :ptr(ptr){
 		}
 
-		SequenceVerificationProgress(FakeIt& fakeit, std::set<const ActualInvocationsSource*>& sources) :
+		SequenceVerificationProgress(FakeitContext& fakeit, std::set<const ActualInvocationsSource*>& sources) :
 			SequenceVerificationProgress(new SequenceVerificationExpectation(fakeit, sources)){
 		}
 

@@ -9,7 +9,7 @@
 #ifndef DefaultFakeit_h__
 #define DefaultFakeit_h__
 
-#include "fakeit/FakeIt.hpp"
+#include "fakeit/FakeitContext.hpp"
 #include "fakeit/DefaultEventHandler.hpp"
 #include "fakeit/DefaultErrorFormatter.hpp"
 #include "fakeit/UsingFunctor.hpp"
@@ -18,7 +18,7 @@
 
 namespace fakeit {
 
-struct DefaultFakeit: public FakeIt {
+struct DefaultFakeit: public FakeitContext {
 
 	DefaultFakeit() :_customFormatter(nullptr){}
 

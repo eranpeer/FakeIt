@@ -17,7 +17,7 @@
 #include "mockutils/DynamicProxy.hpp"
 #include "fakeit/StubbingImpl.hpp"
 #include "fakeit/DomainObjects.hpp"
-#include "fakeit/FakeIt.hpp"
+#include "fakeit/FakeitContext.hpp"
 
 namespace fakeit {
 
@@ -25,11 +25,11 @@ template<typename C, typename ... baseclasses>
 class MockImpl: private MockObject<C>, public virtual ActualInvocationsSource {
 public:
 
-	MockImpl(FakeIt& fakeit, C &obj) :
+	MockImpl(FakeitContext& fakeit, C &obj) :
 			MockImpl<C, baseclasses...>(fakeit, obj, true) {
 	}
 
-	MockImpl(FakeIt& fakeit) :
+	MockImpl(FakeitContext& fakeit) :
 			MockImpl<C, baseclasses...>(fakeit, *(createFakeInstance()), false) {
 		FakeObject<C, baseclasses...>* fake = (FakeObject<C, baseclasses...>*) _instance;
 		fake->getVirtualTable().setCookie(1, this);
@@ -65,7 +65,7 @@ public:
 		return _proxy.get();
 	}
 
-	virtual FakeIt & getFakeIt() override {
+	virtual FakeitContext & getFakeIt() override {
 		return _fakeit;
 	}
 
@@ -91,7 +91,7 @@ private:
 	DynamicProxy<C, baseclasses...> _proxy;
 	C* _instance; //
 	bool _isSpy;
-	FakeIt& _fakeit;
+	FakeitContext& _fakeit;
 
 	template<typename R, typename ... arglist>
 	class MethodStubbingContextImpl: public MethodStubbingContext<C, R, arglist...> {
@@ -167,7 +167,7 @@ private:
 		return *methodMock;
 	}
 
-	MockImpl(FakeIt& fakeit, C &obj, bool isSpy) :
+	MockImpl(FakeitContext& fakeit, C &obj, bool isSpy) :
 			_proxy { obj }, _instance(&obj), _isSpy(isSpy), _fakeit(fakeit) {
 	}
 };

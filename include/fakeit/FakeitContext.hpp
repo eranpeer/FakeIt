@@ -6,14 +6,14 @@
  * Created on Mar 10, 2014
  */
 
-#ifndef FakeIt_h__
-#define FakeIt_h__
+#ifndef FakeitContext_h__
+#define FakeitContext_h__
 
 #include "fakeit/EventHandler.hpp"
 #include "fakeit/ErrorFormatter.hpp"
 namespace fakeit {
 
-	struct FakeIt : public EventHandler, public ErrorFormatter {
+	struct FakeitContext : public EventHandler, public ErrorFormatter {
 
 		void handle(const UnexpectedMethodCallEvent& e) {
 			auto& eh = getEventHandler();

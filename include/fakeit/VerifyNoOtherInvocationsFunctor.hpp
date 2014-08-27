@@ -21,16 +21,16 @@
 
 #include "mockutils/smart_ptr.hpp"
 #include "mockutils/Macros.hpp"
-#include "fakeit/FakeIt.hpp"
+#include "fakeit/FakeitContext.hpp"
 
 namespace fakeit {
 class VerifyNoOtherInvocationsFunctor {
 
-	FakeIt& _fakeit;
+	FakeitContext& _fakeit;
 
 public:
 
-	VerifyNoOtherInvocationsFunctor(FakeIt& fakeit):_fakeit(fakeit) {
+	VerifyNoOtherInvocationsFunctor(FakeitContext& fakeit):_fakeit(fakeit) {
 	}
 
 	void operator()() {

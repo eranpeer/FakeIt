@@ -9,7 +9,7 @@
 #ifndef VerifyNoOtherInvocationsVerificationProgress_hpp_
 #define VerifyNoOtherInvocationsVerificationProgress_hpp_
 
-#include "fakeit/FakeIt.hpp"
+#include "fakeit/FakeitContext.hpp"
 
 namespace fakeit {
 
@@ -36,14 +36,14 @@ class VerifyNoOtherInvocationsVerificationProgress {
 
 	private:
 
-		FakeIt& _fakeit;
+		FakeitContext& _fakeit;
 		std::set<const ActualInvocationsSource*> _mocks;
 
 		std::string _file;
 		int _line;
 		std::string _callingMethod;
 
-		VerifyNoOtherInvocationsExpectation(FakeIt& fakeit, std::set<const ActualInvocationsSource*> mocks) :
+		VerifyNoOtherInvocationsExpectation(FakeitContext& fakeit, std::set<const ActualInvocationsSource*> mocks) :
 				_fakeit(fakeit),
 				_mocks(mocks), _line(0) {
 		}
@@ -81,7 +81,7 @@ class VerifyNoOtherInvocationsVerificationProgress {
 			ptr(ptr) {
 	}
 
-	VerifyNoOtherInvocationsVerificationProgress(FakeIt& fakeit, std::set<const ActualInvocationsSource*>& invocationSources) :
+	VerifyNoOtherInvocationsVerificationProgress(FakeitContext& fakeit, std::set<const ActualInvocationsSource*>& invocationSources) :
 			VerifyNoOtherInvocationsVerificationProgress(new VerifyNoOtherInvocationsExpectation(fakeit, invocationSources)) {
 	}
 

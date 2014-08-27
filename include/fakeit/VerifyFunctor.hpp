@@ -16,14 +16,14 @@
 #include "fakeit/Sequence.hpp"
 #include "fakeit/SortInvocations.hpp"
 #include "fakeit/UsingFunctor.hpp"
-#include "fakeit/FakeIt.hpp"
+#include "fakeit/FakeitContext.hpp"
 #include "fakeit/SequenceVerificationProgress.hpp"
 
 namespace fakeit {
 
 class VerifyFunctor {
 
-	FakeIt& _fakeit;
+	FakeitContext& _fakeit;
 
 	void collectSequences(std::vector<Sequence*>& vec) {
 	}
@@ -45,7 +45,7 @@ class VerifyFunctor {
 
 public:
 
-	VerifyFunctor(FakeIt& fakeit):_fakeit(fakeit) {
+	VerifyFunctor(FakeitContext& fakeit):_fakeit(fakeit) {
 	}
 
 	template<typename ... list>

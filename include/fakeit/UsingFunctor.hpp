@@ -15,7 +15,7 @@
 #include "fakeit/Stubbing.hpp"
 #include "fakeit/Sequence.hpp"
 #include "fakeit/SortInvocations.hpp"
-#include "fakeit/FakeIt.hpp"
+#include "fakeit/FakeitContext.hpp"
 #include "fakeit/SequenceVerificationProgress.hpp"
 
 #include "mockutils/smart_ptr.hpp"
@@ -25,11 +25,11 @@ namespace fakeit {
 class UsingFunctor {
 
 	friend class VerifyFunctor;
-	FakeIt& _fakeit;
+	FakeitContext& _fakeit;
 
 public:
 
-	UsingFunctor(FakeIt& fakeit):_fakeit(fakeit) {
+	UsingFunctor(FakeitContext& fakeit):_fakeit(fakeit) {
 	}
 
 	template<typename ... list>
