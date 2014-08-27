@@ -53,9 +53,10 @@ private:
 	ErrorFormatter * _customFormatter;
 };
 
-static UsingFunctor Using (DefaultFakeit::getInstance());
-static VerifyFunctor Verify(DefaultFakeit::getInstance());
-static VerifyNoOtherInvocationsFunctor VerifyNoOtherInvocations(DefaultFakeit::getInstance());
+static DefaultFakeit& Fakeit = DefaultFakeit::getInstance();
+static UsingFunctor Using(Fakeit);
+static VerifyFunctor Verify(Fakeit);
+static VerifyNoOtherInvocationsFunctor VerifyNoOtherInvocations(Fakeit);
 
 }
 #endif //
