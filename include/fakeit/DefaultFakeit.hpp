@@ -20,25 +20,37 @@ namespace fakeit {
 
 struct DefaultFakeit: public FakeitContext {
 
-	DefaultFakeit() :_customFormatter(nullptr){}
+	DefaultFakeit() :_customFormatter(nullptr), _customTestingFrameworkEventHandler(nullptr) {
+		addEventHandler(_eventLogger);
+	}
 
 	static DefaultFakeit& getInstance() {
 		static DefaultFakeit instance;
 		return instance;
 	}
 
-	void setCustomErrorFormatter(fakeit::ErrorFormatter& customErrorFormatter) {
+	void setCustomEventFormatter(fakeit::ErrorFormatter& customErrorFormatter) {
 		_customFormatter = &customErrorFormatter;
 	}
 
-	void clearCustomErrorFormatter() {
+	void clearCustomEventFormatter() {
 		_customFormatter = nullptr;
+	}
+
+	void setCustomTestingFrameworkEventHandler(fakeit::EventHandler& eventHandler) {
+		_customTestingFrameworkEventHandler = &eventHandler;
+	}
+
+	void clearCustomTestingFrameworkEventHandler() {
+		_customTestingFrameworkEventHandler = nullptr;
 	}
 
 protected:
 	
 	fakeit::EventHandler& getTestingFrameworkEventHandler() override {
-		return _eventHandler;
+		if (_customTestingFrameworkEventHandler)
+			return *_customTestingFrameworkEventHandler;
+		return _nullTestingFrameworkEventHandler;
 	}
 
 	fakeit::ErrorFormatter& getErrorFormatter() override {
@@ -48,9 +60,22 @@ protected:
 	}
 
 private:
-	DefaultEventLogger _eventHandler;
+	DefaultEventLogger _eventLogger;
 	DefaultErrorFormatter _formatter;
 	fakeit::ErrorFormatter * _customFormatter;
+
+	class NullEventHandler : public fakeit::EventHandler {
+
+		virtual void handle(const UnexpectedMethodCallEvent& e) {}
+
+		virtual void handle(const SequenceVerificationEvent& e) {}
+
+		virtual void handle(const NoMoreInvocationsVerificationEvent& e) {}
+	};
+
+	NullEventHandler _nullTestingFrameworkEventHandler;
+	fakeit::EventHandler* _customTestingFrameworkEventHandler;
+
 };
 
 static DefaultFakeit& Fakeit = DefaultFakeit::getInstance();

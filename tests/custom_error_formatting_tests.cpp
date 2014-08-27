@@ -71,11 +71,11 @@ struct CustomErrorFormatting : tpunit::TestFixture {
 
 	static void setup() {
 		static CustomErrorFormatter formatter;
-		Fakeit.setCustomErrorFormatter(formatter);
+		Fakeit.setCustomEventFormatter(formatter);
 	}
 
 	static void teardown() {
-		Fakeit.clearCustomErrorFormatter();
+		Fakeit.clearCustomEventFormatter();
 	}
 
 	void format_UnexpectedMethodCallEvent() {

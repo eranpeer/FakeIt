@@ -8,19 +8,22 @@
 
 #ifndef FakeitContext_h__
 #define FakeitContext_h__
-
+#include <vector>
 #include "fakeit/EventHandler.hpp"
 #include "fakeit/ErrorFormatter.hpp"
+
 namespace fakeit {
 
 	struct FakeitContext : private EventHandler, private ErrorFormatter {
 
 		void handle(const UnexpectedMethodCallEvent& e) {
+			fireEvent(e);
 			auto& eh = getTestingFrameworkEventHandler();
 			eh.handle(e);
 		}
 
 		void handle(const SequenceVerificationEvent& e) {
+			fireEvent(e);
 			auto& eh = getTestingFrameworkEventHandler();
 			eh.handle(e);
 		}
@@ -45,9 +48,31 @@ namespace fakeit {
 			return eh.format(e);
 		}
 
+		void addEventHandler(EventHandler& eventListener){
+			_eventListeners.push_back(&eventListener);
+		}
+
 	protected:
 		virtual EventHandler& getTestingFrameworkEventHandler() = 0;
 		virtual ErrorFormatter& getErrorFormatter() = 0;
+	private:
+		std::vector<EventHandler*> _eventListeners;
+
+		void fireEvent(const fakeit::NoMoreInvocationsVerificationEvent& evt){
+			for (auto listener : _eventListeners)
+				listener->handle(evt);
+		}
+
+		void fireEvent(const fakeit::UnexpectedMethodCallEvent& evt){
+			for (auto listener : _eventListeners)
+				listener->handle(evt);
+		}
+
+		void fireEvent(const fakeit::SequenceVerificationEvent& evt){
+			for (auto listener : _eventListeners)
+				listener->handle(evt);
+		}
+
 	};
 
 }
