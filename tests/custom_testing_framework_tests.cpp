@@ -39,6 +39,11 @@ struct CustomTestingFramework : tpunit::TestFixture {
 		};
 
 		virtual void handle(const UnexpectedMethodCallEvent& e) {
+//			TestingFrameworkAdapter adapter;
+//			DefaultFakeit2 df;
+//			df.setTestingFrameworkAdapter(adapter);
+//			df.clearTestingFrameworkAdapter();
+
 			throw AssertionException("UnexpectedMethodCallEvent");
 		}
 
@@ -126,6 +131,7 @@ struct CustomTestingFramework : tpunit::TestFixture {
 			fakeit::Verify(Method(mock, func).Using(1)).setFileInfo("test file", 1, "test method");
 			fakeit::VerifyNoOtherInvocations(Method(mock, func)) //
 				.setFileInfo("test file", 1, "test method");
+
 		}
 		catch (TestingFrameworkAdapter::AssertionException& e) {
 			std::string expectedMsg{ "NoMoreInvocationsVerificationEvent" };
