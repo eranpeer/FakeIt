@@ -20,7 +20,7 @@ namespace fakeit {
 
 struct DefaultFakeit: public FakeitContext {
 
-	DefaultFakeit() : _eventLogger(*this), _customFormatter(nullptr),_customTestingFrameworkEventHandler(nullptr) {
+	DefaultFakeit() : _eventLogger(*this), _customFormatter(nullptr),_testingFrameworkAdapter(nullptr) {
 		addEventHandler(_eventLogger);
 	}
 
@@ -37,20 +37,20 @@ struct DefaultFakeit: public FakeitContext {
 		_customFormatter = nullptr;
 	}
 
-	void setCustomTestingFrameworkEventHandler(fakeit::EventHandler& eventHandler) {
-		_customTestingFrameworkEventHandler = &eventHandler;
+	void setTestingFrameworkAdapter(fakeit::EventHandler& eventHandler) {
+		_testingFrameworkAdapter = &eventHandler;
 	}
 
-	void clearCustomTestingFrameworkEventHandler() {
-		_customTestingFrameworkEventHandler = nullptr;
+	void clearTestingFrameworkAdapter() {
+		_testingFrameworkAdapter = nullptr;
 	}
 
 protected:
 	
-	fakeit::EventHandler& getTestingFrameworkEventHandler() override {
-		if (_customTestingFrameworkEventHandler)
-			return *_customTestingFrameworkEventHandler;
-		return _nullTestingFrameworkEventHandler;
+	fakeit::EventHandler& getTestingFrameworkAdapter() override {
+		if (_testingFrameworkAdapter)
+			return *_testingFrameworkAdapter;
+		return _nullTestingFrameworkAdapter;
 	}
 
 	fakeit::EventFormatter& getEventFormatter() override {
@@ -72,8 +72,8 @@ private:
 	DefaultEventLogger _eventLogger;
 	DefaultEventFormatter _formatter;
 	fakeit::EventFormatter * _customFormatter;
-	NullEventHandler _nullTestingFrameworkEventHandler;
-	fakeit::EventHandler* _customTestingFrameworkEventHandler;
+	NullEventHandler _nullTestingFrameworkAdapter;
+	fakeit::EventHandler* _testingFrameworkAdapter;
 };
 
 static DefaultFakeit& Fakeit = DefaultFakeit::getInstance();

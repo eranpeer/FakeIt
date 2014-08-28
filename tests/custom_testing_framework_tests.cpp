@@ -78,11 +78,11 @@ struct CustomTestingFramework : tpunit::TestFixture {
 
 	static void setup() {
 		static TestingFrameworkAdapter adapter;
-		Fakeit.setCustomTestingFrameworkEventHandler(adapter);
+		Fakeit.setTestingFrameworkAdapter(adapter);
 	}
 
 	static void teardown() {
-		Fakeit.clearCustomTestingFrameworkEventHandler();
+		Fakeit.clearTestingFrameworkAdapter();
 	}
 
 	void handle_UnexpectedMethodCallEvent() {

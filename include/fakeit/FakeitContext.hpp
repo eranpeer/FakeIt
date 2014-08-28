@@ -18,19 +18,19 @@ namespace fakeit {
 
 		void handle(const UnexpectedMethodCallEvent& e) {
 			fireEvent(e);
-			auto& eh = getTestingFrameworkEventHandler();
+			auto& eh = getTestingFrameworkAdapter();
 			eh.handle(e);
 		}
 
 		void handle(const SequenceVerificationEvent& e) {
 			fireEvent(e);
-			auto& eh = getTestingFrameworkEventHandler();
+			auto& eh = getTestingFrameworkAdapter();
 			eh.handle(e);
 		}
 
 		void handle(const NoMoreInvocationsVerificationEvent& e) {
 			fireEvent(e);
-			auto& eh = getTestingFrameworkEventHandler();
+			auto& eh = getTestingFrameworkAdapter();
 			eh.handle(e);
 		}
 
@@ -54,7 +54,7 @@ namespace fakeit {
 		}
 
 	protected:
-		virtual EventHandler& getTestingFrameworkEventHandler() = 0;
+		virtual EventHandler& getTestingFrameworkAdapter() = 0;
 		virtual EventFormatter& getEventFormatter() = 0;
 	private:
 		std::vector<EventHandler*> _eventListeners;
