@@ -18,7 +18,7 @@ struct SomeInterface {
 Mock<SomeInterface> mock;
 
 // Setup mock behavior.
-When(When(mock,foo)).Return(1); // Method mock.foo will return 1 once.
+When(Method(mock,foo)).Return(1); // Method mock.foo will return 1 once.
 
 // Fetch the mock instance.
 SomeInterface &i = mock.get();
