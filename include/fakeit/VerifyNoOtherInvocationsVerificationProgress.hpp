@@ -9,6 +9,8 @@
 #ifndef VerifyNoOtherInvocationsVerificationProgress_hpp_
 #define VerifyNoOtherInvocationsVerificationProgress_hpp_
 
+#include "fakeit/FakeitContext.hpp"
+
 namespace fakeit {
 
 class VerifyNoOtherInvocationsVerificationProgress {
@@ -34,13 +36,15 @@ class VerifyNoOtherInvocationsVerificationProgress {
 
 	private:
 
+		FakeitContext& _fakeit;
 		std::set<const ActualInvocationsSource*> _mocks;
 
 		std::string _file;
 		int _line;
 		std::string _callingMethod;
 
-		VerifyNoOtherInvocationsExpectation(std::set<const ActualInvocationsSource*> mocks) :
+		VerifyNoOtherInvocationsExpectation(FakeitContext& fakeit, std::set<const ActualInvocationsSource*> mocks) :
+				_fakeit(fakeit),
 				_mocks(mocks), _line(0) {
 		}
 
@@ -58,9 +62,13 @@ class VerifyNoOtherInvocationsVerificationProgress {
 				std::vector<Invocation*> sortedActualIvocations;
 				sortByInvocationOrder(actualInvocations, sortedActualIvocations);
 
-				NoMoreInvocationsVerificationException e(sortedActualIvocations, sortedNonVerifedIvocations);
+				NoMoreInvocationsVerificationEvent evt(sortedActualIvocations, sortedNonVerifedIvocations);
+				evt.setFileInfo(_file, _line, _callingMethod);
+				_fakeit.handle(evt);
+
+				std::string format = _fakeit.format(evt);
+				NoMoreInvocationsVerificationException e(format);
 				e.setFileInfo(_file, _line, _callingMethod);
-				fakeit::FakeIt::getInstance().handle(e);
 				throw e;
 			}
 		}
@@ -73,8 +81,8 @@ class VerifyNoOtherInvocationsVerificationProgress {
 			ptr(ptr) {
 	}
 
-	VerifyNoOtherInvocationsVerificationProgress(std::set<const ActualInvocationsSource*>& invocationSources) :
-			VerifyNoOtherInvocationsVerificationProgress(new VerifyNoOtherInvocationsExpectation(invocationSources)) {
+	VerifyNoOtherInvocationsVerificationProgress(FakeitContext& fakeit, std::set<const ActualInvocationsSource*>& invocationSources) :
+			VerifyNoOtherInvocationsVerificationProgress(new VerifyNoOtherInvocationsExpectation(fakeit, invocationSources)) {
 	}
 
 public:

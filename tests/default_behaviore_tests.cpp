@@ -28,7 +28,8 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 					TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToNullIfNotDefaultConstructible),//
 					TEST(DefaultBehavioreTests::ReturnPtr_NullPtrIfPtrToAbstract),
 					TEST(DefaultBehavioreTests::canMockClassWithoutDefaultConstructor),
-					TEST(DefaultBehavioreTests::canMockClassWithProtectedConstructor)
+					TEST(DefaultBehavioreTests::canMockClassWithProtectedConstructor),
+					TEST(DefaultBehavioreTests::createAndDeleteFakitInstatnce)
 					//
 							) {
 	}
@@ -221,6 +222,12 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 		};
 		Mock<SomeClass> mock;
 		Fake(Method(mock,foo));
+	}
+
+	void createAndDeleteFakitInstatnce(){
+		{
+			DefaultFakeit df;
+		}
 	}
 
 } __DefaultBehaviore;

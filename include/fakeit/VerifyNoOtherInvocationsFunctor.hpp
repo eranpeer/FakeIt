@@ -21,14 +21,16 @@
 
 #include "mockutils/smart_ptr.hpp"
 #include "mockutils/Macros.hpp"
-#include "fakeit/FakeIt.hpp"
+#include "fakeit/FakeitContext.hpp"
 
 namespace fakeit {
 class VerifyNoOtherInvocationsFunctor {
 
+	FakeitContext& _fakeit;
+
 public:
 
-	VerifyNoOtherInvocationsFunctor() {
+	VerifyNoOtherInvocationsFunctor(FakeitContext& fakeit):_fakeit(fakeit) {
 	}
 
 	void operator()() {
@@ -39,11 +41,10 @@ public:
 		std::set<const ActualInvocationsSource*> invocationSources;
 		invocationSources.insert(&head);
 		collectInvocationSources(invocationSources, tail...);
-		VerifyNoOtherInvocationsVerificationProgress progress{invocationSources};
+		VerifyNoOtherInvocationsVerificationProgress progress{_fakeit,invocationSources};
 		return progress;
 	}
-}
-static VerifyNoOtherInvocations;
+};
 
 }
 

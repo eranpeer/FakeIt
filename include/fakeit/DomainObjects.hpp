@@ -13,9 +13,13 @@
 
 namespace fakeit {
 
+struct FakeitContext;
+
 template<typename C>
 struct MockObject {
+	virtual ~MockObject() = default;
 	virtual C & get() = 0;
+	virtual FakeitContext & getFakeIt() = 0;
 };
 
 struct Method {

@@ -22,18 +22,28 @@ namespace fakeit {
 
 struct Invocation {
 
+	struct Matcher {
+
+		virtual ~Matcher() THROWS {
+		}
+
+		virtual bool matches(Invocation& invocation) = 0;
+
+		virtual std::string format() const = 0;
+	};
+
 	Invocation(int ordinal, Method & method) :
-			ordinal(ordinal), method(method), _isVerified(false) {
+			_ordinal(ordinal), _method(method), _isVerified(false) {
 	}
 
 	virtual ~Invocation() = default;
 
 	int getOrdinal() const {
-		return ordinal;
+		return _ordinal;
 	}
 
 	Method & getMethod() const {
-		return method;
+		return _method;
 	}
 
 	void markAsVerified() {
@@ -46,17 +56,9 @@ struct Invocation {
 
 	virtual std::string format() const = 0;
 
-	struct Matcher {
-		virtual ~Matcher() THROWS {
-		}
-		virtual bool matches(Invocation& invocation) = 0;
-
-		virtual std::string format() const = 0;
-	};
-
 private:
-	const int ordinal;
-	Method & method;
+	const int _ordinal;
+	Method & _method;
 	bool _isVerified;
 };
 

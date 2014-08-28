@@ -9,14 +9,8 @@
 #ifndef FakeitExceptions_h__
 #define FakeitExceptions_h__
 
-#include <functional>
-#include <memory>
+#include "fakeit/FakeitEvents.hpp"
 
-#include "fakeit/Sequence.hpp"
-#include "fakeit/DomainObjects.hpp"
-#include "fakeit/ErrorFormatter.hpp"
-
-#include "mockutils/Formatter.hpp"
 namespace fakeit {
 
 struct FakeitException {
@@ -31,43 +25,23 @@ struct FakeitException {
 	}
 };
 
+
 struct UnexpectedMethodCallException: public FakeitException {
 
-	UnexpectedMethodCallException(std::shared_ptr<Invocation> actualInvocation) {
-		_actualInvocation = actualInvocation;
+	UnexpectedMethodCallException(std::string format) :
+			_format(format) {
 	}
 
 	virtual std::string what() const override {
-		if (&(_actualInvocation->getMethod()) == &UnknownMethod::instance()) {
-			return std::string("UnexpectedMethodCallException: Unknown method invocation. All used virtual methods must be stubbed!");
-		}
-		else {
-			return std::string("UnexpectedMethodCallException: Could not find any recorded behavior to support this method call");
-		}
-		//return getErrorFormatter()->format(*this);
-	}
-
-	const Method& getMethod() const {
-		return _actualInvocation->getMethod();
-	}
-
-	Invocation& getInvocation() const {
-		fakeit::Invocation & invocation = *_actualInvocation;
-		return invocation;
+		return _format;
 	}
 
 private:
-	std::shared_ptr<Invocation> _actualInvocation;
-};
-
-
-enum class VerificationType {
-	Exact, AtLeast, NoMoreInvocatoins
+	std::string _format;
 };
 
 struct VerificationException: public FakeitException {
 	virtual ~VerificationException() = default;
-	virtual VerificationType verificationType() const = 0;
 
 	void setFileInfo(std::string file, int line, std::string callingMethod) {
 		_file = file;
@@ -75,9 +49,15 @@ struct VerificationException: public FakeitException {
 		_line = line;
 	}
 
-	const std::string& file() const {return _file;}
-	int line() const {return _line;}
-	const std::string& 	callingMethod() const { return _callingMethod; }
+	const std::string& file() const {
+		return _file;
+	}
+	int line() const {
+		return _line;
+	}
+	const std::string& callingMethod() const {
+		return _callingMethod;
+	}
 
 private:
 	std::string _file;
@@ -86,80 +66,30 @@ private:
 };
 
 struct NoMoreInvocationsVerificationException: public VerificationException {
-	NoMoreInvocationsVerificationException( //
-			std::vector<Invocation*>& allIvocations, //
-			std::vector<Invocation*>& unverifedIvocations) : //
-			VerificationException(), _allIvocations(allIvocations), _unverifedIvocations(unverifedIvocations) { //
-	}
 
-	virtual VerificationType verificationType() const override {
-		return VerificationType::NoMoreInvocatoins;
-	}
-
-	const std::vector<Invocation*>& allIvocations() const {
-		return _allIvocations;
-	}
-
-	const std::vector<Invocation*>& unverifedIvocations() const {
-		return _unverifedIvocations;
+	NoMoreInvocationsVerificationException(std::string format) : //
+			_format(format) { //
 	}
 
 	virtual std::string what() const override {
-//		return getErrorFormatter()->format(*this);
-		return std::string("VerificationException: expected no more invocations but found ") //
-		.append(std::to_string(unverifedIvocations().size()));
+		return _format;
 	}
-
 private:
-	const std::vector<Invocation*> _allIvocations;
-	const std::vector<Invocation*> _unverifedIvocations;
+	std::string _format;
 };
 
-
 struct SequenceVerificationException: public VerificationException {
-	SequenceVerificationException( //
-			std::vector<Sequence*>& expectedPattern, //
-			std::vector<Invocation*>& actualSequence, //
-			int expectedCount, //
-			int actualCount) : //
-			VerificationException(), //
-			_expectedPattern(expectedPattern), //
-			_actualSequence(actualSequence), //
-			_expectedCount(expectedCount), //
-			_actualCount(actualCount) //
-	{ //
-	}
-
-	const std::vector<Sequence*>& expectedPattern() const {
-		return _expectedPattern;
-	}
-
-	const std::vector<Invocation*>& actualSequence() const {
-		return _actualSequence;
-	}
-
-    int expectedCount() const {
-		return _expectedCount;
-	}
-
-    int actualCount() const {
-		return _actualCount;
+	SequenceVerificationException(const std::string& format) : //
+			_format(format) //
+	{
 	}
 
 	virtual std::string what() const override {
-//		return getErrorFormatter()->format(*this);
-		return std::string("VerificationException: expected ") //
-		.append(verificationType() == fakeit::VerificationType::Exact ? "exactly " : "at least ") //
-		.append(std::to_string(expectedCount())) //
-		.append(" invocations but was ") //
-		.append(std::to_string(actualCount()));
+		return _format;
 	}
 
 private:
-	const std::vector<Sequence*> _expectedPattern;
-	const std::vector<Invocation*> _actualSequence;
-	const int _expectedCount;
-	const int _actualCount;
+	std::string _format;
 };
 
 }

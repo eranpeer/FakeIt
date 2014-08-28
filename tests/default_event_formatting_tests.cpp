@@ -17,24 +17,21 @@
 
 using namespace fakeit;
 
-
-struct DefaultErrorFormatting: tpunit::TestFixture {
-	DefaultErrorFormatting() :
+struct DefaultEventFormatting: tpunit::TestFixture {
+	DefaultEventFormatting() :
 			tpunit::TestFixture(
 			//
-			TEST(DefaultErrorFormatting::parse_UnmockedMethodCallException),
-			TEST(DefaultErrorFormatting::parse_UnmatchedMethodCallException),
-			TEST(DefaultErrorFormatting::parse_AnyArguments),
-			TEST(DefaultErrorFormatting::parse_Exactly_Once),
-			TEST(DefaultErrorFormatting::parse_Atleast_Once),
-			TEST(DefaultErrorFormatting::parse_NoMoreInvocations_VerificationFailure),
-			TEST(DefaultErrorFormatting::parse_UserDefinedMatcher_in_expected_pattern),
-			TEST(DefaultErrorFormatting::parse_actual_arguments)
+			TEST(DefaultEventFormatting::format_UnmockedMethodCallEvent),
+			TEST(DefaultEventFormatting::format_UnmatchedMethodCallEvent),
+			TEST(DefaultEventFormatting::format_AnyArguments),
+			TEST(DefaultEventFormatting::format_Exactly_Once),
+			TEST(DefaultEventFormatting::format_Atleast_Once),
+			TEST(DefaultEventFormatting::format_NoMoreInvocations_VerificationFailure),
+			TEST(DefaultEventFormatting::format_UserDefinedMatcher_in_expected_pattern),
+			TEST(DefaultEventFormatting::format_actual_arguments)
 			) //
 	{
 	}
-
-	fakeit::DefaultErrorFormatter formatter;
 
 	template <typename T> std::string to_string(T& val){
 		std::stringstream stream;
@@ -59,7 +56,7 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 			long double) = 0;
 	};
 
-	void parse_UnmockedMethodCallException() {
+	void format_UnmockedMethodCallEvent() {
 		Mock<SomeInterface> mock;
 		SomeInterface &i = mock.get();
 		try {
@@ -68,12 +65,14 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 		}
 		catch (UnexpectedMethodCallException& e)
 		{
-			std::string expectedMsg("UnexpectedMethodCallException: Unknown method invocation. All used virtual methods must be stubbed!");
-			ASSERT_EQUAL(expectedMsg, to_string(e));
+			std::string expectedMsg{"Unexpected method invocation: unknown()\n"};
+			expectedMsg +=	"  An unmocked method was invoked. All used virtual methods must be stubbed!";
+			std::string actual{to_string(e)};
+			ASSERT_EQUAL(expectedMsg, actual);
 		}
 	}
 
-	void parse_UnmatchedMethodCallException() {
+	void format_UnmatchedMethodCallEvent() {
 		Mock<SomeInterface> mock;
 		Fake(Method(mock,func).Using(3));
 		SomeInterface &i = mock.get();
@@ -83,33 +82,16 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 		}
 		catch (UnexpectedMethodCallException& e)
 		{
-			std::string expectedMsg("UnexpectedMethodCallException: Could not find any recorded behavior to support this method call");
-			ASSERT_EQUAL(expectedMsg, to_string(e));
+			std::string expectedMsg{"Unexpected method invocation: mock.func(1)\n  Could not find any recorded behavior to support this method call."};
+			std::string actual{to_string(e)};
+			ASSERT_EQUAL(expectedMsg, actual);
 		}
 	}
 
-	void parse_AnyArguments() {
+	void format_AnyArguments() {
 		Mock<SomeInterface> mock;
 		try {
-			Verify(Method(mock, func)).Exactly(Once);
-		}
-		catch (SequenceVerificationException& e) {
-			std::string expectedMsg;
-			expectedMsg += "test file:1: Verification error\n";
-			expectedMsg += "Expected pattern: mock.func( any arguments )\n";
-			expectedMsg += "Expected matches: exactly 2\n";
-			expectedMsg += "Actual matches  : 0\n";
-			expectedMsg += "Actual sequence : no actual invocations";
-
-//			std::string actualMsg = formatter.format(e);
-//			ASSERT_EQUAL(expectedMsg, actualMsg);
-		}
-	}
-
-	void parse_Exactly_Once() {
-		Mock<SomeInterface> mock;
-		try {
-			Verify(Method(mock, func)).Exactly(Once);
+			fakeit::Verify(Method(mock, func)).setFileInfo("test file",1,"test method").Exactly(Once);
 		}
 		catch (SequenceVerificationException& e) {
 			std::string expectedMsg;
@@ -117,19 +99,34 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 			expectedMsg += "Expected pattern: mock.func( any arguments )\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
-			expectedMsg += "Actual sequence : no actual invocations";
-
-//			std::string actualMsg = formatter.format(e);
-//			ASSERT_EQUAL(expectedMsg, actualMsg);
-			ASSERT_EQUAL(std::string{"VerificationException: expected exactly 1 invocations but was 0"}, e.what());
-
+			expectedMsg += "Actual sequence : total of 0 actual invocations.";
+			std::string actualMsg{to_string(e)};
+			ASSERT_EQUAL(expectedMsg, actualMsg);
 		}
 	}
 
-	void parse_Atleast_Once() {
+	void format_Exactly_Once() {
 		Mock<SomeInterface> mock;
 		try {
-			Verify(Method(mock, func)).AtLeast(Once);
+			fakeit::Verify(Method(mock, func)).setFileInfo("test file",1,"test method").Exactly(Once);
+		}
+		catch (SequenceVerificationException& e) {
+			std::string expectedMsg;
+			expectedMsg += "test file:1: Verification error\n";
+			expectedMsg += "Expected pattern: mock.func( any arguments )\n";
+			expectedMsg += "Expected matches: exactly 1\n";
+			expectedMsg += "Actual matches  : 0\n";
+			expectedMsg += "Actual sequence : total of 0 actual invocations.";
+
+			std::string actualMsg{to_string(e)};
+			ASSERT_EQUAL(expectedMsg, actualMsg);
+		}
+	}
+
+	void format_Atleast_Once() {
+		Mock<SomeInterface> mock;
+		try {
+			fakeit::Verify(Method(mock, func)).setFileInfo("test file",1,"test method").AtLeast(Once);
 		}
 		catch (SequenceVerificationException& e) {
 			std::string expectedMsg;
@@ -137,22 +134,20 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 			expectedMsg += "Expected pattern: mock.func( any arguments )\n";
 			expectedMsg += "Expected matches: at least 1\n";
 			expectedMsg += "Actual matches  : 0\n";
-			expectedMsg += "Actual sequence : no actual invocations";
+			expectedMsg += "Actual sequence : total of 0 actual invocations.";
 
-			ASSERT_EQUAL(std::string{"VerificationException: expected at least 1 invocations but was 0"}, e.what());
-
-//			std::string actualMsg = formatter.format(e);
-//			ASSERT_EQUAL(expectedMsg, actualMsg);
+			std::string actualMsg {to_string(e)};
+			ASSERT_EQUAL(expectedMsg, actualMsg);
 		}
 	}
 
-	void parse_NoMoreInvocations_VerificationFailure() {
+	void format_NoMoreInvocations_VerificationFailure() {
 		Mock<SomeInterface> mock;
 		try {
 			Fake(Method(mock, func));
 			mock.get().func(1);
 			mock.get().func(2);
-			Verify(Method(mock, func).Using(1));
+			fakeit::Verify(Method(mock, func).Using(1)).setFileInfo("test file",1,"test method");
 			fakeit::VerifyNoOtherInvocations(Method(mock, func)) //
 				.setFileInfo("test file",1,"test method");
 		}
@@ -162,17 +157,16 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 			expectedMsg += "Expected no more invocations!! But the following unverified invocations were found:\n";
 			expectedMsg += "  mock.func(2)";//
 
-			std::string actualMsg = formatter.format(e);//
+			std::string actualMsg{to_string(e)};//
 			ASSERT_EQUAL(expectedMsg, actualMsg);
-			ASSERT_EQUAL(std::string{"VerificationException: expected no more invocations but found 1"}, e.what());
 		}
 	}
 
 
-	void parse_UserDefinedMatcher_in_expected_pattern() {
+	void format_UserDefinedMatcher_in_expected_pattern() {
 		Mock<SomeInterface> mock;
 		When(Method(mock, func)).Return(0);
-		SomeInterface &i = mock.get();
+		//SomeInterface &i = mock.get();
 		try {
 			fakeit::Verify(Method(mock, func).Matching([](...){return true; })) //
 				.setFileInfo("test file",1,"test method").Exactly(2);
@@ -185,17 +179,17 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 			expectedMsg += "Expected pattern: mock.func( user defined matcher )\n";
 			expectedMsg += "Expected matches: exactly 2\n";
 			expectedMsg += "Actual matches  : 0\n";
-			expectedMsg += "Actual sequence : no actual invocations";
+			expectedMsg += "Actual sequence : total of 0 actual invocations.";
 
-//			std::string actualMsg = formatter.format(e);
-//			ASSERT_EQUAL(expectedMsg, actualMsg);
+			std::string actualMsg {to_string(e)};
+			ASSERT_EQUAL(expectedMsg, actualMsg);
 		}
 	}
 
-	void parse_actual_arguments() {
+	void format_actual_arguments() {
 		Mock<SomeInterface> mock;
 		When(Method(mock, all_types)).Return(0);
-		SomeInterface &i = mock.get();
+		//SomeInterface &i = mock.get();
 		try {
 			mock().all_types('a', true, 1, 1, 1, 1, 1, 1, 1, 1);
 			fakeit::Verify(Method(mock, all_types)) //
@@ -209,18 +203,18 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 			expectedMsg += "Expected pattern: mock.all_types( any arguments )\n";
 			expectedMsg += "Expected matches: exactly 2\n";
 			expectedMsg += "Actual matches  : 1\n";
-			expectedMsg += "Actual sequence :\n";
-			expectedMsg += "  mock.all_types( 'a', true, 1, 1, 1, 1, 1, 1, 1.0, 1.0 )";
+			expectedMsg += "Actual sequence : total of 1 actual invocations:\n";
+			expectedMsg += "  mock.all_types(?, true, 1, 1, 1, 1, 1, 1, 1.000000, 1.000000)";
 
-//			std::string actualMsg = formatter.format(e);
-	//		ASSERT_EQUAL(expectedMsg, actualMsg);
+			std::string actualMsg {to_string(e)};
+			ASSERT_EQUAL(expectedMsg, actualMsg);
 		}
 	}
 
 	void parse_expected_arguments() {
 		Mock<SomeInterface> mock;
 		When(Method(mock, all_types)).Return(0);
-		SomeInterface &i = mock.get();
+		//SomeInterface &i = mock.get();
 		try {
 			fakeit::Verify(Method(mock, all_types).Using('a', true, 1, 1, 1, 1, 1, 1, 1, 1))//
 				.setFileInfo("test file", 1, "test method").Exactly(2);
@@ -233,9 +227,10 @@ struct DefaultErrorFormatting: tpunit::TestFixture {
 			expectedMsg += "Expected pattern: mock.all_types( 'a', true, 1, 1, 1, 1, 1, 1, 1.0, 1.0 )\n";
 			expectedMsg += "Expected matches: exactly 2\n";
 			expectedMsg += "Actual matches  : 0\n";
-			expectedMsg += "Actual sequence : no actual invocations";
-			//ASSERT_EQUAL(expectedMsg, to_string(e));
+			expectedMsg += "Actual sequence : total of 0 actual invocations.";
+			std::string actual {to_string(e)};
+			ASSERT_EQUAL(expectedMsg, actual);
 		}
 	}
 
-} __DefaultErrorFormatting;
+} __DefaultEventFormatting;

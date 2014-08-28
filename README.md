@@ -18,7 +18,7 @@ struct SomeInterface {
 Mock<SomeInterface> mock;
 
 // Setup mock behavior.
-When(mock[&SomeInterface::foo]).Return(1);
+When(Method(mock,foo)).Return(1); // Method mock.foo will return 1 once.
 
 // Fetch the mock instance.
 SomeInterface &i = mock.get();
@@ -32,18 +32,18 @@ Verify method invocation
 ```cpp
 Mock<SomeInterface> mock;
 		
-When(mock[&SomeInterface::foo]).Return(0);
+When(Method(mock,foo)).Return(0);
 
 SomeInterface &i = mock.get();
 
 // Production code
 i.foo(1);
 
-// Verify foo was invoked
-Verify(mock[&SomeInterface::foo]);
+// Verify method mock.foo was invoked.
+Verify(Method(mock,foo));
 
-// Verify foo was invoked with specific arguments
-Verify(mock[&SomeInterface::foo].Using(1));
+// Verify method mock.foo was invoked with specific arguments.
+Verify(Method(mock,foo).Using(1));
 ```
 
 Checkout the [Quickstart](https://github.com/eranpeer/FakeIt/wiki/Quickstart) for many more examples!

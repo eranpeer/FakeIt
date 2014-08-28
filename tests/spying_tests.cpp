@@ -21,8 +21,11 @@ struct SpyingTests: tpunit::TestFixture {
 					TEST(SpyingTests::dataMembersAreNotChangedOnReset), //
 					TEST(SpyingTests::verifySpyiedMethodWasCalled), //
 					TEST(SpyingTests::mockDestructordoesNotDeleteObject), //
-					TEST(SpyingTests::canVerifyMethodAfterSpying)//
-			) //
+					TEST(SpyingTests::canVerifyMethodAfterSpying),//
+					TEST(SpyingTests::canVerifyProcedureAfterSpying),
+					TEST(SpyingTests::spyMultipleMethods)
+					//
+	) //
 	{
 	}
 
@@ -35,6 +38,9 @@ struct SpyingTests: tpunit::TestFixture {
 		virtual int func2(int arg) {
 			return arg;
 		}
+		virtual void proc(){
+		}
+
 	};
 
 	void useOriginalClassMethodIfNotFaked() {
@@ -117,6 +123,29 @@ struct SpyingTests: tpunit::TestFixture {
 		SomeClass& i = mock.get();
 		ASSERT_EQUAL(1, i.func1(1));
 		Verify(Method(mock,func1));
+		Verify(Method(mock,func1)).Exactly(Once);
+		VerifyNoOtherInvocations(mock);
+	}
+
+	void canVerifyProcedureAfterSpying() {
+		SomeClass obj;
+		Mock<SomeClass> mock(obj);
+		Spy(Method(mock,proc));
+		SomeClass& i = mock.get();
+		i.proc();
+		Verify(Method(mock,proc));
+		Verify(Method(mock,proc)).Exactly(Once);
+		VerifyNoOtherInvocations(mock);
+	}
+
+	void spyMultipleMethods() {
+		SomeClass obj;
+		Mock<SomeClass> mock(obj);
+		Spy(Method(mock,func1),Method(mock,proc));
+		SomeClass& i = mock.get();
+		i.func1(1);
+		i.proc();
+		Verify(Method(mock,proc)).Exactly(Once);
 		Verify(Method(mock,func1)).Exactly(Once);
 		VerifyNoOtherInvocations(mock);
 	}

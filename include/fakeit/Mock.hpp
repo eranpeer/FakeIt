@@ -11,25 +11,26 @@
 
 #include "fakeit/DomainObjects.hpp"
 #include "fakeit/MockImpl.hpp"
+#include "fakeit/DefaultFakeit.hpp"
 
 namespace fakeit {
 
 using namespace fakeit;
 
 template<typename C, typename ... baseclasses>
-class Mock : private MockObject<C>, public ActualInvocationsSource {
+class Mock : public ActualInvocationsSource {
 	MockImpl<C, baseclasses...> impl;
 public:
 
 	static_assert(std::is_polymorphic<C>::value, "Can only mock a polymorphic type");
 
-	Mock() : impl() {
+	Mock() : impl(Fakeit) {
 	}
 
-	Mock(C &obj) :impl(obj) {
+	Mock(C &obj) :impl(Fakeit, obj) {
 	}
 
-	virtual C& get() override {
+	virtual C& get() {
 		return impl.get();
 	}
 

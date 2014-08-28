@@ -15,7 +15,7 @@
 #include "fakeit/Stubbing.hpp"
 #include "fakeit/Sequence.hpp"
 #include "fakeit/SortInvocations.hpp"
-#include "fakeit/FakeIt.hpp"
+#include "fakeit/FakeitContext.hpp"
 #include "fakeit/SequenceVerificationProgress.hpp"
 
 #include "mockutils/smart_ptr.hpp"
@@ -25,10 +25,11 @@ namespace fakeit {
 class UsingFunctor {
 
 	friend class VerifyFunctor;
+	FakeitContext& _fakeit;
 
 public:
 
-	UsingFunctor() {
+	UsingFunctor(FakeitContext& fakeit):_fakeit(fakeit) {
 	}
 
 	template<typename ... list>
@@ -36,12 +37,11 @@ public:
 		std::set<const ActualInvocationsSource*> allMocks;
 		allMocks.insert(&head);
 		collectInvocationSources(allMocks, tail...);
-		SequenceVerificationProgress progress (allMocks);
+		SequenceVerificationProgress progress (_fakeit, allMocks);
 		return progress;
 	}
 
-}
-static Using;
+};
 
 }
 

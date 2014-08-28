@@ -17,13 +17,11 @@ struct NoMoreInvocationsVerificationException;
 
 struct EventHandler {
 
-	virtual ~EventHandler() = default;
+	virtual void handle(const UnexpectedMethodCallEvent& e) = 0;
 
-	virtual void handle(const UnexpectedMethodCallException& e) = 0;
+	virtual void handle(const SequenceVerificationEvent& e) = 0;
 
-	virtual void handle(const SequenceVerificationException& e) = 0;
-
-	virtual void handle(const NoMoreInvocationsVerificationException& e) = 0;
+	virtual void handle(const NoMoreInvocationsVerificationEvent& e) = 0;
 
 };
 
