@@ -194,7 +194,7 @@ public:
 			MethodStubbingBase<C, R, arglist...>(stubbingContext) {
 	}
 
-	FunctionStubbingRoot(const FunctionStubbingRoot& other) = default;
+    FunctionStubbingRoot(const FunctionStubbingRoot& ) = default;
 
 	virtual ~FunctionStubbingRoot() THROWS {
 	}
@@ -266,7 +266,7 @@ public:
 	virtual ~ProcedureStubbingRoot() THROWS {
 	}
 
-	ProcedureStubbingRoot(const ProcedureStubbingRoot& other) = default;
+    ProcedureStubbingRoot(const ProcedureStubbingRoot& ) = default;
 
 	void operator=(std::function<R(arglist...)> method) {
 		MethodStubbingBase<C, R, arglist...>::operator=(method);
@@ -303,7 +303,7 @@ class DataMemberStubbingRoot {
 private:
 	//DataMemberStubbingRoot & operator= (const DataMemberStubbingRoot & other) = delete;
 public:
-	DataMemberStubbingRoot(const DataMemberStubbingRoot& other) = default;
+    DataMemberStubbingRoot(const DataMemberStubbingRoot& ) = default;
 	DataMemberStubbingRoot() = default;
 
 	void operator=(const DATA_TYPE& val) {

@@ -25,7 +25,7 @@ class VerifyFunctor {
 
 	FakeitContext& _fakeit;
 
-	void collectSequences(std::vector<Sequence*>& vec) {
+    void collectSequences(std::vector<Sequence*>& ) {
 	}
 
 	template<typename ... list>

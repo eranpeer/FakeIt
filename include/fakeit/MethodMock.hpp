@@ -92,7 +92,7 @@ private:
 
 		virtual ~NoMoreRecordedBehavior() = default;
 
-		virtual R invoke(arglist&... args) override {
+        virtual R invoke(arglist&... ) override {
 			throw NoMoreRecordedBehaviorException();
 		}
 
