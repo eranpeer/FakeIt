@@ -20,7 +20,7 @@ struct Quantity {
 	}
 
 	const int quantity;
-};
+} static Once(1);
 
 template<typename R>
 struct Quantifier: public Quantity {
@@ -29,11 +29,6 @@ struct Quantifier: public Quantity {
 	}
 
 	const R& value;
-
-	Quantifier<R> & operator()(const R& value) {
-		this->value = value;
-		return *this;
-	}
 };
 
 template<>
@@ -52,7 +47,7 @@ struct QuantifierFunctor: public Quantifier<void> {
 	Quantifier<R> operator()(const R& value) {
 		return Quantifier<R>(quantity, value);
 	}
-} static Once(1);
+};
 
 template<int q>
 struct Times :public Quantity{
