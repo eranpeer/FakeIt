@@ -180,7 +180,7 @@ class FunctionStubbingRoot: //
 public virtual MethodStubbingBase<C, R, arglist...> //
 {
 private:
-	FunctionStubbingRoot & operator=(const FunctionStubbingRoot & other) = delete;
+	FunctionStubbingRoot & operator=(const FunctionStubbingRoot&) = delete;
 
 	friend class VerifyFunctor;
 	friend class FakeFunctor;
@@ -194,7 +194,7 @@ public:
 			MethodStubbingBase<C, R, arglist...>(stubbingContext) {
 	}
 
-	FunctionStubbingRoot(const FunctionStubbingRoot& other) = default;
+	FunctionStubbingRoot(const FunctionStubbingRoot&) = default;
 
 	virtual ~FunctionStubbingRoot() THROWS {
 	}
@@ -249,7 +249,7 @@ template<typename C, typename R, typename ... arglist>
 class ProcedureStubbingRoot: //
 public virtual MethodStubbingBase<C, R, arglist...> {
 private:
-	ProcedureStubbingRoot & operator=(const ProcedureStubbingRoot & other) = delete;
+	ProcedureStubbingRoot & operator=(const ProcedureStubbingRoot&) = delete;
 
 	friend class VerifyFunctor;
 	friend class FakeFunctor;
@@ -266,7 +266,7 @@ public:
 	virtual ~ProcedureStubbingRoot() THROWS {
 	}
 
-	ProcedureStubbingRoot(const ProcedureStubbingRoot& other) = default;
+	ProcedureStubbingRoot(const ProcedureStubbingRoot&) = default;
 
 	void operator=(std::function<R(arglist...)> method) {
 		MethodStubbingBase<C, R, arglist...>::operator=(method);
@@ -303,7 +303,7 @@ class DataMemberStubbingRoot {
 private:
 	//DataMemberStubbingRoot & operator= (const DataMemberStubbingRoot & other) = delete;
 public:
-	DataMemberStubbingRoot(const DataMemberStubbingRoot& other) = default;
+	DataMemberStubbingRoot(const DataMemberStubbingRoot&) = default;
 	DataMemberStubbingRoot() = default;
 
 	void operator=(const DATA_TYPE& val) {

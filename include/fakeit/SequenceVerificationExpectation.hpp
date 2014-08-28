@@ -55,7 +55,7 @@ private:
 	void VerifyExpectation()
 	{
 		std::unordered_set<Invocation*> actualIvocations;
-		collectActualInvocations(_expectedPattern, actualIvocations);
+		collectActualInvocations(actualIvocations);
 
 		std::vector<Invocation*> actualSequence;
 		sortByInvocationOrder(actualIvocations, actualSequence);
@@ -88,7 +88,7 @@ private:
 		return collectSequences(vec, tail...);
 	}
 
-	void collectActualInvocations(std::vector<Sequence*>& expectedPattern, std::unordered_set<Invocation*>& actualIvocations) {
+	void collectActualInvocations(std::unordered_set<Invocation*>& actualIvocations) {
 		for (auto mock : _involvedMocks) {
 			mock->getActualInvocations(actualIvocations);
 		}
