@@ -30,7 +30,7 @@ struct A {
 
 namespace fakeit {
 template<> struct Formatter<A> {
-	static std::string format(const A& val) {
+	static std::string format(const A&) {
 		return {"a"};
 	}
 };
