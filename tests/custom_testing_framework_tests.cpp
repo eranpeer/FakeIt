@@ -38,20 +38,15 @@ struct CustomTestingFramework : tpunit::TestFixture {
 			std::string _msg;
 		};
 
-		virtual void handle(const UnexpectedMethodCallEvent& e) {
-//			TestingFrameworkAdapter adapter;
-//			DefaultFakeit2 df;
-//			df.setTestingFrameworkAdapter(adapter);
-//			df.clearTestingFrameworkAdapter();
-
+		virtual void handle(const UnexpectedMethodCallEvent&) {
 			throw AssertionException("UnexpectedMethodCallEvent");
 		}
 
-		virtual void handle(const SequenceVerificationEvent& e) {
+		virtual void handle(const SequenceVerificationEvent&) {
 			throw AssertionException("SequenceVerificationEvent");
 		}
 
-		virtual void handle(const NoMoreInvocationsVerificationEvent& e) {
+		virtual void handle(const NoMoreInvocationsVerificationEvent&) {
 			throw AssertionException("NoMoreInvocationsVerificationEvent");
 		}
 	};

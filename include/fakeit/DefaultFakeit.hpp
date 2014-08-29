@@ -20,11 +20,11 @@ namespace fakeit {
 
 class NullEventHandler : public fakeit::EventHandler {
 
-	virtual void handle(const UnexpectedMethodCallEvent& e) {}
+	virtual void handle(const UnexpectedMethodCallEvent&) {}
 
-	virtual void handle(const SequenceVerificationEvent& e) {}
+	virtual void handle(const SequenceVerificationEvent&) {}
 
-	virtual void handle(const NoMoreInvocationsVerificationEvent& e) {}
+	virtual void handle(const NoMoreInvocationsVerificationEvent&) {}
 
 	NullEventHandler(NullEventHandler&) = delete;
 

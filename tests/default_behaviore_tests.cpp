@@ -70,7 +70,7 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 		NotDefaultConstructible(int a) :
 				a(a) {
 		}
-		const bool operator==(const NotDefaultConstructible &other) const {
+		bool operator==(const NotDefaultConstructible &other) const {
 			return a == other.a;
 		}
 	private:
@@ -89,7 +89,7 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 		virtual ReferenceFunctions& abstractTypeFunc() = 0;
 		virtual ReferenceFunctions* abstractTypeFunc2() = 0;
 
-		const bool operator==(const ReferenceFunctions &other) const {
+		bool operator==(const ReferenceFunctions &other) const {
 			return this == &other;
 		}
 	};
@@ -207,7 +207,7 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 
 	void canMockClassWithoutDefaultConstructor() {
 		struct SomeClass {
-			SomeClass(int a){}
+			SomeClass(int){}
 			virtual void foo() = 0;
 		};
 		Mock<SomeClass> mock;
@@ -218,7 +218,7 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 		struct SomeClass {
 			virtual void foo() = 0;
 		protected:
-			SomeClass(int a){}
+			SomeClass(int){}
 		};
 		Mock<SomeClass> mock;
 		Fake(Method(mock,foo));

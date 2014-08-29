@@ -73,7 +73,7 @@ template<typename R, typename ... arglist>
 struct ReturnDefaultValue: public Behavior<R, arglist...> {
 	virtual ~ReturnDefaultValue() = default;
 
-	virtual R invoke(arglist&... args) override {
+	virtual R invoke(arglist&...) override {
 		return DefaultValue<R>::value();
 	}
 
