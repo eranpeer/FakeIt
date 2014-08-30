@@ -39,24 +39,10 @@ fakeit_test_application: $(OBJS)
 	@echo 'Finished building test application: fakeit_tests.exe'
 	@echo ' '
 
-fakeit_test_application_with_coverage: $(subst .cpp,_with_coverage,$(CPP_SRCS)) 
-	@echo 'Building test application: fakeit_tests.exe'
-	@echo 'Invoking: Clang C++ Linker'
-	clang++ --coverage -o "fakeit_tests.exe" $(OBJS) 
-	@echo 'Finished building test application: fakeit_tests.exe'
-	@echo ' '
-
 %.o: ../tests/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: Clang C++ Compiler'
 	clang++ -D__GXX_EXPERIMENTAL_CXX0X__ -I"../include" -O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
-	@echo 'Finished building: $<'
-	@echo ' '
-
-%_with_coverage: ../tests/%.cpp
-	@echo 'Building file: $<'
-	@echo 'Invoking: Clang C++ Compiler'
-	clang++ --coverage -D__GXX_EXPERIMENTAL_CXX0X__ -I"../include" -O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -MMD -MP -MF"$(@:%_with_coverage=%.d)" -MT"$(@:%_with_coverage=%.d)" -o $(subst _with_coverage,.o,"$@") "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
@@ -66,5 +52,5 @@ endif
 
 # Other Targets
 clean:
-	-$(RM) $(OBJS)$(CPP_DEPS) fakeit_tests.exe *.gc*
+	-$(RM) $(OBJS)$(CPP_DEPS) fakeit_tests.exe
 	-@echo ' '
