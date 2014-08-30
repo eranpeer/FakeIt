@@ -5,7 +5,9 @@ GCC: [![Build Status GCC](https://travis-ci.org/eranpeer/FakeIt.svg?branch=maste
 
 MSC: [![Build status MSC](https://ci.appveyor.com/api/projects/status/sy2dk8se2yoxaqve)](https://ci.appveyor.com/project/eranpeer/fakeit)
 
-FakeIt is a simple mocking framework for C++11. It supports both GCC and MS Visual C++.
+FakeIt is a simple mocking framework for C++. It supports GCC, Clang and MS Visual C++.
+
+FakeIt is written in C++11 and can be used for testing both C++11 and C++ projects.
 
 ```cpp
 struct SomeInterface {
@@ -76,7 +78,7 @@ run the tests by typing
 Open the tests/all_tests.vcxproj project file with Visual Studio 2013. Build and run the project and check the test results. 
 
 ## Limitations
-* Currently only GCC and MS C++ are supported.
+* Currently only GCC, Clang and MS C++ are supported.
 * Can't mock classes with multiple inheritance.
 * Can't mock classes with virtual inheritance.
 * Currently mocks are not thread safe. 
