@@ -6,6 +6,7 @@ GCC: [![Build Status GCC](https://travis-ci.org/eranpeer/FakeIt.svg?branch=maste
 MSC: [![Build status MSC](https://ci.appveyor.com/api/projects/status/sy2dk8se2yoxaqve)](https://ci.appveyor.com/project/eranpeer/fakeit)
 
 FakeIt is a simple mocking framework for C++. It supports GCC, Clang and MS Visual C++.
+
 FakeIt is written in C++11 and can be used for testing both C++11 and C++ projects.
 
 ```cpp
