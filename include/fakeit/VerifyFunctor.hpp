@@ -34,15 +34,11 @@ class VerifyFunctor {
 		collectSequences(vec, tail...);
 	}
 
-	template<typename ... list>
-	void collectInvolvedMocks(std::set<const ActualInvocationsSource*>& invlovedMocks, const Sequence& sequence, const list&... tail) {
-		std::vector<Sequence*> allSequences;
-		collectSequences(allSequences, sequence, tail...);
+	void collectInvolvedMocks(std::vector<Sequence*>& allSequences,std::set<const ActualInvocationsSource*>&invlovedMocks){
 		for (auto sequence : allSequences) {
 			sequence->getInvolvedMocks(invlovedMocks);
 		}
 	}
-
 public:
 
 	VerifyFunctor(FakeitContext& fakeit):_fakeit(fakeit) {
@@ -50,11 +46,18 @@ public:
 
 	template<typename ... list>
 	SequenceVerificationProgress operator()(const Sequence& sequence, const list&... tail) {
+		std::vector<Sequence*> allSequences;
+		collectSequences(allSequences, sequence, tail...);
+
 		std::set<const ActualInvocationsSource*> invlovedMocks;
-		collectInvolvedMocks(invlovedMocks, sequence, tail...);
-		SequenceVerificationProgress progress(_fakeit, invlovedMocks);
-		progress.Verify(sequence, tail...);
-		return progress;
+		collectInvolvedMocks(allSequences,invlovedMocks);
+
+		UsingProgress usingProgress(_fakeit, invlovedMocks);
+		return usingProgress.Verify(sequence, tail... );
+
+		//SequenceVerificationProgress progress(_fakeit, invlovedMocks, allSequences);
+		//progress.Verify(sequence, tail...);
+		//return progress;
 	}
 
 };

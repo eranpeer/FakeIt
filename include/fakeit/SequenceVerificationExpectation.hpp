@@ -18,9 +18,8 @@ struct SequenceVerificationExpectation {
 		VerifyExpectation();
 	}
 
-	template<typename ... list>
-	void setExpectedPattern(const Sequence& sequence, const list&... tail) {
-		collectSequences(_expectedPattern, sequence, tail...);
+	void setExpectedPattern(std::vector<Sequence*> expectedPattern) {
+		_expectedPattern = expectedPattern;
 	}
 
 	void setExpectedCount(const int count) {
@@ -44,10 +43,13 @@ private:
 	int _line;
 	std::string _testMethod;
 
-	SequenceVerificationExpectation(FakeitContext& fakeit, std::set<const ActualInvocationsSource*>& mocks) : //
+	SequenceVerificationExpectation(
+			FakeitContext& fakeit,
+			std::set<const ActualInvocationsSource*>& mocks,
+			std::vector<Sequence*>& expectedPattern) : //
 		_fakeit(fakeit),
 		_involvedMocks( mocks ), //
-		_expectedPattern(), //
+		_expectedPattern(expectedPattern), //
 		_expectedCount(-1), //
 		_line(0) {
 	}

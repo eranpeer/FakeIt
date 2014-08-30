@@ -15,6 +15,7 @@ namespace fakeit {
 
 		friend class UsingFunctor;
 		friend class VerifyFunctor;
+		friend class UsingProgress;
 
 		smart_ptr<SequenceVerificationExpectation> ptr;
 		//std::shared_ptr<SequenceVerificationExpectation> ptr;
@@ -22,8 +23,11 @@ namespace fakeit {
 		SequenceVerificationProgress(SequenceVerificationExpectation * ptr) :ptr(ptr){
 		}
 
-		SequenceVerificationProgress(FakeitContext& fakeit, std::set<const ActualInvocationsSource*>& sources) :
-			SequenceVerificationProgress(new SequenceVerificationExpectation(fakeit, sources)){
+		SequenceVerificationProgress(
+				FakeitContext& fakeit,
+				std::set<const ActualInvocationsSource*>& sources,
+				std::vector<Sequence*>& allSequences) :
+			SequenceVerificationProgress(new SequenceVerificationExpectation(fakeit, sources, allSequences)){
 		}
 
 		virtual void verifyInvocations(const int times) {
@@ -77,11 +81,11 @@ namespace fakeit {
 			return *this;
 		}
 
-		template<typename ... list>
-		SequenceVerificationProgress Verify(const Sequence& sequence, const list&... tail) {
-			ptr->setExpectedPattern(sequence, tail...);
-			return *this;
-		}
+//		template<typename ... list>
+//		SequenceVerificationProgress Verify(const Sequence& sequence, const list&... tail) {
+//			ptr->setExpectedPattern(sequence, tail...);
+//			return *this;
+//		}
 	};
 }
 
