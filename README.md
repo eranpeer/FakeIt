@@ -77,7 +77,7 @@ run the tests by typing
 Open the tests/all_tests.vcxproj project file with Visual Studio 2013. Build and run the project and check the test results. 
 
 ## Limitations
-* Currently only GCC and MS C++ are supported.
+* Currently only GCC, Clang and MS C++ are supported.
 * Can't mock classes with multiple inheritance.
 * Can't mock classes with virtual inheritance.
 * Currently mocks are not thread safe. 
