@@ -80,12 +80,6 @@ namespace fakeit {
 			ptr->setFileInfo(file, line, callingMethod);
 			return *this;
 		}
-
-//		template<typename ... list>
-//		SequenceVerificationProgress Verify(const Sequence& sequence, const list&... tail) {
-//			ptr->setExpectedPattern(sequence, tail...);
-//			return *this;
-//		}
 	};
 }
 
