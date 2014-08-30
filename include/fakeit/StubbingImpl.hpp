@@ -60,20 +60,20 @@ class MethodStubbingBase: public RecordedMethodInvocation, //
 	typedef R (C::*func)(arglist...);
 
 	func getOriginalMethod() {
-		return stubbingContext->getOriginalMethod();
+		return _stubbingContext->getOriginalMethod();
 	}
 
 	C& get() {
-		return stubbingContext->getMock().get();
+		return _stubbingContext->getMock().get();
 	}
 
 	std::shared_ptr<RecordedMethodBody<R, arglist...>> buildInitialMethodBody() {
-		std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody { new RecordedMethodBody<R, arglist...>(stubbingContext->getMethodMock().getMethod()) };
+		std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody { new RecordedMethodBody<R, arglist...>(_stubbingContext->getMethodMock().getMethod()) };
 		return recordedMethodBody;
 	}
 
 	void setInvocationMatcher(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> invocationMatcher) {
-		MethodStubbingBase<C, R, arglist...>::invocationMatcher = invocationMatcher;
+		MethodStubbingBase<C, R, arglist...>::_invocationMatcher = invocationMatcher;
 	}
 
 protected:
@@ -82,54 +82,56 @@ protected:
 	friend class SpyFunctor;
 	friend class WhenFunctor;
 
-	std::shared_ptr<MethodStubbingContext<C, R, arglist...>> stubbingContext;
-	std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> invocationMatcher;
-	std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody;
+	std::shared_ptr<MethodStubbingContext<C, R, arglist...>> _stubbingContext;
+	std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> _invocationMatcher;
+	std::shared_ptr<RecordedMethodBody<R, arglist...>> _recordedMethodBody;
 
-	int expectedInvocationCount;
+	int _expectedInvocationCount;
 
 	MethodStubbingBase(std::shared_ptr<MethodStubbingContext<C, R, arglist...>> stubbingContext) :
-			stubbingContext(stubbingContext), invocationMatcher { new DefaultInvocationMatcher<arglist...>() }, expectedInvocationCount(-1) {
-		recordedMethodBody = buildInitialMethodBody();
+			_stubbingContext(stubbingContext), _invocationMatcher { new DefaultInvocationMatcher<arglist...>() }, _expectedInvocationCount(-1) {
+		_recordedMethodBody = buildInitialMethodBody();
 	}
 
 	virtual ~MethodStubbingBase() {
 	}
 
 	virtual void apply() override {
-		stubbingContext->getMethodMock().stubMethodInvocation(invocationMatcher, recordedMethodBody);
+		_stubbingContext->getMethodMock().stubMethodInvocation(_invocationMatcher, _recordedMethodBody);
 	}
 
 	void setMethodDetails(std::string mockName,std::string methodName){
-		stubbingContext->getMethodMock().setMethodDetails(mockName,methodName);
+		_stubbingContext->getMethodMock().setMethodDetails(mockName,methodName);
 	}
 
 	void Using(const arglist&... args) {
-		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> {
-					new ExpectedArgumentsInvocationMatcher<arglist...>(args...)});
+		auto matcher = std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> {
+			new ExpectedArgumentsInvocationMatcher<arglist...>(args...)};
+		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(matcher);
 	}
 
-	void Matching(std::function<bool(arglist...)> matcher) {
-		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> {
-					new UserDefinedInvocationMatcher<arglist...>(matcher)});
+	void Matching(std::function<bool(arglist...)> predicate) {
+		auto matcher = std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> {
+			new UserDefinedInvocationMatcher<arglist...>(predicate)};
+		MethodStubbingBase<C, R, arglist...>::setInvocationMatcher(matcher);
 	}
 
 public:
 	virtual bool matches(Invocation& invocation) override {
-		auto methodMock = stubbingContext->getMethodMock();
-		Method& expectedMethod = methodMock.getMethod();
+		MethodMock<C, R, arglist...>& methodMock = _stubbingContext->getMethodMock();
 		Method& actualMethod = invocation.getMethod();
+		Method& expectedMethod = methodMock.getMethod();
 		if (!actualMethod.operator == (expectedMethod)) {
 			return false;
 		}
 
 		ActualInvocation<arglist...>& actualInvocation = dynamic_cast<ActualInvocation<arglist...>&>(invocation);
-		return invocationMatcher->matches(actualInvocation);
+		return _invocationMatcher->matches(actualInvocation);
 	}
 
 	void getActualInvocations(std::unordered_set<Invocation*>& into) const override {
 		std::vector<std::shared_ptr<ActualInvocation<arglist...>>>actualInvocations =
-				stubbingContext->getMethodMock().getActualInvocations(*invocationMatcher);
+				_stubbingContext->getMethodMock().getActualInvocations(*_invocationMatcher);
 		for (auto i : actualInvocations) {
 			Invocation* ai = i.get();
 			into.insert(ai);
@@ -137,7 +139,7 @@ public:
 	}
 
 	void getInvolvedMocks(std::set<const ActualInvocationsSource*>& into) const override {
-		into.insert(stubbingContext.get());
+		into.insert(_stubbingContext.get());
 	}
 
 	void getExpectedSequence(std::vector<Invocation::Matcher*>& into) const override {
@@ -147,8 +149,8 @@ public:
 	}
 
 	std::string format() const {
-		std::string s = stubbingContext->getMethodMock().getMethod().name();
-		s += invocationMatcher->format();
+		std::string s = _stubbingContext->getMethodMock().getMethod().name();
+		s += _invocationMatcher->format();
 		return s;
 	}
 
@@ -167,7 +169,7 @@ public:
 	}
 
 	void AppendAction(std::shared_ptr<Behavior<R, arglist...>> method) {
-		recordedMethodBody->AppendDo(method);
+		_recordedMethodBody->AppendDo(method);
 	}
 
 	void operator=(std::function<R(arglist...)> method) {
