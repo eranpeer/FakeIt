@@ -173,7 +173,6 @@ private:
 	}
 
 	void throwExactVerificationException(std::vector<Invocation*> actualSequence, int count) {
-
 		SequenceVerificationEvent evt(VerificationType::Exact, _expectedPattern, actualSequence, _expectedCount, count);
 		evt.setFileInfo(_file, _line, _testMethod);
 		_fakeit.handle(evt);

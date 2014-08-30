@@ -116,7 +116,10 @@ protected:
 
 public:
 	virtual bool matches(Invocation& invocation) override {
-		if (&invocation.getMethod() != &stubbingContext->getMethodMock().getMethod()) {
+		auto methodMock = stubbingContext->getMethodMock();
+		Method& expectedMethod = methodMock.getMethod();
+		Method& actualMethod = invocation.getMethod();
+		if (!actualMethod.operator == (expectedMethod)) {
 			return false;
 		}
 

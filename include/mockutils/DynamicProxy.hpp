@@ -49,7 +49,7 @@ struct DynamicProxy {
 	}
 
 	void Reset() {
-		methodMocks = {nullptr};
+		methodMocks = {{}};
 		members = {};
 		cloneVt.copyFrom(originalVT.restore());
 	}

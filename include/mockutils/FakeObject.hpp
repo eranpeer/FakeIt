@@ -20,7 +20,9 @@
 namespace fakeit {
 // silent GCC compiler warning: iso c++ forbids zero-size array [-Wpedantic]
 #ifdef __GNUG__
-#pragma GCC diagnostic ignored "-Wpedantic"
+  #ifndef __clang__
+    #pragma GCC diagnostic ignored "-Wpedantic"
+  #endif
 #endif
 
 // silent MSC++ compiler warning: C4200: nonstandard extension used : zero-sized array in struct/union.
@@ -69,7 +71,9 @@ public:
 #endif
 
 #ifdef __GNUG__
-#pragma GCC diagnostic pop
+  #ifndef __clang__
+    #pragma GCC diagnostic pop
+  #endif
 #endif
 
 }

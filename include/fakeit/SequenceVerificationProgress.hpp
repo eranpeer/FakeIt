@@ -1,6 +1,7 @@
 #ifndef SequenceVerificationProgress_hpp_
 #define SequenceVerificationProgress_hpp_
 
+#include <memory>
 #include "fakeit/FakeitExceptions.hpp"
 #include "fakeit/SequenceVerificationExpectation.hpp"
 #include "mockutils/smart_ptr.hpp"
@@ -15,7 +16,8 @@ namespace fakeit {
 		friend class UsingFunctor;
 		friend class VerifyFunctor;
 
-		fakeit::smart_ptr<SequenceVerificationExpectation> ptr;
+		smart_ptr<SequenceVerificationExpectation> ptr;
+		//std::shared_ptr<SequenceVerificationExpectation> ptr;
 
 		SequenceVerificationProgress(SequenceVerificationExpectation * ptr) :ptr(ptr){
 		}

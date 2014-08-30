@@ -9,7 +9,7 @@
 #ifndef VirtualTable_h__
 #define VirtualTable_h__
 
-#include "mockutils/gcc/is_simple_inheritance_layout.hpp"
+//#include "mockutils/gcc/is_simple_inheritance_layout.hpp"
 #include "mockutils/VTUtils.hpp"
 
 namespace fakeit {
@@ -17,7 +17,7 @@ namespace fakeit {
 template<class C, class ... baseclasses>
 struct VirtualTable {
 
-	static_assert(is_simple_inheritance_layout<C>::value, "Can't mock a type with multiple inheritance");
+	//static_assert(is_simple_inheritance_layout<C>::value, "Can't mock a type with multiple inheritance");
 
 	class Handle {
 

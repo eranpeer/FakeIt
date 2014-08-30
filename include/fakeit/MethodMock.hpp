@@ -145,10 +145,12 @@ template<typename C, typename R, typename ... arglist>
 class MethodMock: public virtual MethodInvocationHandler<R, arglist...>, public virtual ActualInvocationsSource {
 
 	class MethodImpl: public Method {
+		MethodMock* _methodMock;
 		std::string _name;
 	public:
-		MethodImpl(std::string name) :
-				_name(name) {
+		MethodImpl(MethodMock* methodMock) :
+				_methodMock(methodMock),
+				_name(typeid(methodMock->_vMethod).name()) {
 		}
 
 		virtual std::string name() const override {
@@ -158,6 +160,12 @@ class MethodMock: public virtual MethodInvocationHandler<R, arglist...>, public 
 		void setName(const std::string& name) {
 			_name = name;
 		}
+
+		bool operator ==(const Method &other) const override {
+			const MethodImpl* b = dynamic_cast< const MethodImpl* >( &other );
+			return b != NULL && this->_methodMock == b->_methodMock;
+		}
+
 	};
 
 	MockObject<C>& _mock;
@@ -188,7 +196,7 @@ class MethodMock: public virtual MethodInvocationHandler<R, arglist...>, public 
 public:
 
 	MethodMock(MockObject<C>& mock, R (C::*vMethod)(arglist...)) :
-	_mock(mock), _vMethod(vMethod), _method {typeid(vMethod).name()} {
+	_mock(mock), _vMethod(vMethod), _method {this} {
 	}
 
 	virtual ~MethodMock() {
@@ -212,7 +220,8 @@ public:
 	R handleMethodInvocation(arglist&... args) override {
 
 		int ordinal = nextInvocationOrdinal();
-		auto actualInvoaction = std::shared_ptr<ActualInvocation<arglist...>> {new ActualInvocation<arglist...>(ordinal, this->getMethod(),
+		Method& method = this->getMethod();
+		auto actualInvoaction = std::shared_ptr<ActualInvocation<arglist...>> {new ActualInvocation<arglist...>(ordinal, method,
 					args...)};
 		auto methodInvocationMock = getMethodInvocationMockForActualArgs(*actualInvoaction);
 		if (!methodInvocationMock) {
