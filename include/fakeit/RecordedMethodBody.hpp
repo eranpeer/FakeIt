@@ -24,7 +24,7 @@
 namespace fakeit {
 
 /**
- * A composite MethodInvocationHandler that holds a list of RecordedSequence objects.
+ * A composite MethodInvocationHandler that holds a list of ActionSequence objects.
  */
 template<typename C, typename R, typename ... arglist>
 class RecordedMethodBody: public virtual MethodInvocationHandler<R, arglist...>, public virtual ActualInvocationsSource {
@@ -142,7 +142,7 @@ public:
 		_actualInvocations.push_back(actualInvoaction);
 		try {
 			return invocationHandler->handleMethodInvocation(args...);
-		} catch (NoMoreRecordedBehaviorException&) {
+		} catch (NoMoreRecordedActionException&) {
 			UnexpectedMethodCallEvent event(UnexpectedType::Unmatched, *actualInvoaction);
 			_mock.getFakeIt().handle(event);
 

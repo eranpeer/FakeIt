@@ -32,7 +32,7 @@ public:
 				return;
 			}
 
-			_recordedMethodInvocation.apply();
+			_recordedMethodInvocation.commit();
 		}
 
 		StubbingProgress(StubbingProgress& other) :
@@ -40,14 +40,14 @@ public:
 			other._isActive = false; // all other ctors should init _isActive to true;
 		}
 
-		StubbingProgress(RecordedMethodInvocation& xaction) :
+		StubbingProgress(Xaction& xaction) :
 				_isActive(true), _recordedMethodInvocation(xaction) {
 		}
 
 	private:
 
 		bool _isActive;
-		RecordedMethodInvocation& _recordedMethodInvocation;
+		Xaction& _recordedMethodInvocation;
 	};
 
 	template<typename C, typename R, typename ... arglist>
@@ -61,18 +61,18 @@ public:
 				StubbingProgress(other), root(other.root) {
 		}
 
-		FunctionProgress(FunctionStubbingRoot<C, R, arglist...>& xaction) :
+		FunctionProgress(FunctionSequenceBuilder<C, R, arglist...>& xaction) :
 				StubbingProgress(xaction), root(xaction) {
 		}
 	protected:
 
-		virtual FunctionStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<Behavior<R, arglist...> > ptr) override {
+		virtual FunctionStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<Action<R, arglist...> > ptr) override {
 			root.AppendAction(ptr);
 			return *this;
 		}
 
 	private:
-		FunctionStubbingRoot<C, R, arglist...>& root;
+		FunctionSequenceBuilder<C, R, arglist...>& root;
 	};
 
 	template<typename C, typename R, typename ... arglist>
@@ -86,34 +86,34 @@ public:
 				StubbingProgress(other), root(other.root) {
 		}
 
-		ProcedureProgress(ProcedureStubbingRoot<C, R, arglist...>& xaction) :
+		ProcedureProgress(ProcedureSequenceBuilder<C, R, arglist...>& xaction) :
 				StubbingProgress(xaction), root(xaction) {
 		}
 
 	protected:
 
-		virtual ProcedureStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<Behavior<R, arglist...> > ptr) override {
+		virtual ProcedureStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<Action<R, arglist...> > ptr) override {
 			root.AppendAction(ptr);
 			return *this;
 		}
 
 	private:
-		ProcedureStubbingRoot<C, R, arglist...>& root;
+		ProcedureSequenceBuilder<C, R, arglist...>& root;
 	};
 
 	WhenFunctor() {
 	}
 
 	template<typename C, typename R, typename ... arglist>
-	ProcedureProgress<C, R, arglist...> operator()(const ProcedureStubbingRoot<C, R, arglist...>& stubbingProgress) {
-		ProcedureStubbingRoot<C, R, arglist...>& rootWithoutConst = const_cast<ProcedureStubbingRoot<C, R, arglist...>&>(stubbingProgress);
+	ProcedureProgress<C, R, arglist...> operator()(const ProcedureSequenceBuilder<C, R, arglist...>& stubbingProgress) {
+		ProcedureSequenceBuilder<C, R, arglist...>& rootWithoutConst = const_cast<ProcedureSequenceBuilder<C, R, arglist...>&>(stubbingProgress);
 		ProcedureProgress<C, R, arglist...> a(rootWithoutConst);
 		return a;
 	}
 
 	template<typename C, typename R, typename ... arglist>
-	FunctionProgress<C, R, arglist...> operator()(const FunctionStubbingRoot<C, R, arglist...>& stubbingProgress) {
-		FunctionStubbingRoot<C, R, arglist...>& rootWithoutConst = const_cast<FunctionStubbingRoot<C, R, arglist...>&>(stubbingProgress);
+	FunctionProgress<C, R, arglist...> operator()(const FunctionSequenceBuilder<C, R, arglist...>& stubbingProgress) {
+		FunctionSequenceBuilder<C, R, arglist...>& rootWithoutConst = const_cast<FunctionSequenceBuilder<C, R, arglist...>&>(stubbingProgress);
 		FunctionProgress<C, R, arglist...> a(rootWithoutConst);
 		return a;
 	}

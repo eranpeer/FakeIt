@@ -19,7 +19,7 @@
 #include "fakeit/FakeitExceptions.hpp"
 #include "fakeit/ActualInvocation.hpp"
 #include "fakeit/Quantifier.hpp"
-#include "fakeit/Behavior.hpp"
+#include "fakeit/Action.hpp"
 #include "mockutils/DefaultValue.hpp"
 #include "mockutils/Macros.hpp"
 
@@ -47,7 +47,7 @@ struct FunctionStubbingProgress {
 	Return(const Quantifier<R>& q) {
 		const R& value = q.value;
 		auto method = [value](const arglist&...)->R {return value;};
-		std::shared_ptr<Behavior<R, arglist...>> doMock { new Repeat<R, arglist...>(method, q.quantity) };
+		std::shared_ptr<Action<R, arglist...>> doMock { new Repeat<R, arglist...>(method, q.quantity) };
 		return DoImpl(doMock);
 	}
 
@@ -90,7 +90,7 @@ struct FunctionStubbingProgress {
 	Throw(const Quantifier<E>& q) {
 		const E& value = q.value;
 		auto method = [value](const arglist&...)->R {throw value;};
-		std::shared_ptr<Behavior<R, arglist...>> doMock { new Repeat<R, arglist...>(method, q.quantity) };
+		std::shared_ptr<Action<R, arglist...>> doMock { new Repeat<R, arglist...>(method, q.quantity) };
 		return DoImpl(doMock);
 	}
 
@@ -108,14 +108,14 @@ struct FunctionStubbingProgress {
 
 	virtual FunctionStubbingProgress<R, arglist...>&
 	Do(std::function<R(arglist...)> method) {
-		std::shared_ptr<Behavior<R, arglist...>> ptr { new Repeat<R, arglist...>(method) };
+		std::shared_ptr<Action<R, arglist...>> ptr { new Repeat<R, arglist...>(method) };
 		return DoImpl(ptr);
 	}
 
 	template<typename F>
 	FunctionStubbingProgress<R, arglist...>&
 	Do(const Quantifier<F>& q) {
-		std::shared_ptr<Behavior<R, arglist...>> doMock { new Repeat<R, arglist...>(q.value, q.quantity) };
+		std::shared_ptr<Action<R, arglist...>> doMock { new Repeat<R, arglist...>(q.value, q.quantity) };
 		return DoImpl(doMock);
 	}
 
@@ -127,13 +127,13 @@ struct FunctionStubbingProgress {
 	}
 
 	virtual void AlwaysDo(std::function<R(arglist...)> method) {
-		std::shared_ptr<Behavior<R, arglist...>> ptr { new RepeatForever<R, arglist...>(method) };
+		std::shared_ptr<Action<R, arglist...>> ptr { new RepeatForever<R, arglist...>(method) };
 		DoImpl(ptr);
 	}
 
 protected:
 
-	virtual FunctionStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<Behavior<R, arglist...> > ptr) = 0;
+	virtual FunctionStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<Action<R, arglist...> > ptr) = 0;
 
 private:
 	FunctionStubbingProgress & operator=(const FunctionStubbingProgress & other) = delete;
@@ -156,7 +156,7 @@ struct ProcedureStubbingProgress {
 	ProcedureStubbingProgress<R, arglist...>&
 	Return(const Quantifier<R>& q) {
 		auto method = [](const arglist&...)->R {return DefaultValue<R>::value();};
-		std::shared_ptr<Behavior<R, arglist...>> doMock { new Repeat<R, arglist...>(method, q.quantity) };
+		std::shared_ptr<Action<R, arglist...>> doMock { new Repeat<R, arglist...>(method, q.quantity) };
 		return DoImpl(doMock);
 	}
 
@@ -170,7 +170,7 @@ struct ProcedureStubbingProgress {
 	Throw(const Quantifier<E>& q) {
 		const E& value = q.value;
 		auto method = [value](const arglist&...)->R {throw value;};
-		std::shared_ptr<Behavior<R, arglist...>> doMock { new Repeat<R, arglist...>(method, q.quantity) };
+		std::shared_ptr<Action<R, arglist...>> doMock { new Repeat<R, arglist...>(method, q.quantity) };
 		return DoImpl(doMock);
 	}
 
@@ -187,14 +187,14 @@ struct ProcedureStubbingProgress {
 	}
 
 	virtual ProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) {
-		std::shared_ptr<Behavior<R, arglist...>> ptr { new Repeat<R, arglist...>(method) };
+		std::shared_ptr<Action<R, arglist...>> ptr { new Repeat<R, arglist...>(method) };
 		return DoImpl(ptr);
 	}
 
 	template<typename F>
 	ProcedureStubbingProgress<R, arglist...>&
 	Do(const Quantifier<F>& q) {
-		std::shared_ptr<Behavior<R, arglist...>> doMock { new Repeat<R, arglist...>(q.value, q.quantity) };
+		std::shared_ptr<Action<R, arglist...>> doMock { new Repeat<R, arglist...>(q.value, q.quantity) };
 		return DoImpl(doMock);
 	}
 
@@ -206,13 +206,13 @@ struct ProcedureStubbingProgress {
 	}
 
 	virtual void AlwaysDo(std::function<R(arglist...)> method) {
-		std::shared_ptr<Behavior<R, arglist...>> ptr { new RepeatForever<R, arglist...>(method) };
+		std::shared_ptr<Action<R, arglist...>> ptr { new RepeatForever<R, arglist...>(method) };
 		DoImpl(ptr);
 	}
 
 protected:
 
-	virtual ProcedureStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<Behavior<R, arglist...> > ptr)=0;
+	virtual ProcedureStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<Action<R, arglist...> > ptr)=0;
 
 private:
 	ProcedureStubbingProgress & operator=(const ProcedureStubbingProgress & other) = delete;
