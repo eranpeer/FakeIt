@@ -49,48 +49,48 @@ public:
 	}
 
 	template<typename R, typename ... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionStubbingRoot<C, R, arglist...> operator [](R (C::*vMethod)(arglist...) const) {
+	FunctionSequenceBuilder<C, R, arglist...> operator [](R (C::*vMethod)(arglist...) const) {
 		auto methodWithoutConstVolatile = reinterpret_cast<R (C::*)(arglist...)>(vMethod);
 		return impl.stub(methodWithoutConstVolatile);
 	}
 
 	template < typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionStubbingRoot<C, R, arglist...> operator [](R(C::*vMethod)(arglist...) volatile) {
+	FunctionSequenceBuilder<C, R, arglist...> operator [](R(C::*vMethod)(arglist...) volatile) {
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return impl.stub(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionStubbingRoot<C, R, arglist...> operator [](R(C::*vMethod)(arglist...) const volatile) {
+	FunctionSequenceBuilder<C, R, arglist...> operator [](R(C::*vMethod)(arglist...) const volatile) {
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return impl.stub(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionStubbingRoot<C, R, arglist...> operator [](R(C::*vMethod)(arglist...)) {
+	FunctionSequenceBuilder<C, R, arglist...> operator [](R(C::*vMethod)(arglist...)) {
 		return impl.stub(vMethod);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureStubbingRoot<C, void, arglist...> operator [](R(C::*vMethod)(arglist...) const) {
+	ProcedureSequenceBuilder<C, void, arglist...> operator [](R(C::*vMethod)(arglist...) const) {
 		auto methodWithoutConstVolatile = reinterpret_cast<void(C::*)(arglist...)>(vMethod);
 		return impl.stub(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureStubbingRoot<C, void, arglist...> operator [](R(C::*vMethod)(arglist...) volatile) {
+	ProcedureSequenceBuilder<C, void, arglist...> operator [](R(C::*vMethod)(arglist...) volatile) {
 		auto methodWithoutConstVolatile = reinterpret_cast<void(C::*)(arglist...)>(vMethod);
 		return impl.stub(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureStubbingRoot<C, void, arglist...> operator [](R(C::*vMethod)(arglist...) const volatile) {
+	ProcedureSequenceBuilder<C, void, arglist...> operator [](R(C::*vMethod)(arglist...) const volatile) {
 		auto methodWithoutConstVolatile = reinterpret_cast<void(C::*)(arglist...)>(vMethod);
 		return impl.stub(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureStubbingRoot<C, void, arglist...> operator [](R(C::*vMethod)(arglist...)) {
+	ProcedureSequenceBuilder<C, void, arglist...> operator [](R(C::*vMethod)(arglist...)) {
 		auto methodWithoutConstVolatile = reinterpret_cast<void(C::*)(arglist...)>(vMethod);
 		return impl.stub(methodWithoutConstVolatile);
 	}

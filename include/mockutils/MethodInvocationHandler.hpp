@@ -13,7 +13,7 @@
 
 namespace fakeit {
 
-struct NoMoreRecordedBehaviorException {
+struct NoMoreRecordedActionException {
 };
 
 template<typename R, typename ... arglist>

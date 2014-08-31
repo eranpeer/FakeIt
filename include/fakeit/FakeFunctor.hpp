@@ -21,10 +21,10 @@ private:
 	}
 
 	template<typename C, typename R, typename ... arglist>
-	void fake(MethodStubbingBase<C, R, arglist...>& root) {
-		std::shared_ptr<Behavior<R, arglist...>> ptr { new ReturnDefaultValue<R, arglist...>() };
-		root.AppendAction(ptr);
-		root.apply();
+	void fake(ActionSequenceBuilder<C, R, arglist...>& root) {
+		std::shared_ptr<Action<R, arglist...>> ptr { new ReturnDefaultValue<R, arglist...>() };
+		root.appendAction(ptr);
+		root.commit();
 	}
 
 public:
@@ -33,14 +33,14 @@ public:
 	}
 
 	template<typename C, typename R, typename ... arglist>
-	void operator()(const ProcedureStubbingRoot<C, R, arglist...>& root) {
-		ProcedureStubbingRoot<C, R, arglist...>& rootWithoutConst = const_cast<ProcedureStubbingRoot<C, R, arglist...>&>(root);
+	void operator()(const ProcedureSequenceBuilder<C, R, arglist...>& root) {
+		ProcedureSequenceBuilder<C, R, arglist...>& rootWithoutConst = const_cast<ProcedureSequenceBuilder<C, R, arglist...>&>(root);
 		fake(rootWithoutConst);
 	}
 
 	template<typename C, typename R, typename ... arglist>
-	void operator()(const FunctionStubbingRoot<C, R, arglist...>& root) {
-		FunctionStubbingRoot<C, R, arglist...>& rootWithoutConst = const_cast<FunctionStubbingRoot<C, R, arglist...>&>(root);
+	void operator()(const FunctionSequenceBuilder<C, R, arglist...>& root) {
+		FunctionSequenceBuilder<C, R, arglist...>& rootWithoutConst = const_cast<FunctionSequenceBuilder<C, R, arglist...>&>(root);
 		fake(rootWithoutConst);
 	}
 

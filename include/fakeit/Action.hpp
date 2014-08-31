@@ -1,13 +1,13 @@
 /*
- * Behavior.hpp
+ * Action.hpp
  * Copyright (c) 2014 Eran Pe'er.
  *
  * This program is made available under the terms of the MIT License.
  * 
  * Created on Jun 5, 2014
  */
-#ifndef BEHAVIOR_HPP_
-#define BEHAVIOR_HPP_
+#ifndef Action_hpp_
+#define Action_hpp_
 
 #include <vector>
 #include <functional>
@@ -20,14 +20,14 @@
 namespace fakeit {
 
 template<typename R, typename ... arglist>
-struct Behavior {
-	virtual ~Behavior() = default;
+struct Action {
+	virtual ~Action() = default;
 	virtual R invoke(arglist&... args) = 0;
 	virtual bool isDone() = 0;
 };
 
 template<typename R, typename ... arglist>
-struct Repeat: public Behavior<R, arglist...> {
+struct Repeat: public Action<R, arglist...> {
 	virtual ~Repeat() = default;
 	Repeat(std::function<R(arglist&...)> f) :
 			f(f), times(1) {
@@ -51,7 +51,7 @@ private:
 };
 
 template<typename R, typename ... arglist>
-struct RepeatForever: public Behavior<R, arglist...> {
+struct RepeatForever: public Action<R, arglist...> {
 
 	virtual ~RepeatForever() = default;
 
@@ -70,7 +70,7 @@ private:
 };
 
 template<typename R, typename ... arglist>
-struct ReturnDefaultValue: public Behavior<R, arglist...> {
+struct ReturnDefaultValue: public Action<R, arglist...> {
 	virtual ~ReturnDefaultValue() = default;
 
 	virtual R invoke(arglist&...) override {
@@ -83,7 +83,7 @@ struct ReturnDefaultValue: public Behavior<R, arglist...> {
 };
 
 template<typename C, typename R, typename ... arglist>
-struct ReturnDelegateValue: public Behavior<R, arglist...> {
+struct ReturnDelegateValue: public Action<R, arglist...> {
 
 	ReturnDelegateValue(C & instance, R (C::*vMethod)(arglist... args)):instance(instance),vMethod(vMethod){}
 	virtual ~ReturnDelegateValue() = default;
@@ -103,4 +103,4 @@ private:
 
 }
 
-#endif /* BEHAVIOR_HPP_ */
+#endif

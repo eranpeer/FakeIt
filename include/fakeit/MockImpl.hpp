@@ -16,6 +16,7 @@
 
 #include "mockutils/DynamicProxy.hpp"
 #include "fakeit/StubbingImpl.hpp"
+#include "fakeit/ActionSequenceBuilder.hpp"
 #include "fakeit/DomainObjects.hpp"
 #include "fakeit/FakeitContext.hpp"
 
@@ -76,15 +77,15 @@ public:
 	}
 
 	template<typename R, typename ... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionStubbingRoot<C, R, arglist...> stub(R (C::*vMethod)(arglist...)) {
-		return FunctionStubbingRoot<C, R, arglist...>(
-				std::shared_ptr<MethodStubbingContext<C, R, arglist...>>(new MethodStubbingContextImpl<R, arglist...>(*this, vMethod)));
+	FunctionSequenceBuilder<C, R, arglist...> stub(R (C::*vMethod)(arglist...)) {
+		return FunctionSequenceBuilder<C, R, arglist...>(
+				std::shared_ptr<ActionSequenceBuilderContext<C, R, arglist...>>(new MethodStubbingContextImpl<R, arglist...>(*this, vMethod)));
 	}
 
 	template<typename R, typename ... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureStubbingRoot<C, R, arglist...> stub(R (C::*vMethod)(arglist...)) {
-		return ProcedureStubbingRoot<C, R, arglist...>(
-				std::shared_ptr<MethodStubbingContext<C, R, arglist...>>(new MethodStubbingContextImpl<R, arglist...>(*this, vMethod)));
+	ProcedureSequenceBuilder<C, R, arglist...> stub(R (C::*vMethod)(arglist...)) {
+		return ProcedureSequenceBuilder<C, R, arglist...>(
+				std::shared_ptr<ActionSequenceBuilderContext<C, R, arglist...>>(new MethodStubbingContextImpl<R, arglist...>(*this, vMethod)));
 	}
 
 private:
@@ -94,9 +95,9 @@ private:
 	FakeitContext& _fakeit;
 
 	template<typename R, typename ... arglist>
-	class MethodStubbingContextImpl: public MethodStubbingContext<C, R, arglist...> {
+	class MethodStubbingContextImpl: public ActionSequenceBuilderContext<C, R, arglist...> {
 		MockImpl<C, baseclasses...>& mock;
-		typename MethodStubbingContext<C, R, arglist...>::MethodType vMethod;
+		typename ActionSequenceBuilderContext<C, R, arglist...>::MethodType vMethod;
 	public:
 
 		MethodStubbingContextImpl(MockImpl<C, baseclasses...>& mock, R (C::*vMethod)(arglist...)) :
@@ -111,9 +112,9 @@ private:
 			mock.getActualInvocations(into);
 		}
 
-		virtual typename MethodStubbingContext<C, R, arglist...>::MethodType getOriginalMethod() override {
+		virtual typename ActionSequenceBuilderContext<C, R, arglist...>::MethodType getOriginalMethod() override {
 			void * mPtr = mock.getOriginalMethod(vMethod);
-			return union_cast<typename MethodStubbingContext<C, R, arglist...>::MethodType>(mPtr);
+			return union_cast<typename ActionSequenceBuilderContext<C, R, arglist...>::MethodType>(mPtr);
 		}
 
 		virtual MockObject<C>& getMock() override {

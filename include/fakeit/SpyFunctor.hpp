@@ -20,13 +20,13 @@ private:
 	}
 
 	template<typename C, typename R, typename ... arglist>
-	void spy(MethodStubbingBase<C, R, arglist...>& context) {
-		C& obj = context.get();
-		auto methodFromOriginalVT = context.getOriginalMethod();
-		std::shared_ptr<Behavior<R, arglist...>> ptr {
+	void spy(ActionSequenceBuilder<C, R, arglist...>& builder) {
+		C& obj = builder.get();
+		auto methodFromOriginalVT = builder.getOriginalMethod();
+		std::shared_ptr<Action<R, arglist...>> ptr {
 			new ReturnDelegateValue<C, R, arglist...>(obj, methodFromOriginalVT) };
-		context.AppendAction(ptr);
-		context.apply();
+		builder.appendAction(ptr);
+		builder.commit();
 	}
 
 public:
@@ -35,14 +35,14 @@ public:
 	}
 
 	template<typename C, typename R, typename ... arglist>
-	void operator()(const ProcedureStubbingRoot<C, R, arglist...>& root) {
-		ProcedureStubbingRoot<C, R, arglist...>& rootWithoutConst = const_cast<ProcedureStubbingRoot<C, R, arglist...>&>(root);
+	void operator()(const ProcedureSequenceBuilder<C, R, arglist...>& root) {
+		ProcedureSequenceBuilder<C, R, arglist...>& rootWithoutConst = const_cast<ProcedureSequenceBuilder<C, R, arglist...>&>(root);
 		spy(rootWithoutConst);
 	}
 
 	template<typename C, typename R, typename ... arglist>
-	void operator()(const FunctionStubbingRoot<C, R, arglist...>& root) {
-		FunctionStubbingRoot<C, R, arglist...>& rootWithoutConst = const_cast<FunctionStubbingRoot<C, R, arglist...>&>(root);
+	void operator()(const FunctionSequenceBuilder<C, R, arglist...>& root) {
+		FunctionSequenceBuilder<C, R, arglist...>& rootWithoutConst = const_cast<FunctionSequenceBuilder<C, R, arglist...>&>(root);
 		spy(rootWithoutConst);
 	}
 
