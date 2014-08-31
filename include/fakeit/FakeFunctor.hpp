@@ -9,7 +9,7 @@
 #ifndef FakeFunctor_hpp_
 #define FakeFunctor_hpp_
 
-#include "fakeit/Stubbing.hpp"
+#include "fakeit/StubbingProgress.hpp"
 #include "fakeit/StubbingImpl.hpp"
 #include "fakeit/FakeitContext.hpp"
 

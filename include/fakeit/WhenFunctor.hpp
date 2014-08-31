@@ -10,7 +10,7 @@
 #define WHENFUNCTOR_HPP_
 
 #include "fakeit/StubbingImpl.hpp"
-#include "fakeit/Stubbing.hpp"
+#include "fakeit/StubbingProgress.hpp"
 #include "fakeit/FakeitContext.hpp"
 
 namespace fakeit {
@@ -66,7 +66,7 @@ public:
 		}
 	protected:
 
-		virtual FirstFunctionStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<Behavior<R, arglist...> > ptr) override {
+		virtual FunctionStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<Behavior<R, arglist...> > ptr) override {
 			root.AppendAction(ptr);
 			return *this;
 		}
@@ -92,7 +92,7 @@ public:
 
 	protected:
 
-		virtual FirstProcedureStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<Behavior<R, arglist...> > ptr) override {
+		virtual ProcedureStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<Behavior<R, arglist...> > ptr) override {
 			root.AppendAction(ptr);
 			return *this;
 		}

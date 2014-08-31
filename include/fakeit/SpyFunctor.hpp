@@ -9,7 +9,7 @@
 #ifndef SpyFunctor_hpp_
 #define SpyFunctor_hpp_
 
-#include "fakeit/Stubbing.hpp"
+#include "fakeit/StubbingProgress.hpp"
 #include "fakeit/StubbingImpl.hpp"
 
 namespace fakeit {

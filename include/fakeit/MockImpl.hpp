@@ -103,7 +103,7 @@ private:
 				mock(mock), vMethod(vMethod) {
 		}
 
-		virtual MethodMock<C, R, arglist...>& getMethodMock() override {
+		virtual RecordedMethodBody<C, R, arglist...>& getRecordedMethodBody() override {
 			return mock.stubMethodIfNotStubbed(mock._proxy, vMethod);
 		}
 
@@ -157,13 +157,13 @@ private:
 	}
 
 	template<typename R, typename ... arglist>
-	MethodMock<C, R, arglist...>& stubMethodIfNotStubbed(DynamicProxy<C, baseclasses...> &proxy, R (C::*vMethod)(arglist...)) {
+	RecordedMethodBody<C, R, arglist...>& stubMethodIfNotStubbed(DynamicProxy<C, baseclasses...> &proxy, R (C::*vMethod)(arglist...)) {
 		if (!proxy.isStubbed(vMethod)) {
-			auto methodMock = std::shared_ptr<MethodInvocationHandler<R, arglist...>> { new MethodMock<C, R, arglist...>(*this, vMethod) };
+			auto methodMock = std::shared_ptr<MethodInvocationHandler<R, arglist...>> { new RecordedMethodBody<C, R, arglist...>(*this, vMethod) };
 			proxy.stubMethod(vMethod, methodMock);
 		}
 		Destructable * d = proxy.getMethodMock(vMethod);
-		MethodMock<C, R, arglist...> * methodMock = dynamic_cast<MethodMock<C, R, arglist...> *>(d);
+		RecordedMethodBody<C, R, arglist...> * methodMock = dynamic_cast<RecordedMethodBody<C, R, arglist...> *>(d);
 		return *methodMock;
 	}
 

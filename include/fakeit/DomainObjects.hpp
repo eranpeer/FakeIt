@@ -26,7 +26,6 @@ struct Method {
 	Method() = default;
 	virtual ~Method() = default;
 	virtual std::string name() const = 0;
-	virtual bool operator == (const Method &other) const = 0;
 };
 
 struct UnknownMethod : public Method {
@@ -40,11 +39,6 @@ struct UnknownMethod : public Method {
 	static Method& instance() {
 		static UnknownMethod instance;
 		return instance;
-	}
-
-	bool operator == (const Method &other) const override {
-		const UnknownMethod* b = dynamic_cast< const UnknownMethod* >( &other );
-		return b != NULL;
 	}
 
 };

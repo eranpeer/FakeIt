@@ -19,30 +19,31 @@
 #include "fakeit/FakeitExceptions.hpp"
 #include "fakeit/ActualInvocation.hpp"
 #include "fakeit/Quantifier.hpp"
+#include "fakeit/Behavior.hpp"
 #include "mockutils/DefaultValue.hpp"
 #include "mockutils/Macros.hpp"
 
 namespace fakeit {
 
 template<typename R, typename ... arglist>
-struct FirstFunctionStubbingProgress {
+struct FunctionStubbingProgress {
 
-	virtual ~FirstFunctionStubbingProgress() THROWS {
+	virtual ~FunctionStubbingProgress() THROWS {
 	}
 
 	template<typename U = R>
-	typename std::enable_if<!std::is_reference<U>::value, FirstFunctionStubbingProgress<R, arglist...>&>::type 
+	typename std::enable_if<!std::is_reference<U>::value, FunctionStubbingProgress<R, arglist...>&>::type 
 	Return(const R& r) {
 		return Do([r](const arglist&...)->R {return r;});
 	}
 
 	template<typename U = R>
-	typename std::enable_if<std::is_reference<U>::value, FirstFunctionStubbingProgress<R, arglist...>&>::type 
+	typename std::enable_if<std::is_reference<U>::value, FunctionStubbingProgress<R, arglist...>&>::type 
 	Return(const R& r) {
 		return Do([&r](const arglist&...)->R {return r;});
 	}
 
-	FirstFunctionStubbingProgress<R, arglist...>&
+	FunctionStubbingProgress<R, arglist...>&
 	Return(const Quantifier<R>& q) {
 		const R& value = q.value;
 		auto method = [value](const arglist&...)->R {return value;};
@@ -51,7 +52,7 @@ struct FirstFunctionStubbingProgress {
 	}
 
 	template<typename first, typename second, typename ... tail>
-	FirstFunctionStubbingProgress<R, arglist...>&
+	FunctionStubbingProgress<R, arglist...>&
 	Return(const first& f, const second& s, const tail&... t) {
 		Return(f);
 		return Return(s, t...);
@@ -70,7 +71,7 @@ struct FirstFunctionStubbingProgress {
 		return AlwaysDo([&r](const arglist&...)->R {return r;});
 	}
 
-	FirstFunctionStubbingProgress<R, arglist...>&
+	FunctionStubbingProgress<R, arglist...>&
 	Return() {
 		return Do([](const arglist&...)->R {return DefaultValue<R>::value();});
 	}
@@ -80,12 +81,12 @@ struct FirstFunctionStubbingProgress {
 	}
 
 	template<typename E>
-	FirstFunctionStubbingProgress<R, arglist...>& Throw(const E& e) {
+	FunctionStubbingProgress<R, arglist...>& Throw(const E& e) {
 		return Do([e](const arglist&...)->R {throw e;});
 	}
 
 	template<typename E>
-	FirstFunctionStubbingProgress<R, arglist...>&
+	FunctionStubbingProgress<R, arglist...>&
 	Throw(const Quantifier<E>& q) {
 		const E& value = q.value;
 		auto method = [value](const arglist&...)->R {throw value;};
@@ -94,7 +95,7 @@ struct FirstFunctionStubbingProgress {
 	}
 
 	template<typename first, typename second, typename ... tail>
-	FirstFunctionStubbingProgress<R, arglist...>&
+	FunctionStubbingProgress<R, arglist...>&
 	Throw(const first& f, const second& s, const tail&... t) {
 		Throw(f);
 		return Throw(s, t...);
@@ -105,21 +106,21 @@ struct FirstFunctionStubbingProgress {
 		return AlwaysDo([e](const arglist&...)->R {throw e;});
 	}
 
-	virtual FirstFunctionStubbingProgress<R, arglist...>&
+	virtual FunctionStubbingProgress<R, arglist...>&
 	Do(std::function<R(arglist...)> method) {
 		std::shared_ptr<Behavior<R, arglist...>> ptr { new Repeat<R, arglist...>(method) };
 		return DoImpl(ptr);
 	}
 
 	template<typename F>
-	FirstFunctionStubbingProgress<R, arglist...>&
+	FunctionStubbingProgress<R, arglist...>&
 	Do(const Quantifier<F>& q) {
 		std::shared_ptr<Behavior<R, arglist...>> doMock { new Repeat<R, arglist...>(q.value, q.quantity) };
 		return DoImpl(doMock);
 	}
 
 	template<typename first, typename second, typename ... tail>
-	FirstFunctionStubbingProgress<R, arglist...>&
+	FunctionStubbingProgress<R, arglist...>&
 	Do(const first& f, const second& s, const tail&... t) {
 		Do(f);
 		return Do(s, t...);
@@ -132,19 +133,19 @@ struct FirstFunctionStubbingProgress {
 
 protected:
 
-	virtual FirstFunctionStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<Behavior<R, arglist...> > ptr) = 0;
+	virtual FunctionStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<Behavior<R, arglist...> > ptr) = 0;
 
 private:
-	FirstFunctionStubbingProgress & operator=(const FirstFunctionStubbingProgress & other) = delete;
+	FunctionStubbingProgress & operator=(const FunctionStubbingProgress & other) = delete;
 };
 
 template<typename R, typename ... arglist>
-struct FirstProcedureStubbingProgress {
+struct ProcedureStubbingProgress {
 
-	virtual ~FirstProcedureStubbingProgress() THROWS {
+	virtual ~ProcedureStubbingProgress() THROWS {
 	}
 
-	FirstProcedureStubbingProgress<R, arglist...>& Return() {
+	ProcedureStubbingProgress<R, arglist...>& Return() {
 		return Do([](const arglist&...)->R {return DefaultValue<R>::value();});
 	}
 
@@ -152,7 +153,7 @@ struct FirstProcedureStubbingProgress {
 		return AlwaysDo([](const arglist&...)->R {return DefaultValue<R>::value();});
 	}
 
-	FirstProcedureStubbingProgress<R, arglist...>&
+	ProcedureStubbingProgress<R, arglist...>&
 	Return(const Quantifier<R>& q) {
 		auto method = [](const arglist&...)->R {return DefaultValue<R>::value();};
 		std::shared_ptr<Behavior<R, arglist...>> doMock { new Repeat<R, arglist...>(method, q.quantity) };
@@ -160,12 +161,12 @@ struct FirstProcedureStubbingProgress {
 	}
 
 	template<typename E>
-	FirstProcedureStubbingProgress<R, arglist...>& Throw(const E& e) {
+	ProcedureStubbingProgress<R, arglist...>& Throw(const E& e) {
 		return Do([e](const arglist&...)->R {throw e;});
 	}
 
 	template<typename E>
-	FirstProcedureStubbingProgress<R, arglist...>&
+	ProcedureStubbingProgress<R, arglist...>&
 	Throw(const Quantifier<E>& q) {
 		const E& value = q.value;
 		auto method = [value](const arglist&...)->R {throw value;};
@@ -174,7 +175,7 @@ struct FirstProcedureStubbingProgress {
 	}
 
 	template<typename first, typename second, typename ... tail>
-	FirstProcedureStubbingProgress<R, arglist...>&
+	ProcedureStubbingProgress<R, arglist...>&
 	Throw(const first& f, const second& s, const tail&... t) {
 		Throw(f);
 		return Throw(s, t...);
@@ -185,20 +186,20 @@ struct FirstProcedureStubbingProgress {
 		return AlwaysDo([e](const arglist&...)->R {throw e;});
 	}
 
-	virtual FirstProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) {
+	virtual ProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) {
 		std::shared_ptr<Behavior<R, arglist...>> ptr { new Repeat<R, arglist...>(method) };
 		return DoImpl(ptr);
 	}
 
 	template<typename F>
-	FirstProcedureStubbingProgress<R, arglist...>&
+	ProcedureStubbingProgress<R, arglist...>&
 	Do(const Quantifier<F>& q) {
 		std::shared_ptr<Behavior<R, arglist...>> doMock { new Repeat<R, arglist...>(q.value, q.quantity) };
 		return DoImpl(doMock);
 	}
 
 	template<typename first, typename second, typename ... tail>
-	FirstProcedureStubbingProgress<R, arglist...>&
+	ProcedureStubbingProgress<R, arglist...>&
 	Do(const first& f, const second& s, const tail&... t) {
 		Do(f);
 		return Do(s, t...);
@@ -211,30 +212,7 @@ struct FirstProcedureStubbingProgress {
 
 protected:
 
-	virtual FirstProcedureStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<Behavior<R, arglist...> > ptr)=0;
-
-private:
-	FirstProcedureStubbingProgress & operator=(const FirstProcedureStubbingProgress & other) = delete;
-};
-
-template<typename R, typename ... arglist>
-struct FunctionStubbingProgress: public virtual FirstFunctionStubbingProgress<R, arglist...> {
-
-	FunctionStubbingProgress() = default;
-	virtual ~FunctionStubbingProgress() {
-	}
-
-private:
-	FunctionStubbingProgress & operator=(const FunctionStubbingProgress & other) = delete;
-};
-
-template<typename R, typename ... arglist>
-struct ProcedureStubbingProgress: //
-public virtual FirstProcedureStubbingProgress<R, arglist...> {
-
-	ProcedureStubbingProgress() = default;
-	virtual ~ProcedureStubbingProgress() override {
-	}
+	virtual ProcedureStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<Behavior<R, arglist...> > ptr)=0;
 
 private:
 	ProcedureStubbingProgress & operator=(const ProcedureStubbingProgress & other) = delete;

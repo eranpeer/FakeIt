@@ -1,92 +1,182 @@
 /*
- * RecordedMethodBody.hpp
  * Copyright (c) 2014 Eran Pe'er.
  *
  * This program is made available under the terms of the MIT License.
- * 
- * Created on Aug 30, 2014
+ *
+ * Created on Mar 10, 2014
  */
-#ifndef RECORDEDMETHODBODY_HPP_
-#define RECORDEDMETHODBODY_HPP_
+
+#ifndef RecordedMethodBody_h__
+#define RecordedMethodBody_h__
 
 #include <vector>
+#include <functional>
+#include <tuple>
 
 #include "fakeit/DomainObjects.hpp"
 #include "fakeit/ActualInvocation.hpp"
-#include "fakeit/Behavior.hpp"
 #include "fakeit/matchers.hpp"
+#include "fakeit/FakeitEvents.hpp"
+#include "fakeit/FakeitExceptions.hpp"
 
-#include "mockutils/Finally.hpp"
 #include "mockutils/MethodInvocationHandler.hpp"
 
 namespace fakeit {
 
-template<typename R, typename ... arglist>
-struct RecordedMethodBody: public MethodInvocationHandler<R, arglist...> {
+/**
+ * A composite MethodInvocationHandler that holds a list of RecordedSequence objects.
+ */
+template<typename C, typename R, typename ... arglist>
+class RecordedMethodBody: public virtual MethodInvocationHandler<R, arglist...>, public virtual ActualInvocationsSource {
 
-	RecordedMethodBody(Method & method) :
-			method(method) {
-		clear();
-	}
+	struct MatchedInvocationHandler: public MethodInvocationHandler<R, arglist...> {
 
-	void AppendDo(std::function<R(arglist...)> method) {
-		std::shared_ptr<Behavior<R, arglist...>> doMock = std::shared_ptr<Behavior<R, arglist...>> { new Repeat<R, arglist...>(method) };
-		AppendDo(doMock);
-	}
+		virtual ~MatchedInvocationHandler() = default;
 
-	void LastDo(std::function<R(arglist...)> method) {
-		std::shared_ptr<Behavior<R, arglist...>> doMock = std::shared_ptr<Behavior<R, arglist...>> { new Repeat<R, arglist...>(method) };
-		LastDo(doMock);
-	}
-
-	void AppendDo(std::shared_ptr<Behavior<R, arglist...> > doMock) {
-		append(doMock);
-	}
-
-	void LastDo(std::shared_ptr<Behavior<R, arglist...> > doMock) {
-		append(doMock);
-		behaviorMocks.pop_back();
-	}
-
-	R handleMethodInvocation(arglist&... args) override {
-		std::shared_ptr<Behavior<R, arglist...>> behavior = behaviorMocks.front();
-		std::function < void() > finallyClause = [&]()->void {
-			if (behavior->isDone())
-			behaviorMocks.erase(behaviorMocks.begin());
-		};
-		Finally onExit(finallyClause);
-		return behavior->invoke(args...);
-	}
-
-private:
-
-	struct NoMoreRecordedBehavior: public Behavior<R, arglist...> {
-
-		virtual ~NoMoreRecordedBehavior() = default;
-
-		virtual R invoke(arglist&...) override {
-			throw NoMoreRecordedBehaviorException();
+		MatchedInvocationHandler(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> matcher,
+				std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) :
+				matcher { matcher }, invocationHandler { invocationHandler } {
 		}
 
-		virtual bool isDone() override {
-			return false;
+		R handleMethodInvocation(arglist&... args) override {
+			return invocationHandler->handleMethodInvocation(args...);
+		}
+
+		std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> getMatcher() const {
+			return matcher;
+		}
+
+	private:
+		std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> matcher;
+		std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler;
+	};
+
+	class MethodImpl: public Method {
+		friend class RecordedMethodBody;
+		RecordedMethodBody* _methodMock;
+		std::string _name;
+	public:
+		MethodImpl(RecordedMethodBody* methodMock) :
+				_methodMock(methodMock),
+				_name(typeid(methodMock->_vMethod).name()) {
+		}
+
+		virtual std::string name() const override {
+			return _name;
+		}
+
+		void setName(const std::string& name) {
+			_name = name;
 		}
 	};
 
-	Method & method;
+	MockObject<C>& _mock;
+	R (C::*_vMethod)(arglist...);
+	MethodImpl _method;
+	std::vector<std::shared_ptr<MatchedInvocationHandler>>_invocationHandlers;
+	std::vector<std::shared_ptr<ActualInvocation<arglist...>>> _actualInvocations;
 
-	void append(std::shared_ptr<Behavior<R, arglist...>> mock) {
-		behaviorMocks.insert(behaviorMocks.end() - 1, mock);
+	std::shared_ptr<MatchedInvocationHandler> buildMethodInvocationMock(
+			std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> invocationMatcher,
+			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {
+		return std::shared_ptr<MatchedInvocationHandler> {
+			new MatchedInvocationHandler(invocationMatcher, invocationHandler)};
+	}
+
+	MatchedInvocationHandler* getInvocationHandlerForActualArgs(ActualInvocation<arglist...>& invocation) {
+		for (auto i = _invocationHandlers.rbegin(); i != _invocationHandlers.rend(); ++i) {
+			std::shared_ptr<MatchedInvocationHandler> curr = *i;
+			MatchedInvocationHandler& im = *curr;
+			if (im.getMatcher()->matches(invocation)) {
+				return &im;
+			}
+		}
+		return nullptr;
+	}
+
+public:
+
+	RecordedMethodBody(MockObject<C>& mock, R (C::*vMethod)(arglist...)) :
+	_mock(mock), _vMethod(vMethod), _method {this} {
+	}
+
+	virtual ~RecordedMethodBody() {
+	}
+
+	Method& getMethod() {
+		return _method;
+	}
+
+	bool isOfMethod(Method& method){
+		const MethodImpl* tested = dynamic_cast< const MethodImpl* >( &method );
+		return (tested) && this == tested->_methodMock;
+	}
+
+	void addMethodInvocationHandler(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> invocationMatcher,
+			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {
+		auto mock = buildMethodInvocationMock(invocationMatcher, invocationHandler);
+		_invocationHandlers.push_back(mock);
 	}
 
 	void clear() {
-		behaviorMocks.clear();
-		auto doMock = std::shared_ptr<Behavior<R, arglist...>> { new NoMoreRecordedBehavior() };
-		behaviorMocks.push_back(doMock);
+		_invocationHandlers.clear();
 	}
 
-	std::vector<std::shared_ptr<Behavior<R, arglist...>>>behaviorMocks;
+
+	R handleMethodInvocation(arglist&... args) override {
+
+		int ordinal = nextInvocationOrdinal();
+		Method& method = this->getMethod();
+		auto actualInvoaction = std::shared_ptr<ActualInvocation<arglist...>> {new ActualInvocation<arglist...>(ordinal, method,
+					args...)};
+		auto invocationHandler = getInvocationHandlerForActualArgs(*actualInvoaction);
+		if (!invocationHandler) {
+			UnexpectedMethodCallEvent event(UnexpectedType::Unmatched, *actualInvoaction);
+			_mock.getFakeIt().handle(event);
+
+			std::string format{_mock.getFakeIt().format(event)};
+			UnexpectedMethodCallException e(format);
+			throw e;
+		}
+		auto matcher = invocationHandler->getMatcher();
+		actualInvoaction->setActualMatcher(matcher);
+		_actualInvocations.push_back(actualInvoaction);
+		try {
+			return invocationHandler->handleMethodInvocation(args...);
+		} catch (NoMoreRecordedBehaviorException&) {
+			UnexpectedMethodCallEvent event(UnexpectedType::Unmatched, *actualInvoaction);
+			_mock.getFakeIt().handle(event);
+
+			std::string format{_mock.getFakeIt().format(event)};
+			UnexpectedMethodCallException e(format);
+			throw e;
+		}
+	}
+
+	std::vector<std::shared_ptr<ActualInvocation<arglist...>> > getActualInvocations(
+			typename ActualInvocation<arglist...>::Matcher& matcher) {
+		std::vector<std::shared_ptr<ActualInvocation<arglist...>>> result;
+		for (auto actualInvocation : _actualInvocations) {
+			if (matcher.matches(*actualInvocation)) {
+				result.push_back(actualInvocation);
+			}
+		}
+		return result;
+	}
+
+	void getActualInvocations(std::unordered_set<Invocation*>& into) const {
+		for (auto invocation : _actualInvocations) {
+			into.insert(invocation.get());
+		}
+	}
+
+	void setMethodDetails(const std::string& mockName, const std::string& methodName) {
+		const std::string fullName {mockName + "." + methodName};
+		_method.setName(fullName);
+	}
+
 };
 
 }
-#endif /* RECORDEDMETHODBODY_HPP_ */
+
+#endif // MethodMock_h__

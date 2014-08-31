@@ -12,7 +12,7 @@
 #include <set>
 
 #include "fakeit/StubbingImpl.hpp"
-#include "fakeit/Stubbing.hpp"
+#include "fakeit/StubbingProgress.hpp"
 #include "fakeit/Sequence.hpp"
 #include "fakeit/SortInvocations.hpp"
 #include "fakeit/FakeitContext.hpp"
