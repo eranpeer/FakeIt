@@ -13,12 +13,12 @@
 #include <functional>
 #include <tuple>
 
+#include "mockutils/TupleDispatcher.hpp"
 #include "fakeit/DomainObjects.hpp"
 #include "fakeit/ActualInvocation.hpp"
 #include "fakeit/matchers.hpp"
 #include "fakeit/FakeitEvents.hpp"
 #include "fakeit/FakeitExceptions.hpp"
-
 #include "mockutils/MethodInvocationHandler.hpp"
 
 namespace fakeit {
@@ -124,7 +124,6 @@ public:
 
 
 	R handleMethodInvocation(arglist&... args) override {
-
 		int ordinal = nextInvocationOrdinal();
 		Method& method = this->getMethod();
 		auto actualInvoaction = std::shared_ptr<ActualInvocation<arglist...>> {new ActualInvocation<arglist...>(ordinal, method,
