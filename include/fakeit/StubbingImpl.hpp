@@ -17,12 +17,12 @@
 #include <set>
 #include <iostream>
 
-#include "fakeit/MethodMock.hpp"
+#include "fakeit/RecordedMethodBody.hpp"
 #include "fakeit/Stubbing.hpp"
 #include "fakeit/Sequence.hpp"
 #include "fakeit/ActualInvocation.hpp"
 #include "fakeit/EventHandler.hpp"
-#include "fakeit/RecordedMethodBody.hpp"
+#include "fakeit/RecordedSequence.hpp"
 
 namespace fakeit {
 
@@ -37,7 +37,7 @@ struct MethodStubbingContext : public ActualInvocationsSource {
 
 	virtual ~MethodStubbingContext() = default;
 
-	virtual MethodMock<C, R, arglist...>& getMethodMock() = 0;
+	virtual RecordedMethodBody<C, R, arglist...>& getRecordedMethodBody() = 0;
 
 	/**
 	 * Return the original method. not the mock.
@@ -68,8 +68,8 @@ class MethodStubbingBase: public RecordedMethodInvocation, //
 		return _stubbingContext->getMock().get();
 	}
 
-	std::shared_ptr<RecordedMethodBody<R, arglist...>> buildInitialMethodBody() {
-		std::shared_ptr<RecordedMethodBody<R, arglist...>> recordedMethodBody { new RecordedMethodBody<R, arglist...>(_stubbingContext->getMethodMock().getMethod()) };
+	std::shared_ptr<RecordedSequence<R, arglist...>> buildInitialRecordedSequence() {
+		std::shared_ptr<RecordedSequence<R, arglist...>> recordedMethodBody { new RecordedSequence<R, arglist...>(_stubbingContext->getRecordedMethodBody().getMethod()) };
 		return recordedMethodBody;
 	}
 
@@ -85,24 +85,24 @@ protected:
 
 	std::shared_ptr<MethodStubbingContext<C, R, arglist...>> _stubbingContext;
 	std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> _invocationMatcher;
-	std::shared_ptr<RecordedMethodBody<R, arglist...>> _recordedMethodBody;
+	std::shared_ptr<RecordedSequence<R, arglist...>> _recordedSequence;
 
 	int _expectedInvocationCount;
 
 	MethodStubbingBase(std::shared_ptr<MethodStubbingContext<C, R, arglist...>> stubbingContext) :
 			_stubbingContext(stubbingContext), _invocationMatcher { new DefaultInvocationMatcher<arglist...>() }, _expectedInvocationCount(-1) {
-		_recordedMethodBody = buildInitialMethodBody();
+		_recordedSequence = buildInitialRecordedSequence();
 	}
 
 	virtual ~MethodStubbingBase() {
 	}
 
 	virtual void apply() override {
-		_stubbingContext->getMethodMock().stubMethodInvocation(_invocationMatcher, _recordedMethodBody);
+		_stubbingContext->getRecordedMethodBody().addMethodInvocationHandler(_invocationMatcher, _recordedSequence);
 	}
 
 	void setMethodDetails(std::string mockName,std::string methodName){
-		_stubbingContext->getMethodMock().setMethodDetails(mockName,methodName);
+		_stubbingContext->getRecordedMethodBody().setMethodDetails(mockName,methodName);
 	}
 
 	void Using(const arglist&... args) {
@@ -119,7 +119,7 @@ protected:
 
 public:
 	virtual bool matches(Invocation& invocation) override {
-		MethodMock<C, R, arglist...>& methodMock = _stubbingContext->getMethodMock();
+		RecordedMethodBody<C, R, arglist...>& methodMock = _stubbingContext->getRecordedMethodBody();
 		Method& actualMethod = invocation.getMethod();
 		Method& expectedMethod = methodMock.getMethod();
 		if (!actualMethod.operator == (expectedMethod)) {
@@ -132,7 +132,7 @@ public:
 
 	void getActualInvocations(std::unordered_set<Invocation*>& into) const override {
 		std::vector<std::shared_ptr<ActualInvocation<arglist...>>>actualInvocations =
-				_stubbingContext->getMethodMock().getActualInvocations(*_invocationMatcher);
+				_stubbingContext->getRecordedMethodBody().getActualInvocations(*_invocationMatcher);
 		for (auto i : actualInvocations) {
 			Invocation* ai = i.get();
 			into.insert(ai);
@@ -150,7 +150,7 @@ public:
 	}
 
 	std::string format() const {
-		std::string s = _stubbingContext->getMethodMock().getMethod().name();
+		std::string s = _stubbingContext->getRecordedMethodBody().getMethod().name();
 		s += _invocationMatcher->format();
 		return s;
 	}
@@ -170,7 +170,7 @@ public:
 	}
 
 	void AppendAction(std::shared_ptr<Behavior<R, arglist...>> method) {
-		_recordedMethodBody->AppendDo(method);
+		_recordedSequence->AppendDo(method);
 	}
 
 	void operator=(std::function<R(arglist...)> method) {
