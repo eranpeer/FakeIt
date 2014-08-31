@@ -10,35 +10,16 @@
 #define RECORDEDMETHODBODY_HPP_
 
 #include <vector>
-#include <functional>
-#include <tuple>
 
-#include "mockutils/TupleDispatcher.hpp"
 #include "fakeit/DomainObjects.hpp"
 #include "fakeit/ActualInvocation.hpp"
 #include "fakeit/Behavior.hpp"
 #include "fakeit/matchers.hpp"
-#include "fakeit/FakeitContext.hpp"
+
+#include "mockutils/Finally.hpp"
+#include "mockutils/MethodInvocationHandler.hpp"
 
 namespace fakeit {
-
-class finally {
-private:
-	std::function<void()> finallyClause;
-	finally(const finally &);
-	finally& operator=(const finally &);
-public:
-	explicit finally(std::function<void()> f) :
-			finallyClause(f) {
-	}
-
-	~finally() {
-		finallyClause();
-	}
-};
-
-struct NoMoreRecordedBehaviorException: public std::exception {
-};
 
 template<typename R, typename ... arglist>
 struct RecordedMethodBody: public MethodInvocationHandler<R, arglist...> {
@@ -73,7 +54,7 @@ struct RecordedMethodBody: public MethodInvocationHandler<R, arglist...> {
 			if (behavior->isDone())
 			behaviorMocks.erase(behaviorMocks.begin());
 		};
-		finally onExit(finallyClause);
+		Finally onExit(finallyClause);
 		return behavior->invoke(args...);
 	}
 

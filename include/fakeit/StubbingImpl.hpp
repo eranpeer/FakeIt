@@ -22,6 +22,7 @@
 #include "fakeit/Sequence.hpp"
 #include "fakeit/ActualInvocation.hpp"
 #include "fakeit/EventHandler.hpp"
+#include "fakeit/RecordedMethodBody.hpp"
 
 namespace fakeit {
 

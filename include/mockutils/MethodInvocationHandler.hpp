@@ -13,6 +13,9 @@
 
 namespace fakeit {
 
+struct NoMoreRecordedBehaviorException {
+};
+
 template<typename R, typename ... arglist>
 struct MethodInvocationHandler: public Destructable {
 	virtual ~MethodInvocationHandler() = default;

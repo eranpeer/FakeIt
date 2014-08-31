@@ -19,13 +19,12 @@
 #include "fakeit/Behavior.hpp"
 #include "fakeit/matchers.hpp"
 #include "fakeit/FakeitContext.hpp"
-#include "fakeit/RecordedMethodBody.hpp"
+#include "mockutils/MethodInvocationHandler.hpp"
 
 namespace fakeit {
 
 template<typename R, typename ... arglist>
-struct MethodInvocationMock:
-		public MethodInvocationHandler<R, arglist...> {
+struct MethodInvocationMock: public MethodInvocationHandler<R, arglist...> {
 
 	virtual ~MethodInvocationMock() = default;
 
