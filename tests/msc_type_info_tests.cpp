@@ -6,7 +6,7 @@
  * Created on Mar 10, 2014
  */
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 
 #include <string>
 #include <iostream>

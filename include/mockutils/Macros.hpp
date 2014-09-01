@@ -11,7 +11,7 @@
 
 #if defined (__GNUG__)
 #define THROWS noexcept(false)
-#elif defined (_WIN32)
+#elif defined (_MSC_VER)
 #define THROWS throw(...)
 #endif
 

@@ -11,7 +11,7 @@
 
 #include <new>
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #include "mockutils/mscpp/VirtualTable.hpp"
 #else
 #include "mockutils/gcc/VirtualTable.hpp"
@@ -26,7 +26,7 @@ namespace fakeit {
 #endif
 
 // silent MSC++ compiler warning: C4200: nonstandard extension used : zero-sized array in struct/union.
-#ifdef _WIN32
+#ifdef _MSC_VER
 #pragma warning( push )
 #pragma warning( disable : 4200 )
 #endif
@@ -66,7 +66,7 @@ public:
 	}
 };
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #pragma warning( pop )
 #endif
 

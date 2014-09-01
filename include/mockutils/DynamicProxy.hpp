@@ -15,7 +15,7 @@
 #include <array>
 #include <new>
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #include "mockutils/mscpp/VirtualTable.hpp"
 #else
 #include "mockutils/gcc/VirtualTable.hpp"
