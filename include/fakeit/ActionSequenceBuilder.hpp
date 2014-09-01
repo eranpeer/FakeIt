@@ -324,4 +324,3 @@ public:
 
 }
 #endif
-//You can join ProcedureSequenceBuilder and FunctionSequenceBuilder!!!
