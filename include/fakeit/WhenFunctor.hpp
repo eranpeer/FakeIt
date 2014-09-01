@@ -105,15 +105,17 @@ public:
 	}
 
 	template<typename C, typename R, typename ... arglist>
-	ProcedureProgress<C, R, arglist...> operator()(const ProcedureSequenceBuilder<C, R, arglist...>& stubbingContext) {
-		ProcedureSequenceBuilder<C, R, arglist...>& rootWithoutConst = const_cast<ProcedureSequenceBuilder<C, R, arglist...>&>(stubbingContext);
+	typename std::enable_if<std::is_void<R>::value, ProcedureProgress<C, R, arglist...>>::type
+	operator()(const StubbingContext<C, R, arglist...>& stubbingContext) {
+		StubbingContext<C, R, arglist...>& rootWithoutConst = const_cast<StubbingContext<C, R, arglist...>&>(stubbingContext);
 		ProcedureProgress<C, R, arglist...> a(rootWithoutConst);
 		return a;
 	}
 
 	template<typename C, typename R, typename ... arglist>
-	FunctionProgress<C, R, arglist...> operator()(const FunctionSequenceBuilder<C, R, arglist...>& stubbingContext) {
-		FunctionSequenceBuilder<C, R, arglist...>& rootWithoutConst = const_cast<FunctionSequenceBuilder<C, R, arglist...>&>(stubbingContext);
+	typename std::enable_if<!std::is_void<R>::value, FunctionProgress<C, R, arglist...>>::type
+	operator()(const StubbingContext<C, R, arglist...>& stubbingContext) {
+		StubbingContext<C, R, arglist...>& rootWithoutConst = const_cast<StubbingContext<C, R, arglist...>&>(stubbingContext);
 		FunctionProgress<C, R, arglist...> a(rootWithoutConst);
 		return a;
 	}
