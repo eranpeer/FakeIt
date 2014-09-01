@@ -50,7 +50,7 @@ public:
     }
 
     void initializeDataMembersArea() {
-        for ( int i = 0; i < SIZE; ++i ) instanceArea[i] = (char) 0;
+        for ( size_t i = 0; i < SIZE; ++i ) instanceArea[i] = (char) 0;
     }
 
 	void setMethod(unsigned int index, void *method) {
