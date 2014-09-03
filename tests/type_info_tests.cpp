@@ -7,10 +7,10 @@
  */
 
 #include <string>
-#include <iostream>
+#include <iosfwd>
 #include <stdexcept>
 #include <tuple>
-#include <iostream>
+#include <iosfwd>
 #include <type_traits>
 
 #include "tpunit++.hpp"
