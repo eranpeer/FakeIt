@@ -12,10 +12,9 @@
 #include <functional>
 #include <type_traits>
 #include <memory>
-#include <vector>
 #include <unordered_set>
 #include <set>
-#include <iostream>
+#include <iosfwd>
 
 #include "fakeit/RecordedMethodBody.hpp"
 #include "fakeit/StubbingProgress.hpp"

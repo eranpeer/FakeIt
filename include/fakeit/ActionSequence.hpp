@@ -54,13 +54,15 @@ struct ActionSequence: public MethodInvocationHandler<R, arglist...> {
 	}
 
 	R handleMethodInvocation(arglist&... args) override {
-		std::shared_ptr<Action<R, arglist...>> behavior = _recordedActions.front();
+		std::shared_ptr<Destructable> destructablePtr = _recordedActions.front();
+		Destructable& destructable = *destructablePtr;
+		Action<R, arglist...>& action = dynamic_cast<Action<R, arglist...>&>(destructable);
 		std::function < void() > finallyClause = [&]()->void {
-			if (behavior->isDone())
+			if (action.isDone())
 			_recordedActions.erase(_recordedActions.begin());
 		};
 		Finally onExit(finallyClause);
-		return behavior->invoke(args...);
+		return action.invoke(args...);
 	}
 
 private:
@@ -86,11 +88,11 @@ private:
 
 	void clear() {
 		_recordedActions.clear();
-		auto doMock = std::shared_ptr<Action<R, arglist...>> { new NoMoreRecordedAction() };
+		auto doMock = std::shared_ptr<Destructable> { new NoMoreRecordedAction() };
 		_recordedActions.push_back(doMock);
 	}
 
-	std::vector<std::shared_ptr<Action<R, arglist...>>>_recordedActions;
+	std::vector<std::shared_ptr<Destructable>>_recordedActions;
 };
 
 }

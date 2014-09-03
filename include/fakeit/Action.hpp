@@ -9,18 +9,18 @@
 #ifndef Action_hpp_
 #define Action_hpp_
 
-#include <vector>
 #include <functional>
 #include <atomic>
 #include <tuple>
 
 #include "mockutils/DefaultValue.hpp"
+#include "mockutils/Destructable.hpp"
 #include "fakeit/FakeitExceptions.hpp"
 
 namespace fakeit {
 
 template<typename R, typename ... arglist>
-struct Action {
+struct Action : public Destructable {
 	virtual ~Action() = default;
 	virtual R invoke(arglist&... args) = 0;
 	virtual bool isDone() = 0;

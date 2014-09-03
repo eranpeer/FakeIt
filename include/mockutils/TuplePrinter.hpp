@@ -9,7 +9,7 @@
 #ifndef TuplePrinter_h__
 #define TuplePrinter_h__
 
-#include <iostream>
+#include <iosfwd>
 #include <tuple>
 #include <string>
 #include <sstream>

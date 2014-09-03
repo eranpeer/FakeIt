@@ -12,7 +12,7 @@
 #include <functional>
 #include <tuple>
 #include <string>
-#include <iostream>
+#include <iosfwd>
 
 #include "mockutils/TupleDispatcher.hpp"
 #include "mockutils/TuplePrinter.hpp"

@@ -13,7 +13,7 @@
 #include <unordered_set>
 #include <tuple>
 #include <string>
-#include <iostream>
+#include <iosfwd>
 #include <atomic>
 
 

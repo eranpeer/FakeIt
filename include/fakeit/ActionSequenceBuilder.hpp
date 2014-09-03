@@ -15,7 +15,7 @@
 #include <vector>
 #include <unordered_set>
 #include <set>
-#include <iostream>
+#include <iosfwd>
 
 #include "fakeit/RecordedMethodBody.hpp"
 #include "fakeit/StubbingProgress.hpp"

@@ -5,7 +5,7 @@
  *
  * Created on August, 2014
  */
-#include <iostream>
+#include <iosfwd>
 #include "fakeit/EventFormatter.hpp"
 #include "fakeit/FakeitEvents.hpp"
 

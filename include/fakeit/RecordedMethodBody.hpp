@@ -73,7 +73,7 @@ class RecordedMethodBody: public virtual MethodInvocationHandler<R, arglist...>,
 	MockObject<C>& _mock;
 	R (C::*_vMethod)(arglist...);
 	MethodImpl _method;
-	std::vector<std::shared_ptr<MatchedInvocationHandler>>_invocationHandlers;
+	std::vector<std::shared_ptr<Destructable>>_invocationHandlers;
 	std::vector<std::shared_ptr<ActualInvocation<arglist...>>> _actualInvocations;
 
 	std::shared_ptr<MatchedInvocationHandler> buildMethodInvocationMock(
@@ -85,13 +85,20 @@ class RecordedMethodBody: public virtual MethodInvocationHandler<R, arglist...>,
 
 	MatchedInvocationHandler* getInvocationHandlerForActualArgs(ActualInvocation<arglist...>& invocation) {
 		for (auto i = _invocationHandlers.rbegin(); i != _invocationHandlers.rend(); ++i) {
-			std::shared_ptr<MatchedInvocationHandler> curr = *i;
-			MatchedInvocationHandler& im = *curr;
+			std::shared_ptr<Destructable> curr = *i;
+			Destructable& Destructable = *curr;
+			MatchedInvocationHandler& im = asMatchedInvocationHandler(Destructable);
 			if (im.getMatcher()->matches(invocation)) {
 				return &im;
 			}
 		}
 		return nullptr;
+	}
+
+	MatchedInvocationHandler& asMatchedInvocationHandler(Destructable& Destructable)
+	{
+		MatchedInvocationHandler& im = dynamic_cast<MatchedInvocationHandler&>(Destructable);
+		return im;
 	}
 
 public:
@@ -115,7 +122,8 @@ public:
 	void addMethodInvocationHandler(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> invocationMatcher,
 			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {
 		auto mock = buildMethodInvocationMock(invocationMatcher, invocationHandler);
-		_invocationHandlers.push_back(mock);
+		std::shared_ptr<Destructable> destructable{mock};
+		_invocationHandlers.push_back(destructable);
 	}
 
 	void clear() {
