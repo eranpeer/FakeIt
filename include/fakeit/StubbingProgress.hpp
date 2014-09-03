@@ -46,8 +46,7 @@ struct FunctionStubbingProgress {
 	Return(const Quantifier<R>& q) {
 		const R& value = q.value;
 		auto method = [value](const arglist&...)->R {return value;};
-		std::shared_ptr<Action<R, arglist...>> doMock { new Repeat<R, arglist...>(method, q.quantity) };
-		return DoImpl(doMock);
+		return DoImpl(new Repeat<R, arglist...>(method, q.quantity));
 	}
 
 	template<typename first, typename second, typename ... tail>
@@ -89,8 +88,7 @@ struct FunctionStubbingProgress {
 	Throw(const Quantifier<E>& q) {
 		const E& value = q.value;
 		auto method = [value](const arglist&...)->R {throw value;};
-		std::shared_ptr<Action<R, arglist...>> doMock { new Repeat<R, arglist...>(method, q.quantity) };
-		return DoImpl(doMock);
+		return DoImpl(new Repeat<R, arglist...>(method, q.quantity));
 	}
 
 	template<typename first, typename second, typename ... tail>
@@ -107,15 +105,13 @@ struct FunctionStubbingProgress {
 
 	virtual FunctionStubbingProgress<R, arglist...>&
 	Do(std::function<R(arglist...)> method) {
-		std::shared_ptr<Action<R, arglist...>> ptr { new Repeat<R, arglist...>(method) };
-		return DoImpl(ptr);
+		return DoImpl(new Repeat<R, arglist...>(method));
 	}
 
 	template<typename F>
 	FunctionStubbingProgress<R, arglist...>&
 	Do(const Quantifier<F>& q) {
-		std::shared_ptr<Action<R, arglist...>> doMock { new Repeat<R, arglist...>(q.value, q.quantity) };
-		return DoImpl(doMock);
+		return DoImpl(new Repeat<R, arglist...>(q.value, q.quantity));
 	}
 
 	template<typename first, typename second, typename ... tail>
@@ -126,13 +122,12 @@ struct FunctionStubbingProgress {
 	}
 
 	virtual void AlwaysDo(std::function<R(arglist...)> method) {
-		std::shared_ptr<Action<R, arglist...>> ptr { new RepeatForever<R, arglist...>(method) };
-		DoImpl(ptr);
+		DoImpl(new RepeatForever<R, arglist...>(method));
 	}
 
 protected:
 
-	virtual FunctionStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<Action<R, arglist...> > ptr) = 0;
+	virtual FunctionStubbingProgress<R, arglist...>& DoImpl(Action<R, arglist...>* action) = 0;
 
 private:
 	FunctionStubbingProgress & operator=(const FunctionStubbingProgress & other) = delete;
@@ -155,8 +150,7 @@ struct ProcedureStubbingProgress {
 	ProcedureStubbingProgress<R, arglist...>&
 	Return(const Quantifier<R>& q) {
 		auto method = [](const arglist&...)->R {return DefaultValue<R>::value();};
-		std::shared_ptr<Action<R, arglist...>> doMock { new Repeat<R, arglist...>(method, q.quantity) };
-		return DoImpl(doMock);
+		return DoImpl(new Repeat<R, arglist...>(method, q.quantity));
 	}
 
 	template<typename E>
@@ -169,8 +163,7 @@ struct ProcedureStubbingProgress {
 	Throw(const Quantifier<E>& q) {
 		const E& value = q.value;
 		auto method = [value](const arglist&...)->R {throw value;};
-		std::shared_ptr<Action<R, arglist...>> doMock { new Repeat<R, arglist...>(method, q.quantity) };
-		return DoImpl(doMock);
+		return DoImpl(new Repeat<R, arglist...>(method, q.quantity));
 	}
 
 	template<typename first, typename second, typename ... tail>
@@ -186,15 +179,13 @@ struct ProcedureStubbingProgress {
 	}
 
 	virtual ProcedureStubbingProgress<R, arglist...>& Do(std::function<R(arglist...)> method) {
-		std::shared_ptr<Action<R, arglist...>> ptr { new Repeat<R, arglist...>(method) };
-		return DoImpl(ptr);
+		return DoImpl(new Repeat<R, arglist...>(method));
 	}
 
 	template<typename F>
 	ProcedureStubbingProgress<R, arglist...>&
 	Do(const Quantifier<F>& q) {
-		std::shared_ptr<Action<R, arglist...>> doMock { new Repeat<R, arglist...>(q.value, q.quantity) };
-		return DoImpl(doMock);
+		return DoImpl(new Repeat<R, arglist...>(q.value, q.quantity));
 	}
 
 	template<typename first, typename second, typename ... tail>
@@ -205,13 +196,12 @@ struct ProcedureStubbingProgress {
 	}
 
 	virtual void AlwaysDo(std::function<R(arglist...)> method) {
-		std::shared_ptr<Action<R, arglist...>> ptr { new RepeatForever<R, arglist...>(method) };
-		DoImpl(ptr);
+		DoImpl(new RepeatForever<R, arglist...>(method));
 	}
 
 protected:
 
-	virtual ProcedureStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<Action<R, arglist...> > ptr)=0;
+	virtual ProcedureStubbingProgress<R, arglist...>& DoImpl(Action<R, arglist...>* action)=0;
 
 private:
 	ProcedureStubbingProgress & operator=(const ProcedureStubbingProgress & other) = delete;

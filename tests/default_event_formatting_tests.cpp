@@ -7,7 +7,7 @@
  */
 
 #include <string>
-#include <iostream>
+#include <iosfwd>
 #include <stdexcept>
 #include <tuple>
 

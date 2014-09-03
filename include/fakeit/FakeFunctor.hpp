@@ -22,8 +22,7 @@ private:
 
 	template<typename C, typename R, typename ... arglist>
 	void fake(ActionSequenceBuilder<C, R, arglist...>& root) {
-		std::shared_ptr<Action<R, arglist...>> ptr { new ReturnDefaultValue<R, arglist...>() };
-		root.appendAction(ptr);
+		root.appendAction(new ReturnDefaultValue<R, arglist...>());
 		root.commit();
 	}
 

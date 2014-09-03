@@ -56,7 +56,7 @@ struct Xaction {
 template<typename C, typename R, typename ... arglist>
 struct StubbingContext : public Xaction {
 
-	virtual void appendAction(std::shared_ptr<Action<R, arglist...>> method) = 0;
+	virtual void appendAction(Action<R, arglist...>* action) = 0;
 
 };
 
@@ -158,13 +158,12 @@ protected:
 	/**
 	 * Used by Fake, Spy & When functors
 	 */
-	void appendAction(std::shared_ptr<Action<R, arglist...>> method) {
-		_recordedActionSequence->AppendDo(method);
+	void appendAction(Action<R, arglist...>* action) override {
+		_recordedActionSequence->AppendDo(action);
 	}
 
 	void setMethodBodyByAssignment(std::function<R(arglist...)> method) {
-		std::shared_ptr<Action<R, arglist...>> ptr {new RepeatForever<R, arglist...>(method)};
-		appendAction(ptr);
+		appendAction(new RepeatForever<R, arglist...>(method));
 		commit();
 	}
 
@@ -255,16 +254,14 @@ public:
 	template<typename U = R>
 	typename std::enable_if<!std::is_reference<U>::value, void>::type operator=(const R& r) {
 		auto method = [r](arglist&...) -> R {return r;};
-		std::shared_ptr<Action<R, arglist...>> ptr { new RepeatForever<R, arglist...>(method) };
-		ActionSequenceBuilder<C, R, arglist...>::appendAction(ptr);
+		ActionSequenceBuilder<C, R, arglist...>::appendAction(new RepeatForever<R, arglist...>(method));
 		ActionSequenceBuilder<C, R, arglist...>::commit();
 	}
 
 	template<typename U = R>
 	typename std::enable_if<std::is_reference<U>::value, void>::type operator=(const R& r) {
 		auto method = [&r](arglist&...) -> R {return r;};
-		std::shared_ptr<Action<R, arglist...>> ptr { new RepeatForever<R, arglist...>(method) };
-		ActionSequenceBuilder<C, R, arglist...>::appendAction(ptr);
+		ActionSequenceBuilder<C, R, arglist...>::appendAction(new RepeatForever<R, arglist...>(method));
 		ActionSequenceBuilder<C, R, arglist...>::commit();
 	}
 };

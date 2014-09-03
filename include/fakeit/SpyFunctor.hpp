@@ -23,9 +23,7 @@ private:
 	void spy(ActionSequenceBuilder<C, R, arglist...>& builder) {
 		C& obj = builder.get();
 		auto methodFromOriginalVT = builder.getOriginalMethod();
-		std::shared_ptr<Action<R, arglist...>> ptr {
-			new ReturnDelegateValue<C, R, arglist...>(obj, methodFromOriginalVT) };
-		builder.appendAction(ptr);
+		builder.appendAction(new ReturnDelegateValue<C, R, arglist...>(obj, methodFromOriginalVT));
 		builder.commit();
 	}
 

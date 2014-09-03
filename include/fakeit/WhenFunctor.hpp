@@ -66,8 +66,8 @@ public:
 		}
 	protected:
 
-		virtual FunctionStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<Action<R, arglist...> > ptr) override {
-			root.appendAction(ptr);
+		virtual FunctionStubbingProgress<R, arglist...>& DoImpl(Action<R, arglist...>* action) override {
+			root.appendAction(action);
 			return *this;
 		}
 
@@ -92,8 +92,8 @@ public:
 
 	protected:
 
-		virtual ProcedureStubbingProgress<R, arglist...>& DoImpl(std::shared_ptr<Action<R, arglist...> > ptr) override {
-			_root.appendAction(ptr);
+		virtual ProcedureStubbingProgress<R, arglist...>& DoImpl(Action<R, arglist...> * action) override {
+			_root.appendAction(action);
 			return *this;
 		}
 

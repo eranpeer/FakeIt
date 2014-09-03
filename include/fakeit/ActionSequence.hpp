@@ -29,27 +29,26 @@ namespace fakeit {
 template<typename R, typename ... arglist>
 struct ActionSequence: public MethodInvocationHandler<R, arglist...> {
 
-	ActionSequence(Method & method) :
-			_method(method) {
+	ActionSequence(Method & method) : _method(method) {
 		clear();
 	}
 
 	void AppendDo(std::function<R(arglist...)> method) {
-		std::shared_ptr<Action<R, arglist...>> doMock = std::shared_ptr<Action<R, arglist...>> { new Repeat<R, arglist...>(method) };
-		AppendDo(doMock);
+		Action<R, arglist...> action = new Repeat<R, arglist...>(method);
+		AppendDo(action);
 	}
 
 	void LastDo(std::function<R(arglist...)> method) {
-		std::shared_ptr<Action<R, arglist...>> doMock = std::shared_ptr<Action<R, arglist...>> { new Repeat<R, arglist...>(method) };
-		LastDo(doMock);
+		Action<R, arglist...> action = new Repeat<R, arglist...>(method);
+		LastDo(action);
 	}
 
-	void AppendDo(std::shared_ptr<Action<R, arglist...> > doMock) {
-		append(doMock);
+	void AppendDo(Action<R, arglist...>* action) {
+		append(action);
 	}
 
-	void LastDo(std::shared_ptr<Action<R, arglist...> > doMock) {
-		append(doMock);
+	void LastDo(Action<R, arglist...>* action) {
+		append(action);
 		_recordedActions.pop_back();
 	}
 
@@ -82,7 +81,8 @@ private:
 
 	Method & _method;
 
-	void append(std::shared_ptr<Action<R, arglist...>> mock) {
+	void append(Action<R, arglist...>* action) {
+		std::shared_ptr<Action<R, arglist...>> mock{action};
 		_recordedActions.insert(_recordedActions.end() - 1, mock);
 	}
 

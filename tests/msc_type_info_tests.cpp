@@ -9,10 +9,9 @@
 #ifdef _MSC_VER
 
 #include <string>
-#include <iostream>
+#include <iosfwd>
 #include <stdexcept>
 #include <tuple>
-#include <iostream>
 #include <type_traits>
 
 #include "tpunit++.hpp"
