@@ -10,17 +10,17 @@
 #define Invocation_h__
 
 #include <typeinfo>
-#include <unordered_set>
 #include <tuple>
 #include <string>
 #include <iosfwd>
 #include <sstream>
 
 #include "fakeit/DomainObjects.hpp"
+#include "mockutils/Destructable.hpp"
 
 namespace fakeit {
 
-struct Invocation {
+struct Invocation : public Destructable {
 
 	struct Matcher {
 

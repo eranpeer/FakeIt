@@ -33,22 +33,26 @@ class RecordedMethodBody: public virtual MethodInvocationHandler<R, arglist...>,
 
 		virtual ~MatchedInvocationHandler() = default;
 
-		MatchedInvocationHandler(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> matcher,
-				std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) :
-				matcher { matcher }, invocationHandler { invocationHandler } {
+		MatchedInvocationHandler(typename ActualInvocation<arglist...>::Matcher* matcher,
+				MethodInvocationHandler<R, arglist...>* invocationHandler) :
+				_matcher { matcher }, _invocationHandler { invocationHandler } {
 		}
 
 		R handleMethodInvocation(arglist&... args) override {
-			return invocationHandler->handleMethodInvocation(args...);
+			Destructable & destructable = *_invocationHandler;
+			MethodInvocationHandler<R, arglist...>& invocationHandler = dynamic_cast<MethodInvocationHandler<R, arglist...>&>(destructable);
+			return invocationHandler.handleMethodInvocation(args...);
 		}
 
-		std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> getMatcher() const {
+		typename ActualInvocation<arglist...>::Matcher& getMatcher() const {
+			Destructable & destructable = *_matcher;
+			typename ActualInvocation<arglist...>::Matcher& matcher = dynamic_cast<typename ActualInvocation<arglist...>::Matcher&>(destructable);
 			return matcher;
 		}
 
 	private:
-		std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> matcher;
-		std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler;
+		std::shared_ptr<Destructable> _matcher;
+		std::shared_ptr<Destructable> _invocationHandler;
 	};
 
 	class MethodImpl: public Method {
@@ -74,13 +78,12 @@ class RecordedMethodBody: public virtual MethodInvocationHandler<R, arglist...>,
 	R (C::*_vMethod)(arglist...);
 	MethodImpl _method;
 	std::vector<std::shared_ptr<Destructable>>_invocationHandlers;
-	std::vector<std::shared_ptr<ActualInvocation<arglist...>>> _actualInvocations;
+	std::vector<std::shared_ptr<Destructable>> _actualInvocations;
 
-	std::shared_ptr<MatchedInvocationHandler> buildMethodInvocationMock(
-			std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> invocationMatcher,
-			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {
-		return std::shared_ptr<MatchedInvocationHandler> {
-			new MatchedInvocationHandler(invocationMatcher, invocationHandler)};
+	MatchedInvocationHandler* buildMatchedInvocationHandler(
+			typename ActualInvocation<arglist...>::Matcher* invocationMatcher,
+			MethodInvocationHandler<R, arglist...>* invocationHandler) {
+		return new MatchedInvocationHandler(invocationMatcher, invocationHandler);
 	}
 
 	MatchedInvocationHandler* getInvocationHandlerForActualArgs(ActualInvocation<arglist...>& invocation) {
@@ -88,18 +91,19 @@ class RecordedMethodBody: public virtual MethodInvocationHandler<R, arglist...>,
 			std::shared_ptr<Destructable> curr = *i;
 			Destructable& Destructable = *curr;
 			MatchedInvocationHandler& im = asMatchedInvocationHandler(Destructable);
-			if (im.getMatcher()->matches(invocation)) {
+			if (im.getMatcher().matches(invocation)) {
 				return &im;
 			}
 		}
 		return nullptr;
 	}
 
-	MatchedInvocationHandler& asMatchedInvocationHandler(Destructable& Destructable)
+	MatchedInvocationHandler& asMatchedInvocationHandler(Destructable& destructable)
 	{
-		MatchedInvocationHandler& im = dynamic_cast<MatchedInvocationHandler&>(Destructable);
+		MatchedInvocationHandler& im = dynamic_cast<MatchedInvocationHandler&>(destructable);
 		return im;
 	}
+
 
 public:
 
@@ -119,9 +123,9 @@ public:
 		return (tested) && this == tested->_methodMock;
 	}
 
-	void addMethodInvocationHandler(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> invocationMatcher,
-			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {
-		auto mock = buildMethodInvocationMock(invocationMatcher, invocationHandler);
+	void addMethodInvocationHandler(typename ActualInvocation<arglist...>::Matcher* matcher,
+			MethodInvocationHandler<R, arglist...>* invocationHandler) {
+		auto* mock = buildMatchedInvocationHandler(matcher, invocationHandler);
 		std::shared_ptr<Destructable> destructable{mock};
 		_invocationHandlers.push_back(destructable);
 	}
@@ -134,8 +138,11 @@ public:
 	R handleMethodInvocation(arglist&... args) override {
 		int ordinal = nextInvocationOrdinal();
 		Method& method = this->getMethod();
-		auto actualInvoaction = std::shared_ptr<ActualInvocation<arglist...>> {new ActualInvocation<arglist...>(ordinal, method,
-					args...)};
+		auto actualInvoaction = new ActualInvocation<arglist...>(ordinal, method, args...);
+
+		// ensure deletion if not added to actual invocations.
+		std::shared_ptr<Destructable> actualInvoactionDtor{actualInvoaction};
+
 		auto invocationHandler = getInvocationHandlerForActualArgs(*actualInvoaction);
 		if (!invocationHandler) {
 			UnexpectedMethodCallEvent event(UnexpectedType::Unmatched, *actualInvoaction);
@@ -145,9 +152,9 @@ public:
 			UnexpectedMethodCallException e(format);
 			throw e;
 		}
-		auto matcher = invocationHandler->getMatcher();
-		actualInvoaction->setActualMatcher(matcher);
-		_actualInvocations.push_back(actualInvoaction);
+		auto& matcher = invocationHandler->getMatcher();
+		actualInvoaction->setActualMatcher(&matcher);
+		_actualInvocations.push_back(actualInvoactionDtor);
 		try {
 			return invocationHandler->handleMethodInvocation(args...);
 		} catch (NoMoreRecordedActionException&) {
@@ -160,21 +167,23 @@ public:
 		}
 	}
 
-	std::vector<std::shared_ptr<ActualInvocation<arglist...>> > getActualInvocations(
-			typename ActualInvocation<arglist...>::Matcher& matcher) {
-		std::vector<std::shared_ptr<ActualInvocation<arglist...>>> result;
-		for (auto actualInvocation : _actualInvocations) {
-			if (matcher.matches(*actualInvocation)) {
-				result.push_back(actualInvocation);
-			}
+	void scanActualInvocations(const std::function<void(ActualInvocation<arglist...>&)>& scanner) {
+		for (auto destructablePtr : _actualInvocations) {
+			ActualInvocation<arglist...>& invocation = asActualInvocation(*destructablePtr);
+			scanner(invocation);
 		}
-		return result;
 	}
 
 	void getActualInvocations(std::unordered_set<Invocation*>& into) const {
-		for (auto invocation : _actualInvocations) {
-			into.insert(invocation.get());
+		for (auto destructablePtr : _actualInvocations) {
+			ActualInvocation<arglist...>& invocation = asActualInvocation(*destructablePtr);
+			into.insert(&invocation);
 		}
+	}
+
+	ActualInvocation<arglist...>& asActualInvocation(Destructable& destructable) const {
+		ActualInvocation<arglist...>& invocation = dynamic_cast<ActualInvocation<arglist...>&>(destructable);
+		return invocation;
 	}
 
 	void setMethodDetails(const std::string& mockName, const std::string& methodName) {

@@ -55,7 +55,7 @@ struct DynamicProxy {
 	}
 
 	template<typename R, typename ... arglist>
-	void stubMethod(R (C::*vMethod)(arglist...), std::shared_ptr<MethodInvocationHandler<R, arglist...>> methodInvocationHandler) {
+	void stubMethod(R (C::*vMethod)(arglist...), MethodInvocationHandler<R, arglist...>* methodInvocationHandler) {
 		MethodProxyCreator<R, arglist...> creator;
 		bind(creator.createMethodProxy(vMethod), methodInvocationHandler);
 	}
@@ -498,11 +498,11 @@ private:
 	}
 
 	template<typename R, typename ... arglist>
-	void bind(const MethodProxy& methodProxy,
-			std::shared_ptr<MethodInvocationHandler<R, arglist...>> invocationHandler) {
+	void bind(const MethodProxy& methodProxy, MethodInvocationHandler<R, arglist...>* invocationHandler) {
 		auto offset = methodProxy.getOffset();
 		getFake().setMethod(offset, methodProxy.getProxy());
-		methodMocks[offset] = invocationHandler;
+		Destructable * destructable = invocationHandler;
+		methodMocks[offset].reset(destructable);
 	}
 
 	template<typename DATA_TYPE>

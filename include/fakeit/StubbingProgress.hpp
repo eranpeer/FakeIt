@@ -11,7 +11,6 @@
 
 #include <functional>
 #include <type_traits>
-#include <unordered_set>
 #include <stdexcept>
 #include <utility>
 

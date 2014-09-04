@@ -82,14 +82,14 @@ private:
 	Method & _method;
 
 	void append(Action<R, arglist...>* action) {
-		std::shared_ptr<Action<R, arglist...>> mock{action};
-		_recordedActions.insert(_recordedActions.end() - 1, mock);
+		std::shared_ptr<Destructable> destructable{action};
+		_recordedActions.insert(_recordedActions.end() - 1, destructable);
 	}
 
 	void clear() {
 		_recordedActions.clear();
-		auto doMock = std::shared_ptr<Destructable> { new NoMoreRecordedAction() };
-		_recordedActions.push_back(doMock);
+		auto actionPtr = std::shared_ptr<Destructable> { new NoMoreRecordedAction() };
+		_recordedActions.push_back(actionPtr);
 	}
 
 	std::vector<std::shared_ptr<Destructable>>_recordedActions;

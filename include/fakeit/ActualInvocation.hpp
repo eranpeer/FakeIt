@@ -40,7 +40,7 @@ struct ActualInvocation: public Invocation {
 	};
 
 	ActualInvocation(int ordinal, Method & method, const arglist&... args) :
-			Invocation(ordinal, method), actualArguments { args... } {
+			Invocation(ordinal, method), _matcher{nullptr}, actualArguments { args... } {
 	}
 
 	const std::tuple<arglist...>& getActualArguments() const {
@@ -50,12 +50,12 @@ struct ActualInvocation: public Invocation {
 	/**
 	 * The Matcher that was use to match this ActualInvocation.
 	 */
-	void setActualMatcher(std::shared_ptr<Matcher> matcher){
-		this->matcher = matcher;
+	void setActualMatcher(Matcher* matcher){
+		this->_matcher = matcher;
 	}
 
-	std::shared_ptr<Matcher> getActualMatcher(){
-		return matcher;
+	Matcher* getActualMatcher(){
+		return _matcher;
 	}
 
 	virtual std::string format() const {
@@ -66,7 +66,7 @@ struct ActualInvocation: public Invocation {
 	}
 
 private:
-	std::shared_ptr<Matcher> matcher;
+	Matcher* _matcher;
 	std::tuple<arglist...> actualArguments;
 };
 

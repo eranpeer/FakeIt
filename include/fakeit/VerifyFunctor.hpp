@@ -10,7 +10,6 @@
 #define VerifyFunctor_hpp_
 
 #include <set>
-
 #include "fakeit/StubbingImpl.hpp"
 #include "fakeit/StubbingProgress.hpp"
 #include "fakeit/Sequence.hpp"

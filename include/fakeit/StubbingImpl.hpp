@@ -12,8 +12,6 @@
 #include <functional>
 #include <type_traits>
 #include <memory>
-#include <unordered_set>
-#include <set>
 #include <iosfwd>
 
 #include "fakeit/RecordedMethodBody.hpp"

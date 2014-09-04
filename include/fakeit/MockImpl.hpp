@@ -78,14 +78,12 @@ public:
 
 	template<typename R, typename ... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
 	FunctionSequenceBuilder<C, R, arglist...> stub(R (C::*vMethod)(arglist...)) {
-		return FunctionSequenceBuilder<C, R, arglist...>(
-				std::shared_ptr<ActionSequenceBuilderContext<C, R, arglist...>>(new MethodStubbingContextImpl<R, arglist...>(*this, vMethod)));
+		return FunctionSequenceBuilder<C, R, arglist...>(new MethodStubbingContextImpl<R, arglist...>(*this, vMethod));
 	}
 
 	template<typename R, typename ... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
 	ProcedureSequenceBuilder<C, R, arglist...> stub(R (C::*vMethod)(arglist...)) {
-		return ProcedureSequenceBuilder<C, R, arglist...>(
-				std::shared_ptr<ActionSequenceBuilderContext<C, R, arglist...>>(new MethodStubbingContextImpl<R, arglist...>(*this, vMethod)));
+		return ProcedureSequenceBuilder<C, R, arglist...>(new MethodStubbingContextImpl<R, arglist...>(*this, vMethod));
 	}
 
 private:
@@ -160,8 +158,7 @@ private:
 	template<typename R, typename ... arglist>
 	RecordedMethodBody<C, R, arglist...>& stubMethodIfNotStubbed(DynamicProxy<C, baseclasses...> &proxy, R (C::*vMethod)(arglist...)) {
 		if (!proxy.isStubbed(vMethod)) {
-			auto methodMock = std::shared_ptr<MethodInvocationHandler<R, arglist...>> { new RecordedMethodBody<C, R, arglist...>(*this, vMethod) };
-			proxy.stubMethod(vMethod, methodMock);
+			proxy.stubMethod(vMethod, new RecordedMethodBody<C, R, arglist...>(*this, vMethod));
 		}
 		Destructable * d = proxy.getMethodMock(vMethod);
 		RecordedMethodBody<C, R, arglist...> * methodMock = dynamic_cast<RecordedMethodBody<C, R, arglist...> *>(d);

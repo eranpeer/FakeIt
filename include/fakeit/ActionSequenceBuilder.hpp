@@ -31,7 +31,7 @@ enum class ProgressType {
 };
 
 template<typename C, typename R, typename ... arglist>
-struct ActionSequenceBuilderContext: public ActualInvocationsSource {
+struct ActionSequenceBuilderContext: public ActualInvocationsSource, public Destructable {
 
 	typedef R (C::*MethodType)(arglist...);
 
@@ -80,7 +80,7 @@ public:
 	 * Used only by Verify phrase.
 	 */
 	virtual bool matches(Invocation& invocation) override {
-		RecordedMethodBody<C, R, arglist...>& recordedMethodBody = _stubbingContext->getRecordedMethodBody();
+		RecordedMethodBody<C, R, arglist...>& recordedMethodBody = getStubbingContext().getRecordedMethodBody();
 		Method& actualMethod = invocation.getMethod();
 		if (!recordedMethodBody.isOfMethod(actualMethod)) {
 			return false;
@@ -94,19 +94,19 @@ public:
 	 * Used only by Verify phrase.
 	 */
 	void getActualInvocations(std::unordered_set<Invocation*>& into) const override {
-		std::vector<std::shared_ptr<ActualInvocation<arglist...>>>actualInvocations =
-		_stubbingContext->getRecordedMethodBody().getActualInvocations(*_invocationMatcher);
-		for (auto i : actualInvocations) {
-			Invocation* ai = i.get();
-			into.insert(ai);
-		}
+		getStubbingContext().getRecordedMethodBody().scanActualInvocations(
+				[&](ActualInvocation<arglist...>& a){
+			if (_invocationMatcher->matches(a)){
+				into.insert(&a);
+			}
+		});
 	}
 
 	/**
 	 * Used only by Verify phrase.
 	 */
 	void getInvolvedMocks(std::set<const ActualInvocationsSource*>& into) const override {
-		into.insert(_stubbingContext.get());
+		into.insert(&getStubbingContext());
 	}
 
 	void getExpectedSequence(std::vector<Invocation::Matcher*>& into) const override {
@@ -116,7 +116,7 @@ public:
 	}
 
 	std::string format() const {
-		std::string s = _stubbingContext->getRecordedMethodBody().getMethod().name();
+		std::string s = getStubbingContext().getRecordedMethodBody().getMethod().name();
 		s += _invocationMatcher->format();
 		return s;
 	}
@@ -127,30 +127,56 @@ public:
 
 protected:
 
-	ActionSequenceBuilder(std::shared_ptr<ActionSequenceBuilderContext<C, R, arglist...>> stubbingContext) :
-	_stubbingContext(stubbingContext), _invocationMatcher {new DefaultInvocationMatcher<arglist...>()}, _expectedInvocationCount(-1) {
+	ActionSequenceBuilder(ActionSequenceBuilderContext<C, R, arglist...>* stubbingContext) :
+	_stubbingContext(stubbingContext), _invocationMatcher {new DefaultInvocationMatcher<arglist...>()}, _expectedInvocationCount(-1), _commited(false) {
 		_recordedActionSequence = buildInitialRecordedSequence();
 	}
 
+	//Move ctor for use by derived classes.
+	ActionSequenceBuilder(ActionSequenceBuilder& other) :
+		_stubbingContext(other._stubbingContext),
+		_invocationMatcher {other._invocationMatcher},
+		_recordedActionSequence(other._recordedActionSequence),
+		_expectedInvocationCount(other._expectedInvocationCount),
+		_commited(other._commited)
+	{
+		other._recordedActionSequence = nullptr;
+		other._invocationMatcher = nullptr;
+		other._commited = true; // avoid delete by other
+	}
+
+	ActionSequenceBuilderContext<C, R, arglist...>& getStubbingContext() const {
+		Destructable& destructable = *_stubbingContext;
+		ActionSequenceBuilderContext<C, R, arglist...>& rv = dynamic_cast<ActionSequenceBuilderContext<C, R, arglist...>&>(destructable);
+		return rv;
+	}
+
 	virtual ~ActionSequenceBuilder() {
+		// committed objects will be deleted by the context.
+		if (!_commited) {
+			// no commit. delete the created objects.
+			delete _invocationMatcher;
+			delete _recordedActionSequence;
+		}
 	}
 
 	virtual void commit() override {
-		_stubbingContext->getRecordedMethodBody().addMethodInvocationHandler(_invocationMatcher, _recordedActionSequence);
+		getStubbingContext().getRecordedMethodBody().addMethodInvocationHandler(_invocationMatcher, _recordedActionSequence);
+		_commited = true;
 	}
 
 	void setMethodDetails(std::string mockName,std::string methodName) {
-		_stubbingContext->getRecordedMethodBody().setMethodDetails(mockName,methodName);
+		getStubbingContext().getRecordedMethodBody().setMethodDetails(mockName,methodName);
 	}
 
 	void setMatchingCriteria(const arglist&... args) {
-		auto matcher = std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> {
+		typename ActualInvocation<arglist...>::Matcher* matcher {
 			new ExpectedArgumentsInvocationMatcher<arglist...>(args...)};
 		setInvocationMatcher(matcher);
 	}
 
 	void setMatchingCriteria(std::function<bool(arglist...)> predicate) {
-		auto matcher = std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> {
+		typename ActualInvocation<arglist...>::Matcher* matcher {
 			new UserDefinedInvocationMatcher<arglist...>(predicate)};
 		setInvocationMatcher(matcher);
 	}
@@ -171,26 +197,27 @@ private:
 	typedef R (C::*func)(arglist...);
 
 	func getOriginalMethod() {
-		return _stubbingContext->getOriginalMethod();
+		return getStubbingContext().getOriginalMethod();
 	}
 
 	C& get() {
-		return _stubbingContext->getMock().get();
+		return getStubbingContext().getMock().get();
 	}
 
-	std::shared_ptr<ActionSequence<R, arglist...>> buildInitialRecordedSequence() {
-		std::shared_ptr<ActionSequence<R, arglist...>> recordedMethodBody {new ActionSequence<R, arglist...>(_stubbingContext->getRecordedMethodBody().getMethod())};
-		return recordedMethodBody;
+	ActionSequence<R, arglist...>* buildInitialRecordedSequence() {
+		return new ActionSequence<R, arglist...>(getStubbingContext().getRecordedMethodBody().getMethod());
 	}
 
-	void setInvocationMatcher(std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> invocationMatcher) {
-		_invocationMatcher = invocationMatcher;
+	void setInvocationMatcher(typename ActualInvocation<arglist...>::Matcher* matcher) {
+		delete _invocationMatcher;
+		_invocationMatcher = matcher;
 	}
 
-	std::shared_ptr<ActionSequenceBuilderContext<C, R, arglist...>> _stubbingContext;
-	std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> _invocationMatcher;
-	std::shared_ptr<ActionSequence<R, arglist...>> _recordedActionSequence;
+	std::shared_ptr<Destructable> _stubbingContext;
+	typename ActualInvocation<arglist...>::Matcher* _invocationMatcher;
+	ActionSequence<R, arglist...>* _recordedActionSequence;
 	int _expectedInvocationCount;
+	bool _commited;
 
 	friend class VerifyFunctor;
 	friend class FakeFunctor;
@@ -213,11 +240,12 @@ protected:
 
 public:
 
-	FunctionSequenceBuilder(std::shared_ptr<ActionSequenceBuilderContext<C, R, arglist...>> stubbingContext) :
+	FunctionSequenceBuilder(ActionSequenceBuilderContext<C, R, arglist...>* stubbingContext) :
 			ActionSequenceBuilder<C, R, arglist...>(stubbingContext) {
 	}
 
-	FunctionSequenceBuilder(const FunctionSequenceBuilder&) = default;
+	FunctionSequenceBuilder(FunctionSequenceBuilder<C, R, arglist...>&other) :ActionSequenceBuilder<C, R, arglist...>(other){}
+	FunctionSequenceBuilder(FunctionSequenceBuilder<C, R, arglist...>&&other):ActionSequenceBuilder<C, R, arglist...>(other){}
 
 	virtual ~FunctionSequenceBuilder() THROWS {
 	}
@@ -226,7 +254,7 @@ public:
 		ActionSequenceBuilder<C, R, arglist...>::setMethodBodyByAssignment(method);
 	}
 
-	FunctionSequenceBuilder<C, R, arglist...>& setMethodDetails(std::string mockName, std::string methodName) {
+	FunctionSequenceBuilder<C, R, arglist...> setMethodDetails(std::string mockName, std::string methodName) {
 		ActionSequenceBuilder<C, R, arglist...>::setMethodDetails(mockName, methodName);
 		return *this;
 	}
@@ -280,20 +308,21 @@ private:
 protected:
 
 public:
-	ProcedureSequenceBuilder(std::shared_ptr<ActionSequenceBuilderContext<C, R, arglist...>> stubbingContext) :
+	ProcedureSequenceBuilder(ActionSequenceBuilderContext<C, R, arglist...>* stubbingContext) :
 			ActionSequenceBuilder<C, R, arglist...>(stubbingContext) {
 	}
 
 	virtual ~ProcedureSequenceBuilder() THROWS {
 	}
 
-	ProcedureSequenceBuilder(const ProcedureSequenceBuilder&) = default;
+	ProcedureSequenceBuilder(ProcedureSequenceBuilder<C, R, arglist...>& other):ActionSequenceBuilder<C, R, arglist...>(other){}
+	ProcedureSequenceBuilder(ProcedureSequenceBuilder<C, R, arglist...>&& other):ActionSequenceBuilder<C, R, arglist...>(other){}
 
 	void operator=(std::function<R(arglist...)> method) {
 		ActionSequenceBuilder<C, R, arglist...>::setMethodBodyByAssignment(method);
 	}
 
-	ProcedureSequenceBuilder<C, R, arglist...>& setMethodDetails(std::string mockName, std::string methodName) {
+	ProcedureSequenceBuilder<C, R, arglist...> setMethodDetails(std::string mockName, std::string methodName) {
 		ActionSequenceBuilder<C, R, arglist...>::setMethodDetails(mockName, methodName);
 		return *this;
 	}

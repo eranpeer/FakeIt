@@ -9,7 +9,7 @@
 #ifndef SEQUENCE_HPP_
 #define SEQUENCE_HPP_
 
-#include <unordered_set>
+#include <set>
 #include <vector>
 #include <stdexcept>
 

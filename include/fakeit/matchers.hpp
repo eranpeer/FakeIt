@@ -30,7 +30,7 @@ struct ExpectedArgumentsInvocationMatcher: public ActualInvocation<arglist...>::
 	}
 
 	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
-		if (invocation.getActualMatcher().get() == this)
+		if (invocation.getActualMatcher() == this)
 			return true;
 		return matches(invocation.getActualArguments());
 	}
@@ -56,7 +56,7 @@ struct UserDefinedInvocationMatcher: public ActualInvocation<arglist...>::Matche
 	}
 
 	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
-		if (invocation.getActualMatcher().get() == this)
+		if (invocation.getActualMatcher() == this)
 			return true;
 		return matches(invocation.getActualArguments());
 	}
