@@ -17,39 +17,25 @@ namespace fakeit {
 
 class FakeFunctor {
 private:
-	void operator()() {
+	template<typename C, typename R, typename ... arglist>
+	void fake(const StubbingContext<C, R, arglist...>& root) {
+		StubbingContext<C, R, arglist...>& rootWithoutConst = const_cast<StubbingContext<C, R, arglist...>&>(root);
+		rootWithoutConst.appendAction(new ReturnDefaultValue<R, arglist...>());
+		rootWithoutConst.commit();
 	}
 
-	template<typename C, typename R, typename ... arglist>
-	void fake(ActionSequenceBuilder<C, R, arglist...>& root) {
-		root.appendAction(new ReturnDefaultValue<R, arglist...>());
-		root.commit();
+	void operator()() {
 	}
 
 public:
 
-	FakeFunctor() {
-	}
-
-	template<typename C, typename R, typename ... arglist>
-	void operator()(const ProcedureSequenceBuilder<C, R, arglist...>& root) {
-		ProcedureSequenceBuilder<C, R, arglist...>& rootWithoutConst = const_cast<ProcedureSequenceBuilder<C, R, arglist...>&>(root);
-		fake(rootWithoutConst);
-	}
-
-	template<typename C, typename R, typename ... arglist>
-	void operator()(const FunctionSequenceBuilder<C, R, arglist...>& root) {
-		FunctionSequenceBuilder<C, R, arglist...>& rootWithoutConst = const_cast<FunctionSequenceBuilder<C, R, arglist...>&>(root);
-		fake(rootWithoutConst);
-	}
-
 	template<typename H, typename ... M>
 	void operator()(const H& head, const M&... tail) {
-		this->operator()(head);
+		fake(head);
 		this->operator()(tail...);
 	}
 
-}static Fake;
+};
 
 }
 

@@ -222,10 +222,7 @@ private:
 	int _expectedInvocationCount;
 	bool _commited;
 
-	friend class VerifyFunctor;
-	friend class FakeFunctor;
 	friend class SpyFunctor;
-	friend class WhenFunctor;
 };
 
 template<typename C, typename R, typename ... arglist>
@@ -235,10 +232,8 @@ public virtual ActionSequenceBuilder<C, R, arglist...> //
 private:
 	FunctionSequenceBuilder & operator=(const FunctionSequenceBuilder&) = delete;
 
-	friend class VerifyFunctor;
-	friend class FakeFunctor;
 	friend class SpyFunctor;
-	friend class WhenFunctor;
+
 protected:
 
 public:
@@ -257,7 +252,7 @@ public:
 		ActionSequenceBuilder<C, R, arglist...>::setMethodBodyByAssignment(method);
 	}
 
-	FunctionSequenceBuilder<C, R, arglist...> setMethodDetails(std::string mockName, std::string methodName) {
+	FunctionSequenceBuilder<C, R, arglist...>& setMethodDetails(std::string mockName, std::string methodName) {
 		ActionSequenceBuilder<C, R, arglist...>::setMethodDetails(mockName, methodName);
 		return *this;
 	}
@@ -303,10 +298,7 @@ public virtual ActionSequenceBuilder<C, R, arglist...> {
 private:
 	ProcedureSequenceBuilder & operator=(const ProcedureSequenceBuilder&) = delete;
 
-	friend class VerifyFunctor;
-	friend class FakeFunctor;
 	friend class SpyFunctor;
-	friend class WhenFunctor;
 
 protected:
 
@@ -325,7 +317,7 @@ public:
 		ActionSequenceBuilder<C, R, arglist...>::setMethodBodyByAssignment(method);
 	}
 
-	ProcedureSequenceBuilder<C, R, arglist...> setMethodDetails(std::string mockName, std::string methodName) {
+	ProcedureSequenceBuilder<C, R, arglist...>& setMethodDetails(std::string mockName, std::string methodName) {
 		ActionSequenceBuilder<C, R, arglist...>::setMethodDetails(mockName, methodName);
 		return *this;
 	}
