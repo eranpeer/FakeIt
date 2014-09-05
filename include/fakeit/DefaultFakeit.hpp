@@ -14,6 +14,9 @@
 #include "fakeit/DefaultEventFormatter.hpp"
 #include "fakeit/UsingFunctor.hpp"
 #include "fakeit/VerifyFunctor.hpp"
+#include "fakeit/SpyFunctor.hpp"
+#include "fakeit/FakeFunctor.hpp"
+#include "fakeit/WhenFunctor.hpp"
 #include "fakeit/VerifyNoOtherInvocationsFunctor.hpp"
 
 namespace fakeit {
@@ -86,11 +89,30 @@ private:
 	fakeit::EventHandler* _testingFrameworkAdapter;
 };
 
-
 static DefaultFakeit& Fakeit = DefaultFakeit::getInstance();
 static UsingFunctor Using(Fakeit);
 static VerifyFunctor Verify(Fakeit);
 static VerifyNoOtherInvocationsFunctor VerifyNoOtherInvocations(Fakeit);
+static SpyFunctor Spy;
+static FakeFunctor Fake;
+static WhenFunctor When;
+
+template <class T>
+class SilenceUnusedVariableWarnings {
+
+	void use(void *){}
+
+	SilenceUnusedVariableWarnings()
+	{
+		use(&Fake);
+		use(&When);
+		use(&Spy);
+		use(&Using);
+		use(&Verify);
+		use(&VerifyNoOtherInvocations);
+	}
+};
 
 }
+
 #endif //

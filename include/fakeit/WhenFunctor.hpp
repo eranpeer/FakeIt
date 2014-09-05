@@ -120,7 +120,7 @@ public:
 		return a;
 	}
 
-}static When;
+};
 
 }
 
