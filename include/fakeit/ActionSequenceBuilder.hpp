@@ -76,54 +76,7 @@ class ActionSequenceBuilder: //
 
 public:
 
-	/**
-	 * Used only by Verify phrase.
-	 */
-	virtual bool matches(Invocation& invocation) override {
-		RecordedMethodBody<C, R, arglist...>& recordedMethodBody = getStubbingContext().getRecordedMethodBody();
-		Method& actualMethod = invocation.getMethod();
-		if (!recordedMethodBody.isOfMethod(actualMethod)) {
-			return false;
-		}
 
-		ActualInvocation<arglist...>& actualInvocation = dynamic_cast<ActualInvocation<arglist...>&>(invocation);
-		return _invocationMatcher->matches(actualInvocation);
-	}
-
-	/**
-	 * Used only by Verify phrase.
-	 */
-	void getActualInvocations(std::unordered_set<Invocation*>& into) const override {
-		getStubbingContext().getRecordedMethodBody().scanActualInvocations(
-				[&](ActualInvocation<arglist...>& a){
-			if (_invocationMatcher->matches(a)){
-				into.insert(&a);
-			}
-		});
-	}
-
-	/**
-	 * Used only by Verify phrase.
-	 */
-	void getInvolvedMocks(std::set<const ActualInvocationsSource*>& into) const override {
-		into.insert(&getStubbingContext());
-	}
-
-	void getExpectedSequence(std::vector<Invocation::Matcher*>& into) const override {
-		const Invocation::Matcher* b = this;
-		Invocation::Matcher* c = const_cast<Invocation::Matcher*>(b);
-		into.push_back(c);
-	}
-
-	std::string format() const {
-		std::string s = getStubbingContext().getRecordedMethodBody().getMethod().name();
-		s += _invocationMatcher->format();
-		return s;
-	}
-
-	unsigned int size() const override {
-		return 1;
-	}
 
 protected:
 
@@ -145,11 +98,6 @@ protected:
 		other._commited = true; // avoid delete by other
 	}
 
-	ActionSequenceBuilderContext<C, R, arglist...>& getStubbingContext() const {
-		Destructable& destructable = *_stubbingContext;
-		ActionSequenceBuilderContext<C, R, arglist...>& rv = dynamic_cast<ActionSequenceBuilderContext<C, R, arglist...>&>(destructable);
-		return rv;
-	}
 
 	virtual ~ActionSequenceBuilder() {
 		// committed objects will be deleted by the context.
@@ -158,6 +106,61 @@ protected:
 			delete _invocationMatcher;
 			delete _recordedActionSequence;
 		}
+	}
+
+	std::string format() const {
+		std::string s = getStubbingContext().getRecordedMethodBody().getMethod().name();
+		s += _invocationMatcher->format();
+		return s;
+	}
+
+	unsigned int size() const override {
+		return 1;
+	}
+
+	/**
+	 * Used only by Verify phrase.
+	 */
+	void getInvolvedMocks(std::set<const ActualInvocationsSource*>& into) const override {
+		into.insert(&getStubbingContext());
+	}
+
+	void getExpectedSequence(std::vector<Invocation::Matcher*>& into) const override {
+		const Invocation::Matcher* b = this;
+		Invocation::Matcher* c = const_cast<Invocation::Matcher*>(b);
+		into.push_back(c);
+	}
+
+	/**
+	 * Used only by Verify phrase.
+	 */
+	void getActualInvocations(std::unordered_set<Invocation*>& into) const override {
+		getStubbingContext().getRecordedMethodBody().scanActualInvocations(
+				[&](ActualInvocation<arglist...>& a){
+			if (_invocationMatcher->matches(a)){
+				into.insert(&a);
+			}
+		});
+	}
+
+	ActionSequenceBuilderContext<C, R, arglist...>& getStubbingContext() const {
+		Destructable& destructable = *_stubbingContext;
+		ActionSequenceBuilderContext<C, R, arglist...>& rv = dynamic_cast<ActionSequenceBuilderContext<C, R, arglist...>&>(destructable);
+		return rv;
+	}
+
+	/**
+	 * Used only by Verify phrase.
+	 */
+	virtual bool matches(Invocation& invocation) override {
+		RecordedMethodBody<C, R, arglist...>& recordedMethodBody = getStubbingContext().getRecordedMethodBody();
+		Method& actualMethod = invocation.getMethod();
+		if (!recordedMethodBody.isOfMethod(actualMethod)) {
+			return false;
+		}
+
+		ActualInvocation<arglist...>& actualInvocation = dynamic_cast<ActualInvocation<arglist...>&>(invocation);
+		return _invocationMatcher->matches(actualInvocation);
 	}
 
 	virtual void commit() override {
