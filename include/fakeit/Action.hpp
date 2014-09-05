@@ -82,14 +82,14 @@ struct ReturnDefaultValue: public Action<R, arglist...> {
 	}
 };
 
-template<typename C, typename R, typename ... arglist>
+template<typename R, typename ... arglist>
 struct ReturnDelegateValue: public Action<R, arglist...> {
 
-	ReturnDelegateValue(C & instance, R (C::*vMethod)(arglist... args)):instance(instance),vMethod(vMethod){}
+	ReturnDelegateValue(std::function<R(arglist&...)> delegate):_delegate(delegate){}
 	virtual ~ReturnDelegateValue() = default;
 
 	virtual R invoke(arglist&... args) override {
-		return ((&instance)->*vMethod)(args...);
+		return _delegate(args...);
 	}
 
 	virtual bool isDone() override {
@@ -97,8 +97,7 @@ struct ReturnDelegateValue: public Action<R, arglist...> {
 	}
 
 private:
-	C & instance;
-	R (C::*vMethod)(arglist... args);
+	std::function<R(arglist&...)> _delegate;
 };
 
 }

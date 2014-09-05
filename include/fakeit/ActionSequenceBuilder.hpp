@@ -23,6 +23,7 @@
 #include "fakeit/ActualInvocation.hpp"
 #include "fakeit/EventHandler.hpp"
 #include "fakeit/ActionSequence.hpp"
+#include "fakeit/DomainObjects.hpp"
 
 namespace fakeit {
 
@@ -30,34 +31,20 @@ enum class ProgressType {
 	NONE, STUBBING, VERIFYING
 };
 
-template<typename C, typename R, typename ... arglist>
-struct ActionSequenceBuilderContext: public ActualInvocationsSource, public Destructable {
-
-	typedef R (C::*MethodType)(arglist...);
-
-	virtual ~ActionSequenceBuilderContext() = default;
-
-	virtual RecordedMethodBody<C, R, arglist...>& getRecordedMethodBody() = 0;
-
-	/**
-	 * Return the original method. not the mock.
-	 */
-	virtual MethodType getOriginalMethod() = 0;
-
-	virtual MockObject<C>& getMock() = 0;
-
-};
 
 struct Xaction {
 	virtual void commit() = 0;
 };
 
+template<typename C, typename R, typename ... arglist>
+struct SpyingContext : public Xaction {
+	virtual void appendAction(Action<R, arglist...>* action) = 0;
+};
+
 // For use in Fake, Spy & When phrases
 template<typename C, typename R, typename ... arglist>
 struct StubbingContext : public Xaction {
-
 	virtual void appendAction(Action<R, arglist...>* action) = 0;
-
 };
 
 /**
@@ -71,16 +58,33 @@ template<typename C, typename R, typename ... arglist>
 class ActionSequenceBuilder: //
 		public Sequence,                // For use in Verify(sequence1,...)... phrases.
 		public ActualInvocationsSource, // For use in Using(source1,souece2,...) and VerifyNoOtherInvocations(source1,souece2...) phrases.
-		public StubbingContext<C, R, arglist...>, // For use in Fake, Spy & When phrases
+		public virtual StubbingContext<C, R, arglist...>, // For use in Fake, Spy & When phrases
+		public virtual SpyingContext<C, R, arglist...>, // For use in Fake, Spy & When phrases
 		private Invocation::Matcher {
 
 public:
 
+	struct ActionSequenceBuilderContext: public ActualInvocationsSource, public Destructable {
 
+
+		virtual ~ActionSequenceBuilderContext() = default;
+
+		virtual RecordedMethodBody<C, R, arglist...>& getRecordedMethodBody() = 0;
+
+		virtual MockObject<C>& getMock() = 0;
+
+		virtual C& getMockInstance() = 0;
+
+		/**
+		 * Return the original method. not the mock.
+		 */
+		virtual std::function<R(arglist&...)> getOriginalMethod() = 0;
+
+	};
 
 protected:
 
-	ActionSequenceBuilder(ActionSequenceBuilderContext<C, R, arglist...>* stubbingContext) :
+	ActionSequenceBuilder(ActionSequenceBuilderContext* stubbingContext) :
 	_stubbingContext(stubbingContext), _invocationMatcher {new DefaultInvocationMatcher<arglist...>()}, _expectedInvocationCount(-1), _commited(false) {
 		_recordedActionSequence = buildInitialRecordedSequence();
 	}
@@ -143,9 +147,9 @@ protected:
 		});
 	}
 
-	ActionSequenceBuilderContext<C, R, arglist...>& getStubbingContext() const {
+	ActionSequenceBuilderContext& getStubbingContext() const {
 		Destructable& destructable = *_stubbingContext;
-		ActionSequenceBuilderContext<C, R, arglist...>& rv = dynamic_cast<ActionSequenceBuilderContext<C, R, arglist...>&>(destructable);
+		ActionSequenceBuilderContext& rv = dynamic_cast<ActionSequenceBuilderContext&>(destructable);
 		return rv;
 	}
 
@@ -197,9 +201,8 @@ protected:
 	}
 
 private:
-	typedef R (C::*func)(arglist...);
 
-	func getOriginalMethod() {
+	typename std::function<R(arglist&...)> getOriginalMethod() {
 		return getStubbingContext().getOriginalMethod();
 	}
 
@@ -238,7 +241,7 @@ protected:
 
 public:
 
-	FunctionSequenceBuilder(ActionSequenceBuilderContext<C, R, arglist...>* stubbingContext) :
+	FunctionSequenceBuilder(typename ActionSequenceBuilder<C, R, arglist...>::ActionSequenceBuilderContext* stubbingContext) :
 			ActionSequenceBuilder<C, R, arglist...>(stubbingContext) {
 	}
 
@@ -303,7 +306,7 @@ private:
 protected:
 
 public:
-	ProcedureSequenceBuilder(ActionSequenceBuilderContext<C, R, arglist...>* stubbingContext) :
+	ProcedureSequenceBuilder(typename ActionSequenceBuilder<C, R, arglist...>::ActionSequenceBuilderContext* stubbingContext) :
 			ActionSequenceBuilder<C, R, arglist...>(stubbingContext) {
 	}
 

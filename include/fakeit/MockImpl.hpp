@@ -93,31 +93,40 @@ private:
 	FakeitContext& _fakeit;
 
 	template<typename R, typename ... arglist>
-	class MethodStubbingContextImpl: public ActionSequenceBuilderContext<C, R, arglist...> {
-		MockImpl<C, baseclasses...>& mock;
-		typename ActionSequenceBuilderContext<C, R, arglist...>::MethodType vMethod;
+	class MethodStubbingContextImpl: public ActionSequenceBuilder<C, R, arglist...>::ActionSequenceBuilderContext {
+		MockImpl<C, baseclasses...>& _mock;
+		R (C::*_vMethod)(arglist...);
 	public:
 
 		MethodStubbingContextImpl(MockImpl<C, baseclasses...>& mock, R (C::*vMethod)(arglist...)) :
-				mock(mock), vMethod(vMethod) {
+				_mock(mock), _vMethod(vMethod) {
 		}
 
 		virtual RecordedMethodBody<C, R, arglist...>& getRecordedMethodBody() override {
-			return mock.stubMethodIfNotStubbed(mock._proxy, vMethod);
+			return _mock.stubMethodIfNotStubbed(_mock._proxy, _vMethod);
 		}
 
 		virtual void getActualInvocations(std::unordered_set<Invocation*>& into) const override {
-			mock.getActualInvocations(into);
+			_mock.getActualInvocations(into);
 		}
 
-		virtual typename ActionSequenceBuilderContext<C, R, arglist...>::MethodType getOriginalMethod() override {
-			void * mPtr = mock.getOriginalMethod(vMethod);
-			return union_cast<typename ActionSequenceBuilderContext<C, R, arglist...>::MethodType>(mPtr);
+		virtual std::function<R(arglist&...)> getOriginalMethod() override {
+			return [&](arglist&... args)->R{
+				void * mPtr = _mock.getOriginalMethod(_vMethod);
+				auto m = union_cast<decltype(_vMethod)>(mPtr);
+				C& instance = _mock.get();
+				return ((&instance)->*m)(args...);
+			};
 		}
 
 		virtual MockObject<C>& getMock() override {
-			return mock;
+			return _mock;
 		}
+
+		virtual C& getMockInstance() {
+			return _mock.get();
+		}
+
 
 	};
 

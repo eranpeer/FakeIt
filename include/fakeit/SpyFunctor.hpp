@@ -20,9 +20,8 @@ private:
 	template<typename C, typename R, typename ... arglist>
 	void spy(const ActionSequenceBuilder<C, R, arglist...>& root) {
 		ActionSequenceBuilder<C, R, arglist...>& rootWithoutConst = const_cast<ActionSequenceBuilder<C, R, arglist...>&>(root);
-		C& obj = rootWithoutConst.get();
 		auto methodFromOriginalVT = rootWithoutConst.getOriginalMethod();
-		rootWithoutConst.appendAction(new ReturnDelegateValue<C, R, arglist...>(obj, methodFromOriginalVT));
+		rootWithoutConst.appendAction(new ReturnDelegateValue<R, arglist...>(methodFromOriginalVT));
 		rootWithoutConst.commit();
 	}
 
