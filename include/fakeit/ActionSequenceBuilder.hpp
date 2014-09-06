@@ -39,6 +39,7 @@ struct Xaction {
 template<typename C, typename R, typename ... arglist>
 struct SpyingContext : public Xaction {
 	virtual void appendAction(Action<R, arglist...>* action) = 0;
+	virtual typename std::function<R(arglist&...)> getOriginalMethod() = 0;
 };
 
 // For use in Fake, Spy & When phrases
