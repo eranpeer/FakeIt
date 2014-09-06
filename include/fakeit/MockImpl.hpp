@@ -113,7 +113,7 @@ private:
 		virtual std::function<R(arglist&...)> getOriginalMethod() override {
 			void * mPtr = _mock.getOriginalMethod(_vMethod);
 			auto m = union_cast<decltype(_vMethod)>(mPtr); 
-			C& instance = _mock.get();
+			C& instance = _mock.get(); 
 			return [=, &instance](arglist&... args)->R{
 				return ((&instance)->*m)(args...);
 			};
