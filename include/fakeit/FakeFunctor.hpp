@@ -17,9 +17,9 @@ namespace fakeit {
 
 class FakeFunctor {
 private:
-	template<typename C, typename R, typename ... arglist>
-	void fake(const StubbingContext<C, R, arglist...>& root) {
-		StubbingContext<C, R, arglist...>& rootWithoutConst = const_cast<StubbingContext<C, R, arglist...>&>(root);
+	template<typename R, typename ... arglist>
+	void fake(const StubbingContext<R, arglist...>& root) {
+		StubbingContext<R, arglist...>& rootWithoutConst = const_cast<StubbingContext<R, arglist...>&>(root);
 		rootWithoutConst.appendAction(new ReturnDefaultValue<R, arglist...>());
 		rootWithoutConst.commit();
 	}

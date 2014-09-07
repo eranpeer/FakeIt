@@ -36,17 +36,19 @@ struct Xaction {
 	virtual void commit() = 0;
 };
 
-template<typename C, typename R, typename ... arglist>
+// For use in Spy(...) phrases
+template<typename R, typename ... arglist>
 struct SpyingContext : public Xaction {
 	virtual void appendAction(Action<R, arglist...>* action) = 0;
 	virtual typename std::function<R(arglist&...)> getOriginalMethod() = 0;
 };
 
-// For use in Fake, Spy & When phrases
-template<typename C, typename R, typename ... arglist>
+// For use in Fake & When phrases
+template<typename R, typename ... arglist>
 struct StubbingContext : public Xaction {
 	virtual void appendAction(Action<R, arglist...>* action) = 0;
 };
+
 
 /**
  * Build recorded sequence and the matching criteria.
@@ -59,8 +61,8 @@ template<typename C, typename R, typename ... arglist>
 class ActionSequenceBuilder: //
 		public Sequence,                // For use in Verify(sequence1,...)... phrases.
 		public ActualInvocationsSource, // For use in Using(source1,souece2,...) and VerifyNoOtherInvocations(source1,souece2...) phrases.
-		public virtual StubbingContext<C, R, arglist...>, // For use in Fake, Spy & When phrases
-		public virtual SpyingContext<C, R, arglist...>, // For use in Fake, Spy & When phrases
+		public virtual StubbingContext<R, arglist...>, // For use in Fake, Spy & When phrases
+		public virtual SpyingContext<R, arglist...>, // For use in Fake, Spy & When phrases
 		private Invocation::Matcher {
 
 public:
