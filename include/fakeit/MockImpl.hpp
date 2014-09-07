@@ -16,7 +16,7 @@
 
 #include "mockutils/DynamicProxy.hpp"
 #include "fakeit/StubbingImpl.hpp"
-#include "fakeit/ActionSequenceBuilder.hpp"
+#include "fakeit/MethodMockingContext.hpp"
 #include "fakeit/DomainObjects.hpp"
 #include "fakeit/FakeitContext.hpp"
 
@@ -93,7 +93,7 @@ private:
 	FakeitContext& _fakeit;
 
 	template<typename R, typename ... arglist>
-	class MethodStubbingContextImpl: public ActionSequenceBuilder<C, R, arglist...>::ActionSequenceBuilderContext {
+	class MethodStubbingContextImpl: public MethodMockingContext<C, R, arglist...>::MethodMockingContextContext {
 		MockImpl<C, baseclasses...>& _mock;
 		R (C::*_vMethod)(arglist...);
 	public:

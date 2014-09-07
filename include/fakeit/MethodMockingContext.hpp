@@ -6,8 +6,8 @@
  * Created on Mar 10, 2014
  */
 
-#ifndef ActionSequenceBuilder_h__
-#define ActionSequenceBuilder_h__
+#ifndef MethodMockingContext_h__
+#define MethodMockingContext_h__
 
 #include <functional>
 #include <type_traits>
@@ -58,7 +58,7 @@ struct StubbingContext : public Xaction {
  * The recorded sequence is: {Return(1), Return(2), Return(2), Throw(e1)}
  */
 template<typename C, typename R, typename ... arglist>
-class ActionSequenceBuilder: //
+class MethodMockingContext: //
 		public Sequence,                // For use in Verify(sequence1,...)... phrases.
 		public ActualInvocationsSource, // For use in Using(source1,souece2,...) and VerifyNoOtherInvocations(source1,souece2...) phrases.
 		public virtual StubbingContext<R, arglist...>, // For use in Fake, Spy & When phrases
@@ -67,10 +67,10 @@ class ActionSequenceBuilder: //
 
 public:
 
-	struct ActionSequenceBuilderContext: public ActualInvocationsSource, public Destructable {
+	struct MethodMockingContextContext: public ActualInvocationsSource, public Destructable {
 
 
-		virtual ~ActionSequenceBuilderContext() = default;
+		virtual ~MethodMockingContextContext() = default;
 
 		virtual RecordedMethodBody<C, R, arglist...>& getRecordedMethodBody() = 0;
 
@@ -87,13 +87,13 @@ public:
 
 protected:
 
-	ActionSequenceBuilder(ActionSequenceBuilderContext* stubbingContext) :
+	MethodMockingContext(MethodMockingContextContext* stubbingContext) :
 	_stubbingContext(stubbingContext), _invocationMatcher {new DefaultInvocationMatcher<arglist...>()}, _expectedInvocationCount(-1), _commited(false) {
 		_recordedActionSequence = buildInitialRecordedSequence();
 	}
 
 	//Move ctor for use by derived classes.
-	ActionSequenceBuilder(ActionSequenceBuilder& other) :
+	MethodMockingContext(MethodMockingContext& other) :
 		_stubbingContext(other._stubbingContext),
 		_invocationMatcher {other._invocationMatcher},
 		_recordedActionSequence(other._recordedActionSequence),
@@ -106,7 +106,7 @@ protected:
 	}
 
 
-	virtual ~ActionSequenceBuilder() {
+	virtual ~MethodMockingContext() {
 		// committed objects will be deleted by the context.
 		if (!_commited) {
 			// no commit. delete the created objects.
@@ -150,9 +150,9 @@ protected:
 		});
 	}
 
-	ActionSequenceBuilderContext& getStubbingContext() const {
+	MethodMockingContextContext& getStubbingContext() const {
 		Destructable& destructable = *_stubbingContext;
-		ActionSequenceBuilderContext& rv = dynamic_cast<ActionSequenceBuilderContext&>(destructable);
+		MethodMockingContextContext& rv = dynamic_cast<MethodMockingContextContext&>(destructable);
 		return rv;
 	}
 
@@ -231,7 +231,7 @@ private:
 
 template<typename C, typename R, typename ... arglist>
 class FunctionSequenceBuilder: //
-public virtual ActionSequenceBuilder<C, R, arglist...> //
+public virtual MethodMockingContext<C, R, arglist...> //
 {
 private:
 	FunctionSequenceBuilder & operator=(const FunctionSequenceBuilder&) = delete;
@@ -240,105 +240,105 @@ protected:
 
 public:
 
-	FunctionSequenceBuilder(typename ActionSequenceBuilder<C, R, arglist...>::ActionSequenceBuilderContext* stubbingContext) :
-			ActionSequenceBuilder<C, R, arglist...>(stubbingContext) {
+	FunctionSequenceBuilder(typename MethodMockingContext<C, R, arglist...>::MethodMockingContextContext* stubbingContext) :
+			MethodMockingContext<C, R, arglist...>(stubbingContext) {
 	}
 
-	FunctionSequenceBuilder(FunctionSequenceBuilder<C, R, arglist...>&other) :ActionSequenceBuilder<C, R, arglist...>(other){}
-	FunctionSequenceBuilder(FunctionSequenceBuilder<C, R, arglist...>&&other):ActionSequenceBuilder<C, R, arglist...>(other){}
+	FunctionSequenceBuilder(FunctionSequenceBuilder<C, R, arglist...>&other) :MethodMockingContext<C, R, arglist...>(other){}
+	FunctionSequenceBuilder(FunctionSequenceBuilder<C, R, arglist...>&&other):MethodMockingContext<C, R, arglist...>(other){}
 
 	virtual ~FunctionSequenceBuilder() THROWS {
 	}
 
 	void operator=(std::function<R(arglist...)> method) {
-		ActionSequenceBuilder<C, R, arglist...>::setMethodBodyByAssignment(method);
+		MethodMockingContext<C, R, arglist...>::setMethodBodyByAssignment(method);
 	}
 
 	FunctionSequenceBuilder<C, R, arglist...>& setMethodDetails(std::string mockName, std::string methodName) {
-		ActionSequenceBuilder<C, R, arglist...>::setMethodDetails(mockName, methodName);
+		MethodMockingContext<C, R, arglist...>::setMethodDetails(mockName, methodName);
 		return *this;
 	}
 
 	FunctionSequenceBuilder<C, R, arglist...>& Using(const arglist&... args) {
-		ActionSequenceBuilder<C, R, arglist...>::setMatchingCriteria(args...);
+		MethodMockingContext<C, R, arglist...>::setMatchingCriteria(args...);
 		return *this;
 	}
 
 	FunctionSequenceBuilder<C, R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
-		ActionSequenceBuilder<C, R, arglist...>::setMatchingCriteria(matcher);
+		MethodMockingContext<C, R, arglist...>::setMatchingCriteria(matcher);
 		return *this;
 	}
 
 	FunctionSequenceBuilder<C, R, arglist...>& operator()(const arglist&... args) {
-		ActionSequenceBuilder<C, R, arglist...>::setMatchingCriteria(args...);
+		MethodMockingContext<C, R, arglist...>::setMatchingCriteria(args...);
 		return *this;
 	}
 
 	FunctionSequenceBuilder<C, R, arglist...>& operator()(std::function<bool(arglist...)> matcher) {
-		ActionSequenceBuilder<C, R, arglist...>::setMatchingCriteria(matcher);
+		MethodMockingContext<C, R, arglist...>::setMatchingCriteria(matcher);
 		return *this;
 	}
 
 	template<typename U = R>
 	typename std::enable_if<!std::is_reference<U>::value, void>::type operator=(const R& r) {
 		auto method = [r](arglist&...) -> R {return r;};
-		ActionSequenceBuilder<C, R, arglist...>::appendAction(new RepeatForever<R, arglist...>(method));
-		ActionSequenceBuilder<C, R, arglist...>::commit();
+		MethodMockingContext<C, R, arglist...>::appendAction(new RepeatForever<R, arglist...>(method));
+		MethodMockingContext<C, R, arglist...>::commit();
 	}
 
 	template<typename U = R>
 	typename std::enable_if<std::is_reference<U>::value, void>::type operator=(const R& r) {
 		auto method = [&r](arglist&...) -> R {return r;};
-		ActionSequenceBuilder<C, R, arglist...>::appendAction(new RepeatForever<R, arglist...>(method));
-		ActionSequenceBuilder<C, R, arglist...>::commit();
+		MethodMockingContext<C, R, arglist...>::appendAction(new RepeatForever<R, arglist...>(method));
+		MethodMockingContext<C, R, arglist...>::commit();
 	}
 };
 
 template<typename C, typename R, typename ... arglist>
 class ProcedureSequenceBuilder: //
-public virtual ActionSequenceBuilder<C, R, arglist...> {
+public virtual MethodMockingContext<C, R, arglist...> {
 private:
 	ProcedureSequenceBuilder & operator=(const ProcedureSequenceBuilder&) = delete;
 
 protected:
 
 public:
-	ProcedureSequenceBuilder(typename ActionSequenceBuilder<C, R, arglist...>::ActionSequenceBuilderContext* stubbingContext) :
-			ActionSequenceBuilder<C, R, arglist...>(stubbingContext) {
+	ProcedureSequenceBuilder(typename MethodMockingContext<C, R, arglist...>::MethodMockingContextContext* stubbingContext) :
+			MethodMockingContext<C, R, arglist...>(stubbingContext) {
 	}
 
 	virtual ~ProcedureSequenceBuilder() THROWS {
 	}
 
-	ProcedureSequenceBuilder(ProcedureSequenceBuilder<C, R, arglist...>& other):ActionSequenceBuilder<C, R, arglist...>(other){}
-	ProcedureSequenceBuilder(ProcedureSequenceBuilder<C, R, arglist...>&& other):ActionSequenceBuilder<C, R, arglist...>(other){}
+	ProcedureSequenceBuilder(ProcedureSequenceBuilder<C, R, arglist...>& other):MethodMockingContext<C, R, arglist...>(other){}
+	ProcedureSequenceBuilder(ProcedureSequenceBuilder<C, R, arglist...>&& other):MethodMockingContext<C, R, arglist...>(other){}
 
 	void operator=(std::function<R(arglist...)> method) {
-		ActionSequenceBuilder<C, R, arglist...>::setMethodBodyByAssignment(method);
+		MethodMockingContext<C, R, arglist...>::setMethodBodyByAssignment(method);
 	}
 
 	ProcedureSequenceBuilder<C, R, arglist...>& setMethodDetails(std::string mockName, std::string methodName) {
-		ActionSequenceBuilder<C, R, arglist...>::setMethodDetails(mockName, methodName);
+		MethodMockingContext<C, R, arglist...>::setMethodDetails(mockName, methodName);
 		return *this;
 	}
 
 	ProcedureSequenceBuilder<C, R, arglist...>& Using(const arglist&... args) {
-		ActionSequenceBuilder<C, R, arglist...>::setMatchingCriteria(args...);
+		MethodMockingContext<C, R, arglist...>::setMatchingCriteria(args...);
 		return *this;
 	}
 
 	ProcedureSequenceBuilder<C, R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
-		ActionSequenceBuilder<C, R, arglist...>::setMatchingCriteria(matcher);
+		MethodMockingContext<C, R, arglist...>::setMatchingCriteria(matcher);
 		return *this;
 	}
 
 	ProcedureSequenceBuilder<C, R, arglist...>& operator()(const arglist&... args) {
-		ActionSequenceBuilder<C, R, arglist...>::setMatchingCriteria(args...);
+		MethodMockingContext<C, R, arglist...>::setMatchingCriteria(args...);
 		return *this;
 	}
 
 	ProcedureSequenceBuilder<C, R, arglist...>& operator()(std::function<bool(arglist...)> matcher) {
-		ActionSequenceBuilder<C, R, arglist...>::setMatchingCriteria(matcher);
+		MethodMockingContext<C, R, arglist...>::setMatchingCriteria(matcher);
 		return *this;
 	}
 };
