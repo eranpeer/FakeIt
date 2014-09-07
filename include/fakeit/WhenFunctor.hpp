@@ -50,7 +50,7 @@ public:
 		Xaction& _recordedMethodInvocation;
 	};
 
-	template<typename C, typename R, typename ... arglist>
+	template<typename R, typename ... arglist>
 	struct FunctionProgress: public StubbingProgress, public FunctionStubbingProgress<R, arglist...> //
 	{
 		friend class WhenFunctor;
@@ -61,7 +61,7 @@ public:
 				StubbingProgress(other), root(other.root) {
 		}
 
-		FunctionProgress(StubbingContext<C, R, arglist...>& xaction) :
+		FunctionProgress(StubbingContext<R, arglist...>& xaction) :
 				StubbingProgress(xaction), root(xaction) {
 		}
 	protected:
@@ -72,10 +72,10 @@ public:
 		}
 
 	private:
-		StubbingContext<C, R, arglist...> & root;
+		StubbingContext<R, arglist...> & root;
 	};
 
-	template<typename C, typename R, typename ... arglist>
+	template<typename R, typename ... arglist>
 	struct ProcedureProgress: public StubbingProgress, public ProcedureStubbingProgress<R, arglist...> {
 
 		friend class WhenFunctor;
@@ -86,7 +86,7 @@ public:
 				StubbingProgress(other), _root(other._root) {
 		}
 
-		ProcedureProgress(StubbingContext<C, R, arglist...>& xaction) :
+		ProcedureProgress(StubbingContext<R, arglist...>& xaction) :
 				StubbingProgress(xaction), _root(xaction) {
 		}
 
@@ -98,25 +98,25 @@ public:
 		}
 
 	private:
-		StubbingContext<C, R, arglist...>& _root;
+		StubbingContext<R, arglist...>& _root;
 	};
 
 	WhenFunctor() {
 	}
 
-	template<typename C, typename R, typename ... arglist>
-	typename std::enable_if<std::is_void<R>::value, ProcedureProgress<C, R, arglist...>>::type
-	operator()(const StubbingContext<C, R, arglist...>& stubbingContext) {
-		StubbingContext<C, R, arglist...>& rootWithoutConst = const_cast<StubbingContext<C, R, arglist...>&>(stubbingContext);
-		ProcedureProgress<C, R, arglist...> a(rootWithoutConst);
+	template<typename R, typename ... arglist>
+	typename std::enable_if<std::is_void<R>::value, ProcedureProgress<R, arglist...>>::type
+	operator()(const StubbingContext<R, arglist...>& stubbingContext) {
+		StubbingContext<R, arglist...>& rootWithoutConst = const_cast<StubbingContext<R, arglist...>&>(stubbingContext);
+		ProcedureProgress<R, arglist...> a(rootWithoutConst);
 		return a;
 	}
 
-	template<typename C, typename R, typename ... arglist>
-	typename std::enable_if<!std::is_void<R>::value, FunctionProgress<C, R, arglist...>>::type
-	operator()(const StubbingContext<C, R, arglist...>& stubbingContext) {
-		StubbingContext<C, R, arglist...>& rootWithoutConst = const_cast<StubbingContext<C, R, arglist...>&>(stubbingContext);
-		FunctionProgress<C, R, arglist...> a(rootWithoutConst);
+	template<typename R, typename ... arglist>
+	typename std::enable_if<!std::is_void<R>::value, FunctionProgress<R, arglist...>>::type
+	operator()(const StubbingContext<R, arglist...>& stubbingContext) {
+		StubbingContext<R, arglist...>& rootWithoutConst = const_cast<StubbingContext<R, arglist...>&>(stubbingContext);
+		FunctionProgress<R, arglist...> a(rootWithoutConst);
 		return a;
 	}
 

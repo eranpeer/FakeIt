@@ -17,9 +17,9 @@ namespace fakeit {
 class SpyFunctor {
 private:
 
-	template<typename C, typename R, typename ... arglist>
-	void spy(const SpyingContext<C, R, arglist...>& root) {
-		SpyingContext<C, R, arglist...>& rootWithoutConst = const_cast<SpyingContext<C, R, arglist...>&>(root);
+	template<typename R, typename ... arglist>
+	void spy(const SpyingContext<R, arglist...>& root) {
+		SpyingContext<R, arglist...>& rootWithoutConst = const_cast<SpyingContext<R, arglist...>&>(root);
 		auto methodFromOriginalVT = rootWithoutConst.getOriginalMethod();
 		rootWithoutConst.appendAction(new ReturnDelegateValue<R, arglist...>(methodFromOriginalVT));
 		rootWithoutConst.commit();
