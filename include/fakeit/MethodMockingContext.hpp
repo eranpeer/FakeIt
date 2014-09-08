@@ -224,7 +224,7 @@ private:
 	bool _commited;
 };
 
-template<typename C, typename R, typename ... arglist>
+template<typename R, typename ... arglist>
 class FunctionSequenceBuilder: //
 public virtual MethodMockingContext<R, arglist...> //
 {
@@ -239,8 +239,8 @@ public:
 			MethodMockingContext<R, arglist...>(stubbingContext) {
 	}
 
-	FunctionSequenceBuilder(FunctionSequenceBuilder<C, R, arglist...>&other) :MethodMockingContext<R, arglist...>(other){}
-	FunctionSequenceBuilder(FunctionSequenceBuilder<C, R, arglist...>&&other):MethodMockingContext<R, arglist...>(other){}
+	FunctionSequenceBuilder(FunctionSequenceBuilder<R, arglist...>&other) :MethodMockingContext<R, arglist...>(other){}
+	FunctionSequenceBuilder(FunctionSequenceBuilder<R, arglist...>&&other):MethodMockingContext<R, arglist...>(other){}
 
 	virtual ~FunctionSequenceBuilder() THROWS {
 	}
@@ -249,27 +249,27 @@ public:
 		MethodMockingContext<R, arglist...>::setMethodBodyByAssignment(method);
 	}
 
-	FunctionSequenceBuilder<C, R, arglist...>& setMethodDetails(std::string mockName, std::string methodName) {
+	FunctionSequenceBuilder<R, arglist...>& setMethodDetails(std::string mockName, std::string methodName) {
 		MethodMockingContext<R, arglist...>::setMethodDetails(mockName, methodName);
 		return *this;
 	}
 
-	FunctionSequenceBuilder<C, R, arglist...>& Using(const arglist&... args) {
+	FunctionSequenceBuilder<R, arglist...>& Using(const arglist&... args) {
 		MethodMockingContext<R, arglist...>::setMatchingCriteria(args...);
 		return *this;
 	}
 
-	FunctionSequenceBuilder<C, R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
+	FunctionSequenceBuilder<R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
 		MethodMockingContext<R, arglist...>::setMatchingCriteria(matcher);
 		return *this;
 	}
 
-	FunctionSequenceBuilder<C, R, arglist...>& operator()(const arglist&... args) {
+	FunctionSequenceBuilder<R, arglist...>& operator()(const arglist&... args) {
 		MethodMockingContext<R, arglist...>::setMatchingCriteria(args...);
 		return *this;
 	}
 
-	FunctionSequenceBuilder<C, R, arglist...>& operator()(std::function<bool(arglist...)> matcher) {
+	FunctionSequenceBuilder<R, arglist...>& operator()(std::function<bool(arglist...)> matcher) {
 		MethodMockingContext<R, arglist...>::setMatchingCriteria(matcher);
 		return *this;
 	}
@@ -289,7 +289,7 @@ public:
 	}
 };
 
-template<typename C, typename R, typename ... arglist>
+template<typename R, typename ... arglist>
 class ProcedureSequenceBuilder: //
 public virtual MethodMockingContext<R, arglist...> {
 private:
@@ -305,34 +305,34 @@ public:
 	virtual ~ProcedureSequenceBuilder() THROWS {
 	}
 
-	ProcedureSequenceBuilder(ProcedureSequenceBuilder<C, R, arglist...>& other):MethodMockingContext<R, arglist...>(other){}
-	ProcedureSequenceBuilder(ProcedureSequenceBuilder<C, R, arglist...>&& other):MethodMockingContext<R, arglist...>(other){}
+	ProcedureSequenceBuilder(ProcedureSequenceBuilder<R, arglist...>& other):MethodMockingContext<R, arglist...>(other){}
+	ProcedureSequenceBuilder(ProcedureSequenceBuilder<R, arglist...>&& other):MethodMockingContext<R, arglist...>(other){}
 
 	void operator=(std::function<R(arglist...)> method) {
 		MethodMockingContext<R, arglist...>::setMethodBodyByAssignment(method);
 	}
 
-	ProcedureSequenceBuilder<C, R, arglist...>& setMethodDetails(std::string mockName, std::string methodName) {
+	ProcedureSequenceBuilder<R, arglist...>& setMethodDetails(std::string mockName, std::string methodName) {
 		MethodMockingContext<R, arglist...>::setMethodDetails(mockName, methodName);
 		return *this;
 	}
 
-	ProcedureSequenceBuilder<C, R, arglist...>& Using(const arglist&... args) {
+	ProcedureSequenceBuilder<R, arglist...>& Using(const arglist&... args) {
 		MethodMockingContext<R, arglist...>::setMatchingCriteria(args...);
 		return *this;
 	}
 
-	ProcedureSequenceBuilder<C, R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
+	ProcedureSequenceBuilder<R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
 		MethodMockingContext<R, arglist...>::setMatchingCriteria(matcher);
 		return *this;
 	}
 
-	ProcedureSequenceBuilder<C, R, arglist...>& operator()(const arglist&... args) {
+	ProcedureSequenceBuilder<R, arglist...>& operator()(const arglist&... args) {
 		MethodMockingContext<R, arglist...>::setMatchingCriteria(args...);
 		return *this;
 	}
 
-	ProcedureSequenceBuilder<C, R, arglist...>& operator()(std::function<bool(arglist...)> matcher) {
+	ProcedureSequenceBuilder<R, arglist...>& operator()(std::function<bool(arglist...)> matcher) {
 		MethodMockingContext<R, arglist...>::setMatchingCriteria(matcher);
 		return *this;
 	}
