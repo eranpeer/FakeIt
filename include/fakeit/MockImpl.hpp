@@ -77,13 +77,13 @@ public:
 	}
 
 	template<typename R, typename ... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionSequenceBuilder<R, arglist...> stub(R (C::*vMethod)(arglist...)) {
-		return FunctionSequenceBuilder<R, arglist...>(new MethodStubbingContextImpl<R, arglist...>(*this, vMethod));
+	FunctionMockingContext<R, arglist...> stub(R (C::*vMethod)(arglist...)) {
+		return FunctionMockingContext<R, arglist...>(new MethodStubbingContextImpl<R, arglist...>(*this, vMethod));
 	}
 
 	template<typename R, typename ... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureSequenceBuilder<R, arglist...> stub(R (C::*vMethod)(arglist...)) {
-		return ProcedureSequenceBuilder<R, arglist...>(new MethodStubbingContextImpl<R, arglist...>(*this, vMethod));
+	ProcedureMockingContext<R, arglist...> stub(R (C::*vMethod)(arglist...)) {
+		return ProcedureMockingContext<R, arglist...>(new MethodStubbingContextImpl<R, arglist...>(*this, vMethod));
 	}
 
 private:
