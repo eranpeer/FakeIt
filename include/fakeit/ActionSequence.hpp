@@ -29,7 +29,7 @@ namespace fakeit {
 template<typename R, typename ... arglist>
 struct ActionSequence: public MethodInvocationHandler<R, arglist...> {
 
-	ActionSequence(Method & method) : _method(method) {
+	ActionSequence() {
 		clear();
 	}
 
@@ -78,8 +78,6 @@ private:
 			return false;
 		}
 	};
-
-	Method & _method;
 
 	void append(Action<R, arglist...>* action) {
 		std::shared_ptr<Destructable> destructable{action};

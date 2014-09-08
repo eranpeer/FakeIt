@@ -93,18 +93,20 @@ private:
 	FakeitContext& _fakeit;
 
 	template<typename R, typename ... arglist>
-	class MethodStubbingContextImpl: public MethodMockingContext<C, R, arglist...>::MethodMockingContextContext {
+	class MethodStubbingContextImpl: public MethodMockingContext<R, arglist...>::MethodMockingContextContext {
 		MockImpl<C, baseclasses...>& _mock;
 		R (C::*_vMethod)(arglist...);
+
+		RecordedMethodBody<C, R, arglist...>& getRecordedMethodBody() {
+			return _mock.stubMethodIfNotStubbed(_mock._proxy, _vMethod);
+		}
+
 	public:
 
 		MethodStubbingContextImpl(MockImpl<C, baseclasses...>& mock, R (C::*vMethod)(arglist...)) :
 				_mock(mock), _vMethod(vMethod) {
 		}
 
-		virtual RecordedMethodBody<C, R, arglist...>& getRecordedMethodBody() override {
-			return _mock.stubMethodIfNotStubbed(_mock._proxy, _vMethod);
-		}
 
 		virtual void getActualInvocations(std::unordered_set<Invocation*>& into) const override {
 			_mock.getActualInvocations(into);
@@ -119,15 +121,26 @@ private:
 			};
 		}
 
-		virtual MockObject<C>& getMock() override {
-			return _mock;
+		std::string getMethodName(){
+			return getRecordedMethodBody().getMethod().name();
 		}
 
-		virtual C& getMockInstance() {
-			return _mock.get();
+		void addMethodInvocationHandler(typename ActualInvocation<arglist...>::Matcher* matcher,
+					MethodInvocationHandler<R, arglist...>* invocationHandler){
+			getRecordedMethodBody().addMethodInvocationHandler(matcher, invocationHandler);
 		}
 
+		void scanActualInvocations(const std::function<void(ActualInvocation<arglist...>&)>& scanner) {
+			getRecordedMethodBody().scanActualInvocations(scanner);
+		}
 
+		void setMethodDetails(std::string mockName,std::string methodName){
+			getRecordedMethodBody().setMethodDetails(mockName, methodName);
+		}
+
+		bool isOfMethod(Method& method){
+			return getRecordedMethodBody().isOfMethod(method);
+		}
 	};
 
 	static MockImpl<C, baseclasses...>* getMockImpl(void * instance) {
