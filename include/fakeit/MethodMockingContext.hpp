@@ -27,11 +27,6 @@
 
 namespace fakeit {
 
-enum class ProgressType {
-	NONE, STUBBING, VERIFYING
-};
-
-
 struct Xaction {
 	virtual void commit() = 0;
 };
