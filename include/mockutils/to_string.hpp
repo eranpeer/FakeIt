@@ -23,7 +23,7 @@ namespace fakeit{
         return stm.str() ;
     }
 
-    template <> std::string to_string<double>( const double& n )
+	static std::string to_string(const double& n)
     {
         std::ostringstream stm ;
         stm <<std::setprecision(6) << std::setiosflags(std::ios::fixed) <<n ;
