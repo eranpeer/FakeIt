@@ -17,6 +17,7 @@
 #include "tpunit++.hpp"
 #include "fakeit.hpp"
 #include "mockutils/Formatter.hpp"
+#include "mockutils/to_string.hpp"
 
 using namespace fakeit;
 
@@ -41,11 +42,11 @@ struct MscTypeInfoTests : tpunit::TestFixture {
 	template <typename C, typename... baseclasses>
 	std::string to_string(struct RTTIClassHierarchyDescriptor<C, baseclasses...>* pClassDescriptor){
 		std::string result;
-		result += "RTTIClassHierarchyDescriptor {\nnumBaseClasses:" + std::to_string(pClassDescriptor->numBaseClasses);
+		result += "RTTIClassHierarchyDescriptor {\nnumBaseClasses:" + fakeit::to_string(pClassDescriptor->numBaseClasses);
 		for (unsigned long i = 0; i < pClassDescriptor->numBaseClasses; i++){
 			RTTIBaseClassDescriptor * baseClassDesc = pClassDescriptor->pBaseClassArray[i];
 			result += "\n";
-			result += "RTTIBaseClassDescriptor {numContainedBases:" + std::to_string(baseClassDesc->numContainedBases) + "}";
+			result += "RTTIBaseClassDescriptor {numContainedBases:" + fakeit::to_string(baseClassDesc->numContainedBases) + "}";
 		}
 		return result;
 	}

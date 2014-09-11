@@ -12,6 +12,7 @@
 #include <ostream>
 #include <type_traits>
 #include <string>
+#include "mockutils/to_string.hpp"
 
 namespace fakeit {
 
@@ -36,55 +37,55 @@ template<> struct Formatter<bool> {
 
 template<> struct Formatter<int> {
 	static std::string format(const int& val) {
-		return std::to_string(val);
+		return fakeit::to_string(val);
 	}
 };
 
 template<> struct Formatter<unsigned int> {
 	static std::string format(const unsigned int& val) {
-		return std::to_string(val);
+		return fakeit::to_string(val);
 	}
 };
 
 template<> struct Formatter<long> {
 	static std::string format(const long& val) {
-		return std::to_string(val);
+		return fakeit::to_string(val);
 	}
 };
 
 template<> struct Formatter<unsigned long> {
 	static std::string format(const unsigned long& val) {
-		return std::to_string(val);
+		return fakeit::to_string(val);
 	}
 };
 
 template<> struct Formatter<long long> {
 	static std::string format(const long long& val) {
-		return std::to_string(val);
+		return fakeit::to_string(val);
 	}
 };
 
 template<> struct Formatter<unsigned long long> {
 	static std::string format(const unsigned long long& val) {
-		return std::to_string(val);
+		return fakeit::to_string(val);
 	}
 };
 
 template<> struct Formatter<long double> {
 	static std::string format(const long double& val) {
-		return std::to_string(val);
+		return fakeit::to_string(val);
 	}
 };
 
 template<> struct Formatter<double> {
 	static std::string format(const double& val) {
-		return std::to_string(val);
+		return fakeit::to_string(val);
 	}
 };
 
 template<> struct Formatter<float> {
 	static std::string format(const float& val) {
-		return std::to_string(val);
+		return fakeit::to_string(val);
 	}
 };
 
