@@ -13,14 +13,24 @@
 
 #include <string>
 #include <sstream>
+#include <iomanip>
 
 namespace fakeit{
-    template < typename T > std::string to_string( const T& n )
+    template < typename T > static std::string to_string( const T& n )
     {
         std::ostringstream stm ;
         stm << n ;
         return stm.str() ;
     }
+
+    template <> std::string to_string<double>( const double& n )
+    {
+        std::ostringstream stm ;
+        stm <<std::setprecision(6) << std::setiosflags(std::ios::fixed) <<n ;
+        std::string rv{stm.str()};
+        return rv;
+    }
+
 }
 
 #endif /* TO_STRING_HPP_ */

@@ -71,14 +71,14 @@ template<> struct Formatter<unsigned long long> {
 	}
 };
 
-template<> struct Formatter<long double> {
-	static std::string format(const long double& val) {
+template<> struct Formatter<double> {
+	static std::string format(const double& val) {
 		return fakeit::to_string(val);
 	}
 };
 
-template<> struct Formatter<double> {
-	static std::string format(const double& val) {
+template<> struct Formatter<long double> {
+	static std::string format(const long double& val) {
 		return fakeit::to_string(val);
 	}
 };
