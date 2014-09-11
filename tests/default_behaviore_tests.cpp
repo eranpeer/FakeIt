@@ -16,16 +16,17 @@
 using namespace fakeit;
 
 struct DefaultBehavioreTests: tpunit::TestFixture {
-	DefaultBehavioreTests() :
-			tpunit::TestFixture(
-			//
+	DefaultBehavioreTests()
+			: tpunit::TestFixture(
+					//
+					TEST(DefaultBehavioreTests::testPassMockByRef),
 					TEST(DefaultBehavioreTests::scalar_types_should_return_zero), //
 					TEST(DefaultBehavioreTests::DefaultBeaviorOfVoidFunctionsIsToDoNothing), //
 					TEST(DefaultBehavioreTests::ReturnByValue_ReturnDefaultConstructedObject), //
 					TEST(DefaultBehavioreTests::ReturnByValue_ThrowExceptionIfNotDefaultConstructible), //
 					TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToNullIfAbstract), //
 					TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToDefaultConstructedObject), //
-					TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToNullIfNotDefaultConstructible),//
+					TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToNullIfNotDefaultConstructible), //
 					TEST(DefaultBehavioreTests::ReturnPtr_NullPtrIfPtrToAbstract),
 					TEST(DefaultBehavioreTests::canMockClassWithoutDefaultConstructor),
 					TEST(DefaultBehavioreTests::canMockClassWithProtectedConstructor),
@@ -67,8 +68,8 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 	};
 
 	struct NotDefaultConstructible {
-		NotDefaultConstructible(int a) :
-				a(a) {
+		NotDefaultConstructible(int a)
+				: a(a) {
 		}
 		bool operator==(const NotDefaultConstructible &other) const {
 			return a == other.a;
@@ -137,14 +138,12 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 		ASSERT_EQUAL(0, union_cast<int>(i.pMemberFunc()));
 	}
 
-	struct VoidFunctions
-	{
+	struct VoidFunctions {
 		virtual void proc1() = 0;
 		virtual void proc2(int a) = 0;
 	};
 
-	void DefaultBeaviorOfVoidFunctionsIsToDoNothing()
-	{
+	void DefaultBeaviorOfVoidFunctionsIsToDoNothing() {
 		Mock<VoidFunctions> mock;
 		Fake(Method(mock,proc1));
 		Fake(Method(mock,proc2));
@@ -175,10 +174,11 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 		NonDefaultConstructibleFunctions& i = mock.get();
 		try {
 			i.notDefaultConstructibleFunc();
-			FAIL();
-		} catch (fakeit::DefaultValueInstatiationException& e){
-			auto expected = std::string("Type ") +std::string(typeid(NotDefaultConstructible).name())
-			+ std::string(" is not default constructible. Could not instantiate a default return value");
+			FAIL()
+			;
+		} catch (fakeit::DefaultValueInstatiationException& e) {
+			auto expected = std::string("Type ") + std::string(typeid(NotDefaultConstructible).name())
+					+ std::string(" is not default constructible. Could not instantiate a default return value");
 			std::string actual(e.what());
 			ASSERT_EQUAL(expected, actual);
 		}
@@ -207,7 +207,8 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 
 	void canMockClassWithoutDefaultConstructor() {
 		struct SomeClass {
-			SomeClass(int){}
+			SomeClass(int) {
+			}
 			virtual void foo() = 0;
 		};
 		Mock<SomeClass> mock;
@@ -218,16 +219,33 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 		struct SomeClass {
 			virtual void foo() = 0;
 		protected:
-			SomeClass(int){}
+			SomeClass(int) {
+			}
 		};
 		Mock<SomeClass> mock;
 		Fake(Method(mock,foo));
 	}
 
-	void createAndDeleteFakitInstatnce(){
+	void createAndDeleteFakitInstatnce() {
 		{
 			DefaultFakeit df;
 		}
+	}
+
+	struct Change {
+		virtual void change(uint8_t r, uint8_t g, uint8_t b) =0;
+	};
+
+	void assertChanged(Mock<Change>& mock, uint8_t v1, uint8_t v2, uint8_t v3) {
+		Verify(Method(mock, change).Using(v1,v2,v3));
+	}
+
+	void testPassMockByRef() {
+		Mock<Change> mock;
+		Change* change = &mock.get();
+		When(Method(mock, change)).AlwaysReturn();
+		change->change(1, 2, 3);
+		assertChanged(mock, 1, 2, 3);
 	}
 
 } __DefaultBehaviore;

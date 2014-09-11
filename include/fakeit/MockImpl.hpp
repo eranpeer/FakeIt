@@ -93,7 +93,7 @@ private:
 	FakeitContext& _fakeit;
 
 	template<typename R, typename ... arglist>
-	class MethodStubbingContextImpl: public MethodMockingContext<R, arglist...>::MethodMockingContextContext {
+	class MethodStubbingContextImpl: public MethodMockingContext<R, arglist...>::Context {
 		MockImpl<C, baseclasses...>& _mock;
 		R (C::*_vMethod)(arglist...);
 

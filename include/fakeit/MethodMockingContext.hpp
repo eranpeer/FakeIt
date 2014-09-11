@@ -62,10 +62,10 @@ class MethodMockingContext: //
 
 public:
 
-	struct MethodMockingContextContext: public ActualInvocationsSource, public Destructable {
+	struct Context: public ActualInvocationsSource, public Destructable {
 
 
-		virtual ~MethodMockingContextContext() = default;
+		virtual ~Context() = default;
 
 		/**
 		 * Return the original method. not the mock.
@@ -86,7 +86,7 @@ public:
 
 protected:
 
-	MethodMockingContext(MethodMockingContextContext* stubbingContext) :
+	MethodMockingContext(Context* stubbingContext) :
 	_stubbingContext(stubbingContext), _invocationMatcher {new DefaultInvocationMatcher<arglist...>()}, _expectedInvocationCount(-1), _commited(false) {
 		_recordedActionSequence = new ActionSequence<R, arglist...>();
 	}
@@ -149,9 +149,9 @@ protected:
 		getStubbingContext().scanActualInvocations(scanner);
 	}
 
-	MethodMockingContextContext& getStubbingContext() const {
+	Context& getStubbingContext() const {
 		Destructable& destructable = *_stubbingContext;
-		MethodMockingContextContext& rv = dynamic_cast<MethodMockingContextContext&>(destructable);
+		Context& rv = dynamic_cast<Context&>(destructable);
 		return rv;
 	}
 
@@ -230,7 +230,7 @@ protected:
 
 public:
 
-	FunctionMockingContext(typename MethodMockingContext<R, arglist...>::MethodMockingContextContext* stubbingContext) :
+	FunctionMockingContext(typename MethodMockingContext<R, arglist...>::Context* stubbingContext) :
 			MethodMockingContext<R, arglist...>(stubbingContext) {
 	}
 
@@ -293,7 +293,7 @@ private:
 protected:
 
 public:
-	ProcedureMockingContext(typename MethodMockingContext<R, arglist...>::MethodMockingContextContext* stubbingContext) :
+	ProcedureMockingContext(typename MethodMockingContext<R, arglist...>::Context* stubbingContext) :
 			MethodMockingContext<R, arglist...>(stubbingContext) {
 	}
 
