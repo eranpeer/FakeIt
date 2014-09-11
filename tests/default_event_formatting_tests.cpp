@@ -28,7 +28,8 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 			TEST(DefaultEventFormatting::format_Atleast_Once),
 			TEST(DefaultEventFormatting::format_NoMoreInvocations_VerificationFailure),
 			TEST(DefaultEventFormatting::format_UserDefinedMatcher_in_expected_pattern),
-			TEST(DefaultEventFormatting::format_actual_arguments)
+			TEST(DefaultEventFormatting::format_actual_arguments),
+			TEST(DefaultEventFormatting::format_expected_arguments)
 			) //
 	{
 	}
@@ -50,10 +51,12 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 			unsigned int, 
 			long, 
 			unsigned long, 
-			long long, 
-			unsigned long long, 
-			double, 
-			long double) = 0;
+			double
+			//,
+			//long long, 
+			//unsigned long long, 
+			//long double
+			) = 0;
 	};
 
 	void format_UnmockedMethodCallEvent() {
@@ -191,7 +194,7 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 		When(Method(mock, all_types)).Return(0);
 		//SomeInterface &i = mock.get();
 		try {
-			mock().all_types('a', true, 1, 1, 1, 1, 1, 1, 1, 1);
+			mock().all_types('a', true, 1, 1, 1, 1, 1);
 			fakeit::Verify(Method(mock, all_types)) //
 				.setFileInfo("test file",1,"test method").Exactly(2);
 			FAIL();
@@ -205,7 +208,7 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 			expectedMsg += "Actual matches  : 1\n";
 			expectedMsg += "Actual sequence : total of 1 actual invocations:\n";
 			//expectedMsg += "  mock.all_types(?, true, 1, 1, 1, 1, 1, 1, 1.000000, 1.000000)";
-			expectedMsg += "  mock.all_types(?, true, 1, 1, 1, 1, 1, 1, 1, 1)";
+			expectedMsg += "  mock.all_types(?, true, 1, 1, 1, 1, 1)";
 
 			std::string actualMsg {to_string(e)};
 			std::cout << actualMsg;
@@ -214,12 +217,12 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 		}
 	}
 
-	void parse_expected_arguments() {
+	void format_expected_arguments() {
 		Mock<SomeInterface> mock;
 		When(Method(mock, all_types)).Return(0);
 		//SomeInterface &i = mock.get();
 		try {
-			fakeit::Verify(Method(mock, all_types).Using('a', true, 1, 1, 1, 1, 1, 1, 1, 1))//
+			fakeit::Verify(Method(mock, all_types).Using('a', true, 1, 1, 1, 1, 1))//
 				.setFileInfo("test file", 1, "test method").Exactly(2);
 			FAIL();
 		}
@@ -227,7 +230,8 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 		{
 			std::string expectedMsg;
 			expectedMsg += "test file:1: Verification error\n";
-			expectedMsg += "Expected pattern: mock.all_types( 'a', true, 1, 1, 1, 1, 1, 1, 1.0, 1.0 )\n";
+			//expectedMsg += "Expected pattern: mock.all_types('a', true, 1, 1, 1, 1, 1)\n";
+			expectedMsg += "Expected pattern: mock.all_types(?, true, 1, 1, 1, 1, 1)\n";
 			expectedMsg += "Expected matches: exactly 2\n";
 			expectedMsg += "Actual matches  : 0\n";
 			expectedMsg += "Actual sequence : total of 0 actual invocations.";
