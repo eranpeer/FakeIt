@@ -24,24 +24,6 @@ namespace fakeit {
         return stm.str() ;
     }
 
-	/*
-	static std::string to_string(const double& n)
-    {
-        std::ostringstream stm ;
-        stm <<std::setprecision(6) << std::setiosflags(std::ios::fixed) <<n ;
-        std::string rv{stm.str()};
-        return rv;
-    }
-	*/
-	/*
-	static std::string to_string(const long double& n)
-	{
-		std::ostringstream stm;
-		stm << std::setprecision(6) << std::setiosflags(std::ios::fixed) << n;
-		std::string rv{ stm.str() };
-		return rv;
-	}
-	*/
 }
 
 #endif /* TO_STRING_HPP_ */
