@@ -16,19 +16,13 @@
 #include <iomanip>
 
 namespace fakeit{
+
+	// Define to_string since MinGW32 does not support std::to_string
     template < typename T > static std::string to_string( const T& n )
     {
         std::ostringstream stm ;
         stm << n ;
         return stm.str() ;
-    }
-
-	static std::string to_string(const double& n)
-    {
-        std::ostringstream stm ;
-        stm <<std::setprecision(6) << std::setiosflags(std::ios::fixed) <<n ;
-        std::string rv{stm.str()};
-        return rv;
     }
 
 }
