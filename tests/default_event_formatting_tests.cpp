@@ -51,11 +51,10 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 			unsigned int, 
 			long, 
 			unsigned long, 
-			double
-			//,
 			//long long, 
 			//unsigned long long, 
-			//long double
+			double,
+			long double
 			) = 0;
 	};
 
@@ -194,7 +193,7 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 		When(Method(mock, all_types)).Return(0);
 		//SomeInterface &i = mock.get();
 		try {
-			mock().all_types('a', true, 1, 1, 1, 1, 1);
+			mock().all_types('a', true, 1, 1, 1, 1, 0, 0);
 			fakeit::Verify(Method(mock, all_types)) //
 				.setFileInfo("test file",1,"test method").Exactly(2);
 			FAIL();
@@ -208,7 +207,7 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 			expectedMsg += "Actual matches  : 1\n";
 			expectedMsg += "Actual sequence : total of 1 actual invocations:\n";
 			//expectedMsg += "  mock.all_types(?, true, 1, 1, 1, 1, 1, 1, 1.000000, 1.000000)";
-			expectedMsg += "  mock.all_types(?, true, 1, 1, 1, 1, 1.000000)";
+			expectedMsg += "  mock.all_types(?, true, 1, 1, 1, 1, 0, 0)";
 
 			std::string actualMsg {to_string(e)};
 			std::cout << actualMsg;
@@ -222,7 +221,7 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 		When(Method(mock, all_types)).Return(0);
 		//SomeInterface &i = mock.get();
 		try {
-			fakeit::Verify(Method(mock, all_types).Using('a', true, 1, 1, 1, 1, 1))//
+			fakeit::Verify(Method(mock, all_types).Using('a', true, 1, 1, 1, 1, 0, 0))//
 				.setFileInfo("test file", 1, "test method").Exactly(2);
 			FAIL();
 		}
@@ -231,7 +230,7 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 			std::string expectedMsg;
 			expectedMsg += "test file:1: Verification error\n";
 			//expectedMsg += "Expected pattern: mock.all_types('a', true, 1, 1, 1, 1, 1.000000)\n";
-			expectedMsg += "Expected pattern: mock.all_types(?, true, 1, 1, 1, 1, 1.000000)\n";
+			expectedMsg += "Expected pattern: mock.all_types(?, true, 1, 1, 1, 1, 0, 0)\n";
 			expectedMsg += "Expected matches: exactly 2\n";
 			expectedMsg += "Actual matches  : 0\n";
 			expectedMsg += "Actual sequence : total of 0 actual invocations.";
