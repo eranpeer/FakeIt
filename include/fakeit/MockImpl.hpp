@@ -108,8 +108,8 @@ private:
 		}
 
 
-		virtual void getActualInvocations(std::unordered_set<Invocation*>& into) const override {
-			_mock.getActualInvocations(into);
+		ActualInvocationsSource& getInvolvedMock(){
+			return _mock;
 		}
 
 		virtual std::function<R(arglist&...)> getOriginalMethod() override {

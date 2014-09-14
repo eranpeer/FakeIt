@@ -18,10 +18,10 @@ namespace fakeit {
 		friend class VerifyFunctor;
 		friend class UsingProgress;
 
-		smart_ptr<SequenceVerificationExpectation> ptr;
+		smart_ptr<SequenceVerificationExpectation> _expectationPtr;
 		//std::shared_ptr<SequenceVerificationExpectation> ptr;
 
-		SequenceVerificationProgress(SequenceVerificationExpectation * ptr) :ptr(ptr){
+		SequenceVerificationProgress(SequenceVerificationExpectation * ptr) :_expectationPtr(ptr){
 		}
 
 		SequenceVerificationProgress(
@@ -32,53 +32,53 @@ namespace fakeit {
 		}
 
 		virtual void verifyInvocations(const int times) {
-			ptr->setExpectedCount(times);
+			_expectationPtr->setExpectedCount(times);
 		}
 
 	public:
 
-		virtual ~SequenceVerificationProgress() THROWS{};
+		~SequenceVerificationProgress() THROWS{};
 
 		void Never() {
 			Exactly(0);
 		}
 
-		virtual void Once() {
+		void Once() {
 			Exactly(1);
 		}
 
-		virtual void Twice() {
+		void Twice() {
 			Exactly(2);
 		}
 
-		virtual void AtLeastOnce() {
+		void AtLeastOnce() {
 			verifyInvocations(-1);
 		}
 
-		virtual void Exactly(const int times) {
+		void Exactly(const int times) {
 			if (times < 0) {
 				throw std::invalid_argument(std::string("bad argument times:").append(fakeit::to_string(times)));
 			}
 			verifyInvocations(times);
 		}
 
-		virtual void Exactly(const Quantity & q) {
+		void Exactly(const Quantity & q) {
 			Exactly(q.quantity);
 		}
 
-		virtual void AtLeast(const int times) {
+		void AtLeast(const int times) {
 			if (times < 0) {
 				throw std::invalid_argument(std::string("bad argument times:").append(fakeit::to_string(times)));
 			}
 			verifyInvocations(-times);
 		}
 
-		virtual void AtLeast(const Quantity & q) {
+		void AtLeast(const Quantity & q) {
 			AtLeast(q.quantity);
 		}
 
 		SequenceVerificationProgress setFileInfo(std::string file, int line, std::string callingMethod) {
-			ptr->setFileInfo(file, line, callingMethod);
+			_expectationPtr->setFileInfo(file, line, callingMethod);
 			return *this;
 		}
 	};

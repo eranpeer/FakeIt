@@ -53,10 +53,6 @@ public:
 
 		UsingProgress usingProgress(_fakeit, invlovedMocks);
 		return usingProgress.Verify(sequence, tail... );
-
-		//SequenceVerificationProgress progress(_fakeit, invlovedMocks, allSequences);
-		//progress.Verify(sequence, tail...);
-		//return progress;
 	}
 
 };

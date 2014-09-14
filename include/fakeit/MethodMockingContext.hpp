@@ -62,7 +62,7 @@ class MethodMockingContext: //
 
 public:
 
-	struct Context: public ActualInvocationsSource, public Destructable {
+	struct Context: public Destructable {
 
 
 		virtual ~Context() = default;
@@ -82,6 +82,8 @@ public:
 		virtual void setMethodDetails(std::string mockName,std::string methodName) = 0;
 
 		virtual bool isOfMethod(Method& method) =  0;
+
+		virtual ActualInvocationsSource& getInvolvedMock() = 0;
 	};
 
 protected:
@@ -128,7 +130,7 @@ protected:
 	 * Used only by Verify phrase.
 	 */
 	void getInvolvedMocks(std::set<const ActualInvocationsSource*>& into) const override {
-		into.insert(&getStubbingContext());
+		into.insert(&getStubbingContext().getInvolvedMock());
 	}
 
 	void getExpectedSequence(std::vector<Invocation::Matcher*>& into) const override {
@@ -223,10 +225,7 @@ template<typename R, typename ... arglist>
 class FunctionMockingContext: //
 public virtual MethodMockingContext<R, arglist...> //
 {
-private:
 	FunctionMockingContext & operator=(const FunctionMockingContext&) = delete;
-
-protected:
 
 public:
 
@@ -287,10 +286,8 @@ public:
 template<typename R, typename ... arglist>
 class ProcedureMockingContext: //
 public virtual MethodMockingContext<R, arglist...> {
-private:
-	ProcedureMockingContext & operator=(const ProcedureMockingContext&) = delete;
 
-protected:
+	ProcedureMockingContext & operator=(const ProcedureMockingContext&) = delete;
 
 public:
 	ProcedureMockingContext(typename MethodMockingContext<R, arglist...>::Context* stubbingContext) :
