@@ -60,6 +60,7 @@ class MethodMockingContext: //
 		public virtual SpyingContext<R, arglist...>, // For use in Fake, Spy & When phrases
 		private Invocation::Matcher {
 
+
 public:
 
 	struct Context: public Destructable {
@@ -86,40 +87,130 @@ public:
 		virtual ActualInvocationsSource& getInvolvedMock() = 0;
 	};
 
+private:
+	class Implementation {
+
+		Context* _stubbingContext;
+		ActionSequence<R, arglist...>* _recordedActionSequence;
+		typename ActualInvocation<arglist...>::Matcher* _invocationMatcher;
+		bool _commited;
+
+		Context& getStubbingContext() const {
+			return *_stubbingContext;
+		}
+
+	public:
+
+		Implementation(Context* stubbingContext):
+			_stubbingContext(stubbingContext),
+			_recordedActionSequence(new ActionSequence<R, arglist...>()),
+			_invocationMatcher {new DefaultInvocationMatcher<arglist...>()},
+			_commited(false)
+			{}
+
+		~Implementation(){
+			delete _stubbingContext;
+			if (!_commited) {
+				// no commit. delete the created objects.
+				delete _recordedActionSequence;
+				delete _invocationMatcher;
+			}
+		}
+
+		ActionSequence<R, arglist...>& getRecordedActionSequence(){
+			return *_recordedActionSequence;
+		}
+
+		std::string format() const {
+			std::string s = getStubbingContext().getMethodName();
+			s += _invocationMatcher->format();
+			return s;
+		}
+
+		void getActualInvocations(std::unordered_set<Invocation*>& into) const {
+			auto scanner = [&](ActualInvocation<arglist...>& a){
+				if (_invocationMatcher->matches(a)){
+					into.insert(&a);
+				}
+			};
+			getStubbingContext().scanActualInvocations(scanner);
+		}
+
+		/**
+		 * Used only by Verify phrase.
+		 */
+		bool matches(Invocation& invocation) {
+			Method& actualMethod = invocation.getMethod();
+			if (!getStubbingContext().isOfMethod(actualMethod)) {
+				return false;
+			}
+
+			ActualInvocation<arglist...>& actualInvocation = dynamic_cast<ActualInvocation<arglist...>&>(invocation);
+			return _invocationMatcher->matches(actualInvocation);
+		}
+
+		void commit() {
+			getStubbingContext().addMethodInvocationHandler(_invocationMatcher, _recordedActionSequence);
+			_commited = true;
+		}
+
+		void appendAction(Action<R, arglist...>* action) {
+			getRecordedActionSequence().AppendDo(action);
+		}
+
+		void setMethodBodyByAssignment(std::function<R(arglist...)> method) {
+			appendAction(new RepeatForever<R, arglist...>(method));
+			commit();
+		}
+
+
+		void setMethodDetails(std::string mockName,std::string methodName) {
+			getStubbingContext().setMethodDetails(mockName,methodName);
+		}
+
+		void setMatchingCriteria(const arglist&... args) {
+			typename ActualInvocation<arglist...>::Matcher* matcher {
+				new ExpectedArgumentsInvocationMatcher<arglist...>(args...)};
+			setInvocationMatcher(matcher);
+		}
+
+		void setMatchingCriteria(std::function<bool(arglist...)> predicate) {
+			typename ActualInvocation<arglist...>::Matcher* matcher {
+				new UserDefinedInvocationMatcher<arglist...>(predicate)};
+			setInvocationMatcher(matcher);
+		}
+
+		void getInvolvedMocks(std::set<const ActualInvocationsSource*>& into) const {
+			into.insert(&getStubbingContext().getInvolvedMock());
+		}
+
+		typename std::function<R(arglist&...)> getOriginalMethod() {
+			return getStubbingContext().getOriginalMethod();
+		}
+
+		void setInvocationMatcher(typename ActualInvocation<arglist...>::Matcher* matcher) {
+			delete _invocationMatcher;
+			_invocationMatcher = matcher;
+		}
+	};
+
 protected:
 
 	MethodMockingContext(Context* stubbingContext) :
-	_stubbingContext(stubbingContext), _invocationMatcher {new DefaultInvocationMatcher<arglist...>()}, _expectedInvocationCount(-1), _commited(false) {
-		_recordedActionSequence = new ActionSequence<R, arglist...>();
+		_impl{new Implementation(stubbingContext)}
+	{
 	}
 
 	//Move ctor for use by derived classes.
 	MethodMockingContext(MethodMockingContext& other) :
-		_stubbingContext(other._stubbingContext),
-		_invocationMatcher {other._invocationMatcher},
-		_recordedActionSequence(other._recordedActionSequence),
-		_expectedInvocationCount(other._expectedInvocationCount),
-		_commited(other._commited)
+		_impl(other._impl)
 	{
-		other._recordedActionSequence = nullptr;
-		other._invocationMatcher = nullptr;
-		other._commited = true; // avoid delete by other
 	}
 
-
-	virtual ~MethodMockingContext() {
-		// committed objects will be deleted by the context.
-		if (!_commited) {
-			// no commit. delete the created objects.
-			delete _invocationMatcher;
-			delete _recordedActionSequence;
-		}
-	}
+	virtual ~MethodMockingContext() = default;
 
 	std::string format() const {
-		std::string s = getStubbingContext().getMethodName();
-		s += _invocationMatcher->format();
-		return s;
+		return _impl->format();
 	}
 
 	unsigned int size() const override {
@@ -130,7 +221,7 @@ protected:
 	 * Used only by Verify phrase.
 	 */
 	void getInvolvedMocks(std::set<const ActualInvocationsSource*>& into) const override {
-		into.insert(&getStubbingContext().getInvolvedMock());
+		_impl->getInvolvedMocks(into);
 	}
 
 	void getExpectedSequence(std::vector<Invocation::Matcher*>& into) const override {
@@ -143,82 +234,50 @@ protected:
 	 * Used only by Verify phrase.
 	 */
 	void getActualInvocations(std::unordered_set<Invocation*>& into) const override {
-		auto scanner = [&](ActualInvocation<arglist...>& a){
-			if (_invocationMatcher->matches(a)){
-				into.insert(&a);
-			}
-		};
-		getStubbingContext().scanActualInvocations(scanner);
-	}
-
-	Context& getStubbingContext() const {
-		Destructable& destructable = *_stubbingContext;
-		Context& rv = dynamic_cast<Context&>(destructable);
-		return rv;
+		_impl->getActualInvocations(into);
 	}
 
 	/**
 	 * Used only by Verify phrase.
 	 */
 	virtual bool matches(Invocation& invocation) override {
-		Method& actualMethod = invocation.getMethod();
-		if (!getStubbingContext().isOfMethod(actualMethod)) {
-			return false;
-		}
-
-		ActualInvocation<arglist...>& actualInvocation = dynamic_cast<ActualInvocation<arglist...>&>(invocation);
-		return _invocationMatcher->matches(actualInvocation);
+		return _impl->matches(invocation);
 	}
 
 	virtual void commit() override {
-		getStubbingContext().addMethodInvocationHandler(_invocationMatcher, _recordedActionSequence);
-		_commited = true;
+		_impl->commit();
 	}
 
 	void setMethodDetails(std::string mockName,std::string methodName) {
-		getStubbingContext().setMethodDetails(mockName,methodName);
+		_impl->setMethodDetails(mockName,methodName);
 	}
 
 	void setMatchingCriteria(const arglist&... args) {
-		typename ActualInvocation<arglist...>::Matcher* matcher {
-			new ExpectedArgumentsInvocationMatcher<arglist...>(args...)};
-		setInvocationMatcher(matcher);
+		_impl->setMatchingCriteria(args...);
 	}
 
 	void setMatchingCriteria(std::function<bool(arglist...)> predicate) {
-		typename ActualInvocation<arglist...>::Matcher* matcher {
-			new UserDefinedInvocationMatcher<arglist...>(predicate)};
-		setInvocationMatcher(matcher);
+		_impl->setMatchingCriteria(predicate);
 	}
 
 	/**
 	 * Used by Fake, Spy & When functors
 	 */
 	void appendAction(Action<R, arglist...>* action) override {
-		_recordedActionSequence->AppendDo(action);
+		_impl->appendAction(action);
 	}
 
 	void setMethodBodyByAssignment(std::function<R(arglist...)> method) {
-		appendAction(new RepeatForever<R, arglist...>(method));
-		commit();
+		_impl->setMethodBodyByAssignment(method);
 	}
 
 private:
 
-	typename std::function<R(arglist&...)> getOriginalMethod() {
-		return getStubbingContext().getOriginalMethod();
+	typename std::function<R(arglist&...)> getOriginalMethod() override {
+		return _impl->getOriginalMethod();
 	}
 
-	void setInvocationMatcher(typename ActualInvocation<arglist...>::Matcher* matcher) {
-		delete _invocationMatcher;
-		_invocationMatcher = matcher;
-	}
-
-	std::shared_ptr<Destructable> _stubbingContext;
-	typename ActualInvocation<arglist...>::Matcher* _invocationMatcher;
-	ActionSequence<R, arglist...>* _recordedActionSequence;
-	int _expectedInvocationCount;
-	bool _commited;
+	std::shared_ptr<Implementation> _impl;
 };
 
 template<typename R, typename ... arglist>

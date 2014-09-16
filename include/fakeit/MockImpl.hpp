@@ -107,7 +107,6 @@ private:
 				_mock(mock), _vMethod(vMethod) {
 		}
 
-
 		ActualInvocationsSource& getInvolvedMock(){
 			return _mock;
 		}
