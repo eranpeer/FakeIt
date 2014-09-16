@@ -19,7 +19,6 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 	DefaultBehavioreTests()
 			: tpunit::TestFixture(
 					//
-					TEST(DefaultBehavioreTests::testPassMockByRef),
 					TEST(DefaultBehavioreTests::scalar_types_should_return_zero), //
 					TEST(DefaultBehavioreTests::DefaultBeaviorOfVoidFunctionsIsToDoNothing), //
 					TEST(DefaultBehavioreTests::ReturnByValue_ReturnDefaultConstructedObject), //
@@ -27,11 +26,7 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 					TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToNullIfAbstract), //
 					TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToDefaultConstructedObject), //
 					TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToNullIfNotDefaultConstructible), //
-					TEST(DefaultBehavioreTests::ReturnPtr_NullPtrIfPtrToAbstract),
-					TEST(DefaultBehavioreTests::canMockClassWithoutDefaultConstructor),
-					TEST(DefaultBehavioreTests::canMockClassWithProtectedConstructor),
-					TEST(DefaultBehavioreTests::createAndDeleteFakitInstatnce)
-					//
+					TEST(DefaultBehavioreTests::ReturnPtr_NullPtrIfPtrToAbstract)
 							) {
 	}
 
@@ -203,49 +198,6 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 		Fake(Method(mock,abstractTypeFunc2));
 		ReferenceFunctions& i = mock.get();
 		ASSERT_EQUAL(nullptr, i.abstractTypeFunc2());
-	}
-
-	void canMockClassWithoutDefaultConstructor() {
-		struct SomeClass {
-			SomeClass(int) {
-			}
-			virtual void foo() = 0;
-		};
-		Mock<SomeClass> mock;
-		Fake(Method(mock,foo));
-	}
-
-	void canMockClassWithProtectedConstructor() {
-		struct SomeClass {
-			virtual void foo() = 0;
-		protected:
-			SomeClass(int) {
-			}
-		};
-		Mock<SomeClass> mock;
-		Fake(Method(mock,foo));
-	}
-
-	void createAndDeleteFakitInstatnce() {
-		{
-			DefaultFakeit df;
-		}
-	}
-
-	struct Change {
-		virtual void change(uint8_t r, uint8_t g, uint8_t b) =0;
-	};
-
-	void assertChanged(Mock<Change>& mock, uint8_t v1, uint8_t v2, uint8_t v3) {
-		Verify(Method(mock, change).Using(v1,v2,v3));
-	}
-
-	void testPassMockByRef() {
-		Mock<Change> mock;
-		Change* change = &mock.get();
-		When(Method(mock, change)).AlwaysReturn();
-		change->change(1, 2, 3);
-		assertChanged(mock, 1, 2, 3);
 	}
 
 } __DefaultBehaviore;
