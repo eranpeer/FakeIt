@@ -76,14 +76,9 @@ public:
 		return DataMemberStubbingRoot<C, DATA_TYPE>();
 	}
 
-	template<typename R, typename ... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionMockingContext<R, arglist...> stub(R (C::*vMethod)(arglist...)) {
-		return FunctionMockingContext<R, arglist...>(new MethodStubbingContextImpl<R, arglist...>(*this, vMethod));
-	}
-
-	template<typename R, typename ... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureMockingContext<R, arglist...> stub(R (C::*vMethod)(arglist...)) {
-		return ProcedureMockingContext<R, arglist...>(new MethodStubbingContextImpl<R, arglist...>(*this, vMethod));
+	template<typename R, typename ... arglist>
+	MockingContext<R, arglist...> stub(R (C::*vMethod)(arglist...)) {
+		return MockingContext<R, arglist...>(new MethodStubbingContextImpl<R, arglist...>(*this, vMethod));
 	}
 
 private:

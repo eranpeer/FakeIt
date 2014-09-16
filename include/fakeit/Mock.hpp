@@ -49,48 +49,48 @@ public:
 	}
 
 	template<typename R, typename ... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionMockingContext<R, arglist...> operator [](R (C::*vMethod)(arglist...) const) {
+	MockingContext<R, arglist...> operator [](R (C::*vMethod)(arglist...) const) {
 		auto methodWithoutConstVolatile = reinterpret_cast<R (C::*)(arglist...)>(vMethod);
 		return impl.stub(methodWithoutConstVolatile);
 	}
 
 	template < typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionMockingContext<R, arglist...> operator [](R(C::*vMethod)(arglist...) volatile) {
+	MockingContext<R, arglist...> operator [](R(C::*vMethod)(arglist...) volatile) {
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return impl.stub(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionMockingContext<R, arglist...> operator [](R(C::*vMethod)(arglist...) const volatile) {
+	MockingContext<R, arglist...> operator [](R(C::*vMethod)(arglist...) const volatile) {
 		auto methodWithoutConstVolatile = reinterpret_cast<R(C::*)(arglist...)>(vMethod);
 		return impl.stub(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<!std::is_void<R>::value>::type>
-	FunctionMockingContext<R, arglist...> operator [](R(C::*vMethod)(arglist...)) {
+	MockingContext<R, arglist...> operator [](R(C::*vMethod)(arglist...)) {
 		return impl.stub(vMethod);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureMockingContext<void, arglist...> operator [](R(C::*vMethod)(arglist...) const) {
+	MockingContext<void, arglist...> operator [](R(C::*vMethod)(arglist...) const) {
 		auto methodWithoutConstVolatile = reinterpret_cast<void(C::*)(arglist...)>(vMethod);
 		return impl.stub(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureMockingContext<void, arglist...> operator [](R(C::*vMethod)(arglist...) volatile) {
+	MockingContext<void, arglist...> operator [](R(C::*vMethod)(arglist...) volatile) {
 		auto methodWithoutConstVolatile = reinterpret_cast<void(C::*)(arglist...)>(vMethod);
 		return impl.stub(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureMockingContext<void, arglist...> operator [](R(C::*vMethod)(arglist...) const volatile) {
+	MockingContext<void, arglist...> operator [](R(C::*vMethod)(arglist...) const volatile) {
 		auto methodWithoutConstVolatile = reinterpret_cast<void(C::*)(arglist...)>(vMethod);
 		return impl.stub(methodWithoutConstVolatile);
 	}
 
 	template <typename R, typename... arglist, class = typename std::enable_if<std::is_void<R>::value>::type>
-	ProcedureMockingContext<void, arglist...> operator [](R(C::*vMethod)(arglist...)) {
+	MockingContext<void, arglist...> operator [](R(C::*vMethod)(arglist...)) {
 		auto methodWithoutConstVolatile = reinterpret_cast<void(C::*)(arglist...)>(vMethod);
 		return impl.stub(methodWithoutConstVolatile);
 	}

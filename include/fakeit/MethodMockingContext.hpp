@@ -158,7 +158,7 @@ private:
 			getRecordedActionSequence().AppendDo(action);
 		}
 
-		void setMethodBodyByAssignment(std::function<R(arglist...)> method) {
+		void setMethodBodyByAssignment(std::function<R(arglist&...)> method) {
 			appendAction(new RepeatForever<R, arglist...>(method));
 			commit();
 		}
@@ -267,7 +267,7 @@ protected:
 		_impl->appendAction(action);
 	}
 
-	void setMethodBodyByAssignment(std::function<R(arglist...)> method) {
+	void setMethodBodyByAssignment(std::function<R(arglist&...)> method) {
 		_impl->setMethodBodyByAssignment(method);
 	}
 
@@ -281,110 +281,108 @@ private:
 };
 
 template<typename R, typename ... arglist>
-class FunctionMockingContext: //
+class MockingContext: //
 public virtual MethodMockingContext<R, arglist...> //
 {
-	FunctionMockingContext & operator=(const FunctionMockingContext&) = delete;
+	MockingContext & operator=(const MockingContext&) = delete;
 
 public:
 
-	FunctionMockingContext(typename MethodMockingContext<R, arglist...>::Context* stubbingContext) :
+	MockingContext(typename MethodMockingContext<R, arglist...>::Context* stubbingContext) :
 			MethodMockingContext<R, arglist...>(stubbingContext) {
 	}
 
-	FunctionMockingContext(FunctionMockingContext<R, arglist...>&other) :MethodMockingContext<R, arglist...>(other){}
-	FunctionMockingContext(FunctionMockingContext<R, arglist...>&&other):MethodMockingContext<R, arglist...>(other){}
+	MockingContext(MockingContext<R, arglist...>&other) :MethodMockingContext<R, arglist...>(other){}
+	MockingContext(MockingContext<R, arglist...>&&other):MethodMockingContext<R, arglist...>(other){}
 
-	virtual ~FunctionMockingContext() THROWS {
+	virtual ~MockingContext() THROWS {
 	}
 
-	void operator=(std::function<R(arglist...)> method) {
-		MethodMockingContext<R, arglist...>::setMethodBodyByAssignment(method);
-	}
-
-	FunctionMockingContext<R, arglist...>& setMethodDetails(std::string mockName, std::string methodName) {
+	MockingContext<R, arglist...>& setMethodDetails(std::string mockName, std::string methodName) {
 		MethodMockingContext<R, arglist...>::setMethodDetails(mockName, methodName);
 		return *this;
 	}
 
-	FunctionMockingContext<R, arglist...>& Using(const arglist&... args) {
+	MockingContext<R, arglist...>& Using(const arglist&... args) {
 		MethodMockingContext<R, arglist...>::setMatchingCriteria(args...);
 		return *this;
 	}
 
-	FunctionMockingContext<R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
+	MockingContext<R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
 		MethodMockingContext<R, arglist...>::setMatchingCriteria(matcher);
 		return *this;
 	}
 
-	FunctionMockingContext<R, arglist...>& operator()(const arglist&... args) {
+	MockingContext<R, arglist...>& operator()(const arglist&... args) {
 		MethodMockingContext<R, arglist...>::setMatchingCriteria(args...);
 		return *this;
 	}
 
-	FunctionMockingContext<R, arglist...>& operator()(std::function<bool(arglist...)> matcher) {
+	MockingContext<R, arglist...>& operator()(std::function<bool(arglist...)> matcher) {
 		MethodMockingContext<R, arglist...>::setMatchingCriteria(matcher);
 		return *this;
+	}
+
+	void operator=(std::function<R(arglist...)> method) {
+		MethodMockingContext<R, arglist...>::setMethodBodyByAssignment(method);
 	}
 
 	template<typename U = R>
 	typename std::enable_if<!std::is_reference<U>::value, void>::type operator=(const R& r) {
 		auto method = [r](arglist&...) -> R {return r;};
-		MethodMockingContext<R, arglist...>::appendAction(new RepeatForever<R, arglist...>(method));
-		MethodMockingContext<R, arglist...>::commit();
+		MethodMockingContext<R, arglist...>::setMethodBodyByAssignment(method);
 	}
 
 	template<typename U = R>
 	typename std::enable_if<std::is_reference<U>::value, void>::type operator=(const R& r) {
 		auto method = [&r](arglist&...) -> R {return r;};
-		MethodMockingContext<R, arglist...>::appendAction(new RepeatForever<R, arglist...>(method));
-		MethodMockingContext<R, arglist...>::commit();
+		MethodMockingContext<R, arglist...>::setMethodBodyByAssignment(method);
 	}
 };
 
-template<typename R, typename ... arglist>
-class ProcedureMockingContext: //
-public virtual MethodMockingContext<R, arglist...> {
+template<typename ... arglist>
+class MockingContext<void, arglist...>: //
+public virtual MethodMockingContext<void, arglist...> {
 
-	ProcedureMockingContext & operator=(const ProcedureMockingContext&) = delete;
+	MockingContext & operator=(const MockingContext&) = delete;
 
 public:
-	ProcedureMockingContext(typename MethodMockingContext<R, arglist...>::Context* stubbingContext) :
-			MethodMockingContext<R, arglist...>(stubbingContext) {
+	MockingContext(typename MethodMockingContext<void, arglist...>::Context* stubbingContext) :
+			MethodMockingContext<void, arglist...>(stubbingContext) {
 	}
 
-	virtual ~ProcedureMockingContext() THROWS {
+	virtual ~MockingContext() THROWS {
 	}
 
-	ProcedureMockingContext(ProcedureMockingContext<R, arglist...>& other):MethodMockingContext<R, arglist...>(other){}
-	ProcedureMockingContext(ProcedureMockingContext<R, arglist...>&& other):MethodMockingContext<R, arglist...>(other){}
+	MockingContext(MockingContext<void, arglist...>& other):MethodMockingContext<void, arglist...>(other){}
+	MockingContext(MockingContext<void, arglist...>&& other):MethodMockingContext<void, arglist...>(other){}
 
-	void operator=(std::function<R(arglist...)> method) {
-		MethodMockingContext<R, arglist...>::setMethodBodyByAssignment(method);
+	void operator=(std::function<void(arglist...)> method) {
+		MethodMockingContext<void, arglist...>::setMethodBodyByAssignment(method);
 	}
 
-	ProcedureMockingContext<R, arglist...>& setMethodDetails(std::string mockName, std::string methodName) {
-		MethodMockingContext<R, arglist...>::setMethodDetails(mockName, methodName);
+	MockingContext<void, arglist...>& setMethodDetails(std::string mockName, std::string methodName) {
+		MethodMockingContext<void, arglist...>::setMethodDetails(mockName, methodName);
 		return *this;
 	}
 
-	ProcedureMockingContext<R, arglist...>& Using(const arglist&... args) {
-		MethodMockingContext<R, arglist...>::setMatchingCriteria(args...);
+	MockingContext<void, arglist...>& Using(const arglist&... args) {
+		MethodMockingContext<void, arglist...>::setMatchingCriteria(args...);
 		return *this;
 	}
 
-	ProcedureMockingContext<R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
-		MethodMockingContext<R, arglist...>::setMatchingCriteria(matcher);
+	MockingContext<void, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
+		MethodMockingContext<void, arglist...>::setMatchingCriteria(matcher);
 		return *this;
 	}
 
-	ProcedureMockingContext<R, arglist...>& operator()(const arglist&... args) {
-		MethodMockingContext<R, arglist...>::setMatchingCriteria(args...);
+	MockingContext<void, arglist...>& operator()(const arglist&... args) {
+		MethodMockingContext<void, arglist...>::setMatchingCriteria(args...);
 		return *this;
 	}
 
-	ProcedureMockingContext<R, arglist...>& operator()(std::function<bool(arglist...)> matcher) {
-		MethodMockingContext<R, arglist...>::setMatchingCriteria(matcher);
+	MockingContext<void, arglist...>& operator()(std::function<bool(arglist...)> matcher) {
+		MethodMockingContext<void, arglist...>::setMatchingCriteria(matcher);
 		return *this;
 	}
 };

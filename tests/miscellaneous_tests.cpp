@@ -25,13 +25,14 @@ struct Miscellaneous: tpunit::TestFixture {
 			TEST(Miscellaneous::create_and_delete_fakit_instatnce)
 	){}
 
+	struct SomeStruct {
+		SomeStruct(int) {
+		}
+		virtual void foo() = 0;
+	};
+
 	void can_mock_class_without_default_constructor() {
-		struct SomeClass {
-			SomeClass(int) {
-			}
-			virtual void foo() = 0;
-		};
-		Mock<SomeClass> mock;
+		Mock<SomeStruct> mock;
 		Fake(Method(mock,foo));
 	}
 
