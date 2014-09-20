@@ -402,11 +402,25 @@ struct BasicVerification: tpunit::TestFixture {
 	void use_same_filter_for_both_stubbing_and_verification() {
 		Mock<SomeInterface> mock;
 		auto any_func_invocation = Method(mock,func);
+		auto any_proc_invocation = Method(mock,proc);
+
 		When(any_func_invocation).AlwaysReturn(1);
+		When(any_proc_invocation).AlwaysReturn();
+
 		SomeInterface &i = mock.get();
 		i.func(1);
 		i.func(1);
+
+		i.proc(1);
+		i.proc(1);
+
+		Verify(any_func_invocation);
+		Verify(any_proc_invocation);
+
 		Verify(2 * any_func_invocation);
+		Verify(2 * any_proc_invocation);
+
+		Verify(2 * any_func_invocation + 2 * any_proc_invocation);
 	}
 
 	void verify_after_paramter_was_changed__with_Matching() {
