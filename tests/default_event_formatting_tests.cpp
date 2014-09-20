@@ -19,7 +19,7 @@ using namespace fakeit;
 
 struct DefaultEventFormatting: tpunit::TestFixture {
 	DefaultEventFormatting() :
-			tpunit::TestFixture(
+			TestFixture(
 			//
 			TEST(DefaultEventFormatting::format_UnmockedMethodCallEvent),
 			TEST(DefaultEventFormatting::format_UnmatchedMethodCallEvent),

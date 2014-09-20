@@ -34,6 +34,9 @@ TestResults/
 .settings/
 .metadata/
 
+# CLion files
+.idea/
+
 # temporary
 *.tmp
 *.d

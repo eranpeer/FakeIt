@@ -32,14 +32,14 @@ public:
 
 	MockImpl(FakeitContext& fakeit) :
 			MockImpl<C, baseclasses...>(fakeit, *(createFakeInstance()), false) {
-		FakeObject<C, baseclasses...>* fake = (FakeObject<C, baseclasses...>*) _instance;
+		FakeObject<C, baseclasses...>* fake = reinterpret_cast<FakeObject<C, baseclasses...>*>(_instance);
 		fake->getVirtualTable().setCookie(1, this);
 	}
 
 	virtual ~MockImpl() {
 		if (_isSpy)
 			return;
-		FakeObject<C, baseclasses...>* fake = (FakeObject<C, baseclasses...>*) _instance;
+		FakeObject<C, baseclasses...>* fake = reinterpret_cast<FakeObject<C, baseclasses...>*>(_instance);
 		delete fake;
 	}
 
@@ -57,12 +57,13 @@ public:
 	void reset() {
 		_proxy.Reset();
 		if (!_isSpy) {
-			FakeObject<C, baseclasses...>* fake = (FakeObject<C, baseclasses...>*) _instance;
+			FakeObject<C, baseclasses...>* fake = reinterpret_cast<FakeObject<C, baseclasses...>*>(_instance);
 			fake->initializeDataMembersArea();
 		}
 	}
 
-	virtual C& get() {
+	virtual C& get() override
+	{
 		return _proxy.get();
 	}
 
@@ -97,6 +98,7 @@ private:
 		}
 
 	public:
+		virtual ~MethodStubbingContextImpl() = default;
 
 		MethodStubbingContextImpl(MockImpl<C, baseclasses...>& mock, R (C::*vMethod)(arglist...)) :
 				_mock(mock), _vMethod(vMethod) {
@@ -108,9 +110,9 @@ private:
 
 		virtual std::function<R(arglist&...)> getOriginalMethod() override {
 			void * mPtr = _mock.getOriginalMethod(_vMethod);
-			auto m = union_cast<decltype(_vMethod)>(mPtr); 
 			C& instance = _mock.get(); 
 			return [=, &instance](arglist&... args)->R{
+				auto m = union_cast<decltype(_vMethod)>(mPtr);
 				return ((&instance)->*m)(args...);
 			};
 		}
@@ -138,8 +140,8 @@ private:
 	};
 
 	static MockImpl<C, baseclasses...>* getMockImpl(void * instance) {
-		FakeObject<C, baseclasses...>* fake = (FakeObject<C, baseclasses...>*) instance;
-		MockImpl<C, baseclasses...> * mock = (MockImpl<C, baseclasses...>*) fake->getVirtualTable().getCookie(1);
+		FakeObject<C, baseclasses...>* fake = reinterpret_cast<FakeObject<C, baseclasses...>*>(instance);
+		MockImpl<C, baseclasses...> * mock = reinterpret_cast<MockImpl<C, baseclasses...>*>(fake->getVirtualTable().getCookie(1));
 		return mock;
 	}
 
@@ -160,7 +162,7 @@ private:
 		fake->initializeDataMembersArea();
 		void* unmockedMethodStubPtr = union_cast<void*>(&MockImpl<C, baseclasses...>::unmocked);
 		fake->getVirtualTable().initAll(unmockedMethodStubPtr);
-		return (C*) fake;
+		return reinterpret_cast<C*>(fake);
 	}
 
 	template<typename R, typename ... arglist>

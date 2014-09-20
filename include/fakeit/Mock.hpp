@@ -21,13 +21,14 @@ template<typename C, typename ... baseclasses>
 class Mock : public ActualInvocationsSource {
 	MockImpl<C, baseclasses...> impl;
 public:
+	virtual ~Mock() = default;
 
 	static_assert(std::is_polymorphic<C>::value, "Can only mock a polymorphic type");
 
 	Mock() : impl(Fakeit) {
 	}
 
-	Mock(C &obj) :impl(Fakeit, obj) {
+	explicit Mock(C &obj) :impl(Fakeit, obj) {
 	}
 
 	virtual C& get() {
