@@ -20,11 +20,11 @@ namespace fakeit {
 
 class WhenFunctor {
 
-	struct StubbingProgress {
+	struct StubbingChange {
 
 		friend class WhenFunctor;
 
-		virtual ~StubbingProgress() THROWS {
+		virtual ~StubbingChange() THROWS {
 
 			if (std::uncaught_exception()) {
 				return;
@@ -33,13 +33,13 @@ class WhenFunctor {
 			_xaction.commit();
 		}
 
-		StubbingProgress(StubbingProgress& other) :
+		StubbingChange(StubbingChange& other) :
 				_xaction(other._xaction) {
 		}
 
 	private:
 
-		StubbingProgress(Xaction& xaction)
+		StubbingChange(Xaction& xaction)
 				: _xaction(xaction) {
 		}
 
@@ -49,74 +49,40 @@ class WhenFunctor {
 public:
 
 	template<typename R, typename ... arglist>
-	struct FunctionProgress: public FunctionStubbingProgress<R, arglist...> //
-	{
-		friend class WhenFunctor;
-
-		virtual ~FunctionProgress() = default;
-
-		FunctionProgress(FunctionProgress& other) :
-				_progress(other._progress), _root(other._root) {
-		}
-
-		FunctionProgress(StubbingContext<R, arglist...>& xaction) :
-				_progress(new StubbingProgress(xaction)), _root(xaction) {
-		}
-	protected:
-
-		virtual FunctionStubbingProgress<R, arglist...>& DoImpl(Action<R, arglist...>* action) override {
-			_root.appendAction(action);
-			return *this;
-		}
-
-	private:
-		smart_ptr<StubbingProgress> _progress;
-		StubbingContext<R, arglist...> & _root;
-	};
-
-	template<typename R, typename ... arglist>
-	struct ProcedureProgress: public ProcedureStubbingProgress<R, arglist...> {
+	struct MethodProgress: public MethodStubbingProgress<R, arglist...> {
 
 		friend class WhenFunctor;
 
-		virtual ~ProcedureProgress() override = default;
+		virtual ~MethodProgress() override = default;
 
-		ProcedureProgress(ProcedureProgress& other) :
-			_progress(other._progress), _root(other._root) {
+		MethodProgress(MethodProgress& other) :
+			_progress(other._progress), _context(other._context) {
 		}
 
-		ProcedureProgress(StubbingContext<R, arglist...>& xaction) :
-			_progress(new StubbingProgress(xaction)), _root(xaction) {
+		MethodProgress(StubbingContext<R, arglist...>& xaction) :
+			_progress(new StubbingChange(xaction)), _context(xaction) {
 		}
 
 	protected:
 
-		virtual ProcedureStubbingProgress<R, arglist...>& DoImpl(Action<R, arglist...> * action) override {
-			_root.appendAction(action);
+		virtual MethodStubbingProgress<R, arglist...>& DoImpl(Action<R, arglist...> * action) override {
+			_context.appendAction(action);
 			return *this;
 		}
 
 	private:
-		smart_ptr<StubbingProgress> _progress;
-		StubbingContext<R, arglist...>& _root;
+		smart_ptr<StubbingChange> _progress;
+		StubbingContext<R, arglist...>& _context;
 	};
+
 
 	WhenFunctor() {
 	}
 
 	template<typename R, typename ... arglist>
-	typename std::enable_if<std::is_void<R>::value, ProcedureProgress<R, arglist...>>::type
-	operator()(const StubbingContext<R, arglist...>& stubbingContext) {
+	MethodProgress<R, arglist...> operator()(const StubbingContext<R, arglist...>& stubbingContext) {
 		StubbingContext<R, arglist...>& rootWithoutConst = const_cast<StubbingContext<R, arglist...>&>(stubbingContext);
-		ProcedureProgress<R, arglist...> progress(rootWithoutConst);
-		return progress;
-	}
-
-	template<typename R, typename ... arglist>
-	typename std::enable_if<!std::is_void<R>::value, FunctionProgress<R, arglist...>>::type
-	operator()(const StubbingContext<R, arglist...>& stubbingContext) {
-		StubbingContext<R, arglist...>& rootWithoutConst = const_cast<StubbingContext<R, arglist...>&>(stubbingContext);
-		FunctionProgress<R, arglist...> progress(rootWithoutConst);
+		MethodProgress<R, arglist...> progress(rootWithoutConst);
 		return progress;
 	}
 
