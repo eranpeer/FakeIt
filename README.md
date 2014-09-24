@@ -55,7 +55,7 @@ Download the [Latest Release](https://github.com/eranpeer/FakeIt/releases/latest
 
 ## Features
 * Very simple API based on the expressiveness of C++11.
-* Supports both GCC and MS C++.
+* Supports all major compilers: GCC, Clang and MSC++.
 * Expressive [Arrange-Act-Assert](http://xp123.com/articles/3a-arrange-act-assert/) syntax.
 * Create mock classes or **spy existing objects** instantly in one simple line.
 * No limitation on number of method arguments.
@@ -78,7 +78,7 @@ run the tests by typing
 Open the tests/all_tests.vcxproj project file with Visual Studio 2013. Build and run the project and check the test results. 
 
 ## Limitations
-* Currently only GCC, Clang and MS C++ are supported.
+* Currently only GCC, Clang and MSC++ are supported.
 * Can't mock classes with multiple inheritance.
 * Can't mock classes with virtual inheritance.
 * Currently mocks are not thread safe. 
