@@ -173,7 +173,7 @@ private:
 			setInvocationMatcher(matcher);
 		}
 
-		void setMatchingCriteria(std::function<bool(arglist...)> predicate) {
+		void setMatchingCriteria(std::function<bool(arglist&...)> predicate) {
 			typename ActualInvocation<arglist...>::Matcher* matcher {
 				new UserDefinedInvocationMatcher<arglist...>(predicate)};
 			setInvocationMatcher(matcher);
@@ -255,7 +255,7 @@ protected:
 		_impl->setMatchingCriteria(args...);
 	}
 
-	void setMatchingCriteria(std::function<bool(arglist...)> predicate) {
+	void setMatchingCriteria(std::function<bool(arglist&...)> predicate) {
 		_impl->setMatchingCriteria(predicate);
 	}
 
@@ -307,7 +307,7 @@ public:
 		return *this;
 	}
 
-	MockingContext<R, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
+	MockingContext<R, arglist...>& Matching(std::function<bool(arglist&...)> matcher) {
 		MethodMockingContext<R, arglist...>::setMatchingCriteria(matcher);
 		return *this;
 	}
@@ -317,7 +317,7 @@ public:
 		return *this;
 	}
 
-	MockingContext<R, arglist...>& operator()(std::function<bool(arglist...)> matcher) {
+	MockingContext<R, arglist...>& operator()(std::function<bool(arglist&...)> matcher) {
 		MethodMockingContext<R, arglist...>::setMatchingCriteria(matcher);
 		return *this;
 	}
@@ -370,7 +370,7 @@ public:
 		return *this;
 	}
 
-	MockingContext<void, arglist...>& Matching(std::function<bool(arglist...)> matcher) {
+	MockingContext<void, arglist...>& Matching(std::function<bool(arglist&...)> matcher) {
 		MethodMockingContext<void, arglist...>::setMatchingCriteria(matcher);
 		return *this;
 	}
@@ -380,7 +380,7 @@ public:
 		return *this;
 	}
 
-	MockingContext<void, arglist...>& operator()(std::function<bool(arglist...)> matcher) {
+	MockingContext<void, arglist...>& operator()(std::function<bool(arglist&...)> matcher) {
 		MethodMockingContext<void, arglist...>::setMatchingCriteria(matcher);
 		return *this;
 	}

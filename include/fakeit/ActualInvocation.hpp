@@ -43,7 +43,7 @@ struct ActualInvocation: public Invocation {
 			Invocation(ordinal, method), _matcher{nullptr}, actualArguments { args... } {
 	}
 
-	const std::tuple<arglist...>& getActualArguments() const {
+	std::tuple<arglist...>& getActualArguments() {
 		return actualArguments;
 	}
 

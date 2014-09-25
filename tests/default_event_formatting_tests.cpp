@@ -164,7 +164,6 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 		}
 	}
 
-
 	void format_UserDefinedMatcher_in_expected_pattern() {
 		Mock<SomeInterface> mock;
 		When(Method(mock, func)).Return(0);

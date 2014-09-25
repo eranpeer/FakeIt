@@ -36,6 +36,7 @@ struct BasicStubbing : tpunit::TestFixture {
                     TEST(BasicStubbing::change_method_behavior_with_filter),//
                     TEST(BasicStubbing::change_method_behavior_with_functor_filter),//
                     TEST(BasicStubbing::change_method_behavior_with_matcher),//
+                    TEST(BasicStubbing::change_method_behavior_with_by_ref_arguments_matcher),//
                     TEST(BasicStubbing::change_method_behavior_with_functor_matcher),//
                     TEST(BasicStubbing::stub_multiple_return_values),//
                     TEST(BasicStubbing::stub_multiple_return_values_using_quque),//
@@ -403,27 +404,27 @@ struct BasicStubbing : tpunit::TestFixture {
         ASSERT_THROW(i.proc(2), fakeit::UnexpectedMethodCallException);
     }
 
-//    void change_method_behavior_with_by_ref_arguments_matcher() {
-//        class Exc : public std::exception {
-//        } e;
-//
-//        Mock<SomeInterface> mock;
-//
-//        When(Method(mock, func).Matching([](int& a) {
-//            return a == 1;
-//        })).Return(1);
-//        When(Method(mock, proc).Matching([](int& a) {
-//            return a == 1;
-//        })).Throw(e);
-//
-//        SomeInterface &i = mock.get();
-//
-//        ASSERT_EQUAL(1, i.func(1));
-//        ASSERT_THROW(i.func(2), fakeit::UnexpectedMethodCallException);
-//
-//        ASSERT_THROW(i.proc(1), Exc);
-//        ASSERT_THROW(i.proc(2), fakeit::UnexpectedMethodCallException);
-//    }
+	void change_method_behavior_with_by_ref_arguments_matcher() {
+        class Exc : public std::exception {
+        } e;
+
+        Mock<SomeInterface> mock;
+
+        When(Method(mock, func).Matching([](int& a) {
+            return a == 1;
+        })).Return(1);
+        When(Method(mock, proc).Matching([](int& a) {
+            return a == 1;
+        })).Throw(e);
+
+        SomeInterface &i = mock.get();
+
+        ASSERT_EQUAL(1, i.func(1));
+        ASSERT_THROW(i.func(2), fakeit::UnexpectedMethodCallException);
+
+        ASSERT_THROW(i.proc(1), Exc);
+        ASSERT_THROW(i.proc(2), fakeit::UnexpectedMethodCallException);
+    }
 
 
     void stub_multiple_return_values() {
