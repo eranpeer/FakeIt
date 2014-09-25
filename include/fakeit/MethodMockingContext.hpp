@@ -322,7 +322,7 @@ public:
 		return *this;
 	}
 
-	void operator=(std::function<R(arglist...)> method) {
+	void operator=(std::function<R(arglist&...)> method) {
 		MethodMockingContext<R, arglist...>::setMethodBodyByAssignment(method);
 	}
 
@@ -356,7 +356,7 @@ public:
 	MockingContext(MockingContext<void, arglist...>& other):MethodMockingContext<void, arglist...>(other){}
 	MockingContext(MockingContext<void, arglist...>&& other):MethodMockingContext<void, arglist...>(other){}
 
-	void operator=(std::function<void(arglist...)> method) {
+	void operator=(std::function<void(arglist&...)> method) {
 		MethodMockingContext<void, arglist...>::setMethodBodyByAssignment(method);
 	}
 

@@ -168,7 +168,24 @@ struct BasicStubbing : tpunit::TestFixture {
 
         ASSERT_THROW(i.func(3), fakeit::UnexpectedMethodCallException);
         ASSERT_THROW(i.proc(3), fakeit::UnexpectedMethodCallException);
-    }
+
+	
+	
+		When(Method(mock, func)).Do([](int& val) {
+			return val + 1;
+		});
+		When(Method(mock, proc)).Do([&a](int& val) {
+			a = val + 1;
+		});
+
+		ASSERT_EQUAL(3 + 1, i.func(3));
+
+		i.proc(3);
+		ASSERT_EQUAL(3 + 1, a);
+
+		ASSERT_THROW(i.func(3), fakeit::UnexpectedMethodCallException);
+		ASSERT_THROW(i.proc(3), fakeit::UnexpectedMethodCallException);
+	}
 
     void stub_a_method_with_lambda_delegate_always() {
         Mock<SomeInterface> mock;
@@ -193,7 +210,24 @@ struct BasicStubbing : tpunit::TestFixture {
         a = 0;
         i.proc(3);
         ASSERT_EQUAL(3, a);
-    }
+
+		When(Method(mock, func)).AlwaysDo([](int& val) {
+			return val + 1;
+		});
+		When(Method(mock, proc)).AlwaysDo([&a](int& val) {
+			a = val + 1;
+		});
+
+		ASSERT_EQUAL(3 + 1, i.func(3));
+		ASSERT_EQUAL(3 + 1, i.func(3));
+
+		i.proc(3);
+		ASSERT_EQUAL(3 + 1, a);
+
+		a = 0;
+		i.proc(3);
+		ASSERT_EQUAL(3 + 1, a);
+	}
 
     static int func_delegate(int val) {
         return val;
@@ -242,7 +276,21 @@ struct BasicStubbing : tpunit::TestFixture {
         i.proc(3);
         i.proc(3);
         ASSERT_EQUAL(3, a);
-    }
+    
+		Method(mock, func) = [](int& val) {
+			return val + 1;
+		};
+		Method(mock, proc) = [&a](int& val) {
+			a = val + 1;
+		};
+
+		ASSERT_EQUAL(3 + 1, i.func(3));
+		ASSERT_EQUAL(4 + 1, i.func(4));
+
+		i.proc(3);
+		i.proc(3);
+		ASSERT_EQUAL(3 + 1, a);
+	}
 
     void stub_only_specified_calls_by_assignment() {
         Mock<SomeInterface> mock;

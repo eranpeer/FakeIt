@@ -103,7 +103,7 @@ struct MethodStubbingProgress {
 	}
 
 	virtual MethodStubbingProgress<R, arglist...>&
-	Do(std::function<R(arglist...)> method) {
+	Do(std::function<R(arglist&...)> method) {
 		return DoImpl(new Repeat<R, arglist...>(method));
 	}
 
@@ -120,7 +120,7 @@ struct MethodStubbingProgress {
 		return Do(s, t...);
 	}
 
-	virtual void AlwaysDo(std::function<R(arglist...)> method) {
+	virtual void AlwaysDo(std::function<R(arglist&...)> method) {
 		DoImpl(new RepeatForever<R, arglist...>(method));
 	}
 
@@ -181,7 +181,7 @@ struct MethodStubbingProgress<void, arglist...> {
 		return AlwaysDo([e](const arglist&...)->void {throw e;});
 	}
 
-	virtual MethodStubbingProgress<void, arglist...>& Do(std::function<void(arglist...)> method) {
+	virtual MethodStubbingProgress<void, arglist...>& Do(std::function<void(arglist&...)> method) {
 		return DoImpl(new Repeat<void, arglist...>(method));
 	}
 
@@ -198,7 +198,7 @@ struct MethodStubbingProgress<void, arglist...> {
 		return Do(s, t...);
 	}
 
-	virtual void AlwaysDo(std::function<void(arglist...)> method) {
+	virtual void AlwaysDo(std::function<void(arglist&...)> method) {
 		DoImpl(new RepeatForever<void, arglist...>(method));
 	}
 
