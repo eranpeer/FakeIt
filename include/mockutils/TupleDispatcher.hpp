@@ -34,34 +34,35 @@ bool applyTuple(std::function<bool (ArgsF&...)> f, std::tuple<ArgsT...>& t) {
 }
 
 template<typename ...arglist>
-bool invoke(std::function<bool(arglist&...)> func, std::tuple<arglist...>& arguments) {
-	return applyTuple(func, arguments);
+bool invoke(std::function<bool(arglist&...)> func,const std::tuple<arglist...>& arguments) {
+	std::tuple<arglist...>& args = const_cast<std::tuple<arglist...>&>(arguments);
+	return applyTuple(func, args);
 }
 
-template<int N>
-struct verifyTypes {
-	template<typename Head, typename ... ArgsT, typename ... Tail>
-	static bool applyTuple(std::tuple<ArgsT...>& t, Head &h, Tail&... tail) {
-		//h should be comparable from std::get<N - sizeof...(Tail)  - 1>(t);
-		//static_assert(???, "not assignable");
-		return verifyTypes<sizeof...(Tail)>::applyTuple(t, tail...);
-	}
-};
-
-template<>
-struct verifyTypes<0> {
-	template<typename ... ArgsT>
-	static bool applyTuple(std::tuple<ArgsT...>& /* t */
-	) {
-		return true;
-	}
-};
-
-template<typename ... ArgsT, typename ... Args>
-bool checkTypes(std::tuple<ArgsT...>& t, Args ... args) {
-	static_assert(sizeof...(ArgsT) == sizeof...(Args), "argument lists are not the same size");
-	return verifyTypes<sizeof...(ArgsT)>::applyTuple(t, args...);
-}
+//template<int N>
+//struct verifyTypes {
+//	template<typename Head, typename ... ArgsT, typename ... Tail>
+//	static bool applyTuple(std::tuple<ArgsT...>& t, Head &h, Tail&... tail) {
+//		//h should be comparable from std::get<N - sizeof...(Tail)  - 1>(t);
+//		//static_assert(???, "not assignable");
+//		return verifyTypes<sizeof...(Tail)>::applyTuple(t, tail...);
+//	}
+//};
+//
+//template<>
+//struct verifyTypes<0> {
+//	template<typename ... ArgsT>
+//	static bool applyTuple(std::tuple<ArgsT...>& /* t */
+//	) {
+//		return true;
+//	}
+//};
+//
+//template<typename ... ArgsT, typename ... Args>
+//bool checkTypes(std::tuple<ArgsT...>& t, Args ... args) {
+//	static_assert(sizeof...(ArgsT) == sizeof...(Args), "argument lists are not the same size");
+//	return verifyTypes<sizeof...(ArgsT)>::applyTuple(t, args...);
+//}
 
 }
 

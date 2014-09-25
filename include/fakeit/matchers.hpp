@@ -66,10 +66,10 @@ struct UserDefinedInvocationMatcher: public ActualInvocation<arglist...>::Matche
 	}
 
 private:
-	virtual bool matches(std::tuple<arglist...>& actualArgs) {
+	virtual bool matches(const std::tuple<arglist...>& actualArgs) {
 		return invoke<arglist...>(matcher, actualArgs);
 	}
-	std::function<bool(arglist&...)> matcher;
+	const std::function<bool(arglist&...)> matcher;
 };
 
 template<typename ... arglist>
