@@ -78,5 +78,4 @@ public:
 
 }
 
-
 #endif /* FAKEOBJECT_HPP_ */

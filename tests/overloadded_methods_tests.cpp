@@ -13,34 +13,35 @@
 
 using namespace fakeit;
 
-struct OverloadedMethods: tpunit::TestFixture {
+struct OverloadedMethods : tpunit::TestFixture {
 
-	OverloadedMethods() :
-	tpunit::TestFixture(
-			TEST(OverloadedMethods::testOverloadedMEthods)
-	) {
-	}
+    OverloadedMethods() :
+            tpunit::TestFixture(
+                    TEST(OverloadedMethods::stub_overloaded_methods)) {
+    }
 
-	struct SomeInterface {
-		virtual int func() = 0;
-		virtual int func(int) = 0;
-		virtual int func(int, std::string) = 0;
-	};
+    struct SomeInterface {
+        virtual int func() = 0;
 
-	void testOverloadedMEthods(){
-		Mock<SomeInterface> mock;
-		int (SomeInterface::*void_arg)() = &SomeInterface::func;
-		int (SomeInterface::*int_arg)(int) = &SomeInterface::func;
-		int (SomeInterface::*int_string_arg)(int, std::string) = &SomeInterface::func;
+        virtual int func(int) = 0;
 
-		When(mock[void_arg]).Return(1);
-		When(mock[int_arg]).Return(2);
-		When(mock[int_string_arg]).Return(3);
+        virtual int func(int, std::string) = 0;
+    };
 
-		SomeInterface& i = mock.get();
-		ASSERT_EQUAL(1,i.func());
-		ASSERT_EQUAL(2,i.func(1));
-		ASSERT_EQUAL(3,i.func(1,""));
-	}
+    void stub_overloaded_methods() {
+        Mock<SomeInterface> mock;
+        int (SomeInterface::*void_arg)() = &SomeInterface::func;
+        int (SomeInterface::*int_arg)(int) = &SomeInterface::func;
+        int (SomeInterface::*int_string_arg)(int, std::string) = &SomeInterface::func;
+
+        When(mock[void_arg]).Return(1);
+        When(mock[int_arg]).Return(2);
+        When(mock[int_string_arg]).Return(3);
+
+        SomeInterface &i = mock.get();
+        ASSERT_EQUAL(1, i.func());
+        ASSERT_EQUAL(2, i.func(1));
+        ASSERT_EQUAL(3, i.func(1, ""));
+    }
 
 } __OverloadedMethods;

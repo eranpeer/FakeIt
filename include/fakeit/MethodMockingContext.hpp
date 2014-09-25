@@ -163,7 +163,6 @@ private:
 			commit();
 		}
 
-
 		void setMethodDetails(std::string mockName,std::string methodName) {
 			getStubbingContext().setMethodDetails(mockName,methodName);
 		}
