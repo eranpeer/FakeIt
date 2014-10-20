@@ -25,7 +25,13 @@ struct CustomTestingFramework: tpunit::TestFixture {
 					TEST(CustomTestingFramework::handle_SequenceVerificationEvent),
 					TEST(CustomTestingFramework::handle_NoMoreInvocationsVerificationEvent),
 					TEST(
-							CustomTestingFramework::ShouldThrow_UnexpectedMethodCallException_IfAdapterDidNotThrowException_WhenHandlingAnUnmockedMethod)) //
+							CustomTestingFramework::ShouldThrow_UnexpectedMethodCallException_IfAdapterDidNotThrowException_WhenHandlingAnUnmockedMethod),
+					TEST(
+							CustomTestingFramework::ShouldThrow_UnexpectedMethodCallException_IfAdapterDidNotThrowException_WhenHandlingAnUnmatchedInvocation),
+					TEST(
+							CustomTestingFramework::ShouldThrow_UnexpectedMethodCallException_IfAdapterDidNotThrowException_WhenHandlingNoMoreRecordedActionException)
+
+			) //
 	{
 	}
 
@@ -163,4 +169,34 @@ struct CustomTestingFramework: tpunit::TestFixture {
 		}
 	}
 
+	void ShouldThrow_UnexpectedMethodCallException_IfAdapterDidNotThrowException_WhenHandlingAnUnmatchedInvocation() {
+		NullEventHandler testingFrameworkAdapterMock;
+		Fakeit.setTestingFrameworkAdapter(testingFrameworkAdapterMock);
+
+		finally onExit(teardown);
+		Mock<SomeInterface> mock;
+		Fake(Method(mock,func).Using(1));
+		SomeInterface &i = mock.get();
+		try {
+			i.func(100);
+			FAIL();
+		} catch (fakeit::UnexpectedMethodCallException& e) {
+		}
+	}
+
+	void ShouldThrow_UnexpectedMethodCallException_IfAdapterDidNotThrowException_WhenHandlingNoMoreRecordedActionException() {
+		NullEventHandler testingFrameworkAdapterMock;
+		Fakeit.setTestingFrameworkAdapter(testingFrameworkAdapterMock);
+
+		finally onExit(teardown);
+		Mock<SomeInterface> mock;
+		When(Method(mock,func)).Return(0);
+		SomeInterface &i = mock.get();
+		i.func(1);
+		try {
+			i.func(1);
+			FAIL();
+		} catch (fakeit::UnexpectedMethodCallException& e) {
+		}
+	}
 } __CustomTestingFramework;

@@ -152,6 +152,7 @@ public:
 			UnexpectedMethodCallException e(format);
 			throw e;
 		}
+
 		auto& matcher = invocationHandler->getMatcher();
 		actualInvoaction->setActualMatcher(&matcher);
 		_actualInvocations.push_back(actualInvoactionDtor);

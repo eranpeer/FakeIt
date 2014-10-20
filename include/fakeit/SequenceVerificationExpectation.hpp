@@ -66,11 +66,11 @@ private:
 		int count = countMatches(_expectedPattern, actualSequence, matchedInvocations);
 
 		if (isAtLeastVerification() && atLeastLimitNotReached(count)) {
-			throwAtLeastVerificationException(actualSequence, count);
+			handleAtLeastVerificationEvent(actualSequence, count);
 		}
 
 		if (isExactVerification() && exactLimitNotMatched(count)) {
-			throwExactVerificationException(actualSequence, count);
+			handleExactVerificationEvent(actualSequence, count);
 		}
 
 		markAsVerified(matchedInvocations);
@@ -174,18 +174,13 @@ private:
 		return count != _expectedCount;
 	}
 
-	void throwExactVerificationException(std::vector<Invocation*> actualSequence, int count) {
+	void handleExactVerificationEvent(std::vector<Invocation*> actualSequence, int count) {
 		SequenceVerificationEvent evt(VerificationType::Exact, _expectedPattern, actualSequence, _expectedCount, count);
 		evt.setFileInfo(_file, _line, _testMethod);
 		_fakeit.handle(evt);
-
-		std::string format{_fakeit.format(evt)};
-		SequenceVerificationException e(format);
-		e.setFileInfo(_file, _line, _testMethod);
-		throw e;
 	}
 
-	void throwAtLeastVerificationException(std::vector<Invocation*> actualSequence, int count) {
+	void handleAtLeastVerificationEvent(std::vector<Invocation*> actualSequence, int count) {
 		SequenceVerificationEvent evt(VerificationType::AtLeast, _expectedPattern, actualSequence, -_expectedCount, count);
 		evt.setFileInfo(_file, _line, _testMethod);
 		_fakeit.handle(evt);
