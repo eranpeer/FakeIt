@@ -11,6 +11,7 @@
 
 #include "fakeit/StubbingProgress.hpp"
 #include "fakeit/StubbingImpl.hpp"
+#include "fakeit/StubbingContext.hpp"
 #include "fakeit/FakeitContext.hpp"
 
 namespace fakeit {

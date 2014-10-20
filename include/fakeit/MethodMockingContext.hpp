@@ -24,26 +24,10 @@
 #include "fakeit/EventHandler.hpp"
 #include "fakeit/ActionSequence.hpp"
 #include "fakeit/DomainObjects.hpp"
+#include "fakeit/SpyingContext.hpp"
+#include "fakeit/StubbingContext.hpp"
 
 namespace fakeit {
-
-struct Xaction {
-	virtual void commit() = 0;
-};
-
-// For use in Spy(...) phrases
-template<typename R, typename ... arglist>
-struct SpyingContext : public Xaction {
-	virtual void appendAction(Action<R, arglist...>* action) = 0;
-	virtual typename std::function<R(arglist&...)> getOriginalMethod() = 0;
-};
-
-// For use in Fake & When phrases
-template<typename R, typename ... arglist>
-struct StubbingContext : public Xaction {
-	virtual void appendAction(Action<R, arglist...>* action) = 0;
-};
-
 
 /**
  * Build recorded sequence and the matching criteria.

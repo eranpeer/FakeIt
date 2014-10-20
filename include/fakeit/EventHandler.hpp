@@ -9,11 +9,10 @@
 #ifndef EventHandler_h__
 #define EventHandler_h__
 
+#include "fakeit/FakeitEvents.hpp"
+
 namespace fakeit {
 
-struct UnexpectedMethodCallException;
-struct SequenceVerificationException;
-struct NoMoreInvocationsVerificationException;
 
 struct EventHandler {
 
