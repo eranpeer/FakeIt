@@ -65,11 +65,6 @@ class VerifyNoOtherInvocationsVerificationProgress {
 				NoMoreInvocationsVerificationEvent evt(sortedActualIvocations, sortedNonVerifedIvocations);
 				evt.setFileInfo(_file, _line, _callingMethod);
 				_fakeit.handle(evt);
-
-				std::string format = _fakeit.format(evt);
-				NoMoreInvocationsVerificationException e(format);
-				e.setFileInfo(_file, _line, _callingMethod);
-				throw e;
 			}
 		}
 

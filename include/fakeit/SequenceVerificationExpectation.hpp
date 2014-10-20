@@ -189,11 +189,6 @@ private:
 		SequenceVerificationEvent evt(VerificationType::AtLeast, _expectedPattern, actualSequence, -_expectedCount, count);
 		evt.setFileInfo(_file, _line, _testMethod);
 		_fakeit.handle(evt);
-
-		std::string format (_fakeit.format(evt));
-		SequenceVerificationException e(format);
-		e.setFileInfo(_file, _line, _testMethod);
-		throw e;
 	}
 
 };

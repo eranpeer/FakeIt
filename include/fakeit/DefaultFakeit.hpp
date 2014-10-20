@@ -21,27 +21,45 @@
 
 namespace fakeit {
 
-class NullEventHandler : public fakeit::EventHandler {
+struct StandalownAdapter: public fakeit::EventHandler {
 
-	virtual void handle(const UnexpectedMethodCallEvent&) {}
+	StandalownAdapter(EventFormatter& formatter)
+			: _formatter(formatter) {
+	}
 
-	virtual void handle(const SequenceVerificationEvent&) {}
+	virtual void handle(const UnexpectedMethodCallEvent& evt) override {
+		std::string format = _formatter.format(evt);
+		UnexpectedMethodCallException ex(format);
+		throw ex;
+	}
 
-	virtual void handle(const NoMoreInvocationsVerificationEvent&) {}
+	virtual void handle(const SequenceVerificationEvent& evt) override {
+		std::string format (_formatter.format(evt));
+		SequenceVerificationException e(format);
+		e.setFileInfo(evt.file(), evt.line(), evt.callingMethod());
+		throw e;
 
-	NullEventHandler(NullEventHandler&) = delete;
+	}
 
-public:
-	NullEventHandler() = default;
+	virtual void handle(const NoMoreInvocationsVerificationEvent& evt) override {
+		std::string format = _formatter.format(evt);
+		NoMoreInvocationsVerificationException e(format);
+		e.setFileInfo(evt.file(), evt.line(), evt.callingMethod());
+		throw e;
+	}
+
+private:
+	EventFormatter& _formatter;
 };
 
-class DefaultFakeit : public FakeitContext
-{
+class DefaultFakeit: public FakeitContext {
 
 public:
-	DefaultFakeit():_formatter(),_eventLogger(*this), _customFormatter(nullptr),_testingFrameworkAdapter(nullptr)
-	{
-		addEventHandler(_eventLogger);
+	DefaultFakeit()
+			: _formatter(),
+			_standalownAdapter(*this),
+			_customFormatter(nullptr),
+			_testingFrameworkAdapter(nullptr) {
 	}
 
 	static DefaultFakeit& getInstance() {
@@ -67,13 +85,13 @@ public:
 
 protected:
 
-	fakeit::EventHandler& getTestingFrameworkAdapter()  {
+	fakeit::EventHandler& getTestingFrameworkAdapter() {
 		if (_testingFrameworkAdapter)
 			return *_testingFrameworkAdapter;
-		return _nullTestingFrameworkAdapter;
+		return _standalownAdapter;
 	}
 
-	fakeit::EventFormatter& getEventFormatter()  {
+	fakeit::EventFormatter& getEventFormatter() {
 		if (_customFormatter)
 			return *_customFormatter;
 		return _formatter;
@@ -82,8 +100,7 @@ protected:
 private:
 
 	DefaultEventFormatter _formatter;
-	DefaultEventLogger _eventLogger;
-	NullEventHandler _nullTestingFrameworkAdapter;
+	StandalownAdapter _standalownAdapter;
 
 	fakeit::EventFormatter * _customFormatter;
 	fakeit::EventHandler* _testingFrameworkAdapter;
@@ -97,13 +114,13 @@ static SpyFunctor Spy;
 static FakeFunctor Fake;
 static WhenFunctor When;
 
-template <class T>
+template<class T>
 class SilenceUnusedVariableWarnings {
 
-	void use(void *){}
+	void use(void *) {
+	}
 
-	SilenceUnusedVariableWarnings()
-	{
+	SilenceUnusedVariableWarnings() {
 		use(&Fake);
 		use(&When);
 		use(&Spy);

@@ -153,7 +153,6 @@ private:
 
 		std::string format = fakeit.format(event);
 		UnexpectedMethodCallException e(format);
-
 		throw e;
 	}
 
