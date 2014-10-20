@@ -493,7 +493,7 @@ struct BasicStubbing : tpunit::TestFixture {
         Mock<SomeInterface> mock;
         std::queue<int> q({1, 2});
 
-        When(Method(mock, func)).AlwaysDo([&](...) {
+        When(Method(mock, func)).AlwaysDo([&](...) -> int {
             int rv = q.front();
             q.pop();
             return rv;
