@@ -53,6 +53,10 @@ struct FakeitContext: private EventHandler, protected EventFormatter {
 		_eventListeners.push_back(&eventListener);
 	}
 
+	void clearEventHandlers() {
+		_eventListeners.clear();
+	}
+
 protected:
 	virtual EventHandler& getTestingFrameworkAdapter() = 0;
 	virtual EventFormatter& getEventFormatter() = 0;

@@ -20,6 +20,7 @@ verification_errors_tests.cpp \
 default_event_formatting_tests.cpp \
 custom_event_formatting_tests.cpp \
 custom_testing_framework_tests.cpp \
+event_notification_tests.cpp \
 miscellaneous_tests.cpp 
 
 OBJS += $(subst .cpp,.o,$(CPP_SRCS))
