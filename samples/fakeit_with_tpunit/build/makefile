@@ -2,7 +2,7 @@
 RM := rm -rf
 
 CPP_SRCS += \
-custom_testing_framework_tests.cpp \
+SquareToolTest.cpp \
 main.cpp  
 
 OBJS += $(subst .cpp,.o,$(CPP_SRCS))
@@ -24,7 +24,7 @@ fakeit_with_tpunit: $(OBJS)
 %.o: ../sources/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	g++ -D__GXX_EXPERIMENTAL_CXX0X__ -I"../../../include" -O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+	g++ -D__GXX_EXPERIMENTAL_CXX0X__ -I"../../../include" -I"../../../samples/tested_app" -O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
