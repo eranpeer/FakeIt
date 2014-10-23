@@ -1,6 +1,7 @@
 #ifndef fakeit_h__
 #define fakeit_h__
 
+#include "fakeit/DefaultFakeit.hpp"
 #include "fakeit/Mock.hpp"
 #include "fakeit/WhenFunctor.hpp"
 #include "fakeit/FakeFunctor.hpp"
@@ -8,6 +9,8 @@
 #include "fakeit/VerifyFunctor.hpp"
 #include "fakeit/VerifyNoOtherInvocationsFunctor.hpp"
 #include "fakeit/SpyFunctor.hpp"
+
+
 
 #ifdef _MSC_VER
 #define __func__ __FUNCTION__
