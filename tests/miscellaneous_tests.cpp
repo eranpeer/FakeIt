@@ -11,7 +11,7 @@
 
 #include "tpunit++.hpp"
 #include "fakeit.hpp"
-#include "fakeit/FakeitExceptions.hpp"
+#include "fakeit/StandaloneFakeit.hpp"
 
 using namespace fakeit;
 

@@ -12,7 +12,6 @@
 #include <stdexcept>
 #include <tuple>
 
-#include "TpUnitAdapter.hpp"
 #include "tpunit++.hpp"
 #include "fakeit.hpp"
 
