@@ -165,7 +165,7 @@ struct CustomTestingFramework: tpunit::TestFixture {
 		try {
 			i.func(1);
 			FAIL();
-		} catch (fakeit::UnexpectedMethodCallException& e) {
+		} catch (fakeit::UnexpectedMethodCallException&) {
 		}
 	}
 
@@ -180,7 +180,7 @@ struct CustomTestingFramework: tpunit::TestFixture {
 		try {
 			i.func(100);
 			FAIL();
-		} catch (fakeit::UnexpectedMethodCallException& e) {
+		} catch (fakeit::UnexpectedMethodCallException&) {
 		}
 	}
 
@@ -196,7 +196,7 @@ struct CustomTestingFramework: tpunit::TestFixture {
 		try {
 			i.func(1);
 			FAIL();
-		} catch (fakeit::UnexpectedMethodCallException& e) {
+		} catch (fakeit::UnexpectedMethodCallException&) {
 		}
 	}
 } __CustomTestingFramework;
