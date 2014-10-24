@@ -1,7 +1,7 @@
 #ifndef fakeit_h__
 #define fakeit_h__
 
-#include "config/mstest/fakeit_instance.hpp"
+#include "config/standalone/fakeit_instance.hpp"
 
 #include "fakeit/Mock.hpp"
 #include "fakeit/WhenFunctor.hpp"
