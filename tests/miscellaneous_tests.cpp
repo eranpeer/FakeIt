@@ -11,7 +11,6 @@
 
 #include "tpunit++.hpp"
 #include "fakeit.hpp"
-#include "fakeit/StandaloneFakeit.hpp"
 
 using namespace fakeit;
 
@@ -58,8 +57,13 @@ struct Miscellaneous: tpunit::TestFixture
 
 	void create_and_delete_fakit_instatnce()
 	{
+        class MyFakeit:public DefaultFakeit {
+            fakeit::EventHandler &accessTestingFrameworkAdapter() override {
+                throw "not implemented";
+            }
+        };
 		{
-			StandaloneFakeit df;
+            MyFakeit f;
 		}
 	}
 

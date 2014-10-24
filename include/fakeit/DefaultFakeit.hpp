@@ -28,11 +28,14 @@ namespace fakeit {
     };
 
     class DefaultFakeit : public AbstractFakeit {
+        DefaultEventFormatter _formatter;
         fakeit::EventFormatter *_customFormatter;
         fakeit::EventHandler *_testingFrameworkAdapter;
+
     public:
 
-        DefaultFakeit() : _customFormatter(nullptr),
+        DefaultFakeit() : _formatter(),
+                          _customFormatter(nullptr),
                           _testingFrameworkAdapter(nullptr) {
         }
 
@@ -67,6 +70,11 @@ namespace fakeit {
                 return *_customFormatter;
             return accessEventFormatter();
         }
+
+        EventFormatter &accessEventFormatter() override {
+            return _formatter;
+        }
+
     };
 }
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fakeit/DefaultFakeit.hpp"
+#include "fakeit/defaultfakeit.hpp"
 
 namespace fakeit {
 
@@ -40,9 +40,7 @@ namespace fakeit {
     public:
         virtual ~StandaloneFakeit() = default;
 
-        StandaloneFakeit()
-                : _formatter(),
-                  _standaloneAdapter(*this) {
+        StandaloneFakeit(): _standaloneAdapter(*this) {
         }
 
         static StandaloneFakeit &getInstance() {
@@ -56,14 +54,8 @@ namespace fakeit {
             return _standaloneAdapter;
         }
 
-        EventFormatter &accessEventFormatter() override {
-            return _formatter;
-        }
-
     private:
 
-        DefaultEventFormatter _formatter;
         StandaloneAdapter _standaloneAdapter;
-
     };
 }
