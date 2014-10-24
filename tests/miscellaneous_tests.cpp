@@ -59,7 +59,7 @@ struct Miscellaneous: tpunit::TestFixture
 	void create_and_delete_fakit_instatnce()
 	{
 		{
-			DefaultFakeit df;
+			StandaloneFakeit df;
 		}
 	}
 

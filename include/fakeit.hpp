@@ -3,7 +3,6 @@
 
 #include "fakeit/DefaultFakeit.hpp"
 
-static fakeit::DefaultFakeit& Fakeit = fakeit::DefaultFakeit::getInstance();
 
 #include "fakeit/Mock.hpp"
 #include "fakeit/WhenFunctor.hpp"
@@ -12,8 +11,10 @@ static fakeit::DefaultFakeit& Fakeit = fakeit::DefaultFakeit::getInstance();
 #include "fakeit/VerifyFunctor.hpp"
 #include "fakeit/VerifyNoOtherInvocationsFunctor.hpp"
 #include "fakeit/SpyFunctor.hpp"
+
+static fakeit::StandaloneFakeit& Fakeit = fakeit::StandaloneFakeit::getInstance();
+
 #include "fakeit/api_functors.hpp"
 #include "api_macros.hpp"
-
 
 #endif // fakeit_h__

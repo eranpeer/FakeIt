@@ -17,6 +17,7 @@
 namespace fakeit {
 
 struct StandaloneAdapter: public EventHandler {
+	virtual ~StandaloneAdapter() = default;
 
 	StandaloneAdapter(EventFormatter& formatter)
 			: _formatter(formatter) {
@@ -47,20 +48,27 @@ private:
 	EventFormatter& _formatter;
 };
 
-class DefaultFakeit: public FakeitContext {
+class AbstractFakeit : public FakeitContext
+{
+public:
+	virtual ~AbstractFakeit() = default;
+
+};
+
+class StandaloneFakeit : public AbstractFakeit {
 
 public:
-	virtual ~DefaultFakeit() = default;
+	virtual ~StandaloneFakeit() = default;
 
-	DefaultFakeit()
+	StandaloneFakeit()
 			: _formatter(),
 			_standaloneAdapter(*this),
 			_customFormatter(nullptr),
 			_testingFrameworkAdapter(nullptr) {
 	}
 
-	static DefaultFakeit& getInstance() {
-		static DefaultFakeit instance;
+	static StandaloneFakeit& getInstance() {
+		static StandaloneFakeit instance;
 		return instance;
 	}
 
@@ -82,13 +90,15 @@ public:
 
 protected:
 
-	fakeit::EventHandler& getTestingFrameworkAdapter() {
+	fakeit::EventHandler& getTestingFrameworkAdapter() override
+	{
 		if (_testingFrameworkAdapter)
 			return *_testingFrameworkAdapter;
 		return _standaloneAdapter;
 	}
 
-	fakeit::EventFormatter& getEventFormatter() {
+	EventFormatter& getEventFormatter() override
+	{
 		if (_customFormatter)
 			return *_customFormatter;
 		return _formatter;

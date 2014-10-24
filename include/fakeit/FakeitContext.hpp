@@ -15,36 +15,44 @@
 namespace fakeit {
 
 struct FakeitContext: private EventHandler, protected EventFormatter {
+	
+	virtual ~FakeitContext() = default;
 
-	void handle(const UnexpectedMethodCallEvent& e) {
+	void handle(const UnexpectedMethodCallEvent& e) override
+	{
 		fireEvent(e);
 		auto& eh = getTestingFrameworkAdapter();
 		eh.handle(e);
 	}
 
-	void handle(const SequenceVerificationEvent& e) {
+	void handle(const SequenceVerificationEvent& e) override
+	{
 		fireEvent(e);
 		auto& eh = getTestingFrameworkAdapter();
 		eh.handle(e);
 	}
 
-	void handle(const NoMoreInvocationsVerificationEvent& e) {
+	void handle(const NoMoreInvocationsVerificationEvent& e) override
+	{
 		fireEvent(e);
 		auto& eh = getTestingFrameworkAdapter();
 		eh.handle(e);
 	}
 
-	std::string format(const fakeit::UnexpectedMethodCallEvent& e) {
+	std::string format(const UnexpectedMethodCallEvent& e) override
+	{
 		auto& eventFormatter = getEventFormatter();
 		return eventFormatter.format(e);
 	}
 
-	std::string format(const fakeit::SequenceVerificationEvent& e) {
+	std::string format(const SequenceVerificationEvent& e) override
+	{
 		auto& eventFormatter = getEventFormatter();
 		return eventFormatter.format(e);
 	}
 
-	std::string format(const fakeit::NoMoreInvocationsVerificationEvent& e) {
+	std::string format(const NoMoreInvocationsVerificationEvent& e) override
+	{
 		auto& eventFormatter = getEventFormatter();
 		return eventFormatter.format(e);
 	}
@@ -63,17 +71,17 @@ protected:
 private:
 	std::vector<EventHandler*> _eventListeners;
 
-	void fireEvent(const fakeit::NoMoreInvocationsVerificationEvent& evt) {
+	void fireEvent(const NoMoreInvocationsVerificationEvent& evt) {
 		for (auto listener : _eventListeners)
 			listener->handle(evt);
 	}
 
-	void fireEvent(const fakeit::UnexpectedMethodCallEvent& evt) {
+	void fireEvent(const UnexpectedMethodCallEvent& evt) {
 		for (auto listener : _eventListeners)
 			listener->handle(evt);
 	}
 
-	void fireEvent(const fakeit::SequenceVerificationEvent& evt) {
+	void fireEvent(const SequenceVerificationEvent& evt) {
 		for (auto listener : _eventListeners)
 			listener->handle(evt);
 	}
