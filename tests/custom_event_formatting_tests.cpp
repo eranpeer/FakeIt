@@ -75,7 +75,7 @@ struct CustomEventFormatting : tpunit::TestFixture {
 	}
 
 	static void teardown() {
-		Fakeit.clearCustomEventFormatter();
+		Fakeit.resetCustomEventFormatter();
 	}
 
 	void format_UnexpectedMethodCallEvent() {

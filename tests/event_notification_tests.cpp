@@ -106,7 +106,7 @@ struct EventNotification: tpunit::TestFixture {
 
 	static void teardown() {
 		Fakeit.clearEventHandlers();
-		Fakeit.clearTestingFrameworkAdapter();
+		Fakeit.resetTestingFrameworkAdapter();
 	}
 
 	void handle_UnexpectedMethodCallEvent() {

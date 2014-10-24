@@ -107,7 +107,7 @@ struct CustomTestingFramework: tpunit::TestFixture {
 	}
 
 	static void teardown() {
-		Fakeit.clearTestingFrameworkAdapter();
+		Fakeit.resetTestingFrameworkAdapter();
 	}
 
 	void handle_UnexpectedMethodCallEvent() {

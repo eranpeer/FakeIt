@@ -16,102 +16,90 @@
 
 namespace fakeit {
 
-struct StandaloneAdapter: public EventHandler {
-	virtual ~StandaloneAdapter() = default;
+    struct StandaloneAdapter : public EventHandler {
+        virtual ~StandaloneAdapter() = default;
 
-	StandaloneAdapter(EventFormatter& formatter)
-			: _formatter(formatter) {
-	}
+        StandaloneAdapter(EventFormatter &formatter)
+                : _formatter(formatter) {
+        }
 
-	virtual void handle(const UnexpectedMethodCallEvent& evt) override {
-		std::string format = _formatter.format(evt);
-		UnexpectedMethodCallException ex(format);
-		throw ex;
-	}
+        virtual void handle(const UnexpectedMethodCallEvent &evt) override {
+            std::string format = _formatter.format(evt);
+            UnexpectedMethodCallException ex(format);
+            throw ex;
+        }
 
-	virtual void handle(const SequenceVerificationEvent& evt) override {
-		std::string format (_formatter.format(evt));
-		SequenceVerificationException e(format);
-		e.setFileInfo(evt.file(), evt.line(), evt.callingMethod());
-		throw e;
+        virtual void handle(const SequenceVerificationEvent &evt) override {
+            std::string format(_formatter.format(evt));
+            SequenceVerificationException e(format);
+            e.setFileInfo(evt.file(), evt.line(), evt.callingMethod());
+            throw e;
+        }
 
-	}
+        virtual void handle(const NoMoreInvocationsVerificationEvent &evt) override {
+            std::string format = _formatter.format(evt);
+            NoMoreInvocationsVerificationException e(format);
+            e.setFileInfo(evt.file(), evt.line(), evt.callingMethod());
+            throw e;
+        }
 
-	virtual void handle(const NoMoreInvocationsVerificationEvent& evt) override {
-		std::string format = _formatter.format(evt);
-		NoMoreInvocationsVerificationException e(format);
-		e.setFileInfo(evt.file(), evt.line(), evt.callingMethod());
-		throw e;
-	}
+    private:
+        EventFormatter &_formatter;
+    };
 
-private:
-	EventFormatter& _formatter;
-};
+    class AbstractFakeit : public FakeitContext {
+    public:
+        virtual ~AbstractFakeit() = default;
 
-class AbstractFakeit : public FakeitContext
-{
-public:
-	virtual ~AbstractFakeit() = default;
+    protected:
 
-};
+        virtual fakeit::EventHandler &accessTestingFrameworkAdapter() = 0;
 
-class StandaloneFakeit : public AbstractFakeit {
+        virtual EventFormatter &accessEventFormatter() = 0;
+    };
 
-public:
-	virtual ~StandaloneFakeit() = default;
+    class DefaultFakeit : public AbstractFakeit {
+        fakeit::EventFormatter *_customFormatter;
+        fakeit::EventHandler *_testingFrameworkAdapter;
+    public:
 
-	StandaloneFakeit()
-			: _formatter(),
-			_standaloneAdapter(*this),
-			_customFormatter(nullptr),
-			_testingFrameworkAdapter(nullptr) {
-	}
+        DefaultFakeit() : _customFormatter(nullptr),
+                          _testingFrameworkAdapter(nullptr) {
+        }
 
-	static StandaloneFakeit& getInstance() {
-		static StandaloneFakeit instance;
-		return instance;
-	}
+        virtual ~DefaultFakeit() = default;
 
-	void setCustomEventFormatter(fakeit::EventFormatter& customErrorFormatter) {
-		_customFormatter = &customErrorFormatter;
-	}
+        void setCustomEventFormatter(fakeit::EventFormatter &customEventFormatter) {
+            _customFormatter = &customEventFormatter;
+        }
 
-	void clearCustomEventFormatter() {
-		_customFormatter = nullptr;
-	}
+        void resetCustomEventFormatter() {
+            _customFormatter = nullptr;
+        }
 
-	void setTestingFrameworkAdapter(fakeit::EventHandler& eventHandler) {
-		_testingFrameworkAdapter = &eventHandler;
-	}
+        void setTestingFrameworkAdapter(fakeit::EventHandler &testingFrameforkAdapter) {
+            _testingFrameworkAdapter = &testingFrameforkAdapter;
+        }
 
-	void clearTestingFrameworkAdapter() {
-		_testingFrameworkAdapter = nullptr;
-	}
+        void resetTestingFrameworkAdapter() {
+            _testingFrameworkAdapter = nullptr;
+        }
 
-protected:
+    protected:
 
-	fakeit::EventHandler& getTestingFrameworkAdapter() override
-	{
-		if (_testingFrameworkAdapter)
-			return *_testingFrameworkAdapter;
-		return _standaloneAdapter;
-	}
+        fakeit::EventHandler &getTestingFrameworkAdapter() override {
+            if (_testingFrameworkAdapter)
+                return *_testingFrameworkAdapter;
+            return accessTestingFrameworkAdapter();
+        }
 
-	EventFormatter& getEventFormatter() override
-	{
-		if (_customFormatter)
-			return *_customFormatter;
-		return _formatter;
-	}
+        EventFormatter &getEventFormatter() override {
+            if (_customFormatter)
+                return *_customFormatter;
+            return accessEventFormatter();
+        }
+    };
 
-private:
-
-	DefaultEventFormatter _formatter;
-	StandaloneAdapter _standaloneAdapter;
-
-	fakeit::EventFormatter * _customFormatter;
-	fakeit::EventHandler* _testingFrameworkAdapter;
-};
 }
 
 #endif //

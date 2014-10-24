@@ -1,8 +1,9 @@
 #ifndef fakeit_h__
 #define fakeit_h__
 
-#include "fakeit/DefaultFakeit.hpp"
+#include "fakeit/StandaloneFakeit.hpp"
 
+#include "fakeit_instance.hpp"
 
 #include "fakeit/Mock.hpp"
 #include "fakeit/WhenFunctor.hpp"
@@ -11,9 +12,6 @@
 #include "fakeit/VerifyFunctor.hpp"
 #include "fakeit/VerifyNoOtherInvocationsFunctor.hpp"
 #include "fakeit/SpyFunctor.hpp"
-
-static fakeit::StandaloneFakeit& Fakeit = fakeit::StandaloneFakeit::getInstance();
-
 #include "fakeit/api_functors.hpp"
 #include "api_macros.hpp"
 
