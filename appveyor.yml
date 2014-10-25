@@ -1,3 +1,2 @@
-branches:
-  only:
-    - tests
+build:
+  project: tests\all_tests.sln
