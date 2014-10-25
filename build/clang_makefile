@@ -43,7 +43,7 @@ fakeit_test_application: $(OBJS)
 %.o: ../tests/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: Clang C++ Compiler'
-	clang++ -D__GXX_EXPERIMENTAL_CXX0X__ -I"../include" -O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+	clang++ -D__GXX_EXPERIMENTAL_CXX0X__ -I"../include" -I"../config/standalone" -O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
