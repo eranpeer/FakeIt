@@ -1,5 +1,5 @@
 #pragma once
 
-#include "config/tpunit/TpunitFakeit.hpp"
+#include "TpunitFakeit.hpp"
 
 static fakeit::DefaultFakeit& Fakeit = fakeit::TpunitFakeit::getInstance();

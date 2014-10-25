@@ -1,5 +1,5 @@
 #pragma once
 
-#include "config/standalone/StandaloneFakeit.hpp"
+#include "StandaloneFakeit.hpp"
 
 static fakeit::DefaultFakeit& Fakeit = fakeit::StandaloneFakeit::getInstance();

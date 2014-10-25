@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.4)
-include_directories ("../include")
+include_directories ("../include" "../config/standalone")
 project(tests)
 
 set(CMAKE_CXX_FLAGS "-std=c++11")

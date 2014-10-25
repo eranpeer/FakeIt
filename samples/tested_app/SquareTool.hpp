@@ -33,6 +33,4 @@ public:
 	}
 };
 
-
-
 #endif /* SQUARETOOL_HPP_ */
