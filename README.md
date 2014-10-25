@@ -63,7 +63,7 @@ Download the [Latest Release](https://github.com/eranpeer/FakeIt/releases/latest
 * Supports dynamic casting.
 
 ## Installation
-FakeIt is a template library. It does not require any installation. All you need to do is to download the source files and add the "include" folder and the configuration folder to the include path of your project.
+FakeIt is a template library. It does not require any installation. All you need to do is to download the source files and add the "include" folder and the configuration folder of your choice to the include path of your project.
 For example:
 * To use fakeit with **Google Test** add the "include" folder and the "config/gtest" folder to the include path of your test project:
 ```
