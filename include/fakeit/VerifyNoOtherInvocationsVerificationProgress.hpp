@@ -45,8 +45,11 @@ class VerifyNoOtherInvocationsVerificationProgress {
 
 		VerifyNoOtherInvocationsExpectation(FakeitContext& fakeit, std::set<const ActualInvocationsSource*> mocks) :
 				_fakeit(fakeit),
-				_mocks(mocks), _line(0) {
+				_mocks(mocks), 
+				_line(0) {
 		}
+
+		VerifyNoOtherInvocationsExpectation(VerifyNoOtherInvocationsExpectation& other) = default;
 
 		void VerifyExpectation() {
 			std::unordered_set<Invocation*> actualInvocations;
@@ -70,21 +73,26 @@ class VerifyNoOtherInvocationsVerificationProgress {
 
 	};
 
-	fakeit::smart_ptr<VerifyNoOtherInvocationsExpectation> ptr;
+	fakeit::smart_ptr<VerifyNoOtherInvocationsExpectation> _ptr;
 
 	VerifyNoOtherInvocationsVerificationProgress(VerifyNoOtherInvocationsExpectation * ptr) :
-			ptr(ptr) {
+			_ptr(ptr) {
 	}
 
-	VerifyNoOtherInvocationsVerificationProgress(FakeitContext& fakeit, std::set<const ActualInvocationsSource*>& invocationSources) :
-			VerifyNoOtherInvocationsVerificationProgress(new VerifyNoOtherInvocationsExpectation(fakeit, invocationSources)) {
+	VerifyNoOtherInvocationsVerificationProgress(FakeitContext& fakeit, std::set<const ActualInvocationsSource*>& invocationSources) 
+		: VerifyNoOtherInvocationsVerificationProgress(
+			new VerifyNoOtherInvocationsExpectation(fakeit, invocationSources)
+			) 
+	{
 	}
 
 public:
-	~VerifyNoOtherInvocationsVerificationProgress() THROWS {};
+	
+	~VerifyNoOtherInvocationsVerificationProgress() THROWS {
+	};
 
 	VerifyNoOtherInvocationsVerificationProgress setFileInfo(std::string file, int line, std::string callingMethod) {
-		ptr->setFileInfo(file, line, callingMethod);
+		_ptr->setFileInfo(file, line, callingMethod);
 		return *this;
 	}
 };

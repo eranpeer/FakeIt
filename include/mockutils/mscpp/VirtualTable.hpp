@@ -61,7 +61,10 @@ struct RTTIBaseClassDescriptor {
 template <typename C, typename... baseclasses>
 struct RTTIClassHierarchyDescriptor {
 	RTTIClassHierarchyDescriptor() :
-	signature(0), attributes(0), numBaseClasses(0),pBaseClassArray(nullptr){
+	signature(0), 
+	attributes(0), 
+	numBaseClasses(0),
+	pBaseClassArray(nullptr){
 		pBaseClassArray = new RTTIBaseClassDescriptor*[1 + sizeof...(baseclasses)];
 		addBaseClass<C, baseclasses...>();
 	}
@@ -103,7 +106,10 @@ struct RTTIClassHierarchyDescriptor {
 template<typename C, typename... baseclasses>
 struct RTTICompleteObjectLocator {
 	RTTICompleteObjectLocator(const std::type_info& info) :
-	signature(0), offset(0), cdOffset(0), pTypeDescriptor(&info), pClassDescriptor(new RTTIClassHierarchyDescriptor<C,baseclasses...>()) {
+		signature(0), offset(0), cdOffset(0),
+		pTypeDescriptor(&info), 
+		pClassDescriptor(new RTTIClassHierarchyDescriptor<C,baseclasses...>()) 
+	{
 	}
 
 	~RTTICompleteObjectLocator(){
@@ -147,7 +153,6 @@ struct VirtualTable {
 
 	void copyFrom(VirtualTable<C, baseclasses...>& from) {
 		unsigned int size = VTUtils::getVTSize<C>();
-		firstMethod[-1] = from.firstMethod[-1]; // copy object locator
 		for (unsigned int i = 0; i < size; i++) {
 			firstMethod[i] = from.getMethod(i);
 		}
@@ -162,9 +167,11 @@ struct VirtualTable {
 	}
 
 	void dispose() {
+		RTTICompleteObjectLocator<C, baseclasses...> * locator = (RTTICompleteObjectLocator<C, baseclasses...>*)firstMethod[-1];
 		firstMethod--; // skip objectLocator
 		firstMethod--; // skip cookie 0
 		firstMethod--; // skip cookie 1
+		delete locator;
 		delete[] firstMethod;
 	}
 
