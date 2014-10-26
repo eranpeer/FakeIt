@@ -45,8 +45,17 @@ class FakeObject {
 
 public:
 
-    FakeObject() : vtable(VirtualTable<C, baseclasses...>::nullVTable()) {
-        initializeDataMembersArea();
+//    FakeObject() : vtable(VirtualTable<C, baseclasses...>::nullVTable()) {
+//        initializeDataMembersArea();
+//    }
+
+	FakeObject() : vtable() {
+		initializeDataMembersArea();
+	}
+
+	~FakeObject()
+    {
+		vtable.dispose();
     }
 
     void initializeDataMembersArea() {

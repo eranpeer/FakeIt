@@ -34,10 +34,15 @@ struct DynamicProxy {
 	static_assert(std::is_polymorphic<C>::value, "DynamicProxy requires a polymorphic type");
 
 	DynamicProxy(C& instance) :
-			instance(instance), originalVT(VirtualTable<C, baseclasses...>::getVTable(instance).createHandle()), methodMocks() {
-		cloneVt.copyFrom(originalVT.restore());
+			instance(instance), originalVtHandle(VirtualTable<C, baseclasses...>::getVTable(instance).createHandle()), methodMocks() {
+		cloneVt.copyFrom(originalVtHandle.restore());
 		cloneVt.setCookie(0, this);
 		getFake().setVirtualTable(cloneVt);
+	}
+
+	void detach()
+	{
+		getFake().setVirtualTable(originalVtHandle.restore());
 	}
 
 	~DynamicProxy() {
@@ -51,7 +56,7 @@ struct DynamicProxy {
 	void Reset() {
 		methodMocks = {{}};
 		members = {};
-		cloneVt.copyFrom(originalVT.restore());
+		cloneVt.copyFrom(originalVtHandle.restore());
 	}
 
 	template<typename R, typename ... arglist>
@@ -95,7 +100,7 @@ struct DynamicProxy {
 	}
 
 	VirtualTable<C, baseclasses...>& getOriginalVT() {
-		VirtualTable<C, baseclasses...>& vt = originalVT.restore();
+		VirtualTable<C, baseclasses...>& vt = originalVtHandle.restore();
 		return vt;
 	}
 
@@ -479,7 +484,7 @@ private:
 	static_assert(sizeof(C) == sizeof(FakeObject<C,baseclasses...>), "This is a problem");
 
 	C& instance;
-	typename VirtualTable<C, baseclasses...>::Handle originalVT; // avoid delete!! this is the original!
+	typename VirtualTable<C, baseclasses...>::Handle originalVtHandle; // avoid delete!! this is the original!
 	VirtualTable<C, baseclasses...> cloneVt;//
 	std::array<std::shared_ptr<Destructable>, 50> methodMocks;
 	std::vector<std::shared_ptr<Destructable>> members;

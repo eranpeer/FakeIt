@@ -156,6 +156,11 @@ struct VirtualTable {
 	VirtualTable(): VirtualTable(buildVTArray()) {
 	}
 
+	~VirtualTable()
+	{
+		
+	}
+
 	void dispose() {
 		firstMethod--; // skip objectLocator
 		firstMethod--; // skip cookie 0

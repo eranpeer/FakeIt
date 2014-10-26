@@ -39,6 +39,7 @@ public:
 	virtual ~MockImpl() {
 		if (_isSpy)
 			return;
+		_proxy.detach();
 		FakeObject<C, baseclasses...>* fake = reinterpret_cast<FakeObject<C, baseclasses...>*>(_instance);
 		delete fake;
 	}
@@ -158,7 +159,7 @@ private:
 
 	static C* createFakeInstance() {
 		FakeObject<C, baseclasses...>* fake = new FakeObject<C, baseclasses...>();
-		fake->initializeDataMembersArea();
+		//fake->initializeDataMembersArea();
 		void* unmockedMethodStubPtr = union_cast<void*>(&MockImpl<C, baseclasses...>::unmocked);
 		fake->getVirtualTable().initAll(unmockedMethodStubPtr);
 		return reinterpret_cast<C*>(fake);
