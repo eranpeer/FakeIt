@@ -63,6 +63,7 @@ struct Miscellaneous: tpunit::TestFixture
             }
         };
 		{
+        	StandaloneFakeit s;
             MyFakeit f;
 		}
 	}
