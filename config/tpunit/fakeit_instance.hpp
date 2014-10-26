@@ -1,5 +1,5 @@
 #pragma once
 
-#include "TpunitFakeit.hpp"
+#include "TpUnitFakeit.hpp"
 
-static fakeit::DefaultFakeit& Fakeit = fakeit::TpunitFakeit::getInstance();
+static fakeit::DefaultFakeit& Fakeit = fakeit::TpUnitFakeit::getInstance();

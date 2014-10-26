@@ -1,6 +1,6 @@
 #pragma once
 
-#include "defaultfakeit.hpp"
+#include "fakeit/DefaultFakeit.hpp"
 #include "fakeit/EventHandler.hpp"
 
 namespace fakeit {

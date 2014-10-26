@@ -52,7 +52,7 @@ struct VirtualTable {
 
 	void copyFrom(VirtualTable<C, baseclasses...>& from) {
 		unsigned int size = VTUtils::getVTSize<C>();
-		firstMethod[-1] = from.firstMethod[-1]; // copy type_info
+		//firstMethod[-1] = from.firstMethod[-1]; // copy type_info
 		for (size_t i = 0; i < size; ++i) {
 			firstMethod[i] = from.getMethod(i);
 		}
