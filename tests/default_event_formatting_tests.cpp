@@ -302,6 +302,25 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 			std::string actual{ to_string(e) };
 			ASSERT_EQUAL(expectedMsg, actual);
 		}
+
+		try {
+			fakeit::Verify(
+				(Method(mock, func)(1) * 2 * 2))//
+				.setFileInfo("test file", 1, "test method");
+			FAIL();
+		}
+		catch (SequenceVerificationException& e)
+		{
+			std::string expectedMsg;
+			expectedMsg += "test file:1: Verification error\n";
+			expectedMsg += "Expected pattern: (mock.func(1) * 2) * 2\n";
+			expectedMsg += "Expected matches: at least 1\n";
+			expectedMsg += "Actual matches  : 0\n";
+			expectedMsg += "Actual sequence : total of 0 actual invocations.";
+			std::string actual{ to_string(e) };
+			ASSERT_EQUAL(expectedMsg, actual);
+		}
+
 	}
 
 } __DefaultEventFormatting;
