@@ -75,11 +75,11 @@ private:
 	static std::string formatSequence(const Sequence& val) {
 		const ConcatenatedSequence* cs = dynamic_cast<const ConcatenatedSequence*>(&val);
 		if (cs) {
-			return Formatter<ConcatenatedSequence>::format(*cs);
+			return format(*cs);
 		}
 		const RepeatedSequence* rs = dynamic_cast<const RepeatedSequence*>(&val);
 		if (rs) {
-			return Formatter<RepeatedSequence>::format(*rs);
+			return format(*rs);
 		}
 
 		// This is a leaf sequence. It has exactly one matcher! Format this matcher.
@@ -123,7 +123,15 @@ private:
 
 	static std::string format(const RepeatedSequence& val) {
 		std::ostringstream out;
-		out << formatSequence(val.getSequence()) << " * " << val.getTimes();
+		const ConcatenatedSequence* cs = dynamic_cast<const ConcatenatedSequence*>(&val.getSequence());
+		const RepeatedSequence* rs = dynamic_cast<const RepeatedSequence*>(&val.getSequence());
+		if (rs || cs)
+			out << '(';
+		out << formatSequence(val.getSequence());
+		if (rs || cs)
+			out << ')';
+
+		out << " * " << val.getTimes();
 		return out.str();
 	}
 

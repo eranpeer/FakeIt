@@ -31,15 +31,6 @@ struct C
 
 BOOST_AUTO_TEST_CASE(TestClass)
 {
-//	RTTICompleteObjectLocator<S> c(typeid(S));
-//	RTTIClassHierarchyDescriptor<S> d;
-//	VirtualTable<S> vt;
-//	vt.dispose();
-//	vt.dispose();
-//	FakeObject<S> f;
-//	C c;
-//	DynamicProxy<C> _proxy(c);
-//	MockImpl<S> m(Fakeit);
 	Mock<IGraphics> graphicsMock;
 	Fake(Method(graphicsMock, DrawLine));
 
@@ -49,6 +40,11 @@ BOOST_AUTO_TEST_CASE(TestClass)
 	squareTool.DrawOn(graphicsMock.get());
 
 	Verify(Method(graphicsMock, DrawLine)(0, 0, 10, 0));
+	Verify(Method(graphicsMock, DrawLine)(10, 0, 10, 10));
+	Verify(Method(graphicsMock, DrawLine)(10, 10, 0, 10));
+	Verify(Method(graphicsMock, DrawLine)(0, 10, 0, 0));
+
+	Verify(Method(graphicsMock, DrawLine)(0, 0, 10, 0) + Method(graphicsMock, DrawLine)(0, 0, 10, 10));
 
 	// Will file since there are more invocations.
 	VerifyNoOtherInvocations(Method(graphicsMock, DrawLine));

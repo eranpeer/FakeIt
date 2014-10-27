@@ -29,7 +29,10 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 			TEST(DefaultEventFormatting::format_NoMoreInvocations_VerificationFailure),
 			TEST(DefaultEventFormatting::format_UserDefinedMatcher_in_expected_pattern),
 			TEST(DefaultEventFormatting::format_actual_arguments),
-			TEST(DefaultEventFormatting::format_expected_arguments)
+			TEST(DefaultEventFormatting::format_expected_arguments),
+			TEST(DefaultEventFormatting::format_expected_concatenated_sequence),
+			TEST(DefaultEventFormatting::format_expected_repeated_sequence),
+			TEST(DefaultEventFormatting::format_complex_sequence)
 			) //
 	{
 	}
@@ -234,6 +237,69 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 			expectedMsg += "Actual matches  : 0\n";
 			expectedMsg += "Actual sequence : total of 0 actual invocations.";
 			std::string actual {to_string(e)};
+			ASSERT_EQUAL(expectedMsg, actual);
+		}
+	}
+
+	void format_expected_concatenated_sequence() {
+		Mock<SomeInterface> mock;
+		try {
+			fakeit::Verify(
+				Method(mock, func)(1) + Method(mock, proc)(2))//
+				.setFileInfo("test file", 1, "test method");
+			FAIL();
+		}
+		catch (SequenceVerificationException& e)
+		{
+			std::string expectedMsg;
+			expectedMsg += "test file:1: Verification error\n";
+			expectedMsg += "Expected pattern: mock.func(1) + mock.proc(2)\n";
+			expectedMsg += "Expected matches: at least 1\n";
+			expectedMsg += "Actual matches  : 0\n";
+			expectedMsg += "Actual sequence : total of 0 actual invocations.";
+			std::string actual{ to_string(e) };
+			ASSERT_EQUAL(expectedMsg, actual);
+		}
+	}
+
+	void format_expected_repeated_sequence() {
+		Mock<SomeInterface> mock;
+		try {
+			fakeit::Verify(
+				Method(mock, func)(1) * 2)//
+				.setFileInfo("test file", 1, "test method");
+			FAIL();
+		}
+		catch (SequenceVerificationException& e)
+		{
+			std::string expectedMsg;
+			expectedMsg += "test file:1: Verification error\n";
+			expectedMsg += "Expected pattern: mock.func(1) * 2\n";
+			expectedMsg += "Expected matches: at least 1\n";
+			expectedMsg += "Actual matches  : 0\n";
+			expectedMsg += "Actual sequence : total of 0 actual invocations.";
+			std::string actual{ to_string(e) };
+			ASSERT_EQUAL(expectedMsg, actual);
+		}
+	}
+
+	void format_complex_sequence() {
+		Mock<SomeInterface> mock;
+		try {
+			fakeit::Verify(
+				(Method(mock, func)(1) + Method(mock, proc)(1)) * 2)//
+				.setFileInfo("test file", 1, "test method");
+			FAIL();
+		}
+		catch (SequenceVerificationException& e)
+		{
+			std::string expectedMsg;
+			expectedMsg += "test file:1: Verification error\n";
+			expectedMsg += "Expected pattern: (mock.func(1) + mock.proc(1)) * 2\n";
+			expectedMsg += "Expected matches: at least 1\n";
+			expectedMsg += "Actual matches  : 0\n";
+			expectedMsg += "Actual sequence : total of 0 actual invocations.";
+			std::string actual{ to_string(e) };
 			ASSERT_EQUAL(expectedMsg, actual);
 		}
 	}
