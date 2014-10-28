@@ -56,7 +56,7 @@ Download the [Latest Release](https://github.com/eranpeer/FakeIt/releases/latest
 ## Features
 * Very simple API based on the expressiveness of C++11.
 * Supports all major compilers: GCC, Clang and MSC++.
-* Easily integrated with **GTest** and **MS Test**.
+* Easily integrated with **GTest**, **MS Test** and **Boost Test**.
 * Expressive [Arrange-Act-Assert](http://xp123.com/articles/3a-arrange-act-assert/) syntax.
 * Create mock classes or **spy existing objects** instantly in one simple line.
 * No limitation on number of method arguments.
@@ -72,6 +72,10 @@ For example:
 * To use fakeit with **MS Test** add the "include" folder and the "config/mstest" folder to the include path of your test project:
 ```
 -I"<fakeit_folder>/include" -I"<fakeit_folder>/config/mstest"
+```
+* To use fakeit with **Boost Test** add the "include" folder and the "config/boost" folder to the include path of your test project:
+```
+-I"<fakeit_folder>/include" -I"<fakeit_folder>/config/boost"
 ```
 * To use fakeit with **tpunit** add the "include" folder and the "config/tpunit" folder to the include path of your test project:
 ```
