@@ -85,8 +85,8 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="fakeit_with_boost.cpp" />
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="tests\fakeit_with_boost.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
