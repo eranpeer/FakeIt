@@ -83,8 +83,8 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="sources\FailingTestDemo.cpp" />
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="FailingTestDemo.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
