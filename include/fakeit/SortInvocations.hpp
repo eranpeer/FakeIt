@@ -27,8 +27,8 @@ static void sortByInvocationOrder(std::unordered_set<Invocation*>& ivocations, s
 		result.push_back(i);
 }
 
-template<typename T>
-static void collectInvocationSources(T&) {
+template<typename ... list>
+static void collectInvocationSources(std::set<const ActualInvocationsSource*>& into) {
 }
 
 template<typename ... list>
