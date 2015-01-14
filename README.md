@@ -52,11 +52,10 @@ Checkout the [Quickstart](https://github.com/eranpeer/FakeIt/wiki/Quickstart) fo
 
 Download the [Latest Release](https://github.com/eranpeer/FakeIt/releases/latest) and start using FakeIt now!
 
-
 ## Features
 * Very simple API based on the expressiveness of C++11.
 * Supports all major compilers: GCC, Clang and MSC++.
-* Easily integrated with **GTest**, **MS Test** and **Boost Test**.
+* Easily integrated with [**GTest**](https://code.google.com/p/googletest/), [**MS Test**](http://en.wikipedia.org/wiki/Visual_Studio_Unit_Testing_Framework) and [**Boost Test**](http://www.boost.org/doc/libs/1_56_0/libs/test/doc/html/index.html).
 * Expressive [Arrange-Act-Assert](http://xp123.com/articles/3a-arrange-act-assert/) syntax.
 * Create mock classes or **spy existing objects** instantly in one simple line.
 * No limitation on number of method arguments.
