@@ -168,8 +168,6 @@ struct BasicStubbing : tpunit::TestFixture {
 
         ASSERT_THROW(i.func(3), fakeit::UnexpectedMethodCallException);
         ASSERT_THROW(i.proc(3), fakeit::UnexpectedMethodCallException);
-
-	
 	
 		When(Method(mock, func)).Do([](int& val) {
 			return val + 1;

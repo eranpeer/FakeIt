@@ -14,7 +14,7 @@
 #include "fakeit/DomainObjects.hpp"
 #include "fakeit/ActualInvocation.hpp"
 #include "fakeit/Action.hpp"
-#include "fakeit/matchers.hpp"
+#include "fakeit/invocation_matchers.hpp"
 
 #include "mockutils/Finally.hpp"
 #include "mockutils/MethodInvocationHandler.hpp"

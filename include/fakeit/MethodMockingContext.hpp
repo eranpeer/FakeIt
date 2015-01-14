@@ -11,6 +11,7 @@
 
 #include <functional>
 #include <type_traits>
+#include <tuple>
 #include <memory>
 #include <vector>
 #include <unordered_set>
@@ -26,8 +27,107 @@
 #include "fakeit/DomainObjects.hpp"
 #include "fakeit/SpyingContext.hpp"
 #include "fakeit/StubbingContext.hpp"
+#include "mockutils/type_utils.hpp"
 
 namespace fakeit {
+
+//template<std::size_t N, typename ... Types>
+//using Type = typename std::tuple_element<N, std::tuple<Types...>>::type;
+
+template<unsigned int index, typename ... arglist>
+class Collector {
+public:
+
+	template<std::size_t N>
+	using Type = typename std::tuple_element<N, std::tuple<arglist...>>::type;
+
+	Collector(std::vector<Destructable*>& matchers)
+			: _matchers(matchers) {
+	}
+
+	std::vector<Destructable*>& _matchers;
+
+	void CollectMatchers() {
+	}
+
+	template<typename Head, typename ...Tail>
+	typename std::enable_if<std::is_base_of<ITypedArgumentMatcher<typename naked_type<Type<index>>::type>, Head>::value, void>::type CollectMatchers(
+			const Head& creator, const Tail& ... tail) {
+
+		ITypedMatcher<
+
+		typename naked_type<Type<index>>::type
+
+		>* d = creator.createMatcher();
+
+		_matchers.push_back(d);
+		Collector<index + 1, arglist...> c(_matchers);
+		c.CollectMatchers(tail...);
+	}
+
+	template<typename Head, typename ...Tail>
+	typename std::enable_if<
+			!std::is_base_of<ITypedArgumentMatcher<typename naked_type<Type<index>>::type>, Head>::value
+					&& !std::is_same<AnyMatcher, Head>::value, void>::type CollectMatchers(const Head& value, const Tail& ... tail) {
+
+		EqualsMathcher<typename naked_type<Type<index>>::type> m(value);
+
+		ITypedMatcher<typename naked_type<Type<index>>::type>* d = m.createMatcher();
+		_matchers.push_back(d);
+
+		Collector<index + 1, arglist...> c(_matchers);
+		c.CollectMatchers(tail...);
+	}
+
+	template<typename Head, typename ...Tail>
+	typename std::enable_if<
+			!std::is_base_of<ITypedArgumentMatcher<typename naked_type<Type<index>>::type>, Head>::value
+					&& std::is_same<AnyMatcher, Head>::value, void>::type CollectMatchers(const Head& value, const Tail& ... tail) {
+
+		TypedAnyMatcher<typename naked_type<Type<index>>::type> m;
+		ITypedMatcher<typename naked_type<Type<index>>::type>* d = m.createMatcher();
+		_matchers.push_back(d);
+
+		Collector<index + 1, arglist...> c(_matchers);
+		c.CollectMatchers(tail...);
+	}
+
+	template<typename Head>
+	typename std::enable_if<std::is_base_of<ITypedArgumentMatcher<typename naked_type<Type<index>>::type>, Head>::value, void>::type CollectMatchers(
+			const Head& creator) {
+
+		ITypedMatcher<
+
+		typename naked_type<Type<index>>::type
+
+		>* d = creator.createMatcher();
+
+		_matchers.push_back(d);
+	}
+
+	template<typename Head>
+	typename std::enable_if<
+			!std::is_base_of<ITypedArgumentMatcher<typename naked_type<Type<index>>::type>, Head>::value
+					&& !std::is_same<AnyMatcher, Head>::value, void>::type CollectMatchers(const Head& value) {
+
+		EqualsMathcher<typename naked_type<Type<index>>::type> m(value);
+
+		ITypedMatcher<typename naked_type<Type<index>>::type>* d = m.createMatcher();
+		_matchers.push_back(d);
+
+	}
+
+	template<typename Head>
+	typename std::enable_if<
+			!std::is_base_of<ITypedArgumentMatcher<typename naked_type<Type<index>>::type>, Head>::value
+					&& std::is_same<AnyMatcher, Head>::value, void>::type CollectMatchers(const Head& value) {
+
+		TypedAnyMatcher<typename naked_type<Type<index>>::type> m;
+		ITypedMatcher<typename naked_type<Type<index>>::type>* d = m.createMatcher();
+		_matchers.push_back(d);
+	}
+
+};
 
 /**
  * Build recorded sequence and the matching criteria.
@@ -38,17 +138,15 @@ namespace fakeit {
  */
 template<typename R, typename ... arglist>
 class MethodMockingContext: //
-		public Sequence,                // For use in Verify(sequence1,...)... phrases.
+public Sequence,                // For use in Verify(sequence1,...)... phrases.
 		public ActualInvocationsSource, // For use in Using(source1,souece2,...) and VerifyNoOtherInvocations(source1,souece2...) phrases.
 		public virtual StubbingContext<R, arglist...>, // For use in Fake, Spy & When phrases
 		public virtual SpyingContext<R, arglist...>, // For use in Fake, Spy & When phrases
 		private Invocation::Matcher {
 
-
 public:
 
 	struct Context: public Destructable {
-
 
 		virtual ~Context() = default;
 
@@ -60,13 +158,13 @@ public:
 		virtual std::string getMethodName() = 0;
 
 		virtual void addMethodInvocationHandler(typename ActualInvocation<arglist...>::Matcher* matcher,
-							MethodInvocationHandler<R, arglist...>* invocationHandler) = 0;
+				MethodInvocationHandler<R, arglist...>* invocationHandler) = 0;
 
 		virtual void scanActualInvocations(const std::function<void(ActualInvocation<arglist...>&)>& scanner) = 0;
 
-		virtual void setMethodDetails(std::string mockName,std::string methodName) = 0;
+		virtual void setMethodDetails(std::string mockName, std::string methodName) = 0;
 
-		virtual bool isOfMethod(Method& method) =  0;
+		virtual bool isOfMethod(Method& method) = 0;
 
 		virtual ActualInvocationsSource& getInvolvedMock() = 0;
 	};
@@ -76,8 +174,7 @@ private:
 
 		Context* _stubbingContext;
 		ActionSequence<R, arglist...>* _recordedActionSequence;
-		typename ActualInvocation<arglist...>::Matcher* _invocationMatcher;
-		bool _commited;
+		typename ActualInvocation<arglist...>::Matcher* _invocationMatcher;bool _commited;
 
 		Context& getStubbingContext() const {
 			return *_stubbingContext;
@@ -85,14 +182,12 @@ private:
 
 	public:
 
-		Implementation(Context* stubbingContext):
-			_stubbingContext(stubbingContext),
-			_recordedActionSequence(new ActionSequence<R, arglist...>()),
-			_invocationMatcher {new DefaultInvocationMatcher<arglist...>()},
-			_commited(false)
-			{}
+		Implementation(Context* stubbingContext)
+				: _stubbingContext(stubbingContext), _recordedActionSequence(new ActionSequence<R, arglist...>()), _invocationMatcher {
+						new DefaultInvocationMatcher<arglist...>() }, _commited(false) {
+		}
 
-		~Implementation(){
+		~Implementation() {
 			delete _stubbingContext;
 			if (!_commited) {
 				// no commit. delete the created objects.
@@ -101,7 +196,7 @@ private:
 			}
 		}
 
-		ActionSequence<R, arglist...>& getRecordedActionSequence(){
+		ActionSequence<R, arglist...>& getRecordedActionSequence() {
 			return *_recordedActionSequence;
 		}
 
@@ -112,8 +207,8 @@ private:
 		}
 
 		void getActualInvocations(std::unordered_set<Invocation*>& into) const {
-			auto scanner = [&](ActualInvocation<arglist...>& a){
-				if (_invocationMatcher->matches(a)){
+			auto scanner = [&](ActualInvocation<arglist...>& a) {
+				if (_invocationMatcher->matches(a)) {
 					into.insert(&a);
 				}
 			};
@@ -147,19 +242,17 @@ private:
 			commit();
 		}
 
-		void setMethodDetails(std::string mockName,std::string methodName) {
-			getStubbingContext().setMethodDetails(mockName,methodName);
+		void setMethodDetails(std::string mockName, std::string methodName) {
+			getStubbingContext().setMethodDetails(mockName, methodName);
 		}
 
 		void setMatchingCriteria(const arglist&... args) {
-			typename ActualInvocation<arglist...>::Matcher* matcher {
-				new ExpectedArgumentsInvocationMatcher<arglist...>(args...)};
+			typename ActualInvocation<arglist...>::Matcher* matcher { new ExpectedArgumentsInvocationMatcher<arglist...>(args...) };
 			setInvocationMatcher(matcher);
 		}
 
 		void setMatchingCriteria(std::function<bool(arglist&...)> predicate) {
-			typename ActualInvocation<arglist...>::Matcher* matcher {
-				new UserDefinedInvocationMatcher<arglist...>(predicate)};
+			typename ActualInvocation<arglist...>::Matcher* matcher { new UserDefinedInvocationMatcher<arglist...>(predicate) };
 			setInvocationMatcher(matcher);
 		}
 
@@ -179,15 +272,13 @@ private:
 
 protected:
 
-	MethodMockingContext(Context* stubbingContext) :
-		_impl{new Implementation(stubbingContext)}
-	{
+	MethodMockingContext(Context* stubbingContext)
+			: _impl { new Implementation(stubbingContext) } {
 	}
 
 	//Move ctor for use by derived classes.
-	MethodMockingContext(MethodMockingContext& other) :
-		_impl(other._impl)
-	{
+	MethodMockingContext(MethodMockingContext& other)
+			: _impl(other._impl) {
 	}
 
 	virtual ~MethodMockingContext() = default;
@@ -231,8 +322,8 @@ protected:
 		_impl->commit();
 	}
 
-	void setMethodDetails(std::string mockName,std::string methodName) {
-		_impl->setMethodDetails(mockName,methodName);
+	void setMethodDetails(std::string mockName, std::string methodName) {
+		_impl->setMethodDetails(mockName, methodName);
 	}
 
 	void setMatchingCriteria(const arglist&... args) {
@@ -241,6 +332,11 @@ protected:
 
 	void setMatchingCriteria(std::function<bool(arglist&...)> predicate) {
 		_impl->setMatchingCriteria(predicate);
+	}
+
+	void setMatchingCriteria2(const std::vector<Destructable*>& args) {
+		typename ActualInvocation<arglist...>::Matcher* matcher { new ArgumentsMatcherInvocationMatcher<arglist...>(args) };
+		_impl->setInvocationMatcher(matcher);
 	}
 
 	/**
@@ -254,6 +350,15 @@ protected:
 		_impl->setMethodBodyByAssignment(method);
 	}
 
+	template<class ...matcherCreators, class = typename std::enable_if<sizeof...(matcherCreators)==sizeof...(arglist)>::type>
+	void setMatchingCriteria3(const matcherCreators& ... matcherCreator) {
+		std::vector<Destructable*> matchers;
+
+		Collector<0, arglist...> c(matchers);
+		c.CollectMatchers(matcherCreator...);
+
+		MethodMockingContext<R, arglist...>::setMatchingCriteria2(matchers);
+	}
 private:
 
 	typename std::function<R(arglist&...)> getOriginalMethod() override {
@@ -271,12 +376,16 @@ public virtual MethodMockingContext<R, arglist...> //
 
 public:
 
-	MockingContext(typename MethodMockingContext<R, arglist...>::Context* stubbingContext) :
-			MethodMockingContext<R, arglist...>(stubbingContext) {
+	MockingContext(typename MethodMockingContext<R, arglist...>::Context* stubbingContext)
+			: MethodMockingContext<R, arglist...>(stubbingContext) {
 	}
 
-	MockingContext(MockingContext<R, arglist...>&other) :MethodMockingContext<R, arglist...>(other){}
-	MockingContext(MockingContext<R, arglist...>&&other):MethodMockingContext<R, arglist...>(other){}
+	MockingContext(MockingContext<R, arglist...>&other)
+			: MethodMockingContext<R, arglist...>(other) {
+	}
+	MockingContext(MockingContext<R, arglist...> &&other)
+			: MethodMockingContext<R, arglist...>(other) {
+	}
 
 	virtual ~MockingContext() THROWS {
 	}
@@ -288,6 +397,12 @@ public:
 
 	MockingContext<R, arglist...>& Using(const arglist&... args) {
 		MethodMockingContext<R, arglist...>::setMatchingCriteria(args...);
+		return *this;
+	}
+
+	template<class ...matchers>
+	MockingContext<R, arglist...>& Using(const matchers& ... matcher) {
+		MethodMockingContext<R, arglist...>::setMatchingCriteria3(matcher...);
 		return *this;
 	}
 
@@ -324,21 +439,25 @@ public:
 };
 
 template<typename ... arglist>
-class MockingContext<void, arglist...>: //
+class MockingContext<void, arglist...> : //
 public virtual MethodMockingContext<void, arglist...> {
 
 	MockingContext & operator=(const MockingContext&) = delete;
 
 public:
-	MockingContext(typename MethodMockingContext<void, arglist...>::Context* stubbingContext) :
-			MethodMockingContext<void, arglist...>(stubbingContext) {
+	MockingContext(typename MethodMockingContext<void, arglist...>::Context* stubbingContext)
+			: MethodMockingContext<void, arglist...>(stubbingContext) {
 	}
 
 	virtual ~MockingContext() THROWS {
 	}
 
-	MockingContext(MockingContext<void, arglist...>& other):MethodMockingContext<void, arglist...>(other){}
-	MockingContext(MockingContext<void, arglist...>&& other):MethodMockingContext<void, arglist...>(other){}
+	MockingContext(MockingContext<void, arglist...>& other)
+			: MethodMockingContext<void, arglist...>(other) {
+	}
+	MockingContext(MockingContext<void, arglist...> && other)
+			: MethodMockingContext<void, arglist...>(other) {
+	}
 
 	void operator=(std::function<void(arglist&...)> method) {
 		MethodMockingContext<void, arglist...>::setMethodBodyByAssignment(method);
@@ -351,6 +470,12 @@ public:
 
 	MockingContext<void, arglist...>& Using(const arglist&... args) {
 		MethodMockingContext<void, arglist...>::setMatchingCriteria(args...);
+		return *this;
+	}
+
+	template<class ...matchers>
+	MockingContext<void, arglist...>& Using(const matchers& ... matcher) {
+		MethodMockingContext<void, arglist...>::setMatchingCriteria3(matcher...);
 		return *this;
 	}
 

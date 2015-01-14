@@ -15,7 +15,7 @@ namespace fakeit {
 template<int N>
 struct apply_func {
 	template<typename ... ArgsF, typename ... ArgsT, typename ... Args>
-	static bool applyTuple(std::function<bool (ArgsF&...)> f, std::tuple<ArgsT...>& t, Args&... args) {
+	static bool applyTuple(std::function<bool(ArgsF&...)> f, std::tuple<ArgsT...>& t, Args&... args) {
 		return apply_func<N - 1>::applyTuple(f, t, std::get < N - 1 > (t), args...);
 	}
 };
@@ -23,46 +23,62 @@ struct apply_func {
 template<>
 struct apply_func<0> {
 	template<typename ... ArgsF, typename ... ArgsT, typename ... Args>
-	static bool applyTuple(std::function<bool (ArgsF&...)> f, std::tuple<ArgsT...>& /* t */, Args&... args) {
+	static bool applyTuple(std::function<bool(ArgsF&...)> f, std::tuple<ArgsT...>& /* t */, Args&... args) {
 		return f(args...);
 	}
 };
 
 template<typename ... ArgsF, typename ... ArgsT>
-bool applyTuple(std::function<bool (ArgsF&...)> f, std::tuple<ArgsT...>& t) {
+bool applyTuple(std::function<bool(ArgsF&...)> f, std::tuple<ArgsT...>& t) {
 	return apply_func<sizeof...(ArgsT)>::applyTuple(f, t);
 }
 
 template<typename ...arglist>
-bool invoke(std::function<bool(arglist&...)> func,const std::tuple<arglist...>& arguments) {
+bool invoke(std::function<bool(arglist&...)> func, const std::tuple<arglist...>& arguments) {
 	std::tuple<arglist...>& args = const_cast<std::tuple<arglist...>&>(arguments);
 	return applyTuple(func, args);
 }
 
-//template<int N>
-//struct verifyTypes {
-//	template<typename Head, typename ... ArgsT, typename ... Tail>
-//	static bool applyTuple(std::tuple<ArgsT...>& t, Head &h, Tail&... tail) {
-//		//h should be comparable from std::get<N - sizeof...(Tail)  - 1>(t);
-//		//static_assert(???, "not assignable");
-//		return verifyTypes<sizeof...(Tail)>::applyTuple(t, tail...);
-//	}
-//};
-//
-//template<>
-//struct verifyTypes<0> {
-//	template<typename ... ArgsT>
-//	static bool applyTuple(std::tuple<ArgsT...>& /* t */
-//	) {
-//		return true;
-//	}
-//};
-//
-//template<typename ... ArgsT, typename ... Args>
-//bool checkTypes(std::tuple<ArgsT...>& t, Args ... args) {
-//	static_assert(sizeof...(ArgsT) == sizeof...(Args), "argument lists are not the same size");
-//	return verifyTypes<sizeof...(ArgsT)>::applyTuple(t, args...);
-//}
+template<typename TupleType, typename FunctionType>
+void for_each(TupleType&&, FunctionType&
+		, std::integral_constant<size_t, std::tuple_size<typename std::remove_reference<TupleType>::type >::value>) {}
+
+template<std::size_t I, typename TupleType, typename FunctionType
+, typename = typename std::enable_if<I!=std::tuple_size<typename std::remove_reference<TupleType>::type>::value>::type >
+void for_each(TupleType&& t, FunctionType& f, std::integral_constant<size_t, I>)
+{
+	f(I,std::get<I>(t));
+	for_each(std::forward<TupleType>(t), f, std::integral_constant<size_t, I + 1>());
+}
+
+template<typename TupleType, typename FunctionType>
+void for_each(TupleType&& t, FunctionType& f)
+{
+	for_each(std::forward<TupleType>(t), f, std::integral_constant<size_t, 0>());
+}
+
+
+
+
+
+
+template<typename TupleType1, typename TupleType2,typename FunctionType>
+void for_each(TupleType1&&,TupleType2&&, FunctionType&
+		, std::integral_constant<size_t, std::tuple_size<typename std::remove_reference<TupleType1>::type >::value>) {}
+
+template<std::size_t I, typename TupleType1, typename TupleType2,typename FunctionType
+, typename = typename std::enable_if<I!=std::tuple_size<typename std::remove_reference<TupleType1>::type>::value>::type >
+void for_each(TupleType1&& t,TupleType2&& t2, FunctionType& f, std::integral_constant<size_t, I>)
+{
+	f(I, std::get<I>(t), std::get<I>(t2));
+	for_each(std::forward<TupleType1>(t),std::forward<TupleType2>(t2), f, std::integral_constant<size_t, I + 1>());
+}
+
+template<typename TupleType1,typename TupleType2, typename FunctionType>
+void for_each(TupleType1&& t,TupleType2&& t2, FunctionType& f)
+{
+	for_each(std::forward<TupleType1>(t),std::forward<TupleType2>(t2), f, std::integral_constant<size_t, 0>());
+}
 
 }
 

@@ -16,17 +16,30 @@
 
 #include "mockutils/TupleDispatcher.hpp"
 #include "mockutils/TuplePrinter.hpp"
+#include "mockutils/DefaultValue.hpp"
+#include "mockutils/type_utils.hpp"
 #include "fakeit/ActualInvocation.hpp"
+#include "fakeit/argument_matchers.hpp"
 
 namespace fakeit {
 
 template<typename ... arglist>
-struct ExpectedArgumentsInvocationMatcher: public ActualInvocation<arglist...>::Matcher {
+struct ArgumentsMatcherInvocationMatcher: public ActualInvocation<arglist...>::Matcher {
 
-	virtual ~ExpectedArgumentsInvocationMatcher() = default;
+	struct DeletingLambda {
+		template<typename A>
+		void operator()(int index, const A &matcher) {
+			delete matcher;
+		}
+	};
 
-	ExpectedArgumentsInvocationMatcher(const arglist&... args) :
-			expectedArguments(args...) {
+	virtual ~ArgumentsMatcherInvocationMatcher() {
+		for (unsigned int i = 0; i < _matchers.size(); i++)
+			delete _matchers[i];
+	}
+
+	ArgumentsMatcherInvocationMatcher(const std::vector<Destructable*>& args)
+			: _matchers(args) {
 	}
 
 	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
@@ -35,9 +48,65 @@ struct ExpectedArgumentsInvocationMatcher: public ActualInvocation<arglist...>::
 		return matches(invocation.getActualArguments());
 	}
 
-	virtual std::string format() const {
+	virtual std::string format() const override {
 		std::ostringstream out;
-		print(out,expectedArguments);
+		out<<"(";
+		for (unsigned int i =0;i<_matchers.size();i++){
+			if (i>0) out<<", ";
+			IMatcher* m = dynamic_cast<IMatcher*>(_matchers[i]);
+			out<<m->format();
+		}
+		out<<")";
+		return out.str();
+	}
+private:
+
+	struct MatchingLambda {
+		const std::vector<Destructable*>& _matchers;
+		MatchingLambda(const std::vector<Destructable*>& matchers)
+				: _matchers(matchers) {
+		}
+
+		bool matching = true;
+		template<typename A>
+		void operator()(int index, A& actualArg) {
+			ITypedMatcher<typename naked_type<A>::type>* matcher1 =
+					dynamic_cast<ITypedMatcher<typename naked_type<A>::type>*>(_matchers[index]);
+			if (matching)
+				matching = matcher1->matches(actualArg);
+		}
+	};
+
+	virtual bool matches(const std::tuple<arglist...>& actualArgs) {
+		MatchingLambda l(_matchers);
+		fakeit::for_each(actualArgs, l);
+		return l.matching;
+	}
+	const std::vector<Destructable*> _matchers;
+};
+
+template<typename ... arglist>
+struct ExpectedArgumentsInvocationMatcher: public ActualInvocation<arglist...>::Matcher {
+
+	virtual ~ExpectedArgumentsInvocationMatcher() = default;
+
+	ExpectedArgumentsInvocationMatcher(const arglist&... args)
+			: expectedArguments(args...) {
+	}
+
+	ExpectedArgumentsInvocationMatcher(const std::tuple<arglist...>& expectedArguments)
+			: expectedArguments(expectedArguments) {
+	}
+
+	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
+		if (invocation.getActualMatcher() == this)
+			return true;
+		return matches(invocation.getActualArguments());
+	}
+
+	virtual std::string format() const override {
+		std::ostringstream out;
+		print(out, expectedArguments);
 		return out.str();
 	}
 private:
@@ -51,8 +120,8 @@ template<typename ... arglist>
 struct UserDefinedInvocationMatcher: public ActualInvocation<arglist...>::Matcher {
 	virtual ~UserDefinedInvocationMatcher() = default;
 
-	UserDefinedInvocationMatcher(std::function<bool(arglist&...)> matcher) :
-			matcher { matcher } {
+	UserDefinedInvocationMatcher(std::function<bool(arglist&...)> matcher)
+			: matcher { matcher } {
 	}
 
 	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
@@ -93,7 +162,6 @@ private:
 		return true;
 	}
 };
-
 
 }
 

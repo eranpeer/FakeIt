@@ -10,6 +10,7 @@
 #define DefaultValue_h__
 #include <type_traits>
 #include <typeinfo>
+#include "mockutils/type_utils.hpp"
 
 namespace fakeit {
 
@@ -18,10 +19,6 @@ struct DefaultValueInstatiationException {
 	virtual std::string what() const = 0;
 };
 
-template<class C>
-struct naked_type {
-	typedef typename std::remove_reference<C>::type type;
-};
 
 template<class C>
 struct is_constructible_type {
