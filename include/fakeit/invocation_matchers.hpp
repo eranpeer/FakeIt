@@ -154,7 +154,7 @@ struct DefaultInvocationMatcher: public ActualInvocation<arglist...>::Matcher {
 	}
 
 	virtual std::string format() const {
-		return {"( any arguments )"};
+		return {"( Any arguments )"};
 	}
 
 private:

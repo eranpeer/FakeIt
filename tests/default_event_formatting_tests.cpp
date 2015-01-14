@@ -87,7 +87,7 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 		}
 		catch (UnexpectedMethodCallException& e)
 		{
-			std::string expectedMsg{"Unexpected method invocation: mock.func(1)\n  Could not find any recorded behavior to support this method call."};
+			std::string expectedMsg{"Unexpected method invocation: mock.func(1)\n  Could not find Any recorded behavior to support this method call."};
 			std::string actual{to_string(e)};
 			ASSERT_EQUAL(expectedMsg, actual);
 		}
@@ -101,7 +101,7 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 		catch (SequenceVerificationException& e) {
 			std::string expectedMsg;
 			expectedMsg += "test file:1: Verification error\n";
-			expectedMsg += "Expected pattern: mock.func( any arguments )\n";
+			expectedMsg += "Expected pattern: mock.func( Any arguments )\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
 			expectedMsg += "Actual sequence : total of 0 actual invocations.";
@@ -118,7 +118,7 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 		catch (SequenceVerificationException& e) {
 			std::string expectedMsg;
 			expectedMsg += "test file:1: Verification error\n";
-			expectedMsg += "Expected pattern: mock.func( any arguments )\n";
+			expectedMsg += "Expected pattern: mock.func( Any arguments )\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
 			expectedMsg += "Actual sequence : total of 0 actual invocations.";
@@ -136,7 +136,7 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 		catch (SequenceVerificationException& e) {
 			std::string expectedMsg;
 			expectedMsg += "test file:1: Verification error\n";
-			expectedMsg += "Expected pattern: mock.func( any arguments )\n";
+			expectedMsg += "Expected pattern: mock.func( Any arguments )\n";
 			expectedMsg += "Expected matches: at least 1\n";
 			expectedMsg += "Actual matches  : 0\n";
 			expectedMsg += "Actual sequence : total of 0 actual invocations.";
@@ -204,7 +204,7 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 		{
 			std::string expectedMsg;
 			expectedMsg += "test file:1: Verification error\n";
-			expectedMsg += "Expected pattern: mock.all_types( any arguments )\n";
+			expectedMsg += "Expected pattern: mock.all_types( Any arguments )\n";
 			expectedMsg += "Expected matches: exactly 2\n";
 			expectedMsg += "Actual matches  : 1\n";
 			expectedMsg += "Actual sequence : total of 1 actual invocations:\n";

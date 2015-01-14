@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2013 Trevor Pounds <trevor.pounds@gmail.com>
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * Permission is hereby granted, free of charge, to Any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
@@ -106,10 +106,10 @@
  * ASSERT|EXPECT_THROW(statement, exception); generates a failure if
  * the given statement does not throw the supplied excetion.
  * ASSERT|EXPECT_NO_THROW(statement, exception); generates a failure
- * if the given statement throws any exception. Useful for ensuring
+ * if the given statement throws Any exception. Useful for ensuring
  * a statement never throws an exception.
  * ASSERT|EXPECT_ANY_THROW(statement); generates a failure if the
- * given statement does not throw any exceptions.
+ * given statement does not throw Any exceptions.
  */
 #define ASSERT_THROW(statement, exception) try { statement; ABORT(); } catch(const exception&) { PASS(); } catch(...) { ABORT(); }
 #define EXPECT_THROW(statement, exception) try { statement; FAIL(); } catch(const exception&) { PASS(); } catch(...) { FAIL(); }
@@ -142,7 +142,7 @@
 
 /**
  * Try our best to detect compiler support for exception handling so
- * we can catch and report any unhandled exceptions as normal failures.
+ * we can catch and report Any unhandled exceptions as normal failures.
  */
 #ifndef TPUNITPP_HAS_EXCEPTIONS
 #if defined(__EXCEPTIONS) || defined(_CPPUNWIND)

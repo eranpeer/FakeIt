@@ -21,7 +21,7 @@ struct DefaultEventFormatter: public EventFormatter {
 		out << "Unexpected method invocation: ";
 		out << e.getInvocation().format() << std::endl;
 		if (UnexpectedType::Unmatched == e.getUnexpectedType()) {
-			out << "  Could not find any recorded behavior to support this method call.";
+			out << "  Could not find Any recorded behavior to support this method call.";
 		} else {
 			out << "  An unmocked method was invoked. All used virtual methods must be stubbed!";
 		}

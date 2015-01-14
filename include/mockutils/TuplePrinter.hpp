@@ -17,7 +17,7 @@
 
 namespace fakeit {
 
-// helper function to print a tuple of any size
+// helper function to print a tuple of Any size
 template<class Tuple, std::size_t N>
 struct TuplePrinter {
 	static void print(std::ostream &strm, const Tuple& t) {

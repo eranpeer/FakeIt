@@ -67,7 +67,7 @@ struct TypedAnyMatcher: public ITypedArgumentMatcher<T> {
 		}
 
 		virtual std::string format() override {
-			return "any";
+			return "Any";
 		}
 	};
 
@@ -244,40 +244,40 @@ struct NotEqualsMatcher: public ArgumentMatcher<T> {
 
 };
 
-struct AnyMatcher{} static any, _;
+struct AnyMatcher{} static Any, _;
 
 template<typename T>
-EqualsMathcher<T> eq(const T& arg) {
+EqualsMathcher<T> Eq(const T& arg) {
 	EqualsMathcher<T> rv(arg);
 	return rv;
 }
 
 template<typename T>
-GreaterThanMatcher<T> gt(const T& arg) {
+GreaterThanMatcher<T> Gt(const T& arg) {
 	GreaterThanMatcher<T> rv(arg);
 	return rv;
 }
 
 template<typename T>
-GreaterOrEqualsMatcher<T> ge(const T& arg) {
+GreaterOrEqualsMatcher<T> Ge(const T& arg) {
 	GreaterOrEqualsMatcher<T> rv(arg);
 	return rv;
 }
 
 template<typename T>
-LessThanMatcher<T> lt(const T& arg) {
+LessThanMatcher<T> Lt(const T& arg) {
 	LessThanMatcher<T> rv(arg);
 	return rv;
 }
 
 template<typename T>
-LessOrEqualsMatcher<T> le(const T& arg) {
+LessOrEqualsMatcher<T> Le(const T& arg) {
 	LessOrEqualsMatcher<T> rv(arg);
 	return rv;
 }
 
 template<typename T>
-NotEqualsMatcher<T> ne(const T& arg) {
+NotEqualsMatcher<T> Ne(const T& arg) {
 	NotEqualsMatcher<T> rv(arg);
 	return rv;
 }

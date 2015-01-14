@@ -36,30 +36,30 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 
 		Mock<SomeInterface> mock;
 
-		When(Method(mock, func).Using(eq(1))).Return(1);
-		When(Method(mock, func).Using(eq(2))).Return(2);
+		When(Method(mock, func).Using(Eq(1))).Return(1);
+		When(Method(mock, func).Using(Eq(2))).Return(2);
 
 		SomeInterface &i = mock.get();
 		ASSERT_EQUAL(1, i.func(1));
 		ASSERT_EQUAL(2, i.func(2));
 
-		Verify(Method(mock, func).Using(eq(1))).Once();
-		Verify(Method(mock, func).Using(eq(2))).Once();
+		Verify(Method(mock, func).Using(Eq(1))).Once();
+		Verify(Method(mock, func).Using(Eq(2))).Once();
 	}
 
 	void test_gt_matcher() {
 
 		Mock<SomeInterface> mock;
 
-		When(Method(mock, func).Using(gt(1))).AlwaysReturn(1);
-		When(Method(mock, func).Using(gt(2))).AlwaysReturn(2);
+		When(Method(mock, func).Using(Gt(1))).AlwaysReturn(1);
+		When(Method(mock, func).Using(Gt(2))).AlwaysReturn(2);
 
 		SomeInterface &i = mock.get();
 		ASSERT_EQUAL(1, i.func(2));
 		ASSERT_EQUAL(2, i.func(3));
 
-		Verify(Method(mock, func).Using(gt(2))).Once();
-		Verify(Method(mock, func).Using(gt(3))).Never();
+		Verify(Method(mock, func).Using(Gt(2))).Once();
+		Verify(Method(mock, func).Using(Gt(3))).Never();
 	}
 
 	void test_ge_matcher() {
@@ -67,31 +67,31 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		Mock<SomeInterface> mock;
 
 		When(Method(mock, func)).AlwaysReturn(-1);
-		When(Method(mock, func).Using(ge(1))).AlwaysReturn(1);
-		When(Method(mock, func).Using(ge(2))).AlwaysReturn(2);
+		When(Method(mock, func).Using(Ge(1))).AlwaysReturn(1);
+		When(Method(mock, func).Using(Ge(2))).AlwaysReturn(2);
 
 		SomeInterface &i = mock.get();
 		ASSERT_EQUAL(-1, i.func(0));
 		ASSERT_EQUAL(1, i.func(1));
 		ASSERT_EQUAL(2, i.func(2));
 
-		Verify(Method(mock, func).Using(ge(1))).Twice();
-		Verify(Method(mock, func).Using(ge(2))).Once();
+		Verify(Method(mock, func).Using(Ge(1))).Twice();
+		Verify(Method(mock, func).Using(Ge(2))).Once();
 	}
 
 	void test_lt_matcher() {
 
 		Mock<SomeInterface> mock;
 
-		When(Method(mock, func).Using(lt(1))).AlwaysReturn(1);
-		When(Method(mock, func).Using(lt(2))).AlwaysReturn(2);
+		When(Method(mock, func).Using(Lt(1))).AlwaysReturn(1);
+		When(Method(mock, func).Using(Lt(2))).AlwaysReturn(2);
 
 		SomeInterface &i = mock.get();
 		ASSERT_EQUAL(2, i.func(1));
 		ASSERT_EQUAL(2, i.func(0));
 
-		Verify(Method(mock, func).Using(lt(2))).Twice();
-		Verify(Method(mock, func).Using(lt(1))).Once();
+		Verify(Method(mock, func).Using(Lt(2))).Twice();
+		Verify(Method(mock, func).Using(Lt(1))).Once();
 	}
 
 	void test_le_matcher() {
@@ -99,16 +99,16 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		Mock<SomeInterface> mock;
 
 		When(Method(mock, func)).AlwaysReturn(-1);
-		When(Method(mock, func).Using(le(1))).AlwaysReturn(1);
-		When(Method(mock, func).Using(le(2))).AlwaysReturn(2);
+		When(Method(mock, func).Using(Le(1))).AlwaysReturn(1);
+		When(Method(mock, func).Using(Le(2))).AlwaysReturn(2);
 
 		SomeInterface &i = mock.get();
 		ASSERT_EQUAL(2, i.func(2));
 		ASSERT_EQUAL(2, i.func(1));
 		ASSERT_EQUAL(-1, i.func(3));
 
-		Verify(Method(mock, func).Using(le(2))).Twice();
-		Verify(Method(mock, func).Using(le(1))).Once();
+		Verify(Method(mock, func).Using(Le(2))).Twice();
+		Verify(Method(mock, func).Using(Le(1))).Once();
 	}
 
 
@@ -117,27 +117,27 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		Mock<SomeInterface> mock;
 
 		When(Method(mock, func)).AlwaysReturn(-1);
-		When(Method(mock, func).Using(ne(1))).AlwaysReturn(1);
+		When(Method(mock, func).Using(Ne(1))).AlwaysReturn(1);
 
 		SomeInterface &i = mock.get();
 		ASSERT_EQUAL(1, i.func(2));
 		ASSERT_EQUAL(-1, i.func(1));
 
-		Verify(Method(mock, func).Using(ne(1))).Once();
-		Verify(Method(mock, func).Using(ne(10))).Twice();
+		Verify(Method(mock, func).Using(Ne(1))).Once();
+		Verify(Method(mock, func).Using(Ne(10))).Twice();
 	}
 
 	void test_any_matcher() {
 
 		Mock<SomeInterface> mock;
 
-		When(Method(mock, func).Using(any)).AlwaysReturn(1);
+		When(Method(mock, func).Using(Any)).AlwaysReturn(1);
 
 		SomeInterface &i = mock.get();
 		ASSERT_EQUAL(1, i.func(2));
 		ASSERT_EQUAL(1, i.func(1));
 
-		Verify(Method(mock, func).Using(any)).Twice();
+		Verify(Method(mock, func).Using(Any)).Twice();
 	}
 
 	void test_any_matcher2() {
