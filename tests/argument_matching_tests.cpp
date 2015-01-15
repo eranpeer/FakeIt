@@ -151,13 +151,13 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 
 		Mock<SomeInterface> mock;
 
-		When(Method(mock, func).Using(Any)).AlwaysReturn(1);
+		When(Method(mock, func).Using(Any<int>())).AlwaysReturn(1);
 
 		SomeInterface &i = mock.get();
 		ASSERT_EQUAL(1, i.func(2));
 		ASSERT_EQUAL(1, i.func(1));
 
-		Verify(Method(mock, func).Using(Any)).Twice();
+		Verify(Method(mock, func).Using(Any<int>())).Twice();
 	}
 
 	void test_any_matcher2() {

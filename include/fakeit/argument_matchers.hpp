@@ -244,7 +244,13 @@ struct NotEqualsMatcher: public ArgumentMatcher<T> {
 
 };
 
-struct AnyMatcher{} static Any, _;
+struct AnyMatcher{} static _;
+
+template<typename T>
+TypedAnyMatcher<T> Any() {
+	TypedAnyMatcher<T> rv;
+	return rv;
+}
 
 template<typename T>
 EqualsMathcher<T> Eq(const T& arg) {

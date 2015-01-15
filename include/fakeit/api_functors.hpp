@@ -22,7 +22,6 @@ namespace fakeit {
 			use(&Using);
 			use(&Verify);
 			use(&VerifyNoOtherInvocations);
-			use(&Any);
 			use(&_);
 		}
 	};

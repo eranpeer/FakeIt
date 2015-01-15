@@ -53,25 +53,31 @@ struct ArgumentsMatcherInvocationMatcher: public ActualInvocation<arglist...>::M
 private:
 
 	struct MatchingLambda {
-		const std::vector<Destructable*>& _matchers;
 		MatchingLambda(const std::vector<Destructable*>& matchers)
 				: _matchers(matchers) {
 		}
 
-		bool matching = true;
 		template<typename A>
 		void operator()(int index, A& actualArg) {
-			ITypedMatcher<typename naked_type<A>::type>* matcher1 =
+			ITypedMatcher<typename naked_type<A>::type>* matcher =
 					dynamic_cast<ITypedMatcher<typename naked_type<A>::type>*>(_matchers[index]);
-			if (matching)
-				matching = matcher1->matches(actualArg);
+			if (_matching)
+				_matching = matcher->matches(actualArg);
 		}
+
+		bool isMatching(){
+			return _matching;
+		}
+
+	private:
+		bool _matching = true;
+		const std::vector<Destructable*>& _matchers;
 	};
 
 	virtual bool matches(const std::tuple<arglist...>& actualArgs) {
 		MatchingLambda l(_matchers);
 		fakeit::for_each(actualArgs, l);
-		return l.matching;
+		return l.isMatching();
 	}
 	const std::vector<Destructable*> _matchers;
 };
