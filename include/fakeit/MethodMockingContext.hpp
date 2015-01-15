@@ -27,108 +27,10 @@
 #include "fakeit/DomainObjects.hpp"
 #include "fakeit/SpyingContext.hpp"
 #include "fakeit/StubbingContext.hpp"
+#include "fakeit/MatchersCollector.hpp"
 #include "mockutils/type_utils.hpp"
 
 namespace fakeit {
-
-template<unsigned int index, typename ... arglist>
-class Collector {
-
-	std::vector<Destructable*>& _matchers;
-
-public:
-
-	// Fetch the Nth type from arglist...
-	template<std::size_t N>
-	using ArgType = typename std::tuple_element<N, std::tuple<arglist...>>::type;
-
-	Collector(std::vector<Destructable*>& matchers)
-			: _matchers(matchers) {
-	}
-
-
-	void CollectMatchers() {
-	}
-
-	template<typename Head, typename ...Tail>
-	typename std::enable_if<std::is_base_of<ITypedMatcherCreator<typename naked_type<ArgType<index>>::type>, Head>::value, void>::type CollectMatchers(
-			const Head& creator, const Tail& ... tail) {
-
-		ITypedMatcher<
-
-		typename naked_type<ArgType<index>>::type
-
-		>* d = creator.createMatcher();
-
-		_matchers.push_back(d);
-		Collector<index + 1, arglist...> c(_matchers);
-		c.CollectMatchers(tail...);
-	}
-
-	template<typename Head, typename ...Tail>
-	typename std::enable_if<
-			!std::is_base_of<ITypedMatcherCreator<typename naked_type<ArgType<index>>::type>, Head>::value
-					&& !std::is_same<AnyMatcher, Head>::value, void>::type CollectMatchers(const Head& value, const Tail& ... tail) {
-
-		EqMatcherCreator<typename naked_type<ArgType<index>>::type> m(value);
-
-		ITypedMatcher<typename naked_type<ArgType<index>>::type>* d = m.createMatcher();
-		_matchers.push_back(d);
-
-		Collector<index + 1, arglist...> c(_matchers);
-		c.CollectMatchers(tail...);
-	}
-
-	template<typename Head, typename ...Tail>
-	typename std::enable_if<
-			!std::is_base_of<ITypedMatcherCreator<typename naked_type<ArgType<index>>::type>, Head>::value
-					&& std::is_same<AnyMatcher, Head>::value, void>::type CollectMatchers(const Head& value, const Tail& ... tail) {
-
-		TypedAnyMatcher<typename naked_type<ArgType<index>>::type> m;
-		ITypedMatcher<typename naked_type<ArgType<index>>::type>* d = m.createMatcher();
-		_matchers.push_back(d);
-
-		Collector<index + 1, arglist...> c(_matchers);
-		c.CollectMatchers(tail...);
-	}
-
-	template<typename Head>
-	typename std::enable_if<std::is_base_of<ITypedMatcherCreator<typename naked_type<ArgType<index>>::type>, Head>::value, void>::type CollectMatchers(
-			const Head& creator) {
-
-		ITypedMatcher<
-
-		typename naked_type<ArgType<index>>::type
-
-		>* d = creator.createMatcher();
-
-		_matchers.push_back(d);
-	}
-
-	template<typename Head>
-	typename std::enable_if<
-			!std::is_base_of<ITypedMatcherCreator<typename naked_type<ArgType<index>>::type>, Head>::value
-					&& !std::is_same<AnyMatcher, Head>::value, void>::type CollectMatchers(const Head& value) {
-
-		EqMatcherCreator<typename naked_type<ArgType<index>>::type> m(value);
-
-		ITypedMatcher<typename naked_type<ArgType<index>>::type>* d = m.createMatcher();
-		_matchers.push_back(d);
-
-	}
-
-	template<typename Head>
-	typename std::enable_if<
-			!std::is_base_of<ITypedMatcherCreator<typename naked_type<ArgType<index>>::type>, Head>::value
-					&& std::is_same<AnyMatcher, Head>::value, void>::type CollectMatchers(const Head& value) {
-
-		TypedAnyMatcher<typename naked_type<ArgType<index>>::type> m;
-		ITypedMatcher<typename naked_type<ArgType<index>>::type>* d = m.createMatcher();
-		_matchers.push_back(d);
-	}
-
-};
-
 /**
  * Build recorded sequence and the matching criteria.
  * For example, for the following line:
@@ -354,7 +256,7 @@ protected:
 	void setMatchingCriteria3(const matcherCreators& ... matcherCreator) {
 		std::vector<Destructable*> matchers;
 
-		Collector<0, arglist...> c(matchers);
+		MatchersCollector<0, arglist...> c(matchers);
 		c.CollectMatchers(matcherCreator...);
 
 		MethodMockingContext<R, arglist...>::setMatchingCriteria2(matchers);
