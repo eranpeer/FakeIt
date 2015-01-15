@@ -31,32 +31,32 @@
 
 namespace fakeit {
 
-//template<std::size_t N, typename ... Types>
-//using Type = typename std::tuple_element<N, std::tuple<Types...>>::type;
-
 template<unsigned int index, typename ... arglist>
 class Collector {
+
+	std::vector<Destructable*>& _matchers;
+
 public:
 
+	// Fetch the Nth type from arglist...
 	template<std::size_t N>
-	using Type = typename std::tuple_element<N, std::tuple<arglist...>>::type;
+	using ArgType = typename std::tuple_element<N, std::tuple<arglist...>>::type;
 
 	Collector(std::vector<Destructable*>& matchers)
 			: _matchers(matchers) {
 	}
 
-	std::vector<Destructable*>& _matchers;
 
 	void CollectMatchers() {
 	}
 
 	template<typename Head, typename ...Tail>
-	typename std::enable_if<std::is_base_of<ITypedArgumentMatcher<typename naked_type<Type<index>>::type>, Head>::value, void>::type CollectMatchers(
+	typename std::enable_if<std::is_base_of<ITypedMatcherCreator<typename naked_type<ArgType<index>>::type>, Head>::value, void>::type CollectMatchers(
 			const Head& creator, const Tail& ... tail) {
 
 		ITypedMatcher<
 
-		typename naked_type<Type<index>>::type
+		typename naked_type<ArgType<index>>::type
 
 		>* d = creator.createMatcher();
 
@@ -67,12 +67,12 @@ public:
 
 	template<typename Head, typename ...Tail>
 	typename std::enable_if<
-			!std::is_base_of<ITypedArgumentMatcher<typename naked_type<Type<index>>::type>, Head>::value
+			!std::is_base_of<ITypedMatcherCreator<typename naked_type<ArgType<index>>::type>, Head>::value
 					&& !std::is_same<AnyMatcher, Head>::value, void>::type CollectMatchers(const Head& value, const Tail& ... tail) {
 
-		EqualsMathcher<typename naked_type<Type<index>>::type> m(value);
+		EqMatcherCreator<typename naked_type<ArgType<index>>::type> m(value);
 
-		ITypedMatcher<typename naked_type<Type<index>>::type>* d = m.createMatcher();
+		ITypedMatcher<typename naked_type<ArgType<index>>::type>* d = m.createMatcher();
 		_matchers.push_back(d);
 
 		Collector<index + 1, arglist...> c(_matchers);
@@ -81,11 +81,11 @@ public:
 
 	template<typename Head, typename ...Tail>
 	typename std::enable_if<
-			!std::is_base_of<ITypedArgumentMatcher<typename naked_type<Type<index>>::type>, Head>::value
+			!std::is_base_of<ITypedMatcherCreator<typename naked_type<ArgType<index>>::type>, Head>::value
 					&& std::is_same<AnyMatcher, Head>::value, void>::type CollectMatchers(const Head& value, const Tail& ... tail) {
 
-		TypedAnyMatcher<typename naked_type<Type<index>>::type> m;
-		ITypedMatcher<typename naked_type<Type<index>>::type>* d = m.createMatcher();
+		TypedAnyMatcher<typename naked_type<ArgType<index>>::type> m;
+		ITypedMatcher<typename naked_type<ArgType<index>>::type>* d = m.createMatcher();
 		_matchers.push_back(d);
 
 		Collector<index + 1, arglist...> c(_matchers);
@@ -93,12 +93,12 @@ public:
 	}
 
 	template<typename Head>
-	typename std::enable_if<std::is_base_of<ITypedArgumentMatcher<typename naked_type<Type<index>>::type>, Head>::value, void>::type CollectMatchers(
+	typename std::enable_if<std::is_base_of<ITypedMatcherCreator<typename naked_type<ArgType<index>>::type>, Head>::value, void>::type CollectMatchers(
 			const Head& creator) {
 
 		ITypedMatcher<
 
-		typename naked_type<Type<index>>::type
+		typename naked_type<ArgType<index>>::type
 
 		>* d = creator.createMatcher();
 
@@ -107,23 +107,23 @@ public:
 
 	template<typename Head>
 	typename std::enable_if<
-			!std::is_base_of<ITypedArgumentMatcher<typename naked_type<Type<index>>::type>, Head>::value
+			!std::is_base_of<ITypedMatcherCreator<typename naked_type<ArgType<index>>::type>, Head>::value
 					&& !std::is_same<AnyMatcher, Head>::value, void>::type CollectMatchers(const Head& value) {
 
-		EqualsMathcher<typename naked_type<Type<index>>::type> m(value);
+		EqMatcherCreator<typename naked_type<ArgType<index>>::type> m(value);
 
-		ITypedMatcher<typename naked_type<Type<index>>::type>* d = m.createMatcher();
+		ITypedMatcher<typename naked_type<ArgType<index>>::type>* d = m.createMatcher();
 		_matchers.push_back(d);
 
 	}
 
 	template<typename Head>
 	typename std::enable_if<
-			!std::is_base_of<ITypedArgumentMatcher<typename naked_type<Type<index>>::type>, Head>::value
+			!std::is_base_of<ITypedMatcherCreator<typename naked_type<ArgType<index>>::type>, Head>::value
 					&& std::is_same<AnyMatcher, Head>::value, void>::type CollectMatchers(const Head& value) {
 
-		TypedAnyMatcher<typename naked_type<Type<index>>::type> m;
-		ITypedMatcher<typename naked_type<Type<index>>::type>* d = m.createMatcher();
+		TypedAnyMatcher<typename naked_type<ArgType<index>>::type> m;
+		ITypedMatcher<typename naked_type<ArgType<index>>::type>* d = m.createMatcher();
 		_matchers.push_back(d);
 	}
 
@@ -396,7 +396,7 @@ public:
 	}
 
 	MockingContext<R, arglist...>& Using(const arglist&... args) {
-		MethodMockingContext<R, arglist...>::setMatchingCriteria(args...);
+		MethodMockingContext<R, arglist...>::setMatchingCriteria3(args...);
 		return *this;
 	}
 
@@ -469,7 +469,7 @@ public:
 	}
 
 	MockingContext<void, arglist...>& Using(const arglist&... args) {
-		MethodMockingContext<void, arglist...>::setMatchingCriteria(args...);
+		MethodMockingContext<void, arglist...>::setMatchingCriteria3(args...);
 		return *this;
 	}
 

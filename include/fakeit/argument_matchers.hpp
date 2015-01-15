@@ -11,29 +11,29 @@
 
 namespace fakeit {
 
-struct IMatcher: public Destructable  {
-	virtual std::string format() = 0;
+struct IMatcher: public Destructable {
+	virtual std::string format() const = 0;
 };
 
 template<typename T>
-struct ITypedMatcher: public IMatcher  {
+struct ITypedMatcher: public IMatcher {
 	virtual bool matches(const T& actual) const = 0;
 };
 
 template<typename T>
-struct ITypedArgumentMatcher{
+struct ITypedMatcherCreator {
 
-	virtual ~ITypedArgumentMatcher() = default;
+	virtual ~ITypedMatcherCreator() = default;
 
 	virtual ITypedMatcher<T> * createMatcher() const =0;
 };
 
 template<typename T>
-struct ArgumentMatcher: public ITypedArgumentMatcher<T> {
+struct ComparisonMatcherCreator: public ITypedMatcherCreator<T> {
 
-	virtual ~ArgumentMatcher() = default;
+	virtual ~ComparisonMatcherCreator() = default;
 
-	ArgumentMatcher(const T& arg)
+	ComparisonMatcherCreator(const T& arg)
 			: _expected(arg) {
 	}
 
@@ -42,19 +42,14 @@ struct ArgumentMatcher: public ITypedArgumentMatcher<T> {
 				: _expected(expected) {
 		}
 
-		virtual bool matches(const T& actual) const {
-			return actual == _expected;
-		}
-
 		const T _expected;
 	};
 
 	const T& _expected;
 };
 
-
-template <typename T>
-struct TypedAnyMatcher: public ITypedArgumentMatcher<T> {
+template<typename T>
+struct TypedAnyMatcher: public ITypedMatcherCreator<T> {
 
 	virtual ~TypedAnyMatcher() = default;
 
@@ -66,7 +61,7 @@ struct TypedAnyMatcher: public ITypedArgumentMatcher<T> {
 			return true;
 		}
 
-		virtual std::string format() override {
+		virtual std::string format() const override {
 			return "Any";
 		}
 	};
@@ -77,26 +72,28 @@ struct TypedAnyMatcher: public ITypedArgumentMatcher<T> {
 
 };
 
-
 template<typename T>
-struct EqualsMathcher: public ArgumentMatcher<T> {
+struct EqMatcherCreator: public ComparisonMatcherCreator<T> {
 
-	virtual ~EqualsMathcher() = default;
+	virtual ~EqMatcherCreator() = default;
 
-	EqualsMathcher(const T& expected)
-			: ArgumentMatcher<T>(expected) {
+	EqMatcherCreator(const T& expected)
+			: ComparisonMatcherCreator<T>(expected) {
 	}
 
-	struct Matcher: public ArgumentMatcher<T>::Matcher {
+	struct Matcher: public ComparisonMatcherCreator<T>::Matcher {
 		Matcher(const T& expected)
-				: ArgumentMatcher<T>::Matcher(expected) {
+				: ComparisonMatcherCreator<T>::Matcher(expected) {
 		}
 
-		virtual std::string format() override {
+		virtual std::string format() const override {
 			return Formatter<T>::format(this->_expected);
 		}
-	};
 
+		virtual bool matches(const T& actual) const override {
+			return actual == this->_expected;
+		}
+	};
 
 	virtual ITypedMatcher<T> * createMatcher() const {
 		return new Matcher(this->_expected);
@@ -105,22 +102,22 @@ struct EqualsMathcher: public ArgumentMatcher<T> {
 };
 
 template<typename T>
-struct GreaterThanMatcher: public ArgumentMatcher<T> {
+struct GtMatcherCreator: public ComparisonMatcherCreator<T> {
 
-	virtual ~GreaterThanMatcher() = default;
+	virtual ~GtMatcherCreator() = default;
 
-	GreaterThanMatcher(const T& expected)
-			: ArgumentMatcher<T>(expected) {
+	GtMatcherCreator(const T& expected)
+			: ComparisonMatcherCreator<T>(expected) {
 	}
 
-	struct Matcher: public ArgumentMatcher<T>::Matcher {
+	struct Matcher: public ComparisonMatcherCreator<T>::Matcher {
 		Matcher(const T& expected)
-				: ArgumentMatcher<T>::Matcher(expected) {
+				: ComparisonMatcherCreator<T>::Matcher(expected) {
 		}
-		virtual bool matches(const T& actual) const {
+		virtual bool matches(const T& actual) const override {
 			return actual > this->_expected;
 		}
-		virtual std::string format() override {
+		virtual std::string format() const override {
 			return std::string(">") + Formatter<T>::format(this->_expected);
 		}
 	};
@@ -131,22 +128,22 @@ struct GreaterThanMatcher: public ArgumentMatcher<T> {
 };
 
 template<typename T>
-struct GreaterOrEqualsMatcher: public ArgumentMatcher<T> {
+struct GeMatcherCreator: public ComparisonMatcherCreator<T> {
 
-	virtual ~GreaterOrEqualsMatcher() = default;
+	virtual ~GeMatcherCreator() = default;
 
-	GreaterOrEqualsMatcher(const T& expected)
-			: ArgumentMatcher<T>(expected) {
+	GeMatcherCreator(const T& expected)
+			: ComparisonMatcherCreator<T>(expected) {
 	}
 
-	struct Matcher: public ArgumentMatcher<T>::Matcher {
+	struct Matcher: public ComparisonMatcherCreator<T>::Matcher {
 		Matcher(const T& expected)
-				: ArgumentMatcher<T>::Matcher(expected) {
+				: ComparisonMatcherCreator<T>::Matcher(expected) {
 		}
-		virtual bool matches(const T& actual) const {
+		virtual bool matches(const T& actual) const override {
 			return actual >= this->_expected;
 		}
-		virtual std::string format() override {
+		virtual std::string format() const override {
 			return std::string(">=") + Formatter<T>::format(this->_expected);
 		}
 	};
@@ -156,24 +153,23 @@ struct GreaterOrEqualsMatcher: public ArgumentMatcher<T> {
 	}
 };
 
-
 template<typename T>
-struct LessThanMatcher: public ArgumentMatcher<T> {
+struct LtMatcherCreator: public ComparisonMatcherCreator<T> {
 
-	virtual ~LessThanMatcher() = default;
+	virtual ~LtMatcherCreator() = default;
 
-	LessThanMatcher(const T& expected)
-			: ArgumentMatcher<T>(expected) {
+	LtMatcherCreator(const T& expected)
+			: ComparisonMatcherCreator<T>(expected) {
 	}
 
-	struct Matcher: public ArgumentMatcher<T>::Matcher {
+	struct Matcher: public ComparisonMatcherCreator<T>::Matcher {
 		Matcher(const T& expected)
-				: ArgumentMatcher<T>::Matcher(expected) {
+				: ComparisonMatcherCreator<T>::Matcher(expected) {
 		}
-		virtual bool matches(const T& actual) const {
+		virtual bool matches(const T& actual) const override {
 			return actual < this->_expected;
 		}
-		virtual std::string format() override {
+		virtual std::string format() const override {
 			return std::string("<") + Formatter<T>::format(this->_expected);
 		}
 	};
@@ -184,27 +180,27 @@ struct LessThanMatcher: public ArgumentMatcher<T> {
 
 };
 
-
 template<typename T>
-struct LessOrEqualsMatcher: public ArgumentMatcher<T> {
+struct LeMatcherCreator: public ComparisonMatcherCreator<T> {
 
-	virtual ~LessOrEqualsMatcher() = default;
+	virtual ~LeMatcherCreator() = default;
 
-	LessOrEqualsMatcher(const T& expected)
-			: ArgumentMatcher<T>(expected) {
+	LeMatcherCreator(const T& expected)
+			: ComparisonMatcherCreator<T>(expected) {
 	}
 
-	struct Matcher: public ArgumentMatcher<T>::Matcher {
+	struct Matcher: public ComparisonMatcherCreator<T>::Matcher {
 		Matcher(const T& expected)
-				: ArgumentMatcher<T>::Matcher(expected) {
-		}
-		virtual bool matches(const T& actual) const {
-			return actual <= this->_expected;
-		}
-		virtual std::string format() override {
-			return std::string("<=") + Formatter<T>::format(this->_expected);
+				: ComparisonMatcherCreator<T>::Matcher(expected) {
 		}
 
+		virtual bool matches(const T& actual) const override {
+			return actual <= this->_expected;
+		}
+
+		virtual std::string format() const override {
+			return std::string("<=") + Formatter<T>::format(this->_expected);
+		}
 	};
 
 	virtual ITypedMatcher<T> * createMatcher() const override {
@@ -213,26 +209,25 @@ struct LessOrEqualsMatcher: public ArgumentMatcher<T> {
 
 };
 
-
 template<typename T>
-struct NotEqualsMatcher: public ArgumentMatcher<T> {
+struct NeMatcherCreator: public ComparisonMatcherCreator<T> {
 
-	virtual ~NotEqualsMatcher() = default;
+	virtual ~NeMatcherCreator() = default;
 
-	NotEqualsMatcher(const T& expected)
-			: ArgumentMatcher<T>(expected) {
+	NeMatcherCreator(const T& expected)
+			: ComparisonMatcherCreator<T>(expected) {
 	}
 
-	struct Matcher: public ArgumentMatcher<T>::Matcher {
+	struct Matcher: public ComparisonMatcherCreator<T>::Matcher {
 		Matcher(const T& expected)
-				: ArgumentMatcher<T>::Matcher(expected) {
+				: ComparisonMatcherCreator<T>::Matcher(expected) {
 		}
 
-		virtual bool matches(const T& actual) const {
+		virtual bool matches(const T& actual) const override {
 			return actual != this->_expected;
 		}
 
-		virtual std::string format() override {
+		virtual std::string format() const override {
 			return std::string("!=") + Formatter<T>::format(this->_expected);
 		}
 
@@ -244,7 +239,8 @@ struct NotEqualsMatcher: public ArgumentMatcher<T> {
 
 };
 
-struct AnyMatcher{} static _;
+struct AnyMatcher {
+}static _;
 
 template<typename T>
 TypedAnyMatcher<T> Any() {
@@ -253,38 +249,38 @@ TypedAnyMatcher<T> Any() {
 }
 
 template<typename T>
-EqualsMathcher<T> Eq(const T& arg) {
-	EqualsMathcher<T> rv(arg);
+EqMatcherCreator<T> Eq(const T& arg) {
+	EqMatcherCreator<T> rv(arg);
 	return rv;
 }
 
 template<typename T>
-GreaterThanMatcher<T> Gt(const T& arg) {
-	GreaterThanMatcher<T> rv(arg);
+GtMatcherCreator<T> Gt(const T& arg) {
+	GtMatcherCreator<T> rv(arg);
 	return rv;
 }
 
 template<typename T>
-GreaterOrEqualsMatcher<T> Ge(const T& arg) {
-	GreaterOrEqualsMatcher<T> rv(arg);
+GeMatcherCreator<T> Ge(const T& arg) {
+	GeMatcherCreator<T> rv(arg);
 	return rv;
 }
 
 template<typename T>
-LessThanMatcher<T> Lt(const T& arg) {
-	LessThanMatcher<T> rv(arg);
+LtMatcherCreator<T> Lt(const T& arg) {
+	LtMatcherCreator<T> rv(arg);
 	return rv;
 }
 
 template<typename T>
-LessOrEqualsMatcher<T> Le(const T& arg) {
-	LessOrEqualsMatcher<T> rv(arg);
+LeMatcherCreator<T> Le(const T& arg) {
+	LeMatcherCreator<T> rv(arg);
 	return rv;
 }
 
 template<typename T>
-NotEqualsMatcher<T> Ne(const T& arg) {
-	NotEqualsMatcher<T> rv(arg);
+NeMatcherCreator<T> Ne(const T& arg) {
+	NeMatcherCreator<T> rv(arg);
 	return rv;
 }
 

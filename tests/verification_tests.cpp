@@ -59,6 +59,7 @@ struct BasicVerification: tpunit::TestFixture {
 					TEST(BasicVerification::exception_while_verifying_should_cancel_verification), //
 					TEST(BasicVerification::use_same_filter_for_both_stubbing_and_verification), //
 					TEST(BasicVerification::verify_after_paramter_was_changed__with_Matching), //
+					TEST(BasicVerification::verify_after_paramter_was_changed_with_argument_matcher), //
 					TEST(BasicVerification::verify_after_paramter_was_changed_with_Using)) //
 	{
 	}
@@ -447,6 +448,26 @@ struct BasicVerification: tpunit::TestFixture {
 		a1.state = 1;
 
 		auto call_to_proc2_with_state_1 = Method(mock,proc2).Using(a1);
+		Fake(call_to_proc2_with_state_1);
+		SomeInterface &i = mock.get();
+
+		A a2;
+		a2.state = 1;
+
+		i.proc2(a2);
+		i.proc2(a2);
+
+		a2.state = 2;
+
+		Verify(2 * call_to_proc2_with_state_1);
+	}
+
+	void verify_after_paramter_was_changed_with_argument_matcher() {
+		Mock<SomeInterface> mock;
+		A a1;
+		a1.state = 1;
+
+		auto call_to_proc2_with_state_1 = Method(mock,proc2).Using(Eq(a1));
 		Fake(call_to_proc2_with_state_1);
 		SomeInterface &i = mock.get();
 

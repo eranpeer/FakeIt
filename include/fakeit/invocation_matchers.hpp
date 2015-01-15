@@ -36,6 +36,8 @@ struct ArgumentsMatcherInvocationMatcher: public ActualInvocation<arglist...>::M
 	}
 
 	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
+		if (invocation.getActualMatcher() == this)
+			return true;
 		return matches(invocation.getActualArguments());
 	}
 
