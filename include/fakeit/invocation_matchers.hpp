@@ -26,13 +26,6 @@ namespace fakeit {
 template<typename ... arglist>
 struct ArgumentsMatcherInvocationMatcher: public ActualInvocation<arglist...>::Matcher {
 
-	struct DeletingLambda {
-		template<typename A>
-		void operator()(int index, const A &matcher) {
-			delete matcher;
-		}
-	};
-
 	virtual ~ArgumentsMatcherInvocationMatcher() {
 		for (unsigned int i = 0; i < _matchers.size(); i++)
 			delete _matchers[i];
@@ -43,8 +36,6 @@ struct ArgumentsMatcherInvocationMatcher: public ActualInvocation<arglist...>::M
 	}
 
 	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
-		if (invocation.getActualMatcher() == this)
-			return true;
 		return matches(invocation.getActualArguments());
 	}
 
