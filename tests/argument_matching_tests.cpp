@@ -180,7 +180,7 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		} catch (SequenceVerificationException& e) {
 			std::string expectedMsg;
 			expectedMsg += "test file:1: Verification error\n";
-			expectedMsg += "Expected pattern: mock.func( Any )\n";
+			expectedMsg += "Expected pattern: mock.func(Any)\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
 			expectedMsg += "Actual sequence : total of 0 actual invocations.";
@@ -196,7 +196,7 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		} catch (SequenceVerificationException& e) {
 			std::string expectedMsg;
 			expectedMsg += "test file:1: Verification error\n";
-			expectedMsg += "Expected pattern: mock.func( 1 )\n";
+			expectedMsg += "Expected pattern: mock.func(1)\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
 			expectedMsg += "Actual sequence : total of 0 actual invocations.";
@@ -212,7 +212,7 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		} catch (SequenceVerificationException& e) {
 			std::string expectedMsg;
 			expectedMsg += "test file:1: Verification error\n";
-			expectedMsg += "Expected pattern: mock.func( >1 )\n";
+			expectedMsg += "Expected pattern: mock.func(>1)\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
 			expectedMsg += "Actual sequence : total of 0 actual invocations.";
@@ -228,7 +228,7 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		} catch (SequenceVerificationException& e) {
 			std::string expectedMsg;
 			expectedMsg += "test file:1: Verification error\n";
-			expectedMsg += "Expected pattern: mock.func( >=1 )\n";
+			expectedMsg += "Expected pattern: mock.func(>=1)\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
 			expectedMsg += "Actual sequence : total of 0 actual invocations.";
@@ -244,7 +244,7 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		} catch (SequenceVerificationException& e) {
 			std::string expectedMsg;
 			expectedMsg += "test file:1: Verification error\n";
-			expectedMsg += "Expected pattern: mock.func( <1 )\n";
+			expectedMsg += "Expected pattern: mock.func(<1)\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
 			expectedMsg += "Actual sequence : total of 0 actual invocations.";
@@ -260,7 +260,7 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		} catch (SequenceVerificationException& e) {
 			std::string expectedMsg;
 			expectedMsg += "test file:1: Verification error\n";
-			expectedMsg += "Expected pattern: mock.func( <=1 )\n";
+			expectedMsg += "Expected pattern: mock.func(<=1)\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
 			expectedMsg += "Actual sequence : total of 0 actual invocations.";
@@ -276,7 +276,7 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		} catch (SequenceVerificationException& e) {
 			std::string expectedMsg;
 			expectedMsg += "test file:1: Verification error\n";
-			expectedMsg += "Expected pattern: mock.func( !=1 )\n";
+			expectedMsg += "Expected pattern: mock.func(!=1)\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
 			expectedMsg += "Actual sequence : total of 0 actual invocations.";

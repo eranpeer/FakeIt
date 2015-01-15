@@ -27,7 +27,6 @@ struct EventNotification: tpunit::TestFixture {
 							EventNotification::ShouldThrow_UnexpectedMethodCallException_IfAdapterDidNotThrowException_WhenHandlingAnUnmatchedInvocation),
 					TEST(
 							EventNotification::ShouldThrow_UnexpectedMethodCallException_IfAdapterDidNotThrowException_WhenHandlingNoMoreRecordedActionException)
-
 			) //
 	{
 	}
