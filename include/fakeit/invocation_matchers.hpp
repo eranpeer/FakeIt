@@ -84,36 +84,36 @@ private:
 	const std::vector<Destructable*> _matchers;
 };
 
-template<typename ... arglist>
-struct ExpectedArgumentsInvocationMatcher: public ActualInvocation<arglist...>::Matcher {
-
-	virtual ~ExpectedArgumentsInvocationMatcher() = default;
-
-	ExpectedArgumentsInvocationMatcher(const arglist&... args)
-			: expectedArguments(args...) {
-	}
-
-	ExpectedArgumentsInvocationMatcher(const std::tuple<arglist...>& expectedArguments)
-			: expectedArguments(expectedArguments) {
-	}
-
-	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
-		if (invocation.getActualMatcher() == this)
-			return true;
-		return matches(invocation.getActualArguments());
-	}
-
-	virtual std::string format() const override {
-		std::ostringstream out;
-		print(out, expectedArguments);
-		return out.str();
-	}
-private:
-	virtual bool matches(const std::tuple<arglist...>& actualArgs) {
-		return expectedArguments == actualArgs;
-	}
-	const std::tuple<arglist...> expectedArguments;
-};
+//template<typename ... arglist>
+//struct ExpectedArgumentsInvocationMatcher: public ActualInvocation<arglist...>::Matcher {
+//
+//	virtual ~ExpectedArgumentsInvocationMatcher() = default;
+//
+//	ExpectedArgumentsInvocationMatcher(const arglist&... args)
+//			: expectedArguments(args...) {
+//	}
+//
+//	ExpectedArgumentsInvocationMatcher(const std::tuple<arglist...>& expectedArguments)
+//			: expectedArguments(expectedArguments) {
+//	}
+//
+//	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
+//		if (invocation.getActualMatcher() == this)
+//			return true;
+//		return matches(invocation.getActualArguments());
+//	}
+//
+//	virtual std::string format() const override {
+//		std::ostringstream out;
+//		print(out, expectedArguments);
+//		return out.str();
+//	}
+//private:
+//	virtual bool matches(const std::tuple<arglist...>& actualArgs) {
+//		return expectedArguments == actualArgs;
+//	}
+//	const std::tuple<arglist...> expectedArguments;
+//};
 
 template<typename ... arglist>
 struct UserDefinedInvocationMatcher: public ActualInvocation<arglist...>::Matcher {

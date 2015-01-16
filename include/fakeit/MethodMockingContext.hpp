@@ -148,16 +148,6 @@ private:
 			getStubbingContext().setMethodDetails(mockName, methodName);
 		}
 
-		void setMatchingCriteria(const arglist&... args) {
-			typename ActualInvocation<arglist...>::Matcher* matcher { new ExpectedArgumentsInvocationMatcher<arglist...>(args...) };
-			setInvocationMatcher(matcher);
-		}
-
-		void setMatchingCriteria(std::function<bool(arglist&...)> predicate) {
-			typename ActualInvocation<arglist...>::Matcher* matcher { new UserDefinedInvocationMatcher<arglist...>(predicate) };
-			setInvocationMatcher(matcher);
-		}
-
 		void getInvolvedMocks(std::set<const ActualInvocationsSource*>& into) const {
 			into.insert(&getStubbingContext().getInvolvedMock());
 		}
@@ -228,16 +218,17 @@ protected:
 		_impl->setMethodDetails(mockName, methodName);
 	}
 
-	void setMatchingCriteria(const arglist&... args) {
-		_impl->setMatchingCriteria(args...);
-	}
+//	void setMatchingCriteria(const arglist&... args) {
+//		_impl->setMatchingCriteria(args...);
+//	}
 
 	void setMatchingCriteria(std::function<bool(arglist&...)> predicate) {
-		_impl->setMatchingCriteria(predicate);
+		typename ActualInvocation<arglist...>::Matcher* matcher { new UserDefinedInvocationMatcher<arglist...>(predicate) };
+		_impl->setInvocationMatcher(matcher);
 	}
 
-	void setMatchingCriteria2(const std::vector<Destructable*>& args) {
-		typename ActualInvocation<arglist...>::Matcher* matcher { new ArgumentsMatcherInvocationMatcher<arglist...>(args) };
+	void setMatchingCriteria(const std::vector<Destructable*>& matchers) {
+		typename ActualInvocation<arglist...>::Matcher* matcher { new ArgumentsMatcherInvocationMatcher<arglist...>(matchers) };
 		_impl->setInvocationMatcher(matcher);
 	}
 
@@ -253,13 +244,13 @@ protected:
 	}
 
 	template<class ...matcherCreators, class = typename std::enable_if<sizeof...(matcherCreators)==sizeof...(arglist)>::type>
-	void setMatchingCriteria3(const matcherCreators& ... matcherCreator) {
+	void setMatchingCriteria(const matcherCreators& ... matcherCreator) {
 		std::vector<Destructable*> matchers;
 
 		MatchersCollector<0, arglist...> c(matchers);
 		c.CollectMatchers(matcherCreator...);
 
-		MethodMockingContext<R, arglist...>::setMatchingCriteria2(matchers);
+		MethodMockingContext<R, arglist...>::setMatchingCriteria(matchers);
 	}
 private:
 
@@ -298,13 +289,13 @@ public:
 	}
 
 	MockingContext<R, arglist...>& Using(const arglist&... args) {
-		MethodMockingContext<R, arglist...>::setMatchingCriteria3(args...);
+		MethodMockingContext<R, arglist...>::setMatchingCriteria(args...);
 		return *this;
 	}
 
-	template<class ...matchers>
-	MockingContext<R, arglist...>& Using(const matchers& ... matcher) {
-		MethodMockingContext<R, arglist...>::setMatchingCriteria3(matcher...);
+	template<class ...matcherCreator>
+	MockingContext<R, arglist...>& Using(const matcherCreator& ... matcherCreators) {
+		MethodMockingContext<R, arglist...>::setMatchingCriteria(matcherCreators...);
 		return *this;
 	}
 
@@ -371,13 +362,13 @@ public:
 	}
 
 	MockingContext<void, arglist...>& Using(const arglist&... args) {
-		MethodMockingContext<void, arglist...>::setMatchingCriteria3(args...);
+		MethodMockingContext<void, arglist...>::setMatchingCriteria(args...);
 		return *this;
 	}
 
-	template<class ...matchers>
-	MockingContext<void, arglist...>& Using(const matchers& ... matcher) {
-		MethodMockingContext<void, arglist...>::setMatchingCriteria3(matcher...);
+	template<class ...matcherCreator>
+	MockingContext<void, arglist...>& Using(const matcherCreator& ... matcherCreators) {
+		MethodMockingContext<void, arglist...>::setMatchingCriteria(matcherCreators...);
 		return *this;
 	}
 
