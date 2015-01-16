@@ -35,7 +35,7 @@ public:
 		using NakedArgType = typename naked_type<ArgType<index>>::type;
 
 	template<std::size_t N>
-	using ArgMatcherCreatorType = ITypedMatcherCreator<NakedArgType<N>>;
+		using ArgMatcherCreatorType = decltype(std::declval<ITypedMatcherCreator<NakedArgType<N>>>());
 
 	MatchersCollector(std::vector<Destructable*>& matchers)
 			: _matchers(matchers) {
