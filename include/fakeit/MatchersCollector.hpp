@@ -61,7 +61,7 @@ public:
 			&& !std::is_same<AnyMatcher, Head>::value, void> //
 	::type CollectMatchers(const Head& value, const Tail& ... tail) {
 
-		EqMatcherCreator<NakedArgType<index>> m(value);
+		internal::EqMatcherCreator<NakedArgType<index>> m(value);
 		TypedMatcher<NakedArgType<index>>* d = m.createMatcher();
 		_matchers.push_back(d);
 		MatchersCollector<index + 1, arglist...> c(_matchers);
@@ -74,7 +74,7 @@ public:
 			&& std::is_same<AnyMatcher, Head>::value, void> //
 	::type CollectMatchers(const Head& value, const Tail& ... tail) {
 
-		TypedAnyMatcher<NakedArgType<index>> m;
+		internal::TypedAnyMatcher<NakedArgType<index>> m;
 		TypedMatcher<NakedArgType<index>>* d = m.createMatcher();
 		_matchers.push_back(d);
 		MatchersCollector<index + 1, arglist...> c(_matchers);
@@ -96,7 +96,7 @@ public:
 			&& !std::is_same<AnyMatcher, Head>::value, void> //
 	::type CollectMatchers(const Head& value) {
 
-		EqMatcherCreator<NakedArgType<index>> m(value);
+		internal::EqMatcherCreator<NakedArgType<index>> m(value);
 		TypedMatcher<NakedArgType<index>>* d = m.createMatcher();
 		_matchers.push_back(d);
 	}
@@ -106,7 +106,7 @@ public:
 	&& std::is_same<AnyMatcher, Head>::value, void> //
 	::type CollectMatchers(const Head& value) {
 
-		TypedAnyMatcher<NakedArgType<index>> m;
+		internal::TypedAnyMatcher<NakedArgType<index>> m;
 		TypedMatcher<NakedArgType<index>>* d = m.createMatcher();
 		_matchers.push_back(d);
 	}
