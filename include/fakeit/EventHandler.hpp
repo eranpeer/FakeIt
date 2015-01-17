@@ -13,7 +13,6 @@
 
 namespace fakeit {
 
-
 struct EventHandler {
 
 	virtual void handle(const UnexpectedMethodCallEvent& e) = 0;

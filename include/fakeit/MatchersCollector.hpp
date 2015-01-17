@@ -35,7 +35,7 @@ public:
 		using NakedArgType = typename naked_type<ArgType<index>>::type;
 
 	template<std::size_t N>
-		using ArgMatcherCreatorType = decltype(std::declval<ITypedMatcherCreator<NakedArgType<N>>>());
+		using ArgMatcherCreatorType = decltype(std::declval<TypedMatcherCreator<NakedArgType<N>>>());
 
 	MatchersCollector(std::vector<Destructable*>& matchers)
 			: _matchers(matchers) {
@@ -46,10 +46,10 @@ public:
 
 	template<typename Head, typename ...Tail> //
 	typename std::enable_if< //
-			std::is_base_of<ITypedMatcherCreator<NakedArgType<index>>, Head>::value, void> //
+			std::is_base_of<TypedMatcherCreator<NakedArgType<index>>, Head>::value, void> //
 	::type CollectMatchers(const Head& creator, const Tail& ... tail) {
 
-		ITypedMatcher<NakedArgType<index>>* d = creator.createMatcher();
+		TypedMatcher<NakedArgType<index>>* d = creator.createMatcher();
 		_matchers.push_back(d);
 		MatchersCollector<index + 1, arglist...> c(_matchers);
 		c.CollectMatchers(tail...);
@@ -57,12 +57,12 @@ public:
 
 	template<typename Head, typename ...Tail>
 	typename std::enable_if< //
-			!std::is_base_of<ITypedMatcherCreator<NakedArgType<index>>, Head>::value //
+			!std::is_base_of<TypedMatcherCreator<NakedArgType<index>>, Head>::value //
 			&& !std::is_same<AnyMatcher, Head>::value, void> //
 	::type CollectMatchers(const Head& value, const Tail& ... tail) {
 
 		EqMatcherCreator<NakedArgType<index>> m(value);
-		ITypedMatcher<NakedArgType<index>>* d = m.createMatcher();
+		TypedMatcher<NakedArgType<index>>* d = m.createMatcher();
 		_matchers.push_back(d);
 		MatchersCollector<index + 1, arglist...> c(_matchers);
 		c.CollectMatchers(tail...);
@@ -70,12 +70,12 @@ public:
 
 	template<typename Head, typename ...Tail>
 	typename std::enable_if< //
-			!std::is_base_of<ITypedMatcherCreator<NakedArgType<index>>, Head>::value //
+			!std::is_base_of<TypedMatcherCreator<NakedArgType<index>>, Head>::value //
 			&& std::is_same<AnyMatcher, Head>::value, void> //
 	::type CollectMatchers(const Head& value, const Tail& ... tail) {
 
 		TypedAnyMatcher<NakedArgType<index>> m;
-		ITypedMatcher<NakedArgType<index>>* d = m.createMatcher();
+		TypedMatcher<NakedArgType<index>>* d = m.createMatcher();
 		_matchers.push_back(d);
 		MatchersCollector<index + 1, arglist...> c(_matchers);
 		c.CollectMatchers(tail...);
@@ -83,31 +83,31 @@ public:
 
 	template<typename Head>
 	typename std::enable_if< //
-			std::is_base_of<ITypedMatcherCreator<NakedArgType<index>>, Head>::value, void> //
+			std::is_base_of<TypedMatcherCreator<NakedArgType<index>>, Head>::value, void> //
 	::type CollectMatchers(const Head& creator) {
 
-		ITypedMatcher<NakedArgType<index>>* d = creator.createMatcher();
+		TypedMatcher<NakedArgType<index>>* d = creator.createMatcher();
 		_matchers.push_back(d);
 	}
 
 	template<typename Head>
 	typename std::enable_if< //
-			!std::is_base_of<ITypedMatcherCreator<NakedArgType<index>>, Head>::value //
+			!std::is_base_of<TypedMatcherCreator<NakedArgType<index>>, Head>::value //
 			&& !std::is_same<AnyMatcher, Head>::value, void> //
 	::type CollectMatchers(const Head& value) {
 
 		EqMatcherCreator<NakedArgType<index>> m(value);
-		ITypedMatcher<NakedArgType<index>>* d = m.createMatcher();
+		TypedMatcher<NakedArgType<index>>* d = m.createMatcher();
 		_matchers.push_back(d);
 	}
 
 	template<typename Head>
-	typename std::enable_if<!std::is_base_of<ITypedMatcherCreator<NakedArgType<index>>, Head>::value //
+	typename std::enable_if<!std::is_base_of<TypedMatcherCreator<NakedArgType<index>>, Head>::value //
 	&& std::is_same<AnyMatcher, Head>::value, void> //
 	::type CollectMatchers(const Head& value) {
 
 		TypedAnyMatcher<NakedArgType<index>> m;
-		ITypedMatcher<NakedArgType<index>>* d = m.createMatcher();
+		TypedMatcher<NakedArgType<index>>* d = m.createMatcher();
 		_matchers.push_back(d);
 	}
 

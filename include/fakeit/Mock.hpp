@@ -14,8 +14,10 @@
 #include "fakeit/ActualInvocation.hpp"
 
 namespace fakeit {
-
+	namespace internal {
+	}
 using namespace fakeit;
+using namespace fakeit::internal;
 
 template<typename C, typename ... baseclasses>
 class Mock : public ActualInvocationsSource {

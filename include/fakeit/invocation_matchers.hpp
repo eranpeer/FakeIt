@@ -61,8 +61,8 @@ private:
 
 		template<typename A>
 		void operator()(int index, A& actualArg) {
-			ITypedMatcher<typename naked_type<A>::type>* matcher =
-					dynamic_cast<ITypedMatcher<typename naked_type<A>::type>*>(_matchers[index]);
+			TypedMatcher<typename naked_type<A>::type>* matcher =
+					dynamic_cast<TypedMatcher<typename naked_type<A>::type>*>(_matchers[index]);
 			if (_matching)
 				_matching = matcher->matches(actualArg);
 		}
