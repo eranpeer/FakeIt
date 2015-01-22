@@ -168,4 +168,5 @@ struct SpyingTests: tpunit::TestFixture {
     SomeClass& ref(SomeClass& s){
         return *(&(*(&s+1))-1); // Force the compiler to drop any optimizations.
     }
+
 } __SpyingTests;
