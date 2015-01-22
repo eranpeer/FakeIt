@@ -21,6 +21,7 @@ struct Miscellaneous: tpunit::TestFixture
 			TEST(Miscellaneous::pass_mock_by_ref), //
 			TEST(Miscellaneous::can_mock_class_without_default_constructor), //
 			TEST(Miscellaneous::can_mock_class_with_protected_constructor), //
+			TEST(Miscellaneous::drop_ownership), //
 			TEST(Miscellaneous::create_and_delete_fakit_instatnce) //
 		)
 	{
@@ -85,5 +86,19 @@ struct Miscellaneous: tpunit::TestFixture
 		When(Method(mock, change)).AlwaysReturn();
 		change->change(1, 2, 3);
 		assertChanged(mock, 1, 2, 3);
+	}
+
+	void drop_ownership() {
+
+		struct SomeInterface
+		{
+			virtual int foo() = 0;
+		};
+
+		Mock<SomeInterface> mock;
+		When(Method(mock, foo)).AlwaysReturn(1);
+		SomeInterface* i = &mock.get();
+		std::unique_ptr<SomeInterface> p(i);
+		mock.Detach();
 	}
 } __Miscellaneous;

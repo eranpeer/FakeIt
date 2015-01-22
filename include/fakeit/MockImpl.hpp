@@ -79,6 +79,11 @@ namespace fakeit {
 			}
 		}
 
+        void detach(){
+            _isOwner = false;
+            _proxy.detach();
+        }
+
 		virtual C& get() override
 		{
 			return _proxy.get();
