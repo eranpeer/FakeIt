@@ -88,12 +88,13 @@ struct Miscellaneous: tpunit::TestFixture
 		assertChanged(mock, 1, 2, 3);
 	}
 
+	struct SomeInterface
+	{
+		virtual ~SomeInterface(){}
+		virtual int foo() = 0;
+	};
+
 	void drop_ownership() {
-		struct SomeInterface
-		{
-			virtual ~SomeInterface(){}
-			virtual int foo() = 0;
-		};
 
 		Mock<SomeInterface> mock;
 		When(Method(mock, foo)).AlwaysReturn(1);
