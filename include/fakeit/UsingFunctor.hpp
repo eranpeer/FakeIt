@@ -58,7 +58,7 @@ class UsingFunctor {
 
 public:
 
-	UsingFunctor(FakeitContext& fakeit):_fakeit(fakeit) {
+	UsingFunctor(FakeitContext& fakeit) :_fakeit(fakeit) {
 	}
 
 	template<typename ... list>

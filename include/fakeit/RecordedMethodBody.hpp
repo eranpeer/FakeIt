@@ -74,7 +74,7 @@ class RecordedMethodBody: public virtual MethodInvocationHandler<R, arglist...>,
 		}
 	};
 
-	MockObject<C>& _mock;
+	internal::MockObject<C>& _mock;
 	R (C::*_vMethod)(arglist...);
 	MethodImpl _method;
 	std::vector<std::shared_ptr<Destructable>>_invocationHandlers;
@@ -107,7 +107,7 @@ class RecordedMethodBody: public virtual MethodInvocationHandler<R, arglist...>,
 
 public:
 
-	RecordedMethodBody(MockObject<C>& mock, R (C::*vMethod)(arglist...)) :
+	RecordedMethodBody(internal::MockObject<C>& mock, R (C::*vMethod)(arglist...)) :
 	_mock(mock), _vMethod(vMethod), _method {this} {
 	}
 
@@ -136,7 +136,7 @@ public:
 
 
 	R handleMethodInvocation(arglist&... args) override {
-		int ordinal = nextInvocationOrdinal();
+		int ordinal = internal::nextInvocationOrdinal();
 		Method& method = this->getMethod();
 		auto actualInvoaction = new ActualInvocation<arglist...>(ordinal, method, args...);
 

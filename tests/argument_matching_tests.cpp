@@ -173,7 +173,7 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		Verify(Method(mock, func).Using(_)).Twice();
 	}
 
-	void format_Any() {
+    void format_Any() {
 		Mock<SomeInterface> mock;
 		try {
 			fakeit::Verify(Method(mock, func).Using(_)).setFileInfo("test file", 1, "test method").Exactly(Once);

@@ -23,6 +23,7 @@ struct SpyingTests: tpunit::TestFixture {
 					TEST(SpyingTests::mockDestructordoesNotDeleteObject), //
 					TEST(SpyingTests::canVerifyMethodAfterSpying),//
 					TEST(SpyingTests::canVerifyProcedureAfterSpying),
+                    TEST(SpyingTests::restoreObjectOnMockDelete),
 					TEST(SpyingTests::spyMultipleMethods)
 					//
 	) //
@@ -150,4 +151,21 @@ struct SpyingTests: tpunit::TestFixture {
 		VerifyNoOtherInvocations(mock);
 	}
 
+    void restoreObjectOnMockDelete() {
+        SomeClass obj;
+        SomeClass& r = ref(obj);
+        {
+            ASSERT_EQUAL(1, r.func1(1));
+            Mock<SomeClass> mock(obj);
+            Fake(Method(mock, func1));
+            SomeClass &i = mock.get();
+            ASSERT_EQUAL(0, i.func1(1));
+            ASSERT_EQUAL(0, r.func1(1));
+        }
+        ASSERT_EQUAL(1, r.func1(1));
+    }
+
+    SomeClass& ref(SomeClass& s){
+        return *(&(*(&s+1))-1); // Force the compiler to drop any optimizations.
+    }
 } __SpyingTests;
