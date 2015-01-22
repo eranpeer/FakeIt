@@ -25,7 +25,7 @@ namespace fakeit {
 		}
 
 		SequenceVerificationProgress(
-			FakeitContext& fakeit,
+				FakeitContext& fakeit,
 				std::set<const ActualInvocationsSource*>& sources,
 				std::vector<Sequence*>& allSequences) :
 			SequenceVerificationProgress(new SequenceVerificationExpectation(fakeit, sources, allSequences)){

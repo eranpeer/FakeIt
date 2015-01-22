@@ -23,15 +23,13 @@
 
 
 namespace fakeit {
-	
-	namespace internal {
-	
-		static std::atomic_int invocationOrdinal;
 
-		static int nextInvocationOrdinal(){
-			return ++invocationOrdinal;
-		}
-	}
+static std::atomic_int invocationOrdinal;
+
+static int nextInvocationOrdinal(){
+	return ++invocationOrdinal;
+}
+
 
 template<typename ... arglist>
 struct ActualInvocation: public Invocation {

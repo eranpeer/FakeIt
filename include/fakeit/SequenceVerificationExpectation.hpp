@@ -44,7 +44,7 @@ private:
 	std::string _testMethod;
 
 	SequenceVerificationExpectation(
-		FakeitContext& fakeit,
+			FakeitContext& fakeit,
 			std::set<const ActualInvocationsSource*>& mocks,
 			std::vector<Sequence*>& expectedPattern) : //
 		_fakeit(fakeit),

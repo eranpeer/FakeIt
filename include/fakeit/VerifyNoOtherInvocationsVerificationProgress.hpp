@@ -79,7 +79,7 @@ class VerifyNoOtherInvocationsVerificationProgress {
 			_ptr(ptr) {
 	}
 
-	VerifyNoOtherInvocationsVerificationProgress(FakeitContext& fakeit, std::set<const ActualInvocationsSource*>& invocationSources)
+	VerifyNoOtherInvocationsVerificationProgress(FakeitContext& fakeit, std::set<const ActualInvocationsSource*>& invocationSources) 
 		: VerifyNoOtherInvocationsVerificationProgress(
 			new VerifyNoOtherInvocationsExpectation(fakeit, invocationSources)
 			) 

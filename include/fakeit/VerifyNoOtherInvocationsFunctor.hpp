@@ -30,7 +30,7 @@ class VerifyNoOtherInvocationsFunctor {
 
 public:
 
-	VerifyNoOtherInvocationsFunctor(FakeitContext& fakeit) :_fakeit(fakeit) {
+	VerifyNoOtherInvocationsFunctor(FakeitContext& fakeit):_fakeit(fakeit) {
 	}
 
 	void operator()() {

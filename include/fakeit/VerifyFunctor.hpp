@@ -40,7 +40,7 @@ class VerifyFunctor {
 	}
 public:
 
-	VerifyFunctor(FakeitContext& fakeit) :_fakeit(fakeit) {
+	VerifyFunctor(FakeitContext& fakeit):_fakeit(fakeit) {
 	}
 
 	template<typename ... list>
