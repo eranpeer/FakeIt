@@ -26,22 +26,27 @@ template<typename C, typename ... baseclasses>
 class MockImpl: private MockObject<C>, public virtual ActualInvocationsSource {
 public:
 
-	MockImpl(FakeitContext& fakeit, C &obj) :
-			MockImpl<C, baseclasses...>(fakeit, obj, true) {
+	MockImpl(FakeitContext& fakeit, C &obj)
+			: MockImpl<C, baseclasses...>(fakeit, obj, true) {
 	}
 
-	MockImpl(FakeitContext& fakeit) :
-			MockImpl<C, baseclasses...>(fakeit, *(createFakeInstance()), false) {
+	MockImpl(FakeitContext& fakeit)
+			: MockImpl<C, baseclasses...>(fakeit, *(createFakeInstance()), false) {
 		FakeObject<C, baseclasses...>* fake = reinterpret_cast<FakeObject<C, baseclasses...>*>(_instance);
 		fake->getVirtualTable().setCookie(1, this);
 	}
 
 	virtual ~MockImpl() {
-		if (_isSpy)
-			return;
 		_proxy.detach();
-		FakeObject<C, baseclasses...>* fake = reinterpret_cast<FakeObject<C, baseclasses...>*>(_instance);
-		delete fake;
+		if (_isOwner) {
+			FakeObject<C, baseclasses...>* fake = reinterpret_cast<FakeObject<C, baseclasses...>*>(_instance);
+			delete fake;
+		}
+	}
+
+	void detach() {
+		_isOwner = false;
+		_proxy.detach();
 	}
 
 	/**
@@ -57,7 +62,7 @@ public:
 
 	void reset() {
 		_proxy.Reset();
-		if (!_isSpy) {
+		if (_isOwner) {
 			FakeObject<C, baseclasses...>* fake = reinterpret_cast<FakeObject<C, baseclasses...>*>(_instance);
 			fake->initializeDataMembersArea();
 		}
@@ -86,7 +91,7 @@ public:
 private:
 	DynamicProxy<C, baseclasses...> _proxy;
 	C* _instance; //
-	bool _isSpy;
+	bool _isOwner;
 	FakeitContext& _fakeit;
 
 	template<typename R, typename ... arglist>
@@ -101,29 +106,29 @@ private:
 	public:
 		virtual ~MethodStubbingContextImpl() = default;
 
-		MethodStubbingContextImpl(MockImpl<C, baseclasses...>& mock, R (C::*vMethod)(arglist...)) :
-				_mock(mock), _vMethod(vMethod) {
+		MethodStubbingContextImpl(MockImpl<C, baseclasses...>& mock, R (C::*vMethod)(arglist...))
+				: _mock(mock), _vMethod(vMethod) {
 		}
 
-		ActualInvocationsSource& getInvolvedMock(){
+		ActualInvocationsSource& getInvolvedMock() {
 			return _mock;
 		}
 
 		virtual std::function<R(arglist&...)> getOriginalMethod() override {
 			void * mPtr = _mock.getOriginalMethod(_vMethod);
-			C& instance = _mock.get(); 
-			return [=, &instance](arglist&... args)->R{
+			C& instance = _mock.get();
+			return [=, &instance](arglist&... args)->R {
 				auto m = union_cast<decltype(_vMethod)>(mPtr);
 				return ((&instance)->*m)(args...);
 			};
 		}
 
-		std::string getMethodName(){
+		std::string getMethodName() {
 			return getRecordedMethodBody().getMethod().name();
 		}
 
 		void addMethodInvocationHandler(typename ActualInvocation<arglist...>::Matcher* matcher,
-					MethodInvocationHandler<R, arglist...>* invocationHandler){
+				MethodInvocationHandler<R, arglist...>* invocationHandler) {
 			getRecordedMethodBody().addMethodInvocationHandler(matcher, invocationHandler);
 		}
 
@@ -131,11 +136,11 @@ private:
 			getRecordedMethodBody().scanActualInvocations(scanner);
 		}
 
-		void setMethodDetails(std::string mockName,std::string methodName){
+		void setMethodDetails(std::string mockName, std::string methodName) {
 			getRecordedMethodBody().setMethodDetails(mockName, methodName);
 		}
 
-		bool isOfMethod(Method& method){
+		bool isOfMethod(Method& method) {
 			return getRecordedMethodBody().isOfMethod(method);
 		}
 	};
@@ -183,8 +188,8 @@ private:
 		return *methodMock;
 	}
 
-	MockImpl(FakeitContext& fakeit, C &obj, bool isSpy) :
-			_proxy { obj }, _instance(&obj), _isSpy(isSpy), _fakeit(fakeit) {
+	MockImpl(FakeitContext& fakeit, C &obj, bool isSpy)
+			: _proxy { obj }, _instance(&obj), _isOwner(!isSpy), _fakeit(fakeit) {
 	}
 };
 }
