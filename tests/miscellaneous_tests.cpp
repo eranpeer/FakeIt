@@ -90,7 +90,7 @@ struct Miscellaneous: tpunit::TestFixture
 
 	struct A
 	{
-		virtual ~A() {}
+		//~A() = 0;
 		virtual int a1() = 0;
         virtual int a2() = 0;
 	};
@@ -103,8 +103,7 @@ struct Miscellaneous: tpunit::TestFixture
     };
 
     void mock_virtual_methods_of_base_class() {
-
-		Mock<B,A> mock;
+		Mock<B> mock;
         When(Method(mock,b1)).Return(1);
         When(Method(mock,b2)).Return(2);
         When(Method(mock,a1)).Return(3);

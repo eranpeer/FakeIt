@@ -15,28 +15,49 @@
 
 namespace fakeit {
 
-static VirtualOffsetSelector offsetSelctor;
-
 class VTUtils {
 public:
-	template<typename C, typename R, typename ... arglist>
-	static unsigned int getOffset(R (C::*vMethod)(arglist...)) {
-		auto sMethod = reinterpret_cast<unsigned int (VirtualOffsetSelector::*)()>(vMethod);
-		unsigned int offset = (offsetSelctor.*sMethod)();
-		return offset;
-	}
 
-	template<typename C>
-	static unsigned int getVTSize() {
-		struct Derrived:public C{
-			virtual void endOfVt(){}
-		};
+//	template<typename T>
+//	static unsigned int getOffset(T vMethod) {
+//		auto sMethod = reinterpret_cast<unsigned int (VirtualOffsetSelector::*)()>(vMethod);
+//		unsigned int offset = (offsetSelctor.*sMethod)();
+//		return offset;
+//	}
 
-		unsigned int vtSize = getOffset(&Derrived::endOfVt);
-		return vtSize;
-	}
+        template<typename C, typename R, typename ... arglist>
+        static unsigned int getOffset(R (C::*vMethod)(arglist...)) {
+            VirtualOffsetSelector offsetSelctor;
+            auto sMethod = reinterpret_cast<unsigned int (VirtualOffsetSelector::*)()>(vMethod);
+            unsigned int offset = (offsetSelctor.*sMethod)();
+            return offset;
+        }
 
-};
+        template<typename C>
+        static typename std::enable_if<std::has_virtual_destructor<C>::value, unsigned int>::type
+        getDestructorOffset() {
+            VirtualOffsetSelector offsetSelctor;
+            ((C *)&offsetSelctor)->~C();
+            return offsetSelctor.offset;
+        }
+
+        template<typename C>
+        static typename std::enable_if<!std::has_virtual_destructor<C>::value, unsigned int>::type
+        getDestructorOffset() {
+            return 0;
+        }
+
+        template<typename C>
+        static unsigned int getVTSize() {
+            struct Derrived : public C {
+                virtual void endOfVt() {
+                }
+            };
+
+            unsigned int vtSize = getOffset(&Derrived::endOfVt);
+            return vtSize;
+        }
+    };
 
 
 }

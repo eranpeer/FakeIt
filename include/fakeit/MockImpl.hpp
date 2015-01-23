@@ -167,6 +167,7 @@ private:
 		//fake->initializeDataMembersArea();
 		void* unmockedMethodStubPtr = union_cast<void*>(&MockImpl<C, baseclasses...>::unmocked);
 		fake->getVirtualTable().initAll(unmockedMethodStubPtr);
+		//auto dtorOffset = VTUtils::getDestructorOffset<C>();
 		return reinterpret_cast<C*>(fake);
 	}
 
