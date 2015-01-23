@@ -77,14 +77,14 @@ public:
 		return _fakeit;
 	}
 
-	template<class DATA_TYPE, typename ... arglist>
-	DataMemberStubbingRoot<C, DATA_TYPE> stubDataMember(DATA_TYPE C::*member, const arglist&... ctorargs) {
+	template<class DATA_TYPE, typename T, typename ... arglist, class = typename std::enable_if<std::is_base_of<T,C>::value>::type>
+	DataMemberStubbingRoot<C, DATA_TYPE> stubDataMember(DATA_TYPE T::*member, const arglist&... ctorargs) {
 		_proxy.stubDataMember(member, ctorargs...);
-		return DataMemberStubbingRoot<C, DATA_TYPE>();
+		return DataMemberStubbingRoot<T, DATA_TYPE>();
 	}
 
-	template<typename R, typename ... arglist>
-	MockingContext<R, arglist...> stub(R (C::*vMethod)(arglist...)) {
+	template<typename R,typename T, typename ... arglist, class = typename std::enable_if<std::is_base_of<T,C>::value>::type>
+	MockingContext<R, arglist...> stub(R (T::*vMethod)(arglist...)) {
 		return MockingContext<R, arglist...>(new MethodStubbingContextImpl<R, arglist...>(*this, vMethod));
 	}
 

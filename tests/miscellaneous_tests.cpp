@@ -21,7 +21,7 @@ struct Miscellaneous: tpunit::TestFixture
 			TEST(Miscellaneous::pass_mock_by_ref), //
 			TEST(Miscellaneous::can_mock_class_without_default_constructor), //
 			TEST(Miscellaneous::can_mock_class_with_protected_constructor), //
-			TEST(Miscellaneous::drop_ownership), //
+			TEST(Miscellaneous::mock_virtual_methods_of_base_class), //
 			TEST(Miscellaneous::create_and_delete_fakit_instatnce) //
 		)
 	{
@@ -88,18 +88,31 @@ struct Miscellaneous: tpunit::TestFixture
 		assertChanged(mock, 1, 2, 3);
 	}
 
-	struct SomeInterface
+	struct A
 	{
-		virtual ~SomeInterface(){}
-		virtual int foo() = 0;
+		virtual ~A() {}
+		virtual int a1() = 0;
+        virtual int a2() = 0;
 	};
 
-	void drop_ownership() {
+    struct B: public A
+    {
+		virtual ~B() {}
+        virtual int b1() = 0;
+        virtual int b2() = 0;
+    };
 
-		Mock<SomeInterface> mock;
-		When(Method(mock, foo)).AlwaysReturn(1);
-		SomeInterface* i = &mock.get();
-		//std::unique_ptr<SomeInterface> p(i);
-		//mock.Detach();
+    void mock_virtual_methods_of_base_class() {
+
+		Mock<B,A> mock;
+        When(Method(mock,b1)).Return(1);
+        When(Method(mock,b2)).Return(2);
+        When(Method(mock,a1)).Return(3);
+        When(Method(mock,a2)).Return(4);
+
+        ASSERT_EQUAL(1, mock().b1());
+        ASSERT_EQUAL(2, mock().b2());
+        ASSERT_EQUAL(3, mock().a1());
+        ASSERT_EQUAL(4, mock().a2());
 	}
 } __Miscellaneous;
