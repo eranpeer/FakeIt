@@ -142,156 +142,10 @@ private:
 			return methodMock->handleMethodInvocation(args...);
 		}
 
-		R methodProxy0(arglist ... args) {
-			return methodProxy(0, args...);
-		}
-		R methodProxy1(arglist ... args) {
-			return methodProxy(1, args...);
-		}
-		R methodProxy2(arglist ... args) {
-			return methodProxy(2, args...);
-		}
-		R methodProxy3(arglist ... args) {
-			return methodProxy(3, args...);
-		}
-		R methodProxy4(arglist ... args) {
-			return methodProxy(4, args...);
-		}
-		R methodProxy5(arglist ... args) {
-			return methodProxy(5, args...);
-		}
-		R methodProxy6(arglist ... args) {
-			return methodProxy(6, args...);
-		}
-		R methodProxy7(arglist ... args) {
-			return methodProxy(7, args...);
-		}
-		R methodProxy8(arglist ... args) {
-			return methodProxy(8, args...);
-		}
-		R methodProxy9(arglist ... args) {
-			return methodProxy(9, args...);
-		}
-		R methodProxy10(arglist ... args) {
-			return methodProxy(10, args...);
-		}
-		R methodProxy11(arglist ... args) {
-			return methodProxy(11, args...);
-		}
-		R methodProxy12(arglist ... args) {
-			return methodProxy(12, args...);
-		}
-		R methodProxy13(arglist ... args) {
-			return methodProxy(13, args...);
-		}
-		R methodProxy14(arglist ... args) {
-			return methodProxy(14, args...);
-		}
-		R methodProxy15(arglist ... args) {
-			return methodProxy(15, args...);
-		}
-		R methodProxy16(arglist ... args) {
-			return methodProxy(16, args...);
-		}
-		R methodProxy17(arglist ... args) {
-			return methodProxy(17, args...);
-		}
-		R methodProxy18(arglist ... args) {
-			return methodProxy(18, args...);
-		}
-		R methodProxy19(arglist ... args) {
-			return methodProxy(19, args...);
-		}
-		R methodProxy20(arglist ... args) {
-			return methodProxy(20, args...);
-		}
-		R methodProxy21(arglist ... args) {
-			return methodProxy(21, args...);
-		}
-		R methodProxy22(arglist ... args) {
-			return methodProxy(22, args...);
-		}
-		R methodProxy23(arglist ... args) {
-			return methodProxy(23, args...);
-		}
-		R methodProxy24(arglist ... args) {
-			return methodProxy(24, args...);
-		}
-		R methodProxy25(arglist ... args) {
-			return methodProxy(25, args...);
-		}
-		R methodProxy26(arglist ... args) {
-			return methodProxy(26, args...);
-		}
-		R methodProxy27(arglist ... args) {
-			return methodProxy(27, args...);
-		}
-		R methodProxy28(arglist ... args) {
-			return methodProxy(28, args...);
-		}
-		R methodProxy29(arglist ... args) {
-			return methodProxy(29, args...);
-		}
-		R methodProxy30(arglist ... args) {
-			return methodProxy(30, args...);
-		}
-		R methodProxy31(arglist ... args) {
-			return methodProxy(31, args...);
-		}
-		R methodProxy32(arglist ... args) {
-			return methodProxy(32, args...);
-		}
-		R methodProxy33(arglist ... args) {
-			return methodProxy(33, args...);
-		}
-		R methodProxy34(arglist ... args) {
-			return methodProxy(34, args...);
-		}
-		R methodProxy35(arglist ... args) {
-			return methodProxy(35, args...);
-		}
-		R methodProxy36(arglist ... args) {
-			return methodProxy(36, args...);
-		}
-		R methodProxy37(arglist ... args) {
-			return methodProxy(37, args...);
-		}
-		R methodProxy38(arglist ... args) {
-			return methodProxy(38, args...);
-		}
-		R methodProxy39(arglist ... args) {
-			return methodProxy(39, args...);
-		}
-		R methodProxy40(arglist ... args) {
-			return methodProxy(40, args...);
-		}
-		R methodProxy41(arglist ... args) {
-			return methodProxy(41, args...);
-		}
-		R methodProxy42(arglist ... args) {
-			return methodProxy(42, args...);
-		}
-		R methodProxy43(arglist ... args) {
-			return methodProxy(43, args...);
-		}
-		R methodProxy44(arglist ... args) {
-			return methodProxy(44, args...);
-		}
-		R methodProxy45(arglist ... args) {
-			return methodProxy(45, args...);
-		}
-		R methodProxy46(arglist ... args) {
-			return methodProxy(46, args...);
-		}
-		R methodProxy47(arglist ... args) {
-			return methodProxy(47, args...);
-		}
-		R methodProxy48(arglist ... args) {
-			return methodProxy(48, args...);
-		}
-		R methodProxy49(arglist ... args) {
-			return methodProxy(49, args...);
-		}
+        template<int offset>
+        R methodProxyX(arglist ... args) {
+            return methodProxy(offset, args...);
+        }
 
 		MethodProxy newMethodProxy(unsigned int offset, R(MethodProxyCreator::*vMethod)(arglist...)) {
 			return MethodProxy(offset, union_cast<void *>(vMethod));
@@ -303,154 +157,154 @@ private:
 			R(MethodProxyCreator::*vMethod)(arglist...) = 0;
 			switch (offset) {
 				case 0:
-				vMethod = &MethodProxyCreator::methodProxy0;
+				vMethod = &MethodProxyCreator::methodProxyX<0>;
 				break;
 				case 1:
-				vMethod = &MethodProxyCreator::methodProxy1;
+				vMethod = &MethodProxyCreator::methodProxyX<1>;
 				break;
 				case 2:
-				vMethod = &MethodProxyCreator::methodProxy2;
+				vMethod = &MethodProxyCreator::methodProxyX<2>;
 				break;
 				case 3:
-				vMethod = &MethodProxyCreator::methodProxy3;
+				vMethod = &MethodProxyCreator::methodProxyX<3>;
 				break;
 				case 4:
-				vMethod = &MethodProxyCreator::methodProxy4;
+				vMethod = &MethodProxyCreator::methodProxyX<4>;
 				break;
 				case 5:
-				vMethod = &MethodProxyCreator::methodProxy5;
+				vMethod = &MethodProxyCreator::methodProxyX<5>;
 				break;
 				case 6:
-				vMethod = &MethodProxyCreator::methodProxy6;
+				vMethod = &MethodProxyCreator::methodProxyX<6>;
 				break;
 				case 7:
-				vMethod = &MethodProxyCreator::methodProxy7;
+				vMethod = &MethodProxyCreator::methodProxyX<7>;
 				break;
 				case 8:
-				vMethod = &MethodProxyCreator::methodProxy8;
+				vMethod = &MethodProxyCreator::methodProxyX<8>;
 				break;
 				case 9:
-				vMethod = &MethodProxyCreator::methodProxy9;
+				vMethod = &MethodProxyCreator::methodProxyX<9>;
 				break;
 				case 10:
-				vMethod = &MethodProxyCreator::methodProxy10;
+				vMethod = &MethodProxyCreator::methodProxyX<10>;
 				break;
 				case 11:
-				vMethod = &MethodProxyCreator::methodProxy11;
+				vMethod = &MethodProxyCreator::methodProxyX<11>;
 				break;
 				case 12:
-				vMethod = &MethodProxyCreator::methodProxy12;
+				vMethod = &MethodProxyCreator::methodProxyX<12>;
 				break;
 				case 13:
-				vMethod = &MethodProxyCreator::methodProxy13;
+				vMethod = &MethodProxyCreator::methodProxyX<13>;
 				break;
 				case 14:
-				vMethod = &MethodProxyCreator::methodProxy14;
+				vMethod = &MethodProxyCreator::methodProxyX<14>;
 				break;
 				case 15:
-				vMethod = &MethodProxyCreator::methodProxy15;
+				vMethod = &MethodProxyCreator::methodProxyX<15>;
 				break;
 				case 16:
-				vMethod = &MethodProxyCreator::methodProxy16;
+				vMethod = &MethodProxyCreator::methodProxyX<16>;
 				break;
 				case 17:
-				vMethod = &MethodProxyCreator::methodProxy17;
+				vMethod = &MethodProxyCreator::methodProxyX<17>;
 				break;
 				case 18:
-				vMethod = &MethodProxyCreator::methodProxy18;
+				vMethod = &MethodProxyCreator::methodProxyX<18>;
 				break;
 				case 19:
-				vMethod = &MethodProxyCreator::methodProxy19;
+				vMethod = &MethodProxyCreator::methodProxyX<19>;
 				break;
 				case 20:
-				vMethod = &MethodProxyCreator::methodProxy20;
+				vMethod = &MethodProxyCreator::methodProxyX<20>;
 				break;
 				case 21:
-				vMethod = &MethodProxyCreator::methodProxy21;
+				vMethod = &MethodProxyCreator::methodProxyX<21>;
 				break;
 				case 22:
-				vMethod = &MethodProxyCreator::methodProxy22;
+				vMethod = &MethodProxyCreator::methodProxyX<22>;
 				break;
 				case 23:
-				vMethod = &MethodProxyCreator::methodProxy23;
+				vMethod = &MethodProxyCreator::methodProxyX<23>;
 				break;
 				case 24:
-				vMethod = &MethodProxyCreator::methodProxy24;
+				vMethod = &MethodProxyCreator::methodProxyX<24>;
 				break;
 				case 25:
-				vMethod = &MethodProxyCreator::methodProxy25;
+				vMethod = &MethodProxyCreator::methodProxyX<25>;
 				break;
 				case 26:
-				vMethod = &MethodProxyCreator::methodProxy26;
+				vMethod = &MethodProxyCreator::methodProxyX<26>;
 				break;
 				case 27:
-				vMethod = &MethodProxyCreator::methodProxy27;
+				vMethod = &MethodProxyCreator::methodProxyX<27>;
 				break;
 				case 28:
-				vMethod = &MethodProxyCreator::methodProxy28;
+				vMethod = &MethodProxyCreator::methodProxyX<28>;
 				break;
 				case 29:
-				vMethod = &MethodProxyCreator::methodProxy29;
+				vMethod = &MethodProxyCreator::methodProxyX<29>;
 				break;
 				case 30:
-				vMethod = &MethodProxyCreator::methodProxy30;
+				vMethod = &MethodProxyCreator::methodProxyX<30>;
 				break;
 				case 31:
-				vMethod = &MethodProxyCreator::methodProxy31;
+				vMethod = &MethodProxyCreator::methodProxyX<31>;
 				break;
 				case 32:
-				vMethod = &MethodProxyCreator::methodProxy32;
+				vMethod = &MethodProxyCreator::methodProxyX<32>;
 				break;
 				case 33:
-				vMethod = &MethodProxyCreator::methodProxy33;
+				vMethod = &MethodProxyCreator::methodProxyX<33>;
 				break;
 				case 34:
-				vMethod = &MethodProxyCreator::methodProxy34;
+				vMethod = &MethodProxyCreator::methodProxyX<34>;
 				break;
 				case 35:
-				vMethod = &MethodProxyCreator::methodProxy35;
+				vMethod = &MethodProxyCreator::methodProxyX<35>;
 				break;
 				case 36:
-				vMethod = &MethodProxyCreator::methodProxy36;
+				vMethod = &MethodProxyCreator::methodProxyX<36>;
 				break;
 				case 37:
-				vMethod = &MethodProxyCreator::methodProxy37;
+				vMethod = &MethodProxyCreator::methodProxyX<37>;
 				break;
 				case 38:
-				vMethod = &MethodProxyCreator::methodProxy38;
+				vMethod = &MethodProxyCreator::methodProxyX<38>;
 				break;
 				case 39:
-				vMethod = &MethodProxyCreator::methodProxy39;
+				vMethod = &MethodProxyCreator::methodProxyX<39>;
 				break;
 				case 40:
-				vMethod = &MethodProxyCreator::methodProxy40;
+				vMethod = &MethodProxyCreator::methodProxyX<40>;
 				break;
 				case 41:
-				vMethod = &MethodProxyCreator::methodProxy41;
+				vMethod = &MethodProxyCreator::methodProxyX<41>;
 				break;
 				case 42:
-				vMethod = &MethodProxyCreator::methodProxy42;
+				vMethod = &MethodProxyCreator::methodProxyX<42>;
 				break;
 				case 43:
-				vMethod = &MethodProxyCreator::methodProxy43;
+				vMethod = &MethodProxyCreator::methodProxyX<43>;
 				break;
 				case 44:
-				vMethod = &MethodProxyCreator::methodProxy44;
+				vMethod = &MethodProxyCreator::methodProxyX<44>;
 				break;
 				case 45:
-				vMethod = &MethodProxyCreator::methodProxy45;
+				vMethod = &MethodProxyCreator::methodProxyX<45>;
 				break;
 				case 46:
-				vMethod = &MethodProxyCreator::methodProxy46;
+				vMethod = &MethodProxyCreator::methodProxyX<46>;
 				break;
 				case 47:
-				vMethod = &MethodProxyCreator::methodProxy47;
+				vMethod = &MethodProxyCreator::methodProxyX<47>;
 				break;
 				case 48:
-				vMethod = &MethodProxyCreator::methodProxy48;
+				vMethod = &MethodProxyCreator::methodProxyX<48>;
 				break;
 				case 49:
-				vMethod = &MethodProxyCreator::methodProxy49;
+				vMethod = &MethodProxyCreator::methodProxyX<49>;
 				break;
 			}
 			return newMethodProxy(offset,vMethod);

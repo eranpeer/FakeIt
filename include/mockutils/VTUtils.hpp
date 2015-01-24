@@ -27,24 +27,23 @@ public:
 
         template<typename C, typename R, typename ... arglist>
         static unsigned int getOffset(R (C::*vMethod)(arglist...)) {
+            auto sMethod = reinterpret_cast<unsigned int (VirtualOffsetSelector::*)(int)>(vMethod);
             VirtualOffsetSelector offsetSelctor;
-            auto sMethod = reinterpret_cast<unsigned int (VirtualOffsetSelector::*)()>(vMethod);
-            unsigned int offset = (offsetSelctor.*sMethod)();
-            return offset;
+            return (offsetSelctor.*sMethod)(0);
         }
 
         template<typename C>
-        static typename std::enable_if<std::has_virtual_destructor<C>::value, unsigned int>::type
+        static typename std::enable_if<std::has_virtual_destructor<C>::value, int>::type
         getDestructorOffset() {
             VirtualOffsetSelector offsetSelctor;
-            ((C *)&offsetSelctor)->~C();
-            return offsetSelctor.offset;
+            ((C *) &offsetSelctor)->~C();
+            return (int)offsetSelctor.offset;
         }
 
         template<typename C>
-        static typename std::enable_if<!std::has_virtual_destructor<C>::value, unsigned int>::type
+        static typename std::enable_if<!std::has_virtual_destructor<C>::value, int>::type
         getDestructorOffset() {
-            return 0;
+            return -1;
         }
 
         template<typename C>

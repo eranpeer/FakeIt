@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9DA95762-0E40-4343-980D-DEBD3161A82F}</ProjectGuid>
+    <RootNamespace>FakeIt</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\Action.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\ActionSequence.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\ActualInvocation.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\api_functors.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\api_macros.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\argument_matchers.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\DefaultEventFormatter.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\DefaultEventLogger.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\DefaultFakeit.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\DomainObjects.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\EventFormatter.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\EventHandler.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\FakeFunctor.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\FakeitContext.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\FakeitEvents.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\FakeitExceptions.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\fakeit_root.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\Functional.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\Invocation.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\invocation_matchers.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\MatchersCollector.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\MethodMockingContext.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\Mock.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\MockImpl.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\Quantifier.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\RecordedMethodBody.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\Sequence.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\SequenceVerificationExpectation.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\SequenceVerificationProgress.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\SortInvocations.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\SpyFunctor.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\SpyingContext.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\StubbingContext.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\StubbingImpl.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\StubbingProgress.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\UsingFunctor.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\VerifyFunctor.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\VerifyNoOtherInvocationsFunctor.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\VerifyNoOtherInvocationsVerificationProgress.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\WhenFunctor.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\fakeit\Xaction.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\mockutils\DefaultValue.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\mockutils\Destructable.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\mockutils\DynamicProxy.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\mockutils\FakeObject.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\mockutils\Finally.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\mockutils\Formatter.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\mockutils\Macros.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\mockutils\MethodInvocationHandler.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\mockutils\smart_ptr.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\mockutils\to_string.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\mockutils\TupleDispatcher.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\mockutils\TuplePrinter.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\mockutils\type_utils.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\mockutils\union_cast.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\mockutils\VirtualOffestSelector.hpp" />
+    <ClInclude Include="..\..\..\..\projects\FakeIt\include\mockutils\VTUtils.hpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
