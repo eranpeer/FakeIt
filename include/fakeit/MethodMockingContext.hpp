@@ -173,7 +173,7 @@ protected:
 			: _impl(other._impl) {
 	}
 
-	virtual ~MethodMockingContext() = default;
+	virtual ~MethodMockingContext() {}
 
 	std::string format() const {
 		return _impl->format();
