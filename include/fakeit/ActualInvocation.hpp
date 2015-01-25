@@ -24,9 +24,8 @@
 
 namespace fakeit {
 
-static std::atomic_int invocationOrdinal;
-
-static int nextInvocationOrdinal(){
+static unsigned int nextInvocationOrdinal(){
+	static std::atomic_uint invocationOrdinal{0};
 	return ++invocationOrdinal;
 }
 
@@ -39,7 +38,7 @@ struct ActualInvocation: public Invocation {
 		virtual std::string format() const = 0;
 	};
 
-	ActualInvocation(int ordinal, Method & method, const arglist&... args) :
+	ActualInvocation(unsigned int ordinal, Method & method, const arglist&... args) :
 			Invocation(ordinal, method), _matcher{nullptr}, actualArguments { args... } {
 	}
 
