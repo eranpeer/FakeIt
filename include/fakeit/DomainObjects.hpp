@@ -13,6 +13,11 @@
 
 namespace fakeit {
 
+	static unsigned int nextMethodOrdinal(){
+		static std::atomic_uint ordinal{ 0 };
+		return ordinal++;
+	}
+
 struct FakeitContext;
 
 template<typename C>
@@ -22,22 +27,33 @@ struct MockObject {
 	virtual FakeitContext & getFakeIt() = 0;
 };
 
-struct Method {
-	Method() = default;
-	virtual ~Method() = default;
-	virtual std::string name() const = 0;
-};
+struct MethodInfo {
 
-struct UnknownMethod : public Method {
+	MethodInfo(unsigned int id, std::string name):
+		_id(id),_name(name)
+	{}
 
-	virtual ~UnknownMethod() = default;
-
-	virtual std::string name() const {
-		return {"unknown"};
+	unsigned int id() const {
+		return _id;
 	}
 
-	static Method& instance() {
-		static UnknownMethod instance;
+	std::string name() const {
+		return _name;
+	}
+
+	void setName(const std::string& name) {
+		_name = name;
+	}
+
+private:
+	unsigned int _id; 
+	std::string _name;
+};
+
+struct UnknownMethod {
+
+	static MethodInfo & instance() {
+		static MethodInfo instance (nextMethodOrdinal(), "unknown");
 		return instance;
 	}
 

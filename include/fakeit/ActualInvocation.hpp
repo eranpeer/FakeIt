@@ -38,7 +38,7 @@ struct ActualInvocation: public Invocation {
 		virtual std::string format() const = 0;
 	};
 
-	ActualInvocation(unsigned int ordinal, Method & method, const arglist&... args) :
+	ActualInvocation(unsigned int ordinal, MethodInfo & method, const arglist&... args) :
 			Invocation(ordinal, method), _matcher{nullptr}, actualArguments { args... } {
 	}
 

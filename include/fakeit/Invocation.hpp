@@ -32,7 +32,7 @@ struct Invocation : public Destructable {
 		virtual std::string format() const = 0;
 	};
 
-	Invocation(unsigned int ordinal, Method & method) :
+	Invocation(unsigned int ordinal, MethodInfo & method) :
 			_ordinal(ordinal), _method(method), _isVerified(false) {
 	}
 
@@ -42,7 +42,7 @@ struct Invocation : public Destructable {
 		return _ordinal;
 	}
 
-	Method & getMethod() const {
+	MethodInfo & getMethod() const {
 		return _method;
 	}
 
@@ -58,7 +58,7 @@ struct Invocation : public Destructable {
 
 private:
 	const unsigned int _ordinal;
-	Method & _method;
+	MethodInfo & _method;
 	bool _isVerified;
 };
 

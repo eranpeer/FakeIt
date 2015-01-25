@@ -140,7 +140,7 @@ private:
 			getRecordedMethodBody().setMethodDetails(mockName, methodName);
 		}
 
-		bool isOfMethod(Method& method) {
+		bool isOfMethod(MethodInfo & method) {
 			return getRecordedMethodBody().isOfMethod(method);
 		}
 	};

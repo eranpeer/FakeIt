@@ -55,28 +55,12 @@ class RecordedMethodBody: public virtual MethodInvocationHandler<R, arglist...>,
 		std::shared_ptr<Destructable> _invocationHandler;
 	};
 
-	class MethodImpl: public Method {
-		friend class RecordedMethodBody;
-		RecordedMethodBody* _methodMock;
-		std::string _name;
-	public:
-		MethodImpl(RecordedMethodBody* methodMock) :
-				_methodMock(methodMock),
-				_name(typeid(methodMock->_vMethod).name()) {
-		}
-
-		virtual std::string name() const override {
-			return _name;
-		}
-
-		void setName(const std::string& name) {
-			_name = name;
-		}
-	};
 
 	MockObject<C>& _mock;
 	R (C::*_vMethod)(arglist...);
-	MethodImpl _method;
+	MethodInfo _method;
+	unsigned int _methodId;
+
 	std::vector<std::shared_ptr<Destructable>>_invocationHandlers;
 	std::vector<std::shared_ptr<Destructable>> _actualInvocations;
 
@@ -104,23 +88,21 @@ class RecordedMethodBody: public virtual MethodInvocationHandler<R, arglist...>,
 		return im;
 	}
 
-
 public:
 
 	RecordedMethodBody(MockObject<C>& mock, R (C::*vMethod)(arglist...)) :
-	_mock(mock), _vMethod(vMethod), _method {this} {
+		_mock(mock), _vMethod(vMethod), _methodId(nextMethodOrdinal()), _method{_methodId, typeid(_vMethod).name() } {
 	}
 
 	virtual ~RecordedMethodBody() {
 	}
 
-	Method& getMethod() {
+	MethodInfo & getMethod() {
 		return _method;
 	}
 
-	bool isOfMethod(Method& method){
-		const MethodImpl* tested = dynamic_cast< const MethodImpl* >( &method );
-		return (tested) && this == tested->_methodMock;
+	bool isOfMethod(MethodInfo & method){
+		return &method == &_method;
 	}
 
 	void addMethodInvocationHandler(typename ActualInvocation<arglist...>::Matcher* matcher,
@@ -137,7 +119,7 @@ public:
 
 	R handleMethodInvocation(arglist&... args) override {
 		int ordinal = nextInvocationOrdinal();
-		Method& method = this->getMethod();
+		MethodInfo & method = this->getMethod();
 		auto actualInvoaction = new ActualInvocation<arglist...>(ordinal, method, args...);
 
 		// ensure deletion if not added to actual invocations.
