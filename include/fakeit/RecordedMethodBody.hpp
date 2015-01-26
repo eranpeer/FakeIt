@@ -57,9 +57,7 @@ class RecordedMethodBody: public virtual MethodInvocationHandler<R, arglist...>,
 
 
 	MockObject<C>& _mock;
-	R (C::*_vMethod)(arglist...);
 	MethodInfo _method;
-	unsigned int _methodId;
 
 	std::vector<std::shared_ptr<Destructable>>_invocationHandlers;
 	std::vector<std::shared_ptr<Destructable>> _actualInvocations;
@@ -90,9 +88,9 @@ class RecordedMethodBody: public virtual MethodInvocationHandler<R, arglist...>,
 
 public:
 
-	RecordedMethodBody(MockObject<C>& mock, R (C::*vMethod)(arglist...)) :
-		_mock(mock), _vMethod(vMethod), _methodId(nextMethodOrdinal()), _method{_methodId, typeid(_vMethod).name() } {
-	}
+	RecordedMethodBody(MockObject<C>& mock, std::string name) :
+		_mock(mock), _method{ nextMethodOrdinal(), name }
+	{}
 
 	virtual ~RecordedMethodBody() {
 	}
@@ -102,7 +100,8 @@ public:
 	}
 
 	bool isOfMethod(MethodInfo & method){
-		return &method == &_method;
+		//return &method == &_method;
+		return method.id() == _method.id();
 	}
 
 	void addMethodInvocationHandler(typename ActualInvocation<arglist...>::Matcher* matcher,

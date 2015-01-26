@@ -15,7 +15,7 @@ namespace fakeit {
 
 	static unsigned int nextMethodOrdinal(){
 		static std::atomic_uint ordinal{ 0 };
-		return ordinal++;
+		return ++ordinal;
 	}
 
 struct FakeitContext;

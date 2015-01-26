@@ -182,7 +182,7 @@ private:
 	template<typename R, typename ... arglist>
 	RecordedMethodBody<C, R, arglist...>& stubMethodIfNotStubbed(DynamicProxy<C, baseclasses...> &proxy, R (C::*vMethod)(arglist...)) {
 		if (!proxy.isStubbed(vMethod)) {
-			proxy.stubMethod(vMethod, new RecordedMethodBody<C, R, arglist...>(*this, vMethod));
+			proxy.stubMethod(vMethod, createRecordedMethodBody<R,arglist...>(*this, vMethod));
 		}
 		Destructable * d = proxy.getMethodMock(vMethod);
 		RecordedMethodBody<C, R, arglist...> * methodMock = dynamic_cast<RecordedMethodBody<C, R, arglist...> *>(d);
@@ -192,6 +192,16 @@ private:
 	MockImpl(FakeitContext& fakeit, C &obj, bool isSpy)
 			: _proxy { obj }, _instance(&obj), _isOwner(!isSpy), _fakeit(fakeit) {
 	}
+
+	template<typename R, typename ... arglist>
+	static RecordedMethodBody<C, R, arglist...> * createRecordedMethodBody(MockObject<C>& mock, R(C::*vMethod)(arglist...)){
+		return new RecordedMethodBody<C, R, arglist...>(mock, typeid(vMethod).name());
+	}
+
+	static RecordedMethodBody<C, void> * createRecordedDtorBody(MockObject<C>& mock){
+		return new RecordedMethodBody<C, void>(mock, "dtor");
+	}
+
 };
 }
 
