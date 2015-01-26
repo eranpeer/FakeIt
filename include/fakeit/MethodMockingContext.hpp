@@ -42,8 +42,8 @@ template<typename R, typename ... arglist>
 class MethodMockingContext: //
 public Sequence,                // For use in Verify(sequence1,...)... phrases.
 		public ActualInvocationsSource, // For use in Using(source1,souece2,...) and VerifyNoOtherInvocations(source1,souece2...) phrases.
-		public virtual StubbingContext<R, arglist...>, // For use in Fake, Spy & When phrases
-		public virtual SpyingContext<R, arglist...>, // For use in Fake, Spy & When phrases
+		public virtual StubbingContext<R, arglist...>, // For use in Fake & When phrases
+		public virtual SpyingContext<R, arglist...>, // For use in Spy phrases
 		private Invocation::Matcher {
 
 public:

@@ -14,6 +14,7 @@
 #include "mockutils/VirtualOffestSelector.hpp"
 
 namespace fakeit {
+	class NoVirtualDtor {};
 
 class VTUtils {
 public:
@@ -33,17 +34,17 @@ public:
         }
 
         template<typename C>
-        static typename std::enable_if<std::has_virtual_destructor<C>::value, int>::type
+		static typename std::enable_if<std::has_virtual_destructor<C>::value, unsigned int>::type
         getDestructorOffset() {
             VirtualOffsetSelector offsetSelctor;
             ((C *) &offsetSelctor)->~C();
-            return (int)offsetSelctor.offset;
+            return offsetSelctor.offset;
         }
 
         template<typename C>
-        static typename std::enable_if<!std::has_virtual_destructor<C>::value, int>::type
+        static typename std::enable_if<!std::has_virtual_destructor<C>::value, unsigned int>::type
         getDestructorOffset() {
-            return -1;
+            throw NoVirtualDtor();
         }
 
         template<typename C>

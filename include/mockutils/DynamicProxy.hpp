@@ -65,16 +65,31 @@ struct DynamicProxy {
 		bind(creator.createMethodProxy(vMethod), methodInvocationHandler);
 	}
 
+	void stubDtor(MethodInvocationHandler<void>* methodInvocationHandler) {
+		MethodProxyCreator<void> creator;
+		bind(creator.createDtorProxy(), methodInvocationHandler);
+	}
+
 	template<typename R, typename ... arglist>
-	bool isStubbed(R (C::*vMethod)(arglist...)) {
-		auto offset = MethodProxyCreator<R, arglist...>::getOffset(vMethod);
-		std::shared_ptr<Destructable> ptr = methodMocks[offset];
-		return ptr.get() != nullptr;
+	bool isMethodStubbed(R (C::*vMethod)(arglist...)) {
+		unsigned int offset = MethodProxyCreator<R, arglist...>::getOffset(vMethod);
+		return isStubbed(offset);
+	}
+
+	bool isDtorStubbed() {
+		unsigned int offset = VTUtils::getDestructorOffset<C>();
+		return isStubbed((unsigned int)offset);
 	}
 
 	template<typename R, typename ... arglist>
 	Destructable * getMethodMock(R (C::*vMethod)(arglist...)) {
 		auto offset = MethodProxyCreator<R, arglist...>::getOffset(vMethod);
+		std::shared_ptr<Destructable> ptr = methodMocks[offset];
+		return ptr.get();
+	}
+
+	Destructable * getDtorMock() {
+		auto offset = VTUtils::getDestructorOffset<C>();
 		std::shared_ptr<Destructable> ptr = methodMocks[offset];
 		return ptr.get();
 	}
@@ -315,6 +330,11 @@ private:
 			return createMethodProxy(offset);
 		}
 
+		MethodProxy createDtorProxy() {
+			auto offset = VTUtils::getDestructorOffset<C>();
+			return createMethodProxy(offset);
+		}
+
 		static unsigned int getOffset(R (C::*vMethod)(arglist...)) {
 			return VTUtils::getOffset(vMethod);
 		}
@@ -381,6 +401,12 @@ private:
 			throw std::invalid_argument(std::string("multiple inheritance is not supported"));
 		}
 	}
+
+	bool isStubbed(unsigned int offset) {
+		std::shared_ptr<Destructable> ptr = methodMocks[offset];
+		return ptr.get() != nullptr;
+	}
+
 };
 }
 #endif // DynamicProxy_h__

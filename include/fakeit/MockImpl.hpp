@@ -84,9 +84,13 @@ public:
 	}
 
 	template<typename R,typename T, typename ... arglist, class = typename std::enable_if<std::is_base_of<T,C>::value>::type>
-	MockingContext<R, arglist...> stub(R (T::*vMethod)(arglist...)) {
-		return MockingContext<R, arglist...>(new MethodStubbingContextImpl<R, arglist...>(*this, vMethod));
+	MockingContext<R, arglist...> stubMethod(R (T::*vMethod)(arglist...)) {
+		return MockingContext<R, arglist...>(new MethodMockingContextImpl <R, arglist...>(*this, vMethod));
 	}
+
+    MockingContext<void> stubDtor() {
+        return MockingContext<void>(new DtorMockingContextImpl (*this));
+    }
 
 private:
 	DynamicProxy<C, baseclasses...> _proxy;
@@ -94,58 +98,95 @@ private:
 	bool _isOwner;
 	FakeitContext& _fakeit;
 
-	template<typename R, typename ... arglist>
-	class MethodStubbingContextImpl: public MethodMockingContext<R, arglist...>::Context {
-		MockImpl<C, baseclasses...>& _mock;
+    template<typename R, typename ... arglist>
+    class MethodMockingContextBase : public MethodMockingContext<R, arglist...>::Context {
+    protected:
+        MockImpl<C, baseclasses...>& _mock;
+        virtual RecordedMethodBody<C, R, arglist...>& getRecordedMethodBody() = 0;
+
+    public:
+        MethodMockingContextBase(MockImpl<C, baseclasses...>& mock) : _mock(mock) {}
+        virtual ~MethodMockingContextBase() = default;
+
+        void addMethodInvocationHandler(typename ActualInvocation<arglist...>::Matcher* matcher,
+                MethodInvocationHandler<R, arglist...>* invocationHandler) {
+            getRecordedMethodBody().addMethodInvocationHandler(matcher, invocationHandler);
+        }
+
+        void scanActualInvocations(const std::function<void(ActualInvocation<arglist...>&)>& scanner) {
+            getRecordedMethodBody().scanActualInvocations(scanner);
+        }
+
+        void setMethodDetails(std::string mockName, std::string methodName) {
+            getRecordedMethodBody().setMethodDetails(mockName, methodName);
+        }
+
+        bool isOfMethod(MethodInfo & method) {
+            return getRecordedMethodBody().isOfMethod(method);
+        }
+
+        ActualInvocationsSource& getInvolvedMock() {
+            return _mock;
+        }
+
+        std::string getMethodName() {
+            return getRecordedMethodBody().getMethod().name();
+        }
+
+    };
+
+    template<typename R, typename ... arglist>
+	class MethodMockingContextImpl : public MethodMockingContextBase<R,arglist...> {
 		R (C::*_vMethod)(arglist...);
 
-		RecordedMethodBody<C, R, arglist...>& getRecordedMethodBody() {
-			return _mock.stubMethodIfNotStubbed(_mock._proxy, _vMethod);
+    protected:
+
+		virtual RecordedMethodBody<C, R, arglist...>& getRecordedMethodBody() override {
+			return MethodMockingContextBase<R,arglist...>::_mock.stubMethodIfNotStubbed(MethodMockingContextBase<R,arglist...>::_mock._proxy, _vMethod);
 		}
 
 	public:
-		virtual ~MethodStubbingContextImpl() = default;
+		virtual ~MethodMockingContextImpl() = default;
 
-		MethodStubbingContextImpl(MockImpl<C, baseclasses...>& mock, R (C::*vMethod)(arglist...))
-				: _mock(mock), _vMethod(vMethod) {
+		MethodMockingContextImpl(MockImpl<C, baseclasses...>& mock, R (C::*vMethod)(arglist...))
+				: MethodMockingContextBase<R,arglist...>(mock), _vMethod(vMethod) {
 		}
 
-		ActualInvocationsSource& getInvolvedMock() {
-			return _mock;
-		}
-
-		virtual std::function<R(arglist&...)> getOriginalMethod() override {
-			void * mPtr = _mock.getOriginalMethod(_vMethod);
-			C& instance = _mock.get();
+        virtual std::function<R(arglist&...)> getOriginalMethod() override {
+			void * mPtr = MethodMockingContextBase<R,arglist...>::_mock.getOriginalMethod(_vMethod);
+			C& instance = MethodMockingContextBase<R,arglist...>::_mock.get();
 			return [=, &instance](arglist&... args)->R {
 				auto m = union_cast<decltype(_vMethod)>(mPtr);
 				return ((&instance)->*m)(args...);
 			};
 		}
 
-		std::string getMethodName() {
-			return getRecordedMethodBody().getMethod().name();
-		}
-
-		void addMethodInvocationHandler(typename ActualInvocation<arglist...>::Matcher* matcher,
-				MethodInvocationHandler<R, arglist...>* invocationHandler) {
-			getRecordedMethodBody().addMethodInvocationHandler(matcher, invocationHandler);
-		}
-
-		void scanActualInvocations(const std::function<void(ActualInvocation<arglist...>&)>& scanner) {
-			getRecordedMethodBody().scanActualInvocations(scanner);
-		}
-
-		void setMethodDetails(std::string mockName, std::string methodName) {
-			getRecordedMethodBody().setMethodDetails(mockName, methodName);
-		}
-
-		bool isOfMethod(MethodInfo & method) {
-			return getRecordedMethodBody().isOfMethod(method);
-		}
 	};
 
-	static MockImpl<C, baseclasses...>* getMockImpl(void * instance) {
+    class DtorMockingContextImpl : public MethodMockingContextBase<void> {
+
+    protected:
+
+        virtual RecordedMethodBody<C, void>& getRecordedMethodBody() override {
+            return MethodMockingContextBase<void>::_mock.stubDtorIfNotStubbed(MethodMockingContextBase<void>::_mock._proxy);
+        }
+
+    public:
+        virtual ~DtorMockingContextImpl() = default;
+
+        DtorMockingContextImpl(MockImpl<C, baseclasses...>& mock)
+                : MethodMockingContextBase<void>(mock){
+        }
+
+        virtual std::function<void()> getOriginalMethod() override {
+            C& instance = MethodMockingContextBase<void>::_mock.get();
+            return [=, &instance]()->void {
+            };
+        }
+
+    };
+
+    static MockImpl<C, baseclasses...>* getMockImpl(void * instance) {
 		FakeObject<C, baseclasses...>* fake = reinterpret_cast<FakeObject<C, baseclasses...>*>(instance);
 		MockImpl<C, baseclasses...> * mock = reinterpret_cast<MockImpl<C, baseclasses...>*>(fake->getVirtualTable().getCookie(1));
 		return mock;
@@ -167,7 +208,10 @@ private:
 		//fake->initializeDataMembersArea();
 		void* unmockedMethodStubPtr = union_cast<void*>(&MockImpl<C, baseclasses...>::unmocked);
 		fake->getVirtualTable().initAll(unmockedMethodStubPtr);
-		int dtorOffset = VTUtils::getDestructorOffset<C>();
+        try {
+            int dtorOffset = VTUtils::getDestructorOffset<C>();
+        } catch (NoVirtualDtor&){
+        }
 		return reinterpret_cast<C*>(fake);
 	}
 
@@ -179,14 +223,30 @@ private:
 		return origMethodPtr;
 	}
 
+	void * getOriginalDtor() {
+		auto vt = _proxy.getOriginalVT();
+		auto offset = VTUtils::getDestructorOffset<C>();
+		void * origMethodPtr = vt.getMethod(offset);
+		return origMethodPtr;
+	}
+
 	template<typename R, typename ... arglist>
 	RecordedMethodBody<C, R, arglist...>& stubMethodIfNotStubbed(DynamicProxy<C, baseclasses...> &proxy, R (C::*vMethod)(arglist...)) {
-		if (!proxy.isStubbed(vMethod)) {
+		if (!proxy.isMethodStubbed(vMethod)) {
 			proxy.stubMethod(vMethod, createRecordedMethodBody<R,arglist...>(*this, vMethod));
 		}
 		Destructable * d = proxy.getMethodMock(vMethod);
 		RecordedMethodBody<C, R, arglist...> * methodMock = dynamic_cast<RecordedMethodBody<C, R, arglist...> *>(d);
 		return *methodMock;
+	}
+
+	RecordedMethodBody<C,void>& stubDtorIfNotStubbed(DynamicProxy<C, baseclasses...> &proxy) {
+		if (!proxy.isDtorStubbed()) {
+			proxy.stubDtor(createRecordedDtorBody());
+		}
+		Destructable * d = proxy.getDtorMock();
+		RecordedMethodBody<C,void> * dtorMock = dynamic_cast<RecordedMethodBody<C,void> *>(d);
+		return *dtorMock;
 	}
 
 	MockImpl(FakeitContext& fakeit, C &obj, bool isSpy)
