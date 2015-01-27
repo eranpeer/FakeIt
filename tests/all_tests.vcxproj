@@ -71,6 +71,7 @@
     <ClCompile Include="custom_testing_framework_tests.cpp" />
     <ClCompile Include="default_behaviore_tests.cpp" />
     <ClCompile Include="default_event_formatting_tests.cpp" />
+    <ClCompile Include="dtor_mocking_tests.cpp" />
     <ClCompile Include="event_notification_tests.cpp" />
     <ClCompile Include="gcc_stubbing_multiple_values_tests.cpp" />
     <ClCompile Include="gcc_type_info_tests.cpp" />

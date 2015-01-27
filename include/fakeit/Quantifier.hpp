@@ -33,7 +33,7 @@ struct Quantifier: public Quantity {
 
 template<>
 struct Quantifier<void> : public Quantity {
-	Quantifier(const int quantity) :
+	explicit Quantifier(const int quantity) :
 			Quantity(quantity) {
 	}
 };

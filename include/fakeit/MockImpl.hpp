@@ -87,9 +87,9 @@ public:
 	MockingContext<R, arglist...> stubMethod(R (T::*vMethod)(arglist...)) {
 		return MockingContext<R, arglist...>(new MethodMockingContextImpl <R, arglist...>(*this, vMethod));
 	}
-
-	MockingContext<unsigned int, int> stubDtor() {
-		return MockingContext<unsigned int, int>(new DtorMockingContextImpl(*this));
+	
+	DtorMockingContext stubDtor() {
+		return DtorMockingContext(new DtorMockingContextImpl(*this));
     }
 
 private:
