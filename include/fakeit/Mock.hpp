@@ -102,7 +102,7 @@ public:
 		return impl.stubMethod(methodWithoutConstVolatile);
 	}
 
-    MockingContext<void> dtor() {
+	MockingContext<unsigned int, int> dtor() {
         return impl.stubDtor();
     }
 

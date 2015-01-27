@@ -179,6 +179,15 @@ struct VirtualTable {
 		firstMethod[index] = method;
 	}
 
+	void setDtor(void *method) {
+		unsigned int index = VTUtils::getDestructorOffset<C>();
+		firstMethod[index] = method;
+	}
+
+	unsigned int dtorOffset(){
+		return VTUtils::getDestructorOffset<C>();
+	}
+
 	void * getMethod(unsigned int index) const {
 		return firstMethod[index];
 	}

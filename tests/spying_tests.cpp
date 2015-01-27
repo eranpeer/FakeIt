@@ -20,7 +20,7 @@ struct SpyingTests: tpunit::TestFixture {
 					TEST(SpyingTests::returnToOrignalClassMethodsOnReset), //
 					TEST(SpyingTests::dataMembersAreNotChangedOnReset), //
 					TEST(SpyingTests::verifySpyiedMethodWasCalled), //
-					TEST(SpyingTests::mockDestructordoesNotDeleteObject), //
+					TEST(SpyingTests::mockDestructorDoesNotDeleteObject), //
 					TEST(SpyingTests::canVerifyMethodAfterSpying),//
 					TEST(SpyingTests::canVerifyProcedureAfterSpying),
                     TEST(SpyingTests::restoreObjectOnMockDelete),
@@ -95,7 +95,7 @@ struct SpyingTests: tpunit::TestFixture {
 		ASSERT_THROW(Verify(Method(spy,func2)),fakeit::VerificationException);
 	}
 
-	void mockDestructordoesNotDeleteObject() {
+	void mockDestructorDoesNotDeleteObject() {
 		struct SomeClass {
 			bool deleted;
 			SomeClass() :

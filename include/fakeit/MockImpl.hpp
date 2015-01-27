@@ -88,8 +88,8 @@ public:
 		return MockingContext<R, arglist...>(new MethodMockingContextImpl <R, arglist...>(*this, vMethod));
 	}
 
-    MockingContext<void> stubDtor() {
-        return MockingContext<void>(new DtorMockingContextImpl (*this));
+	MockingContext<unsigned int, int> stubDtor() {
+		return MockingContext<unsigned int, int>(new DtorMockingContextImpl(*this));
     }
 
 private:
@@ -163,24 +163,25 @@ private:
 
 	};
 
-    class DtorMockingContextImpl : public MethodMockingContextBase<void> {
+	class DtorMockingContextImpl : public MethodMockingContextBase<unsigned int, int> {
 
     protected:
 
-        virtual RecordedMethodBody<C, void>& getRecordedMethodBody() override {
-            return MethodMockingContextBase<void>::_mock.stubDtorIfNotStubbed(MethodMockingContextBase<void>::_mock._proxy);
+		virtual RecordedMethodBody<C, unsigned int, int>& getRecordedMethodBody() override {
+			return MethodMockingContextBase<unsigned int, int>::_mock.stubDtorIfNotStubbed(MethodMockingContextBase<unsigned int, int>::_mock._proxy);
         }
 
     public:
         virtual ~DtorMockingContextImpl() = default;
 
         DtorMockingContextImpl(MockImpl<C, baseclasses...>& mock)
-                : MethodMockingContextBase<void>(mock){
+			: MethodMockingContextBase<unsigned int, int>(mock){
         }
 
-        virtual std::function<void()> getOriginalMethod() override {
-            C& instance = MethodMockingContextBase<void>::_mock.get();
-            return [=, &instance]()->void {
+		virtual std::function<unsigned int(int&)> getOriginalMethod() override {
+			C& instance = MethodMockingContextBase<unsigned int, int>::_mock.get();
+			return [=, &instance](int&)->unsigned int {
+				return 0;
             };
         }
 
@@ -240,12 +241,12 @@ private:
 		return *methodMock;
 	}
 
-	RecordedMethodBody<C,void>& stubDtorIfNotStubbed(DynamicProxy<C, baseclasses...> &proxy) {
+	RecordedMethodBody<C,unsigned int,int>& stubDtorIfNotStubbed(DynamicProxy<C, baseclasses...> &proxy) {
 		if (!proxy.isDtorStubbed()) {
-			proxy.stubDtor(createRecordedDtorBody());
+			proxy.stubDtor(createRecordedDtorBody(*this));
 		}
 		Destructable * d = proxy.getDtorMock();
-		RecordedMethodBody<C,void> * dtorMock = dynamic_cast<RecordedMethodBody<C,void> *>(d);
+		RecordedMethodBody<C, unsigned int, int> * dtorMock = dynamic_cast<RecordedMethodBody<C, unsigned int, int> *>(d);
 		return *dtorMock;
 	}
 
@@ -258,8 +259,8 @@ private:
 		return new RecordedMethodBody<C, R, arglist...>(mock, typeid(vMethod).name());
 	}
 
-	static RecordedMethodBody<C, void> * createRecordedDtorBody(MockObject<C>& mock){
-		return new RecordedMethodBody<C, void>(mock, "dtor");
+	static RecordedMethodBody<C, unsigned int, int> * createRecordedDtorBody(MockObject<C>& mock){
+		return new RecordedMethodBody<C, unsigned int, int>(mock, "dtor");
 	}
 
 };

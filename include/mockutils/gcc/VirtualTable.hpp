@@ -14,6 +14,7 @@
 #endif
 
 #include "mockutils/VTUtils.hpp"
+#include "mockutils/union_cast.hpp"
 
 namespace fakeit {
 
@@ -70,11 +71,25 @@ struct VirtualTable {
 		delete[] firstMethod;
 	}
 
-	void setMethod(unsigned int index, void *method) {
+    unsigned int doNothing(int){}
+
+
+    void setMethod(unsigned int index, void *method) {
 		firstMethod[index] = method;
 	}
 
-	void * getMethod(unsigned int index) const {
+    void setDtor(void *method) {
+        unsigned int index = VTUtils::getDestructorOffset<C>();
+        void* doNothingPtr = union_cast<void*>(&VirtualTable<C,baseclasses...>::doNothing);
+        firstMethod[index] = doNothingPtr;
+        firstMethod[index + 1] = method;
+    }
+
+    unsigned int dtorOffset(){
+        return VTUtils::getDestructorOffset<C>() + 1;
+    }
+
+    void * getMethod(unsigned int index) const {
 		return firstMethod[index];
 	}
 

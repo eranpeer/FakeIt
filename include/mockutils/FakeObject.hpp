@@ -45,10 +45,6 @@ class FakeObject {
 
 public:
 
-//    FakeObject() : vtable(VirtualTable<C, baseclasses...>::nullVTable()) {
-//        initializeDataMembersArea();
-//    }
-
 	FakeObject() : vtable() {
 		initializeDataMembersArea();
 	}
@@ -73,6 +69,10 @@ public:
 	void setVirtualTable(VirtualTable<C, baseclasses...>& t) {
 		vtable = t;
 	}
+
+	void setDtor(void *dtor){
+        vtable.setDtor(dtor);
+    }
 };
 
 #ifdef _MSC_VER

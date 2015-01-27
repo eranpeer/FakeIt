@@ -62,23 +62,23 @@ struct DynamicProxy {
 	template<typename R, typename ... arglist>
 	void stubMethod(R (C::*vMethod)(arglist...), MethodInvocationHandler<R, arglist...>* methodInvocationHandler) {
 		MethodProxyCreator<R, arglist...> creator;
-		bind(creator.createMethodProxy(vMethod), methodInvocationHandler);
+        bindMethod(creator.createMethodProxy(vMethod), methodInvocationHandler);
 	}
 
-	void stubDtor(MethodInvocationHandler<void>* methodInvocationHandler) {
-		MethodProxyCreator<void> creator;
-		bind(creator.createDtorProxy(), methodInvocationHandler);
+	void stubDtor(MethodInvocationHandler<unsigned int, int>* methodInvocationHandler) {
+		MethodProxyCreator<unsigned int, int> creator;
+        bindDtor(creator.createDtorProxy(), methodInvocationHandler);
 	}
 
 	template<typename R, typename ... arglist>
 	bool isMethodStubbed(R (C::*vMethod)(arglist...)) {
 		unsigned int offset = MethodProxyCreator<R, arglist...>::getOffset(vMethod);
-		return isStubbed(offset);
+		return isBinded(offset);
 	}
 
 	bool isDtorStubbed() {
 		unsigned int offset = VTUtils::getDestructorOffset<C>();
-		return isStubbed((unsigned int)offset);
+		return isBinded((unsigned int) offset);
 	}
 
 	template<typename R, typename ... arglist>
@@ -377,14 +377,21 @@ private:
 	}
 
 	template<typename R, typename ... arglist>
-	void bind(const MethodProxy& methodProxy, MethodInvocationHandler<R, arglist...>* invocationHandler) {
+	void bindMethod(const MethodProxy &methodProxy, MethodInvocationHandler<R, arglist...> *invocationHandler) {
 		auto offset = methodProxy.getOffset();
 		getFake().setMethod(offset, methodProxy.getProxy());
 		Destructable * destructable = invocationHandler;
 		methodMocks[offset].reset(destructable);
 	}
 
-	template<typename DATA_TYPE>
+	void bindDtor(const MethodProxy &methodProxy, MethodInvocationHandler<unsigned int, int> *invocationHandler) {
+        auto offset = methodProxy.getOffset();
+		getFake().setDtor(methodProxy.getProxy());
+        Destructable * destructable = invocationHandler;
+        methodMocks[offset].reset(destructable);
+    }
+
+    template<typename DATA_TYPE>
 	DATA_TYPE getMethodMock(unsigned int offset) {
 		std::shared_ptr<Destructable> ptr = methodMocks[offset];
 		return dynamic_cast<DATA_TYPE>(ptr.get());
@@ -402,7 +409,7 @@ private:
 		}
 	}
 
-	bool isStubbed(unsigned int offset) {
+	bool isBinded(unsigned int offset) {
 		std::shared_ptr<Destructable> ptr = methodMocks[offset];
 		return ptr.get() != nullptr;
 	}

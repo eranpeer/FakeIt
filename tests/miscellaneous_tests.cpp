@@ -22,6 +22,7 @@ struct Miscellaneous: tpunit::TestFixture
 			TEST(Miscellaneous::can_mock_class_without_default_constructor), //
 			TEST(Miscellaneous::can_mock_class_with_protected_constructor), //
 			TEST(Miscellaneous::mock_virtual_methods_of_base_class), //
+			TEST(Miscellaneous::mock_virtual_dtor), //
 			TEST(Miscellaneous::create_and_delete_fakit_instatnce) //
 		)
 	{
@@ -114,4 +115,12 @@ struct Miscellaneous: tpunit::TestFixture
         ASSERT_EQUAL(3, mock().a1());
         ASSERT_EQUAL(4, mock().a2());
 	}
+
+	void mock_virtual_dtor() {
+		Mock<B> mock;
+		When(mock.dtor()).Return(10);
+		B * b = &(mock.get());
+		delete b;
+	}
+
 } __Miscellaneous;
