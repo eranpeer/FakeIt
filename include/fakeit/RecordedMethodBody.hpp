@@ -58,8 +58,8 @@ class RecordedMethodBody: public virtual MethodInvocationHandler<R, arglist...>,
 
 	MockObject<C>& _mock;
 	R (C::*_vMethod)(arglist...);
-	MethodInfo _method;
 	unsigned int _methodId;
+	MethodInfo _method;
 
 	std::vector<std::shared_ptr<Destructable>>_invocationHandlers;
 	std::vector<std::shared_ptr<Destructable>> _actualInvocations;
