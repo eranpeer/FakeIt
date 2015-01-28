@@ -10,6 +10,7 @@
 #define MethodMockingContext_h__
 
 #include <functional>
+#include <utility>
 #include <type_traits>
 #include <tuple>
 #include <memory>
@@ -168,9 +169,12 @@ protected:
 			: _impl { new Implementation(stubbingContext) } {
 	}
 
-	//Move ctor for use by derived classes.
-	MethodMockingContext(MethodMockingContext& other)
-			: _impl(other._impl) {
+	MethodMockingContext(MethodMockingContext&) = default;
+
+	//we have to write move ctor by hand since VC 2013 doesn't support defaulted
+	//move constructor and move assignment
+	MethodMockingContext(MethodMockingContext&& other) 
+			: _impl(std::move(other._impl)) {
 	}
 
 	virtual ~MethodMockingContext() {}
@@ -273,11 +277,10 @@ public:
 			: MethodMockingContext<R, arglist...>(stubbingContext) {
 	}
 
-	MockingContext(MockingContext<R, arglist...>&other)
-			: MethodMockingContext<R, arglist...>(other) {
-	}
-	MockingContext(MockingContext<R, arglist...> &&other)
-			: MethodMockingContext<R, arglist...>(other) {
+	MockingContext(MockingContext&) = default;
+
+	MockingContext(MockingContext&& other)
+			: MethodMockingContext<R, arglist...>(std::move(other)) {
 	}
 
 	virtual ~MockingContext() THROWS {
@@ -332,7 +335,7 @@ public:
 };
 
 template<typename ... arglist>
-class MockingContext<void, arglist...> : //
+class MockingContext<void, arglist...> :
 public virtual MethodMockingContext<void, arglist...> {
 
 	MockingContext & operator=(const MockingContext&) = delete;
@@ -345,11 +348,10 @@ public:
 	virtual ~MockingContext() THROWS {
 	}
 
-	MockingContext(MockingContext<void, arglist...>& other)
-			: MethodMockingContext<void, arglist...>(other) {
-	}
-	MockingContext(MockingContext<void, arglist...> && other)
-			: MethodMockingContext<void, arglist...>(other) {
+	MockingContext(MockingContext&) = default;
+
+	MockingContext(MockingContext&& other)
+			: MethodMockingContext<void, arglist...>(std::move(other)) {
 	}
 
 	void operator=(std::function<void(arglist&...)> method) {
