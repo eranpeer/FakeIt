@@ -163,25 +163,24 @@ private:
 
 	};
 
-	class DtorMockingContextImpl : public MethodMockingContextBase<unsigned int, int> {
+	class DtorMockingContextImpl : public MethodMockingContextBase<void> {
 
     protected:
 
-		virtual RecordedMethodBody<C, unsigned int, int>& getRecordedMethodBody() override {
-			return MethodMockingContextBase<unsigned int, int>::_mock.stubDtorIfNotStubbed(MethodMockingContextBase<unsigned int, int>::_mock._proxy);
+		virtual RecordedMethodBody<C, void>& getRecordedMethodBody() override {
+			return MethodMockingContextBase<void>::_mock.stubDtorIfNotStubbed(MethodMockingContextBase<void>::_mock._proxy);
         }
 
     public:
         virtual ~DtorMockingContextImpl() = default;
 
         DtorMockingContextImpl(MockImpl<C, baseclasses...>& mock)
-			: MethodMockingContextBase<unsigned int, int>(mock){
+			: MethodMockingContextBase<void>(mock){
         }
 
-		virtual std::function<unsigned int(int&)> getOriginalMethod() override {
-			C& instance = MethodMockingContextBase<unsigned int, int>::_mock.get();
-			return [=, &instance](int&)->unsigned int {
-				return 0;
+		virtual std::function<void()> getOriginalMethod() override {
+			C& instance = MethodMockingContextBase<void>::_mock.get();
+			return [=, &instance]()->void {
             };
         }
 
@@ -237,12 +236,12 @@ private:
 		return *methodMock;
 	}
 
-	RecordedMethodBody<C,unsigned int,int>& stubDtorIfNotStubbed(DynamicProxy<C, baseclasses...> &proxy) {
+	RecordedMethodBody<C,void>& stubDtorIfNotStubbed(DynamicProxy<C, baseclasses...> &proxy) {
 		if (!proxy.isDtorStubbed()) {
 			proxy.stubDtor(createRecordedDtorBody(*this));
 		}
 		Destructable * d = proxy.getDtorMock();
-		RecordedMethodBody<C, unsigned int, int> * dtorMock = dynamic_cast<RecordedMethodBody<C, unsigned int, int> *>(d);
+		RecordedMethodBody<C, void> * dtorMock = dynamic_cast<RecordedMethodBody<C, void> *>(d);
 		return *dtorMock;
 	}
 
@@ -255,8 +254,8 @@ private:
 		return new RecordedMethodBody<C, R, arglist...>(mock, typeid(vMethod).name());
 	}
 
-	static RecordedMethodBody<C, unsigned int, int> * createRecordedDtorBody(MockObject<C>& mock){
-		return new RecordedMethodBody<C, unsigned int, int>(mock, "dtor");
+	static RecordedMethodBody<C, void> * createRecordedDtorBody(MockObject<C>& mock){
+		return new RecordedMethodBody<C, void>(mock, "dtor");
 	}
 
 };

@@ -171,6 +171,7 @@ struct VirtualTable {
 		firstMethod--; // skip objectLocator
 		firstMethod--; // skip cookie 0
 		firstMethod--; // skip cookie 1
+		firstMethod--; // skip cookie 2
 		delete locator;
 		delete[] firstMethod;
 	}
@@ -179,9 +180,22 @@ struct VirtualTable {
 		firstMethod[index] = method;
 	}
 
+	unsigned int dtor(int){
+		C * c = (C*)this;
+		C& cRef = *c;
+		auto vt = VirtualTable<C, baseclasses...>::getVTable(cRef);
+		void * dtorPtr = vt.getCookie(3);
+		void(*method)(C*) = reinterpret_cast<void(*)(C*)>(dtorPtr);
+		//C *obj = reinterpret_cast<C*>(ptr);
+		method(c);
+		return 0;
+	}
+
 	void setDtor(void *method) {
+		void* dtorPtr = union_cast<void*>(&VirtualTable<C, baseclasses...>::dtor);
 		unsigned int index = VTUtils::getDestructorOffset<C>();
-		firstMethod[index] = method;
+		firstMethod[index] = dtorPtr;
+		setCookie(3, method);
 	}
 
 	unsigned int dtorOffset(){
@@ -205,11 +219,11 @@ struct VirtualTable {
 
 
 	void* getCookie(int index){
-		return firstMethod[-2 - index];
+		return firstMethod[-3 - index];
 	}
 
 	void setCookie(int index, void * value){
-		firstMethod[-2 - index] = value;
+		firstMethod[-3 - index] = value;
 	}
 
 	Handle createHandle() {
@@ -228,9 +242,10 @@ private:
 
 	static void ** buildVTArray(){
 		int size = VTUtils::getVTSize<C>();
-		auto array = new void*[size + 3] {};
+		auto array = new void*[size + 4] {};
 		RTTICompleteObjectLocator<C, baseclasses...> * objectLocator = new RTTICompleteObjectLocator<C, baseclasses...>(typeid(C));
-		array[2] = objectLocator; // initialize RTTICompleteObjectLocator pointer
+		array[3] = objectLocator; // initialize RTTICompleteObjectLocator pointer
+		array++; // skip cookie 2
 		array++; // skip cookie 1
 		array++; // skip cookie 0
 		array++; // skip object locator

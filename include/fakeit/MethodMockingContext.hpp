@@ -391,75 +391,10 @@ public:
 };
 
     class DtorMockingContext : public virtual MethodMockingContext < void > {
-
-        DtorMockingContext &operator=(const DtorMockingContext &) = delete;
-
-        class ContextProxy : public MethodMockingContext<void>::Context {
-            MethodMockingContext<unsigned int, int>::Context * _context;
-        public:
-            ContextProxy(MethodMockingContext<unsigned int, int>::Context* context):_context(context){
-            }
-
-            ~ContextProxy(){
-                delete _context;
-            }
-
-
-            virtual std::function<void()> getOriginalMethod() override {
-                return [](){};
-            }
-
-            virtual std::string getMethodName() override {
-                return _context->getMethodName();
-            }
-
-            virtual void addMethodInvocationHandler(
-                    ActualInvocation<>::Matcher* matcher,
-                    MethodInvocationHandler<void>* invocationHandler) override {
-
-                struct MatcherProxy : public ActualInvocation<int>::Matcher {
-
-                    virtual bool matches(ActualInvocation<int>& actualInvocation){
-                        return true;
-                    }
-
-                    virtual std::string format() const {
-                        return {"destructor"};
-                    }
-                };
-
-                struct MethodInvocationHandlerProxy : public MethodInvocationHandler<unsigned int,int> {
-                    MethodInvocationHandler<void>* _invocationHandler;
-                    MethodInvocationHandlerProxy(MethodInvocationHandler<void>* invocationHandler):_invocationHandler(invocationHandler){}
-                    virtual unsigned int handleMethodInvocation(int&) override {
-                        _invocationHandler->handleMethodInvocation();
-                        return 0;
-                    }
-                };
-
-                delete matcher;
-                _context->addMethodInvocationHandler(new MatcherProxy(), new MethodInvocationHandlerProxy(invocationHandler));
-            }
-
-            virtual void scanActualInvocations(const std::function<void(ActualInvocation<>&)>& scanner) override {
-            }
-
-            virtual void setMethodDetails(std::string mockName, std::string methodName) override {
-                _context->setMethodDetails(mockName, methodName);
-            }
-
-            virtual bool isOfMethod(MethodInfo & method) override {
-                return _context->isOfMethod(method);
-            }
-
-            virtual ActualInvocationsSource& getInvolvedMock() override {
-                return _context->getInvolvedMock();
-            }
-        };
     public:
 
-        DtorMockingContext(MethodMockingContext<unsigned int, int>::Context *stubbingContext)
-                : MethodMockingContext<void>(new ContextProxy(stubbingContext)) {
+        DtorMockingContext(MethodMockingContext<void>::Context *stubbingContext)
+                : MethodMockingContext<void>(stubbingContext) {
         }
 
         virtual ~DtorMockingContext() THROWS{

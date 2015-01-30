@@ -65,8 +65,8 @@ struct DynamicProxy {
         bindMethod(creator.createMethodProxy(vMethod), methodInvocationHandler);
 	}
 
-	void stubDtor(MethodInvocationHandler<unsigned int, int>* methodInvocationHandler) {
-		MethodProxyCreator<unsigned int, int> creator;
+	void stubDtor(MethodInvocationHandler<void>* methodInvocationHandler) {
+		MethodProxyCreator<void> creator;
         bindDtor(creator.createDtorProxy(), methodInvocationHandler);
 	}
 
@@ -384,7 +384,7 @@ private:
 		methodMocks[offset].reset(destructable);
 	}
 
-	void bindDtor(const MethodProxy &methodProxy, MethodInvocationHandler<unsigned int, int> *invocationHandler) {
+	void bindDtor(const MethodProxy &methodProxy, MethodInvocationHandler<void> *invocationHandler) {
         auto offset = methodProxy.getOffset();
 		getFake().setDtor(methodProxy.getProxy());
         Destructable * destructable = invocationHandler;
