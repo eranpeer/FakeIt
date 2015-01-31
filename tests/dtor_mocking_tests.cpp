@@ -21,6 +21,7 @@ struct DtorMocking : tpunit::TestFixture
 		    TEST(DtorMocking::mock_virtual_dtor_with_when),
             TEST(DtorMocking::mock_virtual_dtor_by_assignment),
             TEST(DtorMocking::call_dtor_without_delete),
+            TEST(DtorMocking::spy_dtor),
 			TEST(DtorMocking::production_takes_ownwership_with_uniqe_ptr)//
 		)
 	{
@@ -73,6 +74,18 @@ struct DtorMocking : tpunit::TestFixture
         Fake(Dtor(mock));
         SomeInterface * i = &mock.get();
         i->~SomeInterface();
+        Verify(Dtor(mock)).Once();
+    }
+
+    struct A {
+        virtual ~A(){}
+    };
+    void spy_dtor() {
+        A a;
+        Mock<A> mock(a);
+        Spy(Dtor(mock));
+        A * i = &mock.get();
+        delete i;
         Verify(Dtor(mock)).Once();
     }
 
