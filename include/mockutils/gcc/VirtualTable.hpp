@@ -71,7 +71,7 @@ struct VirtualTable {
 		delete[] firstMethod;
 	}
 
-    unsigned int doNothing(int){}
+    unsigned int doNothing(int){ return 0;}
 
 
     void setMethod(unsigned int index, void *method) {
