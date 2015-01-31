@@ -21,4 +21,4 @@ CPP_SRCS += \
 	tpunit++main.cpp \
 	type_info_tests.cpp \
 	verification_errors_tests.cpp \
-	verification_tests.cpp
+	verification_tests.cpp 
