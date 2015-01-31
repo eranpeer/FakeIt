@@ -40,6 +40,7 @@ struct DtorMocking : tpunit::TestFixture
 		delete i;
 		delete i; // second delete should not throw exception
         Verify(Dtor(mock)).Twice();
+		ASSERT_THROW(Verify(Dtor(mock)).Once(), fakeit::VerificationException);
 	}
 
 	void mock_virtual_dtor_with_when() {
@@ -75,18 +76,21 @@ struct DtorMocking : tpunit::TestFixture
         SomeInterface * i = &mock.get();
         i->~SomeInterface();
         Verify(Dtor(mock)).Once();
-    }
+		ASSERT_THROW(Verify(Dtor(mock)).Twice(), fakeit::VerificationException);
+	}
 
     struct A {
         virtual ~A(){}
     };
-    void spy_dtor() {
+
+	void spy_dtor() {
         A a;
         Mock<A> mock(a);
         Spy(Dtor(mock));
         A * i = &mock.get();
         delete i;
         Verify(Dtor(mock)).Once();
+		ASSERT_THROW(Verify(Dtor(mock)).Twice(), fakeit::VerificationException);
     }
 
 } __DtorMocking;
