@@ -71,8 +71,16 @@ struct VirtualTable {
 		delete[] firstMethod;
 	}
 
-    unsigned int doNothing(int){ return 0;}
-
+    unsigned int dtor(int){
+        C * c = (C*)this;
+        C& cRef = *c;
+        auto vt = VirtualTable<C, baseclasses...>::getVTable(cRef);
+        unsigned int index = VTUtils::getDestructorOffset<C>();
+        void * dtorPtr = vt.getMethod(index);
+        void(*method)(C*) = reinterpret_cast<void(*)(C*)>(dtorPtr);
+        method(c);
+        return 0;
+    }
 
     void setMethod(unsigned int index, void *method) {
 		firstMethod[index] = method;
@@ -80,14 +88,14 @@ struct VirtualTable {
 
     void setDtor(void *method) {
         unsigned int index = VTUtils::getDestructorOffset<C>();
-        void* doNothingPtr = union_cast<void*>(&VirtualTable<C,baseclasses...>::doNothing);
-        firstMethod[index] = doNothingPtr;
-        firstMethod[index + 1] = method;
+        void* dtorPtr = union_cast<void*>(&VirtualTable<C,baseclasses...>::dtor);
+        firstMethod[index] = method;
+        firstMethod[index + 1] = dtorPtr;
     }
 
-    unsigned int dtorOffset(){
-        return VTUtils::getDestructorOffset<C>() + 1;
-    }
+//    unsigned int dtorOffset(){
+//        return VTUtils::getDestructorOffset<C>() + 1;
+//    }
 
     void * getMethod(unsigned int index) const {
 		return firstMethod[index];

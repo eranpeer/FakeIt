@@ -186,7 +186,6 @@ struct VirtualTable {
 		auto vt = VirtualTable<C, baseclasses...>::getVTable(cRef);
 		void * dtorPtr = vt.getCookie(3);
 		void(*method)(C*) = reinterpret_cast<void(*)(C*)>(dtorPtr);
-		//C *obj = reinterpret_cast<C*>(ptr);
 		method(c);
 		return 0;
 	}
@@ -198,9 +197,9 @@ struct VirtualTable {
 		setCookie(3, method);
 	}
 
-	unsigned int dtorOffset(){
-		return VTUtils::getDestructorOffset<C>();
-	}
+//	unsigned int dtorOffset(){
+//		return VTUtils::getDestructorOffset<C>();
+//	}
 
 	void * getMethod(unsigned int index) const {
 		return firstMethod[index];

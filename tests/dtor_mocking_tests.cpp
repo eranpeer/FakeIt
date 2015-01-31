@@ -20,6 +20,7 @@ struct DtorMocking : tpunit::TestFixture
 		    TEST(DtorMocking::mock_virtual_dtor_with_fake), //
 		    TEST(DtorMocking::mock_virtual_dtor_with_when),
             TEST(DtorMocking::mock_virtual_dtor_by_assignment),
+            TEST(DtorMocking::call_dtor_without_delete),
 			TEST(DtorMocking::production_takes_ownwership_with_uniqe_ptr)//
 		)
 	{
@@ -67,6 +68,12 @@ struct DtorMocking : tpunit::TestFixture
 		std::unique_ptr<SomeInterface> ptr(i);
 	}
 
-
+    void call_dtor_without_delete() {
+        Mock<SomeInterface> mock;
+        Fake(Dtor(mock));
+        SomeInterface * i = &mock.get();
+        i->~SomeInterface();
+        Verify(Dtor(mock)).Once();
+    }
 
 } __DtorMocking;
