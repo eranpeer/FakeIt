@@ -283,9 +283,6 @@ public:
 			: MethodMockingContext<R, arglist...>(std::move(other)) {
 	}
 
-	virtual ~MockingContext() THROWS {
-	}
-
 	MockingContext<R, arglist...>& setMethodDetails(std::string mockName, std::string methodName) {
 		MethodMockingContext<R, arglist...>::setMethodDetails(mockName, methodName);
 		return *this;
@@ -345,9 +342,6 @@ public:
 			: MethodMockingContext<void, arglist...>(stubbingContext) {
 	}
 
-	virtual ~MockingContext() THROWS {
-	}
-
 	MockingContext(MockingContext&) = default;
 
 	MockingContext(MockingContext&& other)
@@ -395,9 +389,6 @@ public:
 
         DtorMockingContext(MethodMockingContext<void>::Context *stubbingContext)
                 : MethodMockingContext<void>(stubbingContext) {
-        }
-
-        virtual ~DtorMockingContext() THROWS{
         }
 
         DtorMockingContext(DtorMockingContext &other) : MethodMockingContext<void>(other) {

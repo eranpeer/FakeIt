@@ -19,7 +19,8 @@ struct DtorMocking : tpunit::TestFixture
 		TestFixture(
 		    TEST(DtorMocking::mock_virtual_dtor_with_fake), //
 		    TEST(DtorMocking::mock_virtual_dtor_with_when),
-            TEST(DtorMocking::mock_virtual_dtor_by_assignment)//
+            TEST(DtorMocking::mock_virtual_dtor_by_assignment),
+			TEST(DtorMocking::production_takes_ownwership_with_uniqe_ptr)//
 		)
 	{
 	}
@@ -58,5 +59,14 @@ struct DtorMocking : tpunit::TestFixture
         delete i; // a++
         ASSERT_EQUAL(2, a);
     }
+
+	void production_takes_ownwership_with_uniqe_ptr() {
+		Mock<SomeInterface> mock;
+		Fake(Dtor(mock));
+		SomeInterface * i = &mock.get();
+		std::unique_ptr<SomeInterface> ptr(i);
+	}
+
+
 
 } __DtorMocking;
