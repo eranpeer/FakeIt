@@ -89,7 +89,10 @@ struct VirtualTable {
     void setDtor(void *method) {
         unsigned int index = VTUtils::getDestructorOffset<C>();
         void* dtorPtr = union_cast<void*>(&VirtualTable<C,baseclasses...>::dtor);
+        // replace the non deleting destructor.
+        // for example (c1->~C()) calls the non deleting dtor only
         firstMethod[index] = method;
+        // replace the deleting destructor with a method that calls the non deleting one
         firstMethod[index + 1] = dtorPtr;
     }
 

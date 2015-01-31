@@ -180,6 +180,7 @@ struct VirtualTable {
 		firstMethod[index] = method;
 	}
 
+	// the dtor VC++ must of the format: int dtor(int)
 	unsigned int dtor(int){
 		C * c = (C*)this;
 		C& cRef = *c;
@@ -191,6 +192,11 @@ struct VirtualTable {
 	}
 
 	void setDtor(void *method) {
+		// the dtor VC++ must of the format: int dtor(int).
+		// the method passed by the user is: void dtor().
+		// store the user method in a cookie and put the 
+		// correct format method in the virtual table.
+        // the method stored in the vt will call the method in the cookie when invoked.
 		void* dtorPtr = union_cast<void*>(&VirtualTable<C, baseclasses...>::dtor);
 		unsigned int index = VTUtils::getDestructorOffset<C>();
 		firstMethod[index] = dtorPtr;
