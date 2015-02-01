@@ -46,7 +46,6 @@ public Sequence,                // For use in Verify(sequence1,...)... phrases.
 		public virtual StubbingContext<R, arglist...>, // For use in Fake & When phrases
 		public virtual SpyingContext<R, arglist...>, // For use in Spy phrases
 		private Invocation::Matcher {
-
 public:
 
 	struct Context: public Destructable {
@@ -267,7 +266,7 @@ private:
 
 template<typename R, typename ... arglist>
 class MockingContext: //
-public virtual MethodMockingContext<R, arglist...> //
+public MethodMockingContext<R, arglist...> //
 {
 	MockingContext & operator=(const MockingContext&) = delete;
 
@@ -333,7 +332,7 @@ public:
 
 template<typename ... arglist>
 class MockingContext<void, arglist...> :
-public virtual MethodMockingContext<void, arglist...> {
+public MethodMockingContext<void, arglist...> {
 
 	MockingContext & operator=(const MockingContext&) = delete;
 
@@ -384,7 +383,7 @@ public:
 	}
 };
 
-    class DtorMockingContext : public virtual MethodMockingContext < void > {
+    class DtorMockingContext : public MethodMockingContext < void > {
     public:
 
         DtorMockingContext(MethodMockingContext<void>::Context *stubbingContext)
