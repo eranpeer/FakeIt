@@ -40,7 +40,7 @@ namespace fakeit {
  * The recorded sequence is: {Return(1), Return(2), Return(2), Throw(e1)}
  */
 template<typename R, typename ... arglist>
-class MethodMockingContext: //
+class MethodMockingContext:
 public Sequence,                // For use in Verify(sequence1,...)... phrases.
 		public ActualInvocationsSource, // For use in Using(source1,souece2,...) and VerifyNoOtherInvocations(source1,souece2...) phrases.
 		public virtual StubbingContext<R, arglist...>, // For use in Fake & When phrases
@@ -209,21 +209,17 @@ protected:
 	/**
 	 * Used only by Verify phrase.
 	 */
-	virtual bool matches(Invocation& invocation) override {
+	bool matches(Invocation& invocation) override {
 		return _impl->matches(invocation);
 	}
 
-	virtual void commit() override {
+	void commit() override {
 		_impl->commit();
 	}
 
 	void setMethodDetails(std::string mockName, std::string methodName) {
 		_impl->setMethodDetails(mockName, methodName);
 	}
-
-//	void setMatchingCriteria(const arglist&... args) {
-//		_impl->setMatchingCriteria(args...);
-//	}
 
 	void setMatchingCriteria(std::function<bool(arglist&...)> predicate) {
 		typename ActualInvocation<arglist...>::Matcher* matcher { new UserDefinedInvocationMatcher<arglist...>(predicate) };
@@ -257,7 +253,7 @@ protected:
 	}
 private:
 
-	typename std::function<R(arglist&...)> getOriginalMethod() override {
+	std::function<R(arglist&...)> getOriginalMethod() override {
 		return _impl->getOriginalMethod();
 	}
 
@@ -265,8 +261,8 @@ private:
 };
 
 template<typename R, typename ... arglist>
-class MockingContext: //
-public MethodMockingContext<R, arglist...> //
+class MockingContext:
+public  MethodMockingContext<R, arglist...>
 {
 	MockingContext & operator=(const MockingContext&) = delete;
 
@@ -318,94 +314,46 @@ public:
 	}
 
 	template<typename U = R>
-	typename std::enable_if<!std::is_reference<U>::value, void>::type operator=(const R& r) {
+	typename std::enable_if<!std::is_reference<U>::value, void>::type operator=(
+			const typename std::conditional<std::is_void<R>::value, int, R>::type& r) {
+		static_assert(!std::is_void<R>::value,
+			"you can't mock return value on method with void return type");
 		auto method = [r](arglist&...) -> R {return r;};
 		MethodMockingContext<R, arglist...>::setMethodBodyByAssignment(method);
 	}
 
 	template<typename U = R>
-	typename std::enable_if<std::is_reference<U>::value, void>::type operator=(const R& r) {
+	typename std::enable_if<std::is_reference<U>::value, void>::type operator=(
+			const typename std::conditional<std::is_void<R>::value, int, R>::type& r) {
+		static_assert(!std::is_void<R>::value,
+			"you can't mock return value on method with void return type");
 		auto method = [&r](arglist&...) -> R {return r;};
 		MethodMockingContext<R, arglist...>::setMethodBodyByAssignment(method);
 	}
 };
 
-template<typename ... arglist>
-class MockingContext<void, arglist...> :
-public MethodMockingContext<void, arglist...> {
-
-	MockingContext & operator=(const MockingContext&) = delete;
-
+class DtorMockingContext : public MethodMockingContext < void > {
 public:
-	MockingContext(typename MethodMockingContext<void, arglist...>::Context* stubbingContext)
-			: MethodMockingContext<void, arglist...>(stubbingContext) {
+
+	DtorMockingContext(MethodMockingContext<void>::Context *stubbingContext)
+		: MethodMockingContext<void>(stubbingContext) {
+		}
+
+	DtorMockingContext(DtorMockingContext &other) : MethodMockingContext<void>(other) {
 	}
 
-	MockingContext(MockingContext&) = default;
-
-	MockingContext(MockingContext&& other)
-			: MethodMockingContext<void, arglist...>(std::move(other)) {
+	DtorMockingContext(DtorMockingContext &&other) : MethodMockingContext<void>(std::move(other)) {
 	}
 
-	void operator=(std::function<void(arglist&...)> method) {
-		MethodMockingContext<void, arglist...>::setMethodBodyByAssignment(method);
+	void operator=(std::function<void()> method) {
+		MethodMockingContext<void>::setMethodBodyByAssignment(method);
 	}
 
-	MockingContext<void, arglist...>& setMethodDetails(std::string mockName, std::string methodName) {
-		MethodMockingContext<void, arglist...>::setMethodDetails(mockName, methodName);
-		return *this;
-	}
-
-	MockingContext<void, arglist...>& Using(const arglist&... args) {
-		MethodMockingContext<void, arglist...>::setMatchingCriteria(args...);
-		return *this;
-	}
-
-	template<class ...matcherCreator>
-	MockingContext<void, arglist...>& Using(const matcherCreator& ... matcherCreators) {
-		MethodMockingContext<void, arglist...>::setMatchingCriteria(matcherCreators...);
-		return *this;
-	}
-
-	MockingContext<void, arglist...>& Matching(std::function<bool(arglist&...)> matcher) {
-		MethodMockingContext<void, arglist...>::setMatchingCriteria(matcher);
-		return *this;
-	}
-
-	MockingContext<void, arglist...>& operator()(const arglist&... args) {
-		MethodMockingContext<void, arglist...>::setMatchingCriteria(args...);
-		return *this;
-	}
-
-	MockingContext<void, arglist...>& operator()(std::function<bool(arglist&...)> matcher) {
-		MethodMockingContext<void, arglist...>::setMatchingCriteria(matcher);
+	DtorMockingContext& setMethodDetails(std::string mockName, std::string methodName) {
+		MethodMockingContext<void>::setMethodDetails(mockName, methodName);
 		return *this;
 	}
 };
-
-    class DtorMockingContext : public MethodMockingContext < void > {
-    public:
-
-        DtorMockingContext(MethodMockingContext<void>::Context *stubbingContext)
-                : MethodMockingContext<void>(stubbingContext) {
-        }
-
-        DtorMockingContext(DtorMockingContext &other) : MethodMockingContext<void>(other) {
-        }
-
-        DtorMockingContext(DtorMockingContext &&other) : MethodMockingContext<void>(other) {
-        }
-
-        void operator=(std::function<void()> method) {
-            MethodMockingContext<void>::setMethodBodyByAssignment(method);
-        }
-
-		DtorMockingContext& setMethodDetails(std::string mockName, std::string methodName) {
-			MethodMockingContext<void>::setMethodDetails(mockName, methodName);
-			return *this;
-		}
-
-    };
 
 }
 #endif
