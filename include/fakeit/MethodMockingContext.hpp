@@ -335,25 +335,24 @@ public:
 class DtorMockingContext : public MethodMockingContext < void > {
 public:
 
-    DtorMockingContext(MethodMockingContext<void>::Context *stubbingContext)
-            : MethodMockingContext<void>(stubbingContext) {
-    }
+	DtorMockingContext(MethodMockingContext<void>::Context *stubbingContext)
+		: MethodMockingContext<void>(stubbingContext) {
+		}
 
-    DtorMockingContext(DtorMockingContext &other) : MethodMockingContext<void>(other) {
-    }
+	DtorMockingContext(DtorMockingContext &other) : MethodMockingContext<void>(other) {
+	}
 
-    DtorMockingContext(DtorMockingContext &&other) : MethodMockingContext<void>(other) {
-    }
+	DtorMockingContext(DtorMockingContext &&other) : MethodMockingContext<void>(std::move(other)) {
+	}
 
-    void operator=(std::function<void()> method) {
-        MethodMockingContext<void>::setMethodBodyByAssignment(method);
-    }
+	void operator=(std::function<void()> method) {
+		MethodMockingContext<void>::setMethodBodyByAssignment(method);
+	}
 
-    DtorMockingContext& setMethodDetails(std::string mockName, std::string methodName) {
-        MethodMockingContext<void>::setMethodDetails(mockName, methodName);
-        return *this;
-    }
-
+	DtorMockingContext& setMethodDetails(std::string mockName, std::string methodName) {
+		MethodMockingContext<void>::setMethodDetails(mockName, methodName);
+		return *this;
+	}
 };
 
 }
