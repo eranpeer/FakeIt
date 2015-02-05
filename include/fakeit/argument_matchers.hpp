@@ -58,7 +58,7 @@ namespace internal {
 		}
 
 		struct Matcher : public TypedMatcher < T > {
-			virtual bool matches(const T& actual) const {
+			virtual bool matches(const T&) const {
 				return true;
 			}
 

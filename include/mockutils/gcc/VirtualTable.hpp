@@ -77,7 +77,7 @@ struct VirtualTable {
         auto vt = VirtualTable<C, baseclasses...>::getVTable(cRef);
         unsigned int index = VTUtils::getDestructorOffset<C>();
         void * dtorPtr = vt.getMethod(index);
-        void(*method)(C*) = reinterpret_cast<void(*)(C*)>(dtorPtr);
+        void(*method)(C*) = union_cast<void(*)(C*)>(dtorPtr);
         method(c);
         return 0;
     }

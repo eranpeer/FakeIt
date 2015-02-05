@@ -205,7 +205,6 @@ private:
 
 	static C* createFakeInstance() {
 		FakeObject<C, baseclasses...>* fake = new FakeObject<C, baseclasses...>();
-		//fake->initializeDataMembersArea();
 		void* unmockedMethodStubPtr = union_cast<void*>(&MockImpl<C, baseclasses...>::unmocked);
 		fake->getVirtualTable().initAll(unmockedMethodStubPtr);
 		return reinterpret_cast<C*>(fake);
