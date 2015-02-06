@@ -74,10 +74,10 @@ namespace fakeit {
     protected:
 
         R methodProxy(unsigned int index, arglist& ... args) {
-            InvocationHandlerCollection * dynamicProxy = getInvocationHandlerCollection(this);
-            MethodInvocationHandler<R, arglist...> * methodMock =
-                (MethodInvocationHandler<R, arglist...> *)dynamicProxy->getInvocatoinHandlerPtr(index);
-            return methodMock->handleMethodInvocation(args...);
+            InvocationHandlerCollection *invocationHandlerCollection = getInvocationHandlerCollection(this);
+            MethodInvocationHandler<R, arglist...> *invocationHandler =
+                (MethodInvocationHandler<R, arglist...> *) invocationHandlerCollection->getInvocatoinHandlerPtr(index);
+            return invocationHandler->handleMethodInvocation(args...);
         }
 
         template<int offset>
