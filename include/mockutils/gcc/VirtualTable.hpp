@@ -18,8 +18,30 @@
 
 namespace fakeit {
 
-template<class C, class ... baseclasses>
-struct VirtualTable {
+    struct VirtualTableBase
+    {
+
+        static VirtualTableBase& getVTable(void* instance) {
+            fakeit::VirtualTableBase* vt = (fakeit::VirtualTableBase*)(instance);
+            return *vt;
+        }
+
+        VirtualTableBase(void** firstMethod) :_firstMethod(firstMethod){}
+
+        void* getCookie(int index) {
+            return _firstMethod[-3 - index];
+        }
+
+        void setCookie(int index, void * value) {
+            _firstMethod[-3 - index] = value;
+        }
+
+    protected:
+        void** _firstMethod;
+    };
+
+    template<class C, class ... baseclasses>
+struct VirtualTable: public VirtualTableBase {
 
 	#ifndef __clang__
 		static_assert(is_simple_inheritance_layout<C>::value, "Can't mock a type with multiple inheritance");
@@ -55,7 +77,7 @@ struct VirtualTable {
 		unsigned int size = VTUtils::getVTSize<C>();
 		//firstMethod[-1] = from.firstMethod[-1]; // copy type_info
 		for (size_t i = 0; i < size; ++i) {
-			firstMethod[i] = from.getMethod(i);
+			_firstMethod[i] = from.getMethod(i);
 		}
 	}
 
@@ -64,11 +86,10 @@ struct VirtualTable {
 	}
 
 	void dispose() {
-		firstMethod--; // type_info
-		firstMethod--; // top_offset
-		firstMethod--; // cookie 0
-		firstMethod--; // cookie 1
-		delete[] firstMethod;
+		_firstMethod--; // type_info
+		_firstMethod--; // top_offset
+		_firstMethod -= numOfCookies; // skip cookies
+		delete[] _firstMethod;
 	}
 
     unsigned int dtor(int){
@@ -83,7 +104,7 @@ struct VirtualTable {
     }
 
     void setMethod(unsigned int index, void *method) {
-		firstMethod[index] = method;
+		_firstMethod[index] = method;
 	}
 
     void setDtor(void *method) {
@@ -91,17 +112,13 @@ struct VirtualTable {
         void* dtorPtr = union_cast<void*>(&VirtualTable<C,baseclasses...>::dtor);
         // replace the non deleting destructor.
         // for example (c1->~C()) calls the non deleting dtor only
-        firstMethod[index] = method;
+        _firstMethod[index] = method;
         // replace the deleting destructor with a method that calls the non deleting one
-        firstMethod[index + 1] = dtorPtr;
+        _firstMethod[index + 1] = dtorPtr;
     }
 
-//    unsigned int dtorOffset(){
-//        return VTUtils::getDestructorOffset<C>() + 1;
-//    }
-
     void * getMethod(unsigned int index) const {
-		return firstMethod[index];
+		return _firstMethod[index];
 	}
 
 	unsigned int getSize() {
@@ -116,39 +133,28 @@ struct VirtualTable {
 	}
 
 	const std::type_info* getTypeId() {
-		return (const std::type_info*) (firstMethod[-1]);
-	}
-
-	void* getCookie(int index) {
-		return firstMethod[-3 - index];
-	}
-
-	void setCookie(int index, void * value) {
-		firstMethod[-3 - index] = value;
+		return (const std::type_info*) (_firstMethod[-1]);
 	}
 
 	Handle createHandle() {
-		Handle h(firstMethod);
+		Handle h(_firstMethod);
 		return h;
 	}
 
 private:
-
-	void** firstMethod;
+    static const unsigned int numOfCookies = 2;
 
 	static void ** buildVTArray() {
 		int size = VTUtils::getVTSize<C>();
-		auto array = new void*[size + 4] { };
-		array[3] = (void*) &typeid(C);
-		array++; // skip cookie 1
-		array++; // skip cookie 0
-		array++; // skip top_offset
+		auto array = new void*[size + 2 + numOfCookies] { };
+        array+= numOfCookies; // skip cookies
+        array++; // skip top_offset
+		array[0] = (void*) &typeid(C); // type_info
 		array++; // skip type_info ptr
 		return array;
 	}
 
-	VirtualTable(void** firstMethod) :
-			firstMethod(firstMethod) {
+	VirtualTable(void** firstMethod) : VirtualTableBase(firstMethod) {
 	}
 
 };

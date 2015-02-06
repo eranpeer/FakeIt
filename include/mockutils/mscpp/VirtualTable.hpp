@@ -123,8 +123,30 @@ struct RTTICompleteObjectLocator {
 	struct RTTIClassHierarchyDescriptor<C, baseclasses...>* pClassDescriptor; //describes inheritance hierarchy
 };
 
+struct VirtualTableBase
+{
+
+    static VirtualTableBase& getVTable(void* instance) {
+        fakeit::VirtualTableBase* vt = (fakeit::VirtualTableBase*)(instance);
+        return *vt;
+    }
+
+    VirtualTableBase(void** firstMethod) :_firstMethod(firstMethod){}
+
+    void* getCookie(int index){
+        return _firstMethod[-2 - index];
+    }
+
+    void setCookie(int index, void * value){
+        _firstMethod[-2 - index] = value;
+    }
+
+protected:
+    void** _firstMethod;
+};
+
 template<class C, class... baseclasses>
-struct VirtualTable {
+struct VirtualTable : public VirtualTableBase {
 
 	class Handle {
 
@@ -154,7 +176,7 @@ struct VirtualTable {
 	void copyFrom(VirtualTable<C, baseclasses...>& from) {
 		unsigned int size = VTUtils::getVTSize<C>();
 		for (unsigned int i = 0; i < size; i++) {
-			firstMethod[i] = from.getMethod(i);
+			_firstMethod[i] = from.getMethod(i);
 		}
 	}
 
@@ -167,15 +189,15 @@ struct VirtualTable {
 	}
 
 	void dispose() {
-		firstMethod--; // skip objectLocator
-        RTTICompleteObjectLocator<C, baseclasses...> * locator = (RTTICompleteObjectLocator<C, baseclasses...>*)firstMethod[0];
+		_firstMethod--; // skip objectLocator
+        RTTICompleteObjectLocator<C, baseclasses...> * locator = (RTTICompleteObjectLocator<C, baseclasses...>*)_firstMethod[0];
         delete locator;
-        firstMethod -= numOfCookies; // skip cookies
-		delete[] firstMethod;
+        _firstMethod -= numOfCookies; // skip cookies
+		delete[] _firstMethod;
 	}
 
 	void setMethod(unsigned int index, void *method) {
-		firstMethod[index] = method;
+		_firstMethod[index] = method;
 	}
 
 	// the dtor VC++ must of the format: int dtor(int)
@@ -197,12 +219,12 @@ struct VirtualTable {
         // the method stored in the vt will call the method in the cookie when invoked.
 		void* dtorPtr = union_cast<void*>(&VirtualTable<C, baseclasses...>::dtor);
 		unsigned int index = VTUtils::getDestructorOffset<C>();
-		firstMethod[index] = dtorPtr;
+		_firstMethod[index] = dtorPtr;
 		setCookie(numOfCookies-1, method); // use the last cookie
 	}
 
 	void * getMethod(unsigned int index) const {
-		return firstMethod[index];
+		return _firstMethod[index];
 	}
 
 	unsigned int getSize() {
@@ -216,23 +238,12 @@ struct VirtualTable {
 		}
 	}
 
-
-	void* getCookie(int index){
-		return firstMethod[-2 - index];
-	}
-
-	void setCookie(int index, void * value){
-		firstMethod[-2 - index] = value;
-	}
-
 	Handle createHandle() {
-		Handle h(firstMethod);
+		Handle h(_firstMethod);
 		return h;
 	}
 
 private:
-
-	void** firstMethod;
 
 	class SimpleType {
 	};
@@ -250,7 +261,7 @@ private:
 		return array;
 	}
 
-	VirtualTable(void** firstMethod) :firstMethod(firstMethod){
+    VirtualTable(void** firstMethod) :VirtualTableBase(firstMethod){
 	}
 };
 }
