@@ -60,6 +60,8 @@
     <ClInclude Include="..\include\mockutils\Formatter.hpp" />
     <ClInclude Include="..\include\mockutils\Macros.hpp" />
     <ClInclude Include="..\include\mockutils\MethodInvocationHandler.hpp" />
+    <ClInclude Include="..\include\mockutils\MethodProxy.hpp" />
+    <ClInclude Include="..\include\mockutils\MethodProxyCreator.hpp" />
     <ClInclude Include="..\include\mockutils\mscpp\VirtualTable.hpp" />
     <ClInclude Include="..\include\mockutils\smart_ptr.hpp" />
     <ClInclude Include="..\include\mockutils\to_string.hpp" />

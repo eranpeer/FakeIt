@@ -36,6 +36,14 @@ namespace fakeit {
             _firstMethod[-3 - index] = value;
         }
 
+        void * getMethod(unsigned int index) const {
+            return _firstMethod[index];
+        }
+
+        void setMethod(unsigned int index, void *method) {
+            _firstMethod[index] = method;
+        }
+
     protected:
         void** _firstMethod;
     };
@@ -62,11 +70,6 @@ struct VirtualTable: public VirtualTableBase {
 			return *vt;
 		}
 	};
-
-	static VirtualTable<C, baseclasses...>& nullVTable() {
-		static VirtualTable<C, baseclasses...> instance;
-		return instance;
-	}
 
 	static VirtualTable<C, baseclasses...>& getVTable(C& instance) {
 		fakeit::VirtualTable<C, baseclasses...>* vt = (fakeit::VirtualTable<C, baseclasses...>*) (&instance);
@@ -103,9 +106,6 @@ struct VirtualTable: public VirtualTableBase {
         return 0;
     }
 
-    void setMethod(unsigned int index, void *method) {
-		_firstMethod[index] = method;
-	}
 
     void setDtor(void *method) {
         unsigned int index = VTUtils::getDestructorOffset<C>();
@@ -117,11 +117,8 @@ struct VirtualTable: public VirtualTableBase {
         _firstMethod[index + 1] = dtorPtr;
     }
 
-    void * getMethod(unsigned int index) const {
-		return _firstMethod[index];
-	}
 
-	unsigned int getSize() {
+        unsigned int getSize() {
 		return VTUtils::getVTSize<C>();
 	}
 

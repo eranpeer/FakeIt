@@ -141,6 +141,14 @@ struct VirtualTableBase
         _firstMethod[-2 - index] = value;
     }
 
+    void * getMethod(unsigned int index) const {
+        return _firstMethod[index];
+    }
+
+    void setMethod(unsigned int index, void *method) {
+        _firstMethod[index] = method;
+    }
+
 protected:
     void** _firstMethod;
 };
@@ -162,11 +170,6 @@ struct VirtualTable : public VirtualTableBase {
 			return *vt;
 		}
 	};
-
-	static VirtualTable<C, baseclasses...>& nullVTable(){
-		static VirtualTable<C, baseclasses...> instance;
-		return instance;
-	}
 
 	static VirtualTable<C, baseclasses...>& getVTable(C& instance) {
 		fakeit::VirtualTable<C, baseclasses...>* vt = (fakeit::VirtualTable<C, baseclasses...>*)(&instance);
@@ -196,10 +199,6 @@ struct VirtualTable : public VirtualTableBase {
 		delete[] _firstMethod;
 	}
 
-	void setMethod(unsigned int index, void *method) {
-		_firstMethod[index] = method;
-	}
-
 	// the dtor VC++ must of the format: int dtor(int)
 	unsigned int dtor(int){
 		C * c = (C*)this;
@@ -223,11 +222,7 @@ struct VirtualTable : public VirtualTableBase {
 		setCookie(numOfCookies-1, method); // use the last cookie
 	}
 
-	void * getMethod(unsigned int index) const {
-		return _firstMethod[index];
-	}
-
-	unsigned int getSize() {
+    unsigned int getSize() {
 		return VTUtils::getVTSize<C>();
 	}
 

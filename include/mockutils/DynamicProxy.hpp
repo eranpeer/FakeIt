@@ -25,225 +25,10 @@
 #include "mockutils/MethodInvocationHandler.hpp"
 #include "mockutils/VTUtils.hpp"
 #include "mockutils/FakeObject.hpp"
+#include "mockutils/MethodProxy.hpp"
+#include "MethodProxyCreator.hpp"
 
 namespace fakeit {
-
-    struct InvocationHandlerCollection {
-        virtual Destructable* getInvocatoinHandlerPtr(unsigned int index) = 0;
-    };
-
-    static InvocationHandlerCollection * getInvocationHandlerCollection(void * instance) {
-        VirtualTableBase & vt = VirtualTableBase::getVTable(instance);
-        InvocationHandlerCollection * invocationHandlerCollection = (InvocationHandlerCollection*) vt.getCookie(0);
-        return invocationHandlerCollection;
-    }
-
-    struct MethodProxy {
-
-        MethodProxy(unsigned int offset, void * vMethod) :
-                _vMethod(vMethod), _offset(offset) {
-        }
-
-        unsigned int getOffset() const {
-            return _offset;
-        }
-
-        void * getProxy() const {
-            return union_cast<void *>(_vMethod);
-        }
-
-    private:
-        void * _vMethod;
-        unsigned int _offset;
-    };
-
-    template<typename R, typename ... arglist>
-    class MethodProxyCreatorBase{
-    protected:
-
-        MethodProxy newMethodProxy(unsigned int offset, R(MethodProxyCreatorBase::*vMethod)(arglist...)) {
-            return MethodProxy(offset, union_cast<void *>(vMethod));
-        }
-
-    public:
-
-        MethodProxy createMethodProxy(unsigned int offset) {
-            return newMethodProxy(offset, getMethodProxyPtr(offset));
-        }
-
-    protected:
-
-        R methodProxy(unsigned int index, arglist& ... args) {
-            InvocationHandlerCollection *invocationHandlerCollection = getInvocationHandlerCollection(this);
-            MethodInvocationHandler<R, arglist...> *invocationHandler =
-                (MethodInvocationHandler<R, arglist...> *) invocationHandlerCollection->getInvocatoinHandlerPtr(index);
-            return invocationHandler->handleMethodInvocation(args...);
-        }
-
-        template<int offset>
-        R methodProxyX(arglist ... args) {
-            return methodProxy(offset, args...);
-        }
-
-        using MethodProxyPtrType = R(MethodProxyCreatorBase::*)(arglist...);
-        MethodProxyPtrType getMethodProxyPtr(unsigned int offset){
-            R(MethodProxyCreatorBase::*vMethod)(arglist...) = 0;
-            switch (offset) {
-            case 0:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 0 > ;
-                break;
-            case 1:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 1 > ;
-                break;
-            case 2:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 2 > ;
-                break;
-            case 3:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 3 > ;
-                break;
-            case 4:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 4 > ;
-                break;
-            case 5:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 5 > ;
-                break;
-            case 6:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 6 > ;
-                break;
-            case 7:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 7 > ;
-                break;
-            case 8:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 8 > ;
-                break;
-            case 9:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 9 > ;
-                break;
-            case 10:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 10 > ;
-                break;
-            case 11:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 11 > ;
-                break;
-            case 12:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 12 > ;
-                break;
-            case 13:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 13 > ;
-                break;
-            case 14:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 14 > ;
-                break;
-            case 15:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 15 > ;
-                break;
-            case 16:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 16 > ;
-                break;
-            case 17:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 17 > ;
-                break;
-            case 18:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 18 > ;
-                break;
-            case 19:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 19 > ;
-                break;
-            case 20:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 20 > ;
-                break;
-            case 21:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 21 > ;
-                break;
-            case 22:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 22 > ;
-                break;
-            case 23:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 23 > ;
-                break;
-            case 24:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 24 > ;
-                break;
-            case 25:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 25 > ;
-                break;
-            case 26:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 26 > ;
-                break;
-            case 27:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 27 > ;
-                break;
-            case 28:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 28 > ;
-                break;
-            case 29:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 29 > ;
-                break;
-            case 30:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 30 > ;
-                break;
-            case 31:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 31 > ;
-                break;
-            case 32:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 32 > ;
-                break;
-            case 33:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 33 > ;
-                break;
-            case 34:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 34 > ;
-                break;
-            case 35:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 35 > ;
-                break;
-            case 36:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 36 > ;
-                break;
-            case 37:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 37 > ;
-                break;
-            case 38:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 38 > ;
-                break;
-            case 39:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 39 > ;
-                break;
-            case 40:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 40 > ;
-                break;
-            case 41:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 41 > ;
-                break;
-            case 42:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 42 > ;
-                break;
-            case 43:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 43 > ;
-                break;
-            case 44:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 44 > ;
-                break;
-            case 45:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 45 > ;
-                break;
-            case 46:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 46 > ;
-                break;
-            case 47:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 47 > ;
-                break;
-            case 48:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 48 > ;
-                break;
-            case 49:
-                vMethod = &MethodProxyCreatorBase::methodProxyX < 49 > ;
-                break;
-            }
-            return vMethod;
-        }
-    };
-
 
     template<typename C, typename ... baseclasses>
     struct DynamicProxy {
@@ -268,7 +53,7 @@ namespace fakeit {
             _invocationHandlers(_methodMocks)
         {
             _cloneVt.copyFrom(originalVtHandle.restore());
-            _cloneVt.setCookie(0, &_invocationHandlers);
+            _cloneVt.setCookie(InvocationHandlerCollection::VT_COOKIE_INDEX, &_invocationHandlers);
             getFake().setVirtualTable(_cloneVt);
         }
 
@@ -293,18 +78,20 @@ namespace fakeit {
 
         template<typename R, typename ... arglist>
         void stubMethod(R(C::*vMethod)(arglist...), MethodInvocationHandler<R, arglist...>* methodInvocationHandler) {
+            auto offset = VTUtils::getOffset(vMethod);
             MethodProxyCreator<R, arglist...> creator;
-            bindMethod(creator.createMethodProxy(vMethod), methodInvocationHandler);
+            bindMethod(creator.createMethodProxy(offset), methodInvocationHandler);
         }
 
         void stubDtor(MethodInvocationHandler<void>* methodInvocationHandler) {
+            auto offset = VTUtils::getDestructorOffset<C>();
             MethodProxyCreator<void> creator;
-            bindDtor(creator.createDtorProxy(), methodInvocationHandler);
+            bindDtor(creator.createMethodProxy(offset), methodInvocationHandler);
         }
 
         template<typename R, typename ... arglist>
         bool isMethodStubbed(R(C::*vMethod)(arglist...)) {
-            unsigned int offset = MethodProxyCreator<R, arglist...>::getOffset(vMethod);
+            unsigned int offset = VTUtils::getOffset(vMethod);
             return isBinded(offset);
         }
 
@@ -315,7 +102,7 @@ namespace fakeit {
 
         template<typename R, typename ... arglist>
         Destructable * getMethodMock(R(C::*vMethod)(arglist...)) {
-            auto offset = MethodProxyCreator<R, arglist...>::getOffset(vMethod);
+            auto offset = VTUtils::getOffset(vMethod);
             std::shared_ptr<Destructable> ptr = _methodMocks[offset];
             return ptr.get();
         }
@@ -352,26 +139,6 @@ namespace fakeit {
         }
 
     private:
-
-        template<typename R, typename ... arglist>
-        class MethodProxyCreator : public MethodProxyCreatorBase < R, arglist... > {
-        public:
-
-            MethodProxy createMethodProxy(R(C::*vMethod)(arglist...)) {
-                auto offset = getOffset(vMethod);
-                return MethodProxyCreatorBase < R, arglist... >::createMethodProxy(offset);
-            }
-
-            MethodProxy createDtorProxy() {
-                auto offset = VTUtils::getDestructorOffset<C>();
-                return MethodProxyCreatorBase < R, arglist... >::createMethodProxy(offset);
-            }
-
-            static unsigned int getOffset(R(C::*vMethod)(arglist...)) {
-                return VTUtils::getOffset(vMethod);
-            }
-
-        };
 
         template<typename DATA_TYPE, typename ... arglist>
         class DataMemeberWrapper : public Destructable {
