@@ -26,22 +26,33 @@ struct OverloadedMethods : tpunit::TestFixture {
         virtual int func(int) = 0;
 
         virtual int func(int, std::string) = 0;
+        
+        virtual void proc() = 0;
+
+        virtual void proc(const int&, std::string*) = 0;
+
     };
 
     void stub_overloaded_methods() {
         Mock<SomeInterface> mock;
-        int (SomeInterface::*void_arg)() = &SomeInterface::func;
-        int (SomeInterface::*int_arg)(int) = &SomeInterface::func;
-        int (SomeInterface::*int_string_arg)(int, std::string) = &SomeInterface::func;
 
-        When(mock[void_arg]).Return(1);
-        When(mock[int_arg]).Return(2);
-        When(mock[int_string_arg]).Return(3);
+        When(OverloadedMethod(mock, func, int())).Return(1);
+        When(OverloadedMethod(mock, func, int(int))).Return(2);
+        When(OverloadedMethod(mock, func, int(int, std::string))).Return(3);
+
+        When(OverloadedMethod(mock, proc, void())).Return();
+        When(OverloadedMethod(mock, proc, void(const int&, std::string*))).Return();
 
         SomeInterface &i = mock.get();
         ASSERT_EQUAL(1, i.func());
         ASSERT_EQUAL(2, i.func(1));
         ASSERT_EQUAL(3, i.func(1, ""));
+
+        i.proc();
+        i.proc(1,nullptr);
+
+        When(OverloadedMethod(mock, func, int(int)).Using(1)).Return(10);
+        ASSERT_EQUAL(10, i.func(1));
     }
 
 } __OverloadedMethods;
