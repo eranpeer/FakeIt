@@ -44,7 +44,7 @@ struct GccTypeInfoTests: tpunit::TestFixture {
 
 	void simple_inheritance_dynamic_down_cast() {
 		Mock<A> aMock; // no need for base classes list on gcc.
-		Fake(aMock[&A::f]);
+		Fake(Method(aMock,f));
 		A& a = aMock.get();
 		Left* left = &a;
 		TopLeft* topLeft = &a;

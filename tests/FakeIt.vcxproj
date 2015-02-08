@@ -35,6 +35,7 @@
     <ClInclude Include="..\include\fakeit\MethodMockingContext.hpp" />
     <ClInclude Include="..\include\fakeit\Mock.hpp" />
     <ClInclude Include="..\include\fakeit\MockImpl.hpp" />
+    <ClInclude Include="..\include\fakeit\Prototype.hpp" />
     <ClInclude Include="..\include\fakeit\Quantifier.hpp" />
     <ClInclude Include="..\include\fakeit\RecordedMethodBody.hpp" />
     <ClInclude Include="..\include\fakeit\Sequence.hpp" />

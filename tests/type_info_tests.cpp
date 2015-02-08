@@ -79,7 +79,7 @@ struct TypeInfoTests : tpunit::TestFixture {
 
 		Mock<A> aMock;
 		A& a = aMock.get();
-		Fake(aMock[&A::l]);
+		Fake(Method(aMock,l));
 
 		Left& left = a;
 		TopLeft& topLeft = left;
@@ -91,7 +91,7 @@ struct TypeInfoTests : tpunit::TestFixture {
 
 	void simple_inheritance_dynamic_down_cast() {
 		Mock<A, Left, TopLeft> aMock;
-		Fake(aMock[&A::l]);
+		Fake(Method(aMock,l));
 		A& a = aMock.get();
 		Left* left = &a;
 		TopLeft* topLeft = &a;

@@ -12,6 +12,7 @@
 #include "fakeit/DomainObjects.hpp"
 #include "fakeit/MockImpl.hpp"
 #include "fakeit/ActualInvocation.hpp"
+#include "fakeit/Prototype.hpp"
 
 namespace fakeit {
 	namespace internal {
