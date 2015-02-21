@@ -33,8 +33,23 @@ struct ActionSequence: public MethodInvocationHandler<R, arglist...> {
 		clear();
 	}
 
+	void AppendDo(std::function<R(arglist...)> method) {
+		Action<R, arglist...> action = new Repeat<R, arglist...>(method);
+		AppendDo(action);
+	}
+
+	void LastDo(std::function<R(arglist...)> method) {
+		Action<R, arglist...> action = new Repeat<R, arglist...>(method);
+		LastDo(action);
+	}
+
 	void AppendDo(Action<R, arglist...>* action) {
 		append(action);
+	}
+
+	void LastDo(Action<R, arglist...>* action) {
+		append(action);
+		_recordedActions.pop_back();
 	}
 
 	R handleMethodInvocation(arglist&... args) override {
