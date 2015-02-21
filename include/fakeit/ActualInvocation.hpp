@@ -24,12 +24,6 @@
 
 namespace fakeit {
 
-static unsigned int nextInvocationOrdinal(){
-	static std::atomic_uint invocationOrdinal{0};
-	return ++invocationOrdinal;
-}
-
-
 template<typename ... arglist>
 struct ActualInvocation: public Invocation {
 

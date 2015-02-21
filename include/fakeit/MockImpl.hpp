@@ -107,7 +107,7 @@ private:
     class MethodMockingContextBase : public MethodMockingContext<R, arglist...>::Context {
     protected:
         MockImpl<C, baseclasses...>& _mock;
-        virtual RecordedMethodBody<C, R, arglist...>& getRecordedMethodBody() = 0;
+        virtual RecordedMethodBody<R, arglist...>& getRecordedMethodBody() = 0;
 
     public:
         MethodMockingContextBase(MockImpl<C, baseclasses...>& mock) : _mock(mock) {}
@@ -145,7 +145,7 @@ private:
 
 	protected:
 
-		virtual RecordedMethodBody<C, R, arglist...>& getRecordedMethodBody() override {
+		virtual RecordedMethodBody<R, arglist...>& getRecordedMethodBody() override {
 			return MethodMockingContextBase<R,arglist...>::_mock.template stubMethodIfNotStubbed<0>(MethodMockingContextBase<R,arglist...>::_mock._proxy, _vMethod);
 		}
 
@@ -174,7 +174,7 @@ private:
 	class UniqueMethodMockingContextImpl : public MethodMockingContextImpl<R,arglist...> {
 	protected:
 
-		virtual RecordedMethodBody<C, R, arglist...>& getRecordedMethodBody() override {
+		virtual RecordedMethodBody<R, arglist...>& getRecordedMethodBody() override {
 			return MethodMockingContextBase<R,arglist...>::_mock.template stubMethodIfNotStubbed<id>(MethodMockingContextBase<R,arglist...>::_mock._proxy,
 					MethodMockingContextImpl<R,arglist...>::_vMethod);
 		}
@@ -190,7 +190,7 @@ private:
 
     protected:
 
-		virtual RecordedMethodBody<C, void>& getRecordedMethodBody() override {
+		virtual RecordedMethodBody<void>& getRecordedMethodBody() override {
 			return MethodMockingContextBase<void>::_mock.stubDtorIfNotStubbed(MethodMockingContextBase<void>::_mock._proxy);
         }
 
@@ -216,7 +216,7 @@ private:
 	}
 
 	void unmocked() {
-		ActualInvocation<> invocation(nextInvocationOrdinal(), UnknownMethod::instance());
+		ActualInvocation<> invocation(Invocation::nextInvocationOrdinal(), UnknownMethod::instance());
 		UnexpectedMethodCallEvent event(UnexpectedType::Unmocked, invocation);
 		auto& fakeit = getMockImpl(this)->_fakeit;
 		fakeit.handle(event);
@@ -249,21 +249,21 @@ private:
 	}
 
 	template<unsigned int id, typename R, typename ... arglist>
-	RecordedMethodBody<C, R, arglist...>& stubMethodIfNotStubbed(DynamicProxy<C, baseclasses...> &proxy, R (C::*vMethod)(arglist...)) {
+	RecordedMethodBody<R, arglist...>& stubMethodIfNotStubbed(DynamicProxy<C, baseclasses...> &proxy, R (C::*vMethod)(arglist...)) {
 		if (!proxy.isMethodStubbed(vMethod)) {
 			proxy.template stubMethod2<id>(vMethod, createRecordedMethodBody<R,arglist...>(*this, vMethod));
 		}
 		Destructable * d = proxy.getMethodMock(vMethod);
-		RecordedMethodBody<C, R, arglist...> * methodMock = dynamic_cast<RecordedMethodBody<C, R, arglist...> *>(d);
+		RecordedMethodBody<R, arglist...> * methodMock = dynamic_cast<RecordedMethodBody<R, arglist...> *>(d);
 		return *methodMock;
 	}
 
-	RecordedMethodBody<C,void>& stubDtorIfNotStubbed(DynamicProxy<C, baseclasses...> &proxy) {
+	RecordedMethodBody<void>& stubDtorIfNotStubbed(DynamicProxy<C, baseclasses...> &proxy) {
 		if (!proxy.isDtorStubbed()) {
 			proxy.stubDtor(createRecordedDtorBody(*this));
 		}
 		Destructable * d = proxy.getDtorMock();
-		RecordedMethodBody<C, void> * dtorMock = dynamic_cast<RecordedMethodBody<C, void> *>(d);
+		RecordedMethodBody<void> * dtorMock = dynamic_cast<RecordedMethodBody<void> *>(d);
 		return *dtorMock;
 	}
 
@@ -272,12 +272,12 @@ private:
 	}
 
 	template<typename R, typename ... arglist>
-	static RecordedMethodBody<C, R, arglist...> * createRecordedMethodBody(MockObject<C>& mock, R(C::*vMethod)(arglist...)){
-		return new RecordedMethodBody<C, R, arglist...>(mock, typeid(vMethod).name());
+	static RecordedMethodBody<R, arglist...> * createRecordedMethodBody(MockObject<C>& mock, R(C::*vMethod)(arglist...)){
+        return new RecordedMethodBody<R, arglist...>(mock.getFakeIt(), typeid(vMethod).name());
 	}
 
-	static RecordedMethodBody<C, void> * createRecordedDtorBody(MockObject<C>& mock){
-		return new RecordedMethodBody<C, void>(mock, "dtor");
+	static RecordedMethodBody<void> * createRecordedDtorBody(MockObject<C>& mock){
+        return new RecordedMethodBody<void>(mock.getFakeIt(), "dtor");
 	}
 
 };

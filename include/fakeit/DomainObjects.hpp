@@ -13,11 +13,6 @@
 
 namespace fakeit {
 
-	static unsigned int nextMethodOrdinal(){
-		static std::atomic_uint ordinal{ 0 };
-		return ++ordinal;
-	}
-
 struct FakeitContext;
 
 template<typename C>
@@ -28,6 +23,11 @@ struct MockObject {
 };
 
 struct MethodInfo {
+
+    static unsigned int nextMethodOrdinal(){
+        static std::atomic_uint ordinal{ 0 };
+        return ++ordinal;
+    }
 
 	MethodInfo(unsigned int id, std::string name):
 		_id(id),_name(name)
@@ -53,7 +53,7 @@ private:
 struct UnknownMethod {
 
 	static MethodInfo & instance() {
-		static MethodInfo instance (nextMethodOrdinal(), "unknown");
+        static MethodInfo instance(MethodInfo::nextMethodOrdinal(), "unknown");
 		return instance;
 	}
 

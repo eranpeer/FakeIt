@@ -26,7 +26,7 @@ namespace fakeit {
 /**
  * A composite MethodInvocationHandler that holds a list of ActionSequence objects.
  */
-template<typename C, typename R, typename ... arglist>
+template<typename R, typename ... arglist>
 class RecordedMethodBody: public virtual MethodInvocationHandler<R, arglist...>, public virtual ActualInvocationsSource {
 
 	struct MatchedInvocationHandler: public MethodInvocationHandler<R, arglist...> {
@@ -88,8 +88,8 @@ class RecordedMethodBody: public virtual MethodInvocationHandler<R, arglist...>,
 
 public:
 
-	RecordedMethodBody(MockObject<C>& mock, std::string name) :
-        _fakeit(mock.getFakeIt()), _method{ nextMethodOrdinal(), name }
+	RecordedMethodBody(FakeitContext& fakeit, std::string name) :
+        _fakeit(fakeit), _method{ MethodInfo::nextMethodOrdinal(), name }
 	{}
 
 	virtual ~RecordedMethodBody() {
@@ -117,7 +117,7 @@ public:
 
 
 	R handleMethodInvocation(arglist&... args) override {
-		int ordinal = nextInvocationOrdinal();
+        unsigned int ordinal = Invocation::nextInvocationOrdinal();
 		MethodInfo & method = this->getMethod();
 		auto actualInvoaction = new ActualInvocation<arglist...>(ordinal, method, args...);
 
