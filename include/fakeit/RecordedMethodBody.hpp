@@ -26,7 +26,7 @@ namespace fakeit {
 /**
  * A composite MethodInvocationHandler that holds a list of ActionSequence objects.
  */
-template<typename C, typename R, typename ... arglist>
+template<typename R, typename ... arglist>
 class RecordedMethodBody: public virtual MethodInvocationHandler<R, arglist...>, public virtual ActualInvocationsSource {
 
 	struct MatchedInvocationHandler: public MethodInvocationHandler<R, arglist...> {
@@ -56,7 +56,7 @@ class RecordedMethodBody: public virtual MethodInvocationHandler<R, arglist...>,
 	};
 
 
-	MockObject<C>& _mock;
+	FakeitContext & _fakeit;
 	MethodInfo _method;
 
 	std::vector<std::shared_ptr<Destructable>>_invocationHandlers;
@@ -88,8 +88,8 @@ class RecordedMethodBody: public virtual MethodInvocationHandler<R, arglist...>,
 
 public:
 
-	RecordedMethodBody(MockObject<C>& mock, std::string name) :
-		_mock(mock), _method{ nextMethodOrdinal(), name }
+	RecordedMethodBody(FakeitContext & fakeit, std::string name) :
+		_fakeit(fakeit), _method{ nextMethodOrdinal(), name }
 	{}
 
 	virtual ~RecordedMethodBody() {
@@ -127,9 +127,9 @@ public:
 		auto invocationHandler = getInvocationHandlerForActualArgs(*actualInvoaction);
 		if (!invocationHandler) {
 			UnexpectedMethodCallEvent event(UnexpectedType::Unmatched, *actualInvoaction);
-			_mock.getFakeIt().handle(event);
+			getContext().handle(event);
 
-			std::string format{_mock.getFakeIt().format(event)};
+			std::string format{getContext().format(event)};
 			UnexpectedMethodCallException e(format);
 			throw e;
 		}
@@ -141,12 +141,16 @@ public:
 			return invocationHandler->handleMethodInvocation(args...);
 		} catch (NoMoreRecordedActionException&) {
 			UnexpectedMethodCallEvent event(UnexpectedType::Unmatched, *actualInvoaction);
-			_mock.getFakeIt().handle(event);
+			getContext().handle(event);
 
-			std::string format{_mock.getFakeIt().format(event)};
+			std::string format{getContext().format(event)};
 			UnexpectedMethodCallException e(format);
 			throw e;
 		}
+	}
+
+	FakeitContext &getContext() {
+		return _fakeit;
 	}
 
 	void scanActualInvocations(const std::function<void(ActualInvocation<arglist...>&)>& scanner) {

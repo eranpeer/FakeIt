@@ -48,7 +48,7 @@ namespace fakeit {
         InvocationHandlers(
                 std::vector<std::shared_ptr<Destructable>>& methodMocks,
                 std::vector<unsigned int>& offsets) :
-                _methodMocks(methodMocks),_offsets{offsets}{
+                _methodMocks(methodMocks),_offsets(offsets){
         }
 
         Destructable* getInvocatoinHandlerPtrById(unsigned int id) override {
