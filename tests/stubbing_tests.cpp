@@ -639,6 +639,8 @@ struct BasicStubbing : tpunit::TestFixture {
     }
 
     struct BigInterface {
+        virtual int func0() = 0;
+
         virtual int func1() = 0;
 
         virtual int func2() = 0;
@@ -738,11 +740,110 @@ struct BasicStubbing : tpunit::TestFixture {
         virtual int func49() = 0;
 
         virtual int func50() = 0;
-        //virtual int outOfVTable() = 0;
+
+        virtual int func51() = 0;
+
+        virtual int func52() = 0;
+
+        virtual int func53() = 0;
+
+        virtual int func54() = 0;
+
+        virtual int func55() = 0;
+
+        virtual int func56() = 0;
+
+        virtual int func57() = 0;
+
+        virtual int func58() = 0;
+
+        virtual int func59() = 0;
+
+        virtual int func60() = 0;
+
+        virtual int func61() = 0;
+
+        virtual int func62() = 0;
+
+        virtual int func63() = 0;
+
+        virtual int func64() = 0;
+
+        virtual int func65() = 0;
+
+        virtual int func66() = 0;
+
+        virtual int func67() = 0;
+
+        virtual int func68() = 0;
+
+        virtual int func69() = 0;
+
+        virtual int func70() = 0;
+
+        virtual int func71() = 0;
+
+        virtual int func72() = 0;
+
+        virtual int func73() = 0;
+
+        virtual int func74() = 0;
+
+        virtual int func75() = 0;
+
+        virtual int func76() = 0;
+
+        virtual int func77() = 0;
+
+        virtual int func78() = 0;
+
+        virtual int func79() = 0;
+
+        virtual int func80() = 0;
+
+        virtual int func81() = 0;
+
+        virtual int func82() = 0;
+
+        virtual int func83() = 0;
+
+        virtual int func84() = 0;
+
+        virtual int func85() = 0;
+
+        virtual int func86() = 0;
+
+        virtual int func87() = 0;
+
+        virtual int func88() = 0;
+
+        virtual int func89() = 0;
+
+        virtual int func90() = 0;
+
+        virtual int func91() = 0;
+
+        virtual int func92() = 0;
+
+        virtual int func93() = 0;
+
+        virtual int func94() = 0;
+
+        virtual int func95() = 0;
+
+        virtual int func96() = 0;
+
+        virtual int func97() = 0;
+
+        virtual int func98() = 0;
+
+        virtual int func99() = 0;
+
     };
 
     void verify_all_functions_are_stubbed_correctly() {
         Mock<BigInterface> mock;
+        When(Method(mock, func0)).Return(0);
         When(Method(mock, func1)).Return(1);
         When(Method(mock, func2)).Return(2);
         When(Method(mock, func3)).Return(3);
@@ -752,6 +853,7 @@ struct BasicStubbing : tpunit::TestFixture {
         When(Method(mock, func7)).Return(7);
         When(Method(mock, func8)).Return(8);
         When(Method(mock, func9)).Return(9);
+
         When(Method(mock, func10)).Return(10);
         When(Method(mock, func11)).Return(11);
         When(Method(mock, func12)).Return(12);
@@ -762,6 +864,7 @@ struct BasicStubbing : tpunit::TestFixture {
         When(Method(mock, func17)).Return(17);
         When(Method(mock, func18)).Return(18);
         When(Method(mock, func19)).Return(19);
+
         When(Method(mock, func20)).Return(20);
         When(Method(mock, func21)).Return(21);
         When(Method(mock, func22)).Return(22);
@@ -772,6 +875,7 @@ struct BasicStubbing : tpunit::TestFixture {
         When(Method(mock, func27)).Return(27);
         When(Method(mock, func28)).Return(28);
         When(Method(mock, func29)).Return(29);
+
         When(Method(mock, func30)).Return(30);
         When(Method(mock, func31)).Return(31);
         When(Method(mock, func32)).Return(32);
@@ -782,6 +886,7 @@ struct BasicStubbing : tpunit::TestFixture {
         When(Method(mock, func37)).Return(37);
         When(Method(mock, func38)).Return(38);
         When(Method(mock, func39)).Return(39);
+
         When(Method(mock, func40)).Return(40);
         When(Method(mock, func41)).Return(41);
         When(Method(mock, func42)).Return(42);
@@ -794,8 +899,63 @@ struct BasicStubbing : tpunit::TestFixture {
         When(Method(mock, func49)).Return(49);
         When(Method(mock, func50)).Return(50);
 
+        When(Method(mock, func51)).Return(51);
+        When(Method(mock, func52)).Return(52);
+        When(Method(mock, func53)).Return(53);
+        When(Method(mock, func54)).Return(54);
+        When(Method(mock, func55)).Return(55);
+        When(Method(mock, func56)).Return(56);
+        When(Method(mock, func57)).Return(57);
+        When(Method(mock, func58)).Return(58);
+        When(Method(mock, func59)).Return(59);
+        When(Method(mock, func60)).Return(60);
+        
+        When(Method(mock, func61)).Return(61);
+        When(Method(mock, func62)).Return(62);
+        When(Method(mock, func63)).Return(63);
+        When(Method(mock, func64)).Return(64);
+        When(Method(mock, func65)).Return(65);
+        When(Method(mock, func66)).Return(66);
+        When(Method(mock, func67)).Return(67);
+        When(Method(mock, func68)).Return(68);
+        When(Method(mock, func69)).Return(69);
+        
+        When(Method(mock, func70)).Return(70);
+        When(Method(mock, func71)).Return(71);
+        When(Method(mock, func72)).Return(72);
+        When(Method(mock, func73)).Return(73);
+        When(Method(mock, func74)).Return(74);
+        When(Method(mock, func75)).Return(75);
+        When(Method(mock, func76)).Return(76);
+        When(Method(mock, func77)).Return(77);
+        When(Method(mock, func78)).Return(78);
+        When(Method(mock, func79)).Return(79);
+
+        When(Method(mock, func80)).Return(80);
+        When(Method(mock, func81)).Return(81);
+        When(Method(mock, func82)).Return(82);
+        When(Method(mock, func83)).Return(83);
+        When(Method(mock, func84)).Return(84);
+        When(Method(mock, func85)).Return(85);
+        When(Method(mock, func86)).Return(86);
+        When(Method(mock, func87)).Return(87);
+        When(Method(mock, func88)).Return(88);
+        When(Method(mock, func89)).Return(89);
+
+        When(Method(mock, func90)).Return(90);
+        When(Method(mock, func91)).Return(91);
+        When(Method(mock, func92)).Return(92);
+        When(Method(mock, func93)).Return(93);
+        When(Method(mock, func94)).Return(94);
+        When(Method(mock, func95)).Return(95);
+        When(Method(mock, func96)).Return(96);
+        When(Method(mock, func97)).Return(97);
+        When(Method(mock, func98)).Return(98);
+        When(Method(mock, func99)).Return(99);
+
         BigInterface &i = mock.get();
 
+        ASSERT_EQUAL(0, i.func0());
         ASSERT_EQUAL(1, i.func1());
         ASSERT_EQUAL(2, i.func2());
         ASSERT_EQUAL(3, i.func3());
@@ -846,6 +1006,55 @@ struct BasicStubbing : tpunit::TestFixture {
         ASSERT_EQUAL(48, i.func48());
         ASSERT_EQUAL(49, i.func49());
         ASSERT_EQUAL(50, i.func50());
+        ASSERT_EQUAL(51, i.func51());
+        ASSERT_EQUAL(52, i.func52());
+        ASSERT_EQUAL(53, i.func53());
+        ASSERT_EQUAL(54, i.func54());
+        ASSERT_EQUAL(55, i.func55());
+        ASSERT_EQUAL(56, i.func56());
+        ASSERT_EQUAL(57, i.func57());
+        ASSERT_EQUAL(58, i.func58());
+        ASSERT_EQUAL(59, i.func59());
+        ASSERT_EQUAL(60, i.func60());
+        ASSERT_EQUAL(61, i.func61());
+        ASSERT_EQUAL(62, i.func62());
+        ASSERT_EQUAL(63, i.func63());
+        ASSERT_EQUAL(64, i.func64());
+        ASSERT_EQUAL(65, i.func65());
+        ASSERT_EQUAL(66, i.func66());
+        ASSERT_EQUAL(67, i.func67());
+        ASSERT_EQUAL(68, i.func68());
+        ASSERT_EQUAL(69, i.func69());
+        ASSERT_EQUAL(70, i.func70());
+        ASSERT_EQUAL(71, i.func71());
+        ASSERT_EQUAL(72, i.func72());
+        ASSERT_EQUAL(73, i.func73());
+        ASSERT_EQUAL(74, i.func74());
+        ASSERT_EQUAL(75, i.func75());
+        ASSERT_EQUAL(76, i.func76());
+        ASSERT_EQUAL(77, i.func77());
+        ASSERT_EQUAL(78, i.func78());
+        ASSERT_EQUAL(79, i.func79());
+        ASSERT_EQUAL(80, i.func80());
+        ASSERT_EQUAL(81, i.func81());
+        ASSERT_EQUAL(82, i.func82());
+        ASSERT_EQUAL(83, i.func83());
+        ASSERT_EQUAL(84, i.func84());
+        ASSERT_EQUAL(85, i.func85());
+        ASSERT_EQUAL(86, i.func86());
+        ASSERT_EQUAL(87, i.func87());
+        ASSERT_EQUAL(88, i.func88());
+        ASSERT_EQUAL(89, i.func89());
+        ASSERT_EQUAL(90, i.func90());
+        ASSERT_EQUAL(91, i.func91());
+        ASSERT_EQUAL(92, i.func92());
+        ASSERT_EQUAL(93, i.func93());
+        ASSERT_EQUAL(94, i.func94());
+        ASSERT_EQUAL(95, i.func95());
+        ASSERT_EQUAL(96, i.func96());
+        ASSERT_EQUAL(97, i.func97());
+        ASSERT_EQUAL(98, i.func98());
+        ASSERT_EQUAL(99, i.func99());
     }
 
     void verify_out_of_vtable_size() {
