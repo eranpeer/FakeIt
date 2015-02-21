@@ -30,27 +30,46 @@
 
 namespace fakeit {
 
+    class InvocationHandlers : public InvocationHandlerCollection {
+        std::vector<std::shared_ptr<Destructable>>& _methodMocks;
+        std::vector<unsigned int>& _offsets;
+
+        unsigned int getOffset(unsigned int id) {
+            unsigned int offset = 0;
+            for(;offset<_offsets.size();offset++){
+                if (_offsets[offset] == id){
+                    break;
+                }
+            }
+            return offset;
+        }
+
+    public:
+        InvocationHandlers(
+                std::vector<std::shared_ptr<Destructable>>& methodMocks,
+                std::vector<unsigned int>& offsets) :
+                _methodMocks(methodMocks),_offsets{offsets}{
+        }
+
+        Destructable* getInvocatoinHandlerPtrById(unsigned int id) override {
+            unsigned int offset = getOffset(id);
+            std::shared_ptr<Destructable> ptr = _methodMocks[offset];
+            return ptr.get();
+        }
+
+    };
+
     template<typename C, typename ... baseclasses>
     struct DynamicProxy {
 
-        class InvocationHandlers : public InvocationHandlerCollection {
-            std::array<std::shared_ptr<Destructable>, 50>& _methodMocks;
-        public:
-            InvocationHandlers(std::array<std::shared_ptr<Destructable>, 50>& methodMocks) : _methodMocks(methodMocks){
-            }
-
-            Destructable* getInvocatoinHandlerPtr(unsigned int offset) override {
-                std::shared_ptr<Destructable> ptr = _methodMocks[offset];
-                return ptr.get();
-            }
-        };
 
         static_assert(std::is_polymorphic<C>::value, "DynamicProxy requires a polymorphic type");
 
         DynamicProxy(C& instance) :
             instance(instance), originalVtHandle(VirtualTable<C, baseclasses...>::getVTable(instance).createHandle()),
-            _methodMocks(),
-            _invocationHandlers(_methodMocks)
+            _methodMocks(VTUtils::getVTSize<C>()),
+            _offsets(VTUtils::getVTSize<C>()),
+            _invocationHandlers(_methodMocks,_offsets)
         {
             _cloneVt.copyFrom(originalVtHandle.restore());
             _cloneVt.setCookie(InvocationHandlerCollection::VT_COOKIE_INDEX, &_invocationHandlers);
@@ -76,17 +95,17 @@ namespace fakeit {
             _cloneVt.copyFrom(originalVtHandle.restore());
         }
 
-        template<typename R, typename ... arglist>
-        void stubMethod(R(C::*vMethod)(arglist...), MethodInvocationHandler<R, arglist...>* methodInvocationHandler) {
+        template<int id, typename R, typename ... arglist>
+        void stubMethod2(R(C::*vMethod)(arglist...), MethodInvocationHandler<R, arglist...>* methodInvocationHandler) {
             auto offset = VTUtils::getOffset(vMethod);
             MethodProxyCreator<R, arglist...> creator;
-            bindMethod(creator.createMethodProxy(offset), methodInvocationHandler);
+            bind(creator.template createMethodProxy<id + 1>(offset),methodInvocationHandler);
         }
 
         void stubDtor(MethodInvocationHandler<void>* methodInvocationHandler) {
             auto offset = VTUtils::getDestructorOffset<C>();
             MethodProxyCreator<void> creator;
-            bindDtor(creator.createMethodProxy(offset), methodInvocationHandler);
+            bindDtor(creator.createMethodProxy<0>(offset),methodInvocationHandler);
         }
 
         template<typename R, typename ... arglist>
@@ -97,7 +116,7 @@ namespace fakeit {
 
         bool isDtorStubbed() {
             unsigned int offset = VTUtils::getDestructorOffset<C>();
-            return isBinded((unsigned int) offset);
+            return isBinded(offset);
         }
 
         template<typename R, typename ... arglist>
@@ -159,27 +178,25 @@ namespace fakeit {
         C& instance;
         typename VirtualTable<C, baseclasses...>::Handle originalVtHandle; // avoid delete!! this is the original!
         VirtualTable<C, baseclasses...> _cloneVt;//
-        std::array<std::shared_ptr<Destructable>, 50> _methodMocks;
+        std::vector<std::shared_ptr<Destructable>> _methodMocks;
         std::vector<std::shared_ptr<Destructable>> _members;
+        std::vector<unsigned int> _offsets;
         InvocationHandlers _invocationHandlers;
 
         FakeObject<C, baseclasses...>& getFake() {
             return reinterpret_cast<FakeObject<C, baseclasses...>&>(instance);
         }
 
-        template<typename R, typename ... arglist>
-        void bindMethod(const MethodProxy &methodProxy, MethodInvocationHandler<R, arglist...> *invocationHandler) {
-            auto offset = methodProxy.getOffset();
-            getFake().setMethod(offset, methodProxy.getProxy());
-            Destructable * destructable = invocationHandler;
-            _methodMocks[offset].reset(destructable);
+        void bind(const MethodProxy &methodProxy, Destructable *invocationHandler) {
+            getFake().setMethod(methodProxy.getOffset(), methodProxy.getProxy());
+            _methodMocks[methodProxy.getOffset()].reset(invocationHandler);
+            _offsets[methodProxy.getOffset()] = methodProxy.getId();
         }
 
-        void bindDtor(const MethodProxy &methodProxy, MethodInvocationHandler<void> *invocationHandler) {
-            auto offset = methodProxy.getOffset();
+        void bindDtor(const MethodProxy &methodProxy, Destructable *invocationHandler) {
             getFake().setDtor(methodProxy.getProxy());
-            Destructable * destructable = invocationHandler;
-            _methodMocks[offset].reset(destructable);
+            _methodMocks[methodProxy.getOffset()].reset(invocationHandler);
+            _offsets[methodProxy.getOffset()] = methodProxy.getId();
         }
 
         template<typename DATA_TYPE>

@@ -84,10 +84,15 @@ public:
 	}
 
 	template<typename R,typename T, typename ... arglist, class = typename std::enable_if<std::is_base_of<T,C>::value>::type>
-	MockingContext<R, arglist...> stubMethod(R (T::*vMethod)(arglist...)) {
-		return MockingContext<R, arglist...>(new MethodMockingContextImpl <R, arglist...>(*this, vMethod));
+	MockingContext<R, arglist...> stubMethodOld(R (T::*vMethod)(arglist...)) {
+        return stubMethod<1>(vMethod);
 	}
-	
+
+    template<int id, typename R, typename T, typename ... arglist, class = typename std::enable_if<std::is_base_of<T, C>::value>::type>
+    MockingContext<R, arglist...> stubMethod(R(T::*vMethod)(arglist...)) {
+        return MockingContext<R, arglist...>(new UniqueMethodMockingContextImpl <id, R, arglist...>(*this, vMethod));
+    }
+
 	DtorMockingContext stubDtor() {
 		return DtorMockingContext(new DtorMockingContextImpl(*this));
     }
@@ -137,13 +142,14 @@ private:
 
     template<typename R, typename ... arglist>
 	class MethodMockingContextImpl : public MethodMockingContextBase<R,arglist...> {
-		R (C::*_vMethod)(arglist...);
 
-    protected:
+	protected:
 
 		virtual RecordedMethodBody<C, R, arglist...>& getRecordedMethodBody() override {
-			return MethodMockingContextBase<R,arglist...>::_mock.stubMethodIfNotStubbed(MethodMockingContextBase<R,arglist...>::_mock._proxy, _vMethod);
+			return MethodMockingContextBase<R,arglist...>::_mock.template stubMethodIfNotStubbed<0>(MethodMockingContextBase<R,arglist...>::_mock._proxy, _vMethod);
 		}
+
+		R (C::*_vMethod)(arglist...);
 
 	public:
 		virtual ~MethodMockingContextImpl() = default;
@@ -161,6 +167,23 @@ private:
 			};
 		}
 
+	};
+
+
+	template<int id, typename R, typename ... arglist>
+	class UniqueMethodMockingContextImpl : public MethodMockingContextImpl<R,arglist...> {
+	protected:
+
+		virtual RecordedMethodBody<C, R, arglist...>& getRecordedMethodBody() override {
+			return MethodMockingContextBase<R,arglist...>::_mock.template stubMethodIfNotStubbed<id>(MethodMockingContextBase<R,arglist...>::_mock._proxy,
+					MethodMockingContextImpl<R,arglist...>::_vMethod);
+		}
+
+	public:
+
+		UniqueMethodMockingContextImpl(MockImpl<C, baseclasses...>& mock, R (C::*vMethod)(arglist...))
+				: MethodMockingContextImpl<R,arglist...>(mock,vMethod) {
+		}
 	};
 
 	class DtorMockingContextImpl : public MethodMockingContextBase<void> {
@@ -225,10 +248,10 @@ private:
 		return origMethodPtr;
 	}
 
-	template<typename R, typename ... arglist>
+	template<unsigned int id, typename R, typename ... arglist>
 	RecordedMethodBody<C, R, arglist...>& stubMethodIfNotStubbed(DynamicProxy<C, baseclasses...> &proxy, R (C::*vMethod)(arglist...)) {
 		if (!proxy.isMethodStubbed(vMethod)) {
-			proxy.stubMethod(vMethod, createRecordedMethodBody<R,arglist...>(*this, vMethod));
+			proxy.template stubMethod2<id>(vMethod, createRecordedMethodBody<R,arglist...>(*this, vMethod));
 		}
 		Destructable * d = proxy.getMethodMock(vMethod);
 		RecordedMethodBody<C, R, arglist...> * methodMock = dynamic_cast<RecordedMethodBody<C, R, arglist...> *>(d);
