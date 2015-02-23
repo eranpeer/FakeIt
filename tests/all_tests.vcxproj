@@ -90,6 +90,7 @@
     <ClCompile Include="custom_event_formatting_tests.cpp" />
     <ClCompile Include="verification_errors_tests.cpp" />
     <ClCompile Include="verification_tests.cpp" />
+    <ClCompile Include="VirtualOffsetSelectorTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="tpunit++.hpp" />

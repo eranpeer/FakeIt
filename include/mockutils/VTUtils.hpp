@@ -19,13 +19,6 @@ namespace fakeit {
 class VTUtils {
 public:
 
-//	template<typename T>
-//	static unsigned int getOffset(T vMethod) {
-//		auto sMethod = reinterpret_cast<unsigned int (VirtualOffsetSelector::*)()>(vMethod);
-//		unsigned int offset = (offsetSelctor.*sMethod)();
-//		return offset;
-//	}
-
         template<typename C, typename R, typename ... arglist>
         static unsigned int getOffset(R (C::*vMethod)(arglist...)) {
             auto sMethod = reinterpret_cast<unsigned int (VirtualOffsetSelector::*)(int)>(vMethod);
