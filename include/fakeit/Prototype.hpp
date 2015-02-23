@@ -3,7 +3,7 @@
 namespace fakeit {
     
     template<typename R, typename... Args >
-    class Prototype;
+    struct Prototype;
 
     template<typename R, typename... Args >
     struct Prototype < R(Args...) > {
