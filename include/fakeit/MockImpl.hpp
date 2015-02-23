@@ -142,12 +142,7 @@ private:
 
     template<typename R, typename ... arglist>
 	class MethodMockingContextImpl : public MethodMockingContextBase<R,arglist...> {
-
 	protected:
-
-		virtual RecordedMethodBody<R, arglist...>& getRecordedMethodBody() override {
-			return MethodMockingContextBase<R,arglist...>::_mock.template stubMethodIfNotStubbed<0>(MethodMockingContextBase<R,arglist...>::_mock._proxy, _vMethod);
-		}
 
 		R (C::*_vMethod)(arglist...);
 
@@ -166,7 +161,6 @@ private:
 				return ((&instance)->*m)(args...);
 			};
 		}
-
 	};
 
 
