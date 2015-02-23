@@ -4,15 +4,11 @@
 #define __func__ __FUNCTION__
 #endif
 
-
 #define Dtor( mock ) \
 	mock.dtor().setMethodDetails(#mock,"destructor")
 
 #define Method( mock , method ) \
 	mock.operator[]<__COUNTER__>(&std::remove_reference<decltype(mock.get())>::type::method).setMethodDetails(#mock,#method)
-
-#define OverloadedMethodOld( mock , method, prototype ) \
-	mock[prototype::MemberType<std::remove_reference<decltype(mock.get())>::type>::get(&std::remove_reference<decltype(mock.get())>::type::method)].setMethodDetails(#mock,#method)
 
 #define OverloadedMethod( mock , method, prototype ) \
 	mock.operator[]<__COUNTER__>(fakeit::Prototype<prototype>::MemberType<std::remove_reference<decltype(mock.get())>::type>::get(&std::remove_reference<decltype(mock.get())>::type::method)).setMethodDetails(#mock,#method)
