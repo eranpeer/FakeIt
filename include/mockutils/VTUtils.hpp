@@ -12,6 +12,7 @@
 #include <functional>
 #include <type_traits>
 #include "mockutils/VirtualOffestSelector.hpp"
+#include "union_cast.hpp"
 
 namespace fakeit {
 	class NoVirtualDtor {};
@@ -30,7 +31,7 @@ public:
 		static typename std::enable_if<std::has_virtual_destructor<C>::value, unsigned int>::type
         getDestructorOffset() {
             VirtualOffsetSelector offsetSelctor;
-            ((C *) &offsetSelctor)->~C();
+            union_cast<C *>(&offsetSelctor)->~C();
             return offsetSelctor.offset;
         }
 
