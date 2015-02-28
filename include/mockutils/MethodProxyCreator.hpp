@@ -13,14 +13,16 @@ namespace fakeit {
     struct InvocationHandlerCollection {
         static const unsigned int VT_COOKIE_INDEX = 0;
         virtual Destructable*getInvocatoinHandlerPtrById(unsigned int index) = 0;
+
+        static InvocationHandlerCollection * getInvocationHandlerCollection(void * instance) {
+        	VirtualTableBase & vt = VirtualTableBase::getVTable(instance);
+        	InvocationHandlerCollection * invocationHandlerCollection = (InvocationHandlerCollection*) vt.getCookie(
+				InvocationHandlerCollection::VT_COOKIE_INDEX);
+        	return invocationHandlerCollection;
+        }
     };
 
-    static InvocationHandlerCollection * getInvocationHandlerCollection(void * instance) {
-        VirtualTableBase & vt = VirtualTableBase::getVTable(instance);
-        InvocationHandlerCollection * invocationHandlerCollection = (InvocationHandlerCollection*) 
-            vt.getCookie(InvocationHandlerCollection::VT_COOKIE_INDEX);
-        return invocationHandlerCollection;
-    }
+
 
     template<typename R, typename ... arglist>
     class MethodProxyCreator {
@@ -37,7 +39,7 @@ namespace fakeit {
     protected:
 
         R methodProxy(unsigned int id, arglist& ... args) {
-            InvocationHandlerCollection *invocationHandlerCollection = getInvocationHandlerCollection(this);
+            InvocationHandlerCollection *invocationHandlerCollection = InvocationHandlerCollection::getInvocationHandlerCollection(this);
             MethodInvocationHandler<R, arglist...> *invocationHandler =
                     (MethodInvocationHandler<R, arglist...> *) invocationHandlerCollection->getInvocatoinHandlerPtrById(id);
             return invocationHandler->handleMethodInvocation(args...);
