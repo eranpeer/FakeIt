@@ -17,7 +17,7 @@ check: fakeit_test_application
 fakeit_test_application: $(OBJS) 
 	@echo 'Building test application: fakeit_tests.exe'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -o "fakeit_tests.exe" $(OBJS) 
+	g++ -flto -Wl,-allow-multiple-definition -o "fakeit_tests.exe" $(OBJS) 
 	@echo 'Finished building test application: fakeit_tests.exe'
 	@echo ' '
 
@@ -31,7 +31,7 @@ fakeit_test_application_with_coverage: $(subst .cpp,_with_coverage,$(CPP_SRCS))
 %.o: ../tests/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	g++ -D__GXX_EXPERIMENTAL_CXX0X__ -I"../include" -I"../config/standalone" -O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+	g++ -flto -D__GXX_EXPERIMENTAL_CXX0X__ -I"../include" -I"../config/standalone" -O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
