@@ -22,4 +22,4 @@ CPP_SRCS += \
 	type_info_tests.cpp \
 	verification_errors_tests.cpp \
 	verification_tests.cpp \
-	VirtualOffsetSelectorTest.cpp
+	VirtualOffsetSelectorTest.cpp 
