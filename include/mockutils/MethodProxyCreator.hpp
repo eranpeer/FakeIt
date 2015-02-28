@@ -25,7 +25,7 @@ namespace fakeit {
     template<typename R, typename ... arglist>
     class MethodProxyCreator {
 
-        using MethodProxyPtrType = R(MethodProxyCreator::*)(arglist...);
+        //using MethodProxyPtrType = R(MethodProxyCreator::*)(arglist...);
 
     public:
 

@@ -15,8 +15,10 @@
 #include <memory>
 #include <vector>
 #include <unordered_set>
+#include <mockutils/Destructable.hpp>
 
 #include "mockutils/type_utils.hpp"
+#include "fakeit/argument_matchers.hpp"
 
 namespace fakeit {
 

@@ -106,6 +106,7 @@ public:
     void getActualInvocations(std::unordered_set<Invocation*>& into) const override {
 		impl.getActualInvocations(into);
 	}
+
 };
 
 }

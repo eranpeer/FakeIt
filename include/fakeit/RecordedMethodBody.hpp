@@ -86,6 +86,11 @@ class RecordedMethodBody: public virtual MethodInvocationHandler<R, arglist...>,
 		return im;
 	}
 
+	ActualInvocation<arglist...>& asActualInvocation(Destructable& destructable) const {
+		ActualInvocation<arglist...>& invocation = dynamic_cast<ActualInvocation<arglist...>&>(destructable);
+		return invocation;
+	}
+
 public:
 
 	RecordedMethodBody(FakeitContext& fakeit, std::string name) :
@@ -128,7 +133,6 @@ public:
 		if (!invocationHandler) {
 			UnexpectedMethodCallEvent event(UnexpectedType::Unmatched, *actualInvoaction);
             _fakeit.handle(event);
-
 			std::string format{_fakeit.format(event)};
 			UnexpectedMethodCallException e(format);
 			throw e;
@@ -142,7 +146,6 @@ public:
 		} catch (NoMoreRecordedActionException&) {
 			UnexpectedMethodCallEvent event(UnexpectedType::Unmatched, *actualInvoaction);
 			_fakeit.handle(event);
-
 			std::string format{_fakeit.format(event)};
 			UnexpectedMethodCallException e(format);
 			throw e;
@@ -161,11 +164,6 @@ public:
 			ActualInvocation<arglist...>& invocation = asActualInvocation(*destructablePtr);
 			into.insert(&invocation);
 		}
-	}
-
-	ActualInvocation<arglist...>& asActualInvocation(Destructable& destructable) const {
-		ActualInvocation<arglist...>& invocation = dynamic_cast<ActualInvocation<arglist...>&>(destructable);
-		return invocation;
 	}
 
 	void setMethodDetails(const std::string& mockName, const std::string& methodName) {

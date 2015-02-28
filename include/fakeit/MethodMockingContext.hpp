@@ -76,7 +76,8 @@ private:
 
 		Context* _stubbingContext;
 		ActionSequence<R, arglist...>* _recordedActionSequence;
-		typename ActualInvocation<arglist...>::Matcher* _invocationMatcher;bool _commited;
+		typename ActualInvocation<arglist...>::Matcher* _invocationMatcher;
+		bool _commited;
 
 		Context& getStubbingContext() const {
 			return *_stubbingContext;
@@ -85,7 +86,10 @@ private:
 	public:
 
 		Implementation(Context* stubbingContext)
-				: _stubbingContext(stubbingContext), _recordedActionSequence(new ActionSequence<R, arglist...>()), _invocationMatcher {
+				: _stubbingContext(stubbingContext),
+				  _recordedActionSequence(new ActionSequence<R, arglist...>()),
+				  _invocationMatcher
+						  {
 						new DefaultInvocationMatcher<arglist...>() }, _commited(false) {
 		}
 

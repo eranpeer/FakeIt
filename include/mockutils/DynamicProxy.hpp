@@ -62,7 +62,6 @@ namespace fakeit {
     template<typename C, typename ... baseclasses>
     struct DynamicProxy {
 
-
         static_assert(std::is_polymorphic<C>::value, "DynamicProxy requires a polymorphic type");
 
         DynamicProxy(C& instance) :
@@ -96,7 +95,7 @@ namespace fakeit {
         }
 
         template<int id, typename R, typename ... arglist>
-        void stubMethod2(R(C::*vMethod)(arglist...), MethodInvocationHandler<R, arglist...>* methodInvocationHandler) {
+        void stubMethod(R(C::*vMethod)(arglist...), MethodInvocationHandler<R, arglist...> *methodInvocationHandler) {
             auto offset = VTUtils::getOffset(vMethod);
             MethodProxyCreator<R, arglist...> creator;
             bind(creator.template createMethodProxy<id + 1>(offset),methodInvocationHandler);
