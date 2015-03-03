@@ -122,34 +122,30 @@ public:
 
 
 	R handleMethodInvocation(arglist&... args) override {
-        unsigned int ordinal = Invocation::nextInvocationOrdinal();
-		MethodInfo & method = this->getMethod();
+		unsigned int ordinal = Invocation::nextInvocationOrdinal();
+		MethodInfo &method = this->getMethod();
 		auto actualInvoaction = new ActualInvocation<arglist...>(ordinal, method, args...);
 
 		// ensure deletion if not added to actual invocations.
 		std::shared_ptr<Destructable> actualInvoactionDtor{actualInvoaction};
 
 		auto invocationHandler = getInvocationHandlerForActualArgs(*actualInvoaction);
-		if (!invocationHandler) {
-			UnexpectedMethodCallEvent event(UnexpectedType::Unmatched, *actualInvoaction);
-            _fakeit.handle(event);
-			std::string format{_fakeit.format(event)};
-			UnexpectedMethodCallException e(format);
-			throw e;
+		if (invocationHandler) {
+			auto &matcher = invocationHandler->getMatcher();
+			actualInvoaction->setActualMatcher(&matcher);
+			_actualInvocations.push_back(actualInvoactionDtor);
+			try {
+				return invocationHandler->handleMethodInvocation(args...);
+			} catch (NoMoreRecordedActionException &) {
+			}
 		}
 
-		auto& matcher = invocationHandler->getMatcher();
-		actualInvoaction->setActualMatcher(&matcher);
-		_actualInvocations.push_back(actualInvoactionDtor);
-		try {
-			return invocationHandler->handleMethodInvocation(args...);
-		} catch (NoMoreRecordedActionException&) {
-			UnexpectedMethodCallEvent event(UnexpectedType::Unmatched, *actualInvoaction);
-			_fakeit.handle(event);
-			std::string format{_fakeit.format(event)};
-			UnexpectedMethodCallException e(format);
-			throw e;
-		}
+		UnexpectedMethodCallEvent event(UnexpectedType::Unmatched, *actualInvoaction);
+		_fakeit.handle(event);
+		std::string format{_fakeit.format(event)};
+		UnexpectedMethodCallException e(format);
+		throw e;
+
 	}
 
 	void scanActualInvocations(const std::function<void(ActualInvocation<arglist...>&)>& scanner) {

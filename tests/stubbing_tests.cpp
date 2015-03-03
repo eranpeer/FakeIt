@@ -20,7 +20,7 @@ struct BasicStubbing : tpunit::TestFixture {
             tpunit::TestFixture(
                     //
                     TEST(BasicStubbing::calling_an_unstubbed_method_should_raise_UnmockedMethodCallException),//
-                    TEST(BasicStubbing::stub_method_to_default_behaviore_will_always_return_do_the_default_behaviore),//
+                    TEST(BasicStubbing::stub_method_to_default_behaviore_will_always_return_the_default_behaviore),//
                     TEST(BasicStubbing::stub_multiple_methods_to_default_behaviore),
                     TEST(BasicStubbing::stub_a_function_to_return_a_specified_value_once),
                     TEST(BasicStubbing::stub_a_function_to_return_a_specified_value_always),
@@ -39,7 +39,7 @@ struct BasicStubbing : tpunit::TestFixture {
                     TEST(BasicStubbing::change_method_behavior_with_by_ref_arguments_matcher),//
                     TEST(BasicStubbing::change_method_behavior_with_functor_matcher),//
                     TEST(BasicStubbing::stub_multiple_return_values),//
-                    TEST(BasicStubbing::stub_multiple_return_values_using_quque),//
+                    TEST(BasicStubbing::stub_multiple_return_values_using_queque),//
                     TEST(BasicStubbing::stub_multiple_throws),
                     TEST(BasicStubbing::stub_multiple_return_values_with_list),
                     TEST(BasicStubbing::stub_multiple_throws_with_list),
@@ -68,7 +68,7 @@ struct BasicStubbing : tpunit::TestFixture {
         }
     }
 
-    void stub_method_to_default_behaviore_will_always_return_do_the_default_behaviore() {
+    void stub_method_to_default_behaviore_will_always_return_the_default_behaviore() {
         Mock<SomeInterface> mock;
 
         Fake(Method(mock, func));
@@ -486,7 +486,7 @@ struct BasicStubbing : tpunit::TestFixture {
         ASSERT_THROW(i.func(0), fakeit::UnexpectedMethodCallException);
     }
 
-    void stub_multiple_return_values_using_quque() {
+    void stub_multiple_return_values_using_queque() {
         Mock<SomeInterface> mock;
         std::queue<int> q({1, 2});
 
