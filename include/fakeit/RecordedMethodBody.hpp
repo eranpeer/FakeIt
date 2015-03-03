@@ -27,7 +27,7 @@ namespace fakeit {
  * A composite MethodInvocationHandler that holds a list of ActionSequence objects.
  */
 template<typename R, typename ... arglist>
-class RecordedMethodBody: public virtual MethodInvocationHandler<R, arglist...>, public virtual ActualInvocationsSource {
+class RecordedMethodBody: public MethodInvocationHandler<R, arglist...>, public ActualInvocationsSource {
 
 	struct MatchedInvocationHandler: public MethodInvocationHandler<R, arglist...> {
 
@@ -157,7 +157,7 @@ public:
 
 	void getActualInvocations(std::unordered_set<Invocation*>& into) const {
 		for (auto destructablePtr : _actualInvocations) {
-			ActualInvocation<arglist...>& invocation = asActualInvocation(*destructablePtr);
+			Invocation& invocation = asActualInvocation(*destructablePtr);
 			into.insert(&invocation);
 		}
 	}

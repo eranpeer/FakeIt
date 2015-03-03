@@ -18,7 +18,6 @@ struct NoMoreRecordedActionException {
 
 template<typename R, typename ... arglist>
 struct MethodInvocationHandler: public Destructable {
-	virtual ~MethodInvocationHandler() = default;
 	virtual R handleMethodInvocation(arglist&... args) = 0;
 };
 
