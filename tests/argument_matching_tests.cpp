@@ -26,8 +26,8 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 					TEST(ArgumentMatchingTests::test_any_matcher), TEST(ArgumentMatchingTests::format_Ge),
 					TEST(ArgumentMatchingTests::test_any_matcher), TEST(ArgumentMatchingTests::format_Lt),
 					TEST(ArgumentMatchingTests::test_any_matcher), TEST(ArgumentMatchingTests::format_Le),
-					TEST(ArgumentMatchingTests::test_any_matcher), TEST(ArgumentMatchingTests::format_Ne)
-
+					TEST(ArgumentMatchingTests::test_any_matcher), TEST(ArgumentMatchingTests::format_Ne),
+                    TEST(ArgumentMatchingTests::mixed_matchers)
 			) //
 	{
 	}
@@ -51,7 +51,13 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		ASSERT_EQUAL(1, i.func2(1, "2"));
 		ASSERT_EQUAL(2, i.func2(2, "2"));
 		ASSERT_EQUAL(3, i.func2(1, "3"));
-	}
+
+        When(Method(mock, func2).Using(Eq(4), "4")).Return(4);
+        When(Method(mock, func2).Using(Eq(5), Eq(std::string("5")))).Return(5);
+        
+        ASSERT_EQUAL(4, i.func2(4, "4"));
+        ASSERT_EQUAL(5, i.func2(5, "5"));
+    }
 
 	void test_eq_matcher() {
 

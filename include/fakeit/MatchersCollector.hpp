@@ -50,7 +50,6 @@ public:
 	typename std::enable_if< //
 			std::is_base_of<TypedMatcherCreator<NakedArgType<index>>, Head>::value, void> //
 	::type CollectMatchers(const Head& creator, const Tail& ... tail) {
-
 		TypedMatcher<NakedArgType<index>>* d = creator.createMatcher();
 		_matchers.push_back(d);
 		MatchersCollector<index + 1, arglist...> c(_matchers);
