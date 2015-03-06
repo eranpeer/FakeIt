@@ -54,7 +54,8 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 
         When(Method(mock, func2).Using(Eq(4), "4")).Return(4);
         When(Method(mock, func2).Using(Eq(5), Eq(std::string("5")))).Return(5);
-        
+		//When(Method(mock, func2).Using(Eq(5), Eq("5"))).Return(5);
+
         ASSERT_EQUAL(4, i.func2(4, "4"));
         ASSERT_EQUAL(5, i.func2(5, "5"));
     }

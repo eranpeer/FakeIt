@@ -64,8 +64,7 @@ struct Times :public Quantity{
 	}
 };
 
-#if defined (__GNUG__)
-// Only supported by GCC
+#if defined (__GNUG__) || (_MSC_VER >= 1900)
 
 inline QuantifierFunctor operator"" _Times(unsigned long long n)
 {

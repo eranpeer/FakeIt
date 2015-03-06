@@ -6,7 +6,7 @@
  * Created on Mar 10, 2014
  */
 
-#if defined (__GNUG__)
+#if defined(__GNUG__) || (_MSC_VER >= 1900)
 
 #include <string>
 #include <queue>

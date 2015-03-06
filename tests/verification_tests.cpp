@@ -153,7 +153,7 @@ struct BasicVerification: tpunit::TestFixture {
 	void verify_method_was_called_at_least_X_with_quantifier() {
 		Mock<SomeInterface> mock;
 
-#if defined (__GNUG__)
+#if defined (__GNUG__) || (_MSC_VER >= 1900)
 		ASSERT_THROW(Verify(Method(mock,func)).AtLeast(2_Times), fakeit::VerificationException);
 		ASSERT_THROW(Verify(Method(mock,proc)).AtLeast(2_Times), fakeit::VerificationException);
 #endif
@@ -163,7 +163,7 @@ struct BasicVerification: tpunit::TestFixture {
 		i.func(1);
 		i.proc(2);
 
-#if defined (__GNUG__)
+#if defined (__GNUG__) || (_MSC_VER >= 1900)
 		ASSERT_THROW(Verify(Method(mock,func)).AtLeast(2_Times), fakeit::VerificationException);
 		ASSERT_THROW(Verify(Method(mock,proc)).AtLeast(2), fakeit::VerificationException);
 #endif
@@ -172,7 +172,7 @@ struct BasicVerification: tpunit::TestFixture {
 		i.func(1);
 		i.proc(2);
 
-#if defined (__GNUG__)
+#if defined (__GNUG__) || (_MSC_VER >= 1900)
 		Verify(Method(mock,func)).AtLeast(2_Times);
 		Verify(Method(mock,proc)).AtLeast(2_Times);
 #endif
@@ -181,7 +181,7 @@ struct BasicVerification: tpunit::TestFixture {
 		i.func(1);
 		i.proc(2);
 
-#if defined (__GNUG__)
+#if defined (__GNUG__) || (_MSC_VER >= 1900)
 		Verify(Method(mock,func)).AtLeast(2_Times);
 		Verify(Method(mock,proc)).AtLeast(2_Times);
 #endif
@@ -237,7 +237,7 @@ struct BasicVerification: tpunit::TestFixture {
 		Mock<SomeInterface> mock;
 		Fake(Method(mock,func), Method(mock,proc));
 
-#if defined (__GNUG__)
+#if defined (__GNUG__) || (_MSC_VER >= 1900)
 // Only supported by GCC
 
 		ASSERT_THROW(Verify(Method(mock,func)).Exactly(2_Time), std::invalid_argument);
@@ -254,12 +254,9 @@ struct BasicVerification: tpunit::TestFixture {
 		i.func(1);
 		i.proc(1);
 
-#if defined (__GNUG__)
-// Only supported by GCC
-
+#if defined (__GNUG__) || (_MSC_VER >= 1900)
 		Verify(Method(mock,func)).Exactly(1_Time);
 		Verify(Method(mock,proc)).Exactly(1_Time);
-
 #endif
 
 		Verify(Method(mock,func)).Exactly(Times<1>());
@@ -269,12 +266,9 @@ struct BasicVerification: tpunit::TestFixture {
 		i.func(1);
 		i.proc(1);
 
-#if defined (__GNUG__)
-// Only supported by GCC
-
+#if defined (__GNUG__) || (_MSC_VER >= 1900)
 		Verify(Method(mock,func)).Exactly(2_Times);
 		Verify(Method(mock,proc)).Exactly(2_Times);
-
 #endif
 
 		Verify(Method(mock,func)).Exactly(Times<2>());
