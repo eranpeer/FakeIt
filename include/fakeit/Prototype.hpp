@@ -9,16 +9,24 @@ namespace fakeit {
     struct Prototype < R(Args...) > {
 
         typedef R Type(Args...);
+        typedef R ConstType(Args...) const;
 
         template<class C>
         struct MemberType {
 
             typedef Type(C::*type);
+            typedef ConstType(C::*cosntType);
 
             static type get(type t){
                 return t;
             }
+
+            static cosntType getconst(cosntType t){
+                return t;
+            }
+
         };
+
     };
 
     template<int X, typename R, typename C, typename... arglist >
