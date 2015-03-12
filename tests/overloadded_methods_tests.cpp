@@ -32,6 +32,10 @@ struct OverloadedMethods : tpunit::TestFixture {
 
         virtual const int func(double) = 0;
 
+        virtual int& func(int, int) = 0;
+
+        virtual int* func(int, int, int) = 0;
+
         virtual void proc() = 0;
 
         virtual void proc(const int&, std::string*) = 0;
@@ -39,12 +43,15 @@ struct OverloadedMethods : tpunit::TestFixture {
     };
 
     void stub_overloaded_methods() {
+        int x = 5;
         Mock<SomeInterface> mock;
 
         When(OverloadedMethod(mock, func, int())).Return(1);
         When(OverloadedMethod(mock, func, int(int))).Return(2);
         When(OverloadedMethod(mock, func, int(int, std::string))).Return(3);
         When(OverloadedMethod(mock, func, const int(double))).Return(4);
+        When(OverloadedMethod(mock, func, int&(int,int) )).Return(x);
+        When(OverloadedMethod(mock, func, int*(int, int, int))).Return(&x);
 
         When(OverloadedMethod(mock, proc, void())).Return();
         When(OverloadedMethod(mock, proc, void(const int&, std::string*))).Return();
@@ -54,6 +61,8 @@ struct OverloadedMethods : tpunit::TestFixture {
         ASSERT_EQUAL(2, i.func(1));
         ASSERT_EQUAL(3, i.func(1, ""));
         ASSERT_EQUAL(4, i.func(1.0));
+        ASSERT_EQUAL(5, i.func(1,1));
+        ASSERT_EQUAL(5, *i.func(1, 1, 1));
 
         i.proc();
         i.proc(1,nullptr);
