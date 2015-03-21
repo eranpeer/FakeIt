@@ -292,9 +292,9 @@ public:
         return *this;
     }
 
-    template<class ...matcherCreator>
-    MockingContext<R, arglist...>& Using(const matcherCreator& ... matcherCreators) {
-        MethodMockingContext<R, arglist...>::setMatchingCriteria(matcherCreators...);
+    template<class ...arg_matcher>
+    MockingContext<R, arglist...>& Using(const arg_matcher& ... arg_matchers) {
+        MethodMockingContext<R, arglist...>::setMatchingCriteria(arg_matchers...);
         return *this;
     }
 
@@ -358,9 +358,9 @@ public:
         return *this;
     }
 
-    template<class ...matcherCreator>
-    MockingContext<void, arglist...>& Using(const matcherCreator& ... matcherCreators) {
-        MethodMockingContext<void, arglist...>::setMatchingCriteria(matcherCreators...);
+    template<class ...arg_matcher>
+    MockingContext<void, arglist...>& Using(const arg_matcher& ... arg_matchers) {
+        MethodMockingContext<void, arglist...>::setMatchingCriteria(arg_matchers...);
         return *this;
     }
 

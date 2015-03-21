@@ -374,7 +374,6 @@ struct BasicStubbing : tpunit::TestFixture {
         } e;
 
         Mock<SomeInterface> mock;
-
         When(Method(mock, func).Using(1)).Return(1);
         When(Method(mock, proc).Using(1)).Throw(e);
 
