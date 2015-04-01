@@ -69,9 +69,5 @@ std::ostream & operator<<(std::ostream &strm, const ActualInvocation<arglist...>
 	return strm;
 }
 
-struct ActualInvocationsSource {
-	virtual void getActualInvocations(std::unordered_set<Invocation*>& into) const = 0;
-};
-
 }
 #endif // ActualInvocation_h__

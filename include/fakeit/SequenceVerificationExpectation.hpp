@@ -4,6 +4,7 @@
 #include "fakeit/FakeitExceptions.hpp"
 #include "mockutils/smart_ptr.hpp"
 #include "fakeit/FakeitContext.hpp"
+#include "fakeit/SortInvocations.hpp"
 
 namespace fakeit {
 
@@ -35,7 +36,7 @@ struct SequenceVerificationExpectation {
 private:
 
 	FakeitContext& _fakeit;
-	std::set<const ActualInvocationsSource*> _involvedMocks;
+	InvocationsSourceProxy _involvedMocks;
 	std::vector<Sequence*> _expectedPattern;
 	int _expectedCount;
 
@@ -45,10 +46,10 @@ private:
 
 	SequenceVerificationExpectation(
 			FakeitContext& fakeit,
-			std::set<const ActualInvocationsSource*>& mocks,
+			InvocationsSourceProxy mocks,
 			std::vector<Sequence*>& expectedPattern) : //
 		_fakeit(fakeit),
-		_involvedMocks( mocks ), //
+		_involvedMocks(mocks),
 		_expectedPattern(expectedPattern), //
 		_expectedCount(-1), //
 		_line(0) {
@@ -91,14 +92,13 @@ private:
 	}
 
 	void collectActualInvocations(std::unordered_set<Invocation*>& actualIvocations) {
-		for (auto mock : _involvedMocks) {
-			mock->getActualInvocations(actualIvocations);
-		}
+		_involvedMocks.getActualInvocations(actualIvocations);
 	}
 
 	void markAsVerified(std::vector<Invocation*>& matchedInvocations) {
-		for (auto i : matchedInvocations)
-			i->markAsVerified();
+        for (auto i : matchedInvocations) {
+            i->markAsVerified();
+        }
 	}
 
 	int countMatches(std::vector<Sequence*> &pattern, std::vector<Invocation*>& actualSequence,

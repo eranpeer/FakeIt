@@ -2,7 +2,6 @@
 
 #include "fakeit/DefaultFakeit.hpp"
 #include <boost/test/unit_test.hpp>
-
 namespace fakeit {
 
 	struct BoostTestAdapter : public EventHandler {
@@ -23,7 +22,7 @@ namespace fakeit {
         }
 
 		virtual void handle(const NoMoreInvocationsVerificationEvent &evt) override {
-			std::string format = _formatter.format(evt);
+			std::string format = "\n" + _formatter.format(evt);
             BOOST_FAIL(format);
         }
 

@@ -37,13 +37,13 @@ class VerifyNoOtherInvocationsVerificationProgress {
 	private:
 
 		FakeitContext& _fakeit;
-		std::set<const ActualInvocationsSource*> _mocks;
+		std::set<ActualInvocationsSource*> _mocks;
 
 		std::string _file;
 		int _line;
 		std::string _callingMethod;
 
-		VerifyNoOtherInvocationsExpectation(FakeitContext& fakeit, std::set<const ActualInvocationsSource*> mocks) :
+		VerifyNoOtherInvocationsExpectation(FakeitContext& fakeit, std::set<ActualInvocationsSource*> mocks) :
 				_fakeit(fakeit),
 				_mocks(mocks), 
 				_line(0) {
@@ -79,7 +79,7 @@ class VerifyNoOtherInvocationsVerificationProgress {
 			_ptr(ptr) {
 	}
 
-	VerifyNoOtherInvocationsVerificationProgress(FakeitContext& fakeit, std::set<const ActualInvocationsSource*>& invocationSources) 
+	VerifyNoOtherInvocationsVerificationProgress(FakeitContext& fakeit, std::set<ActualInvocationsSource*>& invocationSources)
 		: VerifyNoOtherInvocationsVerificationProgress(
 			new VerifyNoOtherInvocationsExpectation(fakeit, invocationSources)
 			) 

@@ -38,8 +38,8 @@ public:
 
 	template<typename ... list>
 	VerifyNoOtherInvocationsVerificationProgress operator()(const ActualInvocationsSource& head, const list&... tail) {
-		std::set<const ActualInvocationsSource*> invocationSources;
-		invocationSources.insert(&head);
+		std::set<ActualInvocationsSource*> invocationSources;
+		invocationSources.insert(const_cast<ActualInvocationsSource*>(&head));
 		collectInvocationSources(invocationSources, tail...);
 		VerifyNoOtherInvocationsVerificationProgress progress{_fakeit,invocationSources};
 		return progress;

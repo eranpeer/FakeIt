@@ -11,67 +11,35 @@
 
 #include <set>
 
-#include "fakeit/StubbingImpl.hpp"
-#include "fakeit/StubbingProgress.hpp"
 #include "fakeit/Sequence.hpp"
 #include "fakeit/SortInvocations.hpp"
 #include "fakeit/FakeitContext.hpp"
-#include "fakeit/SequenceVerificationProgress.hpp"
-
-#include "mockutils/smart_ptr.hpp"
+#include "fakeit/UsingProgress.hpp"
 
 namespace fakeit {
 
-class UsingProgress {
-	FakeitContext& _fakeit;
-	std::set<const ActualInvocationsSource*> _sources;
+	class UsingFunctor {
 
-	void collectSequences(std::vector<Sequence*>&) {
-	}
+		friend class VerifyFunctor;
 
-	template<typename ... list>
-	void collectSequences(std::vector<Sequence*>& vec, const Sequence& sequence, const list&... tail) {
-		vec.push_back(&const_cast<Sequence&>(sequence));
-		collectSequences(vec, tail...);
-	}
+		FakeitContext &_fakeit;
 
-public:
+	public:
 
-	UsingProgress(FakeitContext& fakeit, std::set<const ActualInvocationsSource*>& sources) :
-		_fakeit(fakeit),
-		_sources(sources) {
-	}
+		UsingFunctor(FakeitContext &fakeit) : _fakeit(fakeit) {
+		}
 
-	template<typename ... list>
-	SequenceVerificationProgress Verify(const Sequence& sequence, const list&... tail) {
-		std::vector<Sequence*> allSequences;
-		collectSequences(allSequences, sequence, tail...);
-		SequenceVerificationProgress progress(_fakeit, _sources, allSequences);
-		return progress;
-	}
-};
+		template<typename ... list>
+		UsingProgress operator()(const ActualInvocationsSource &head, const list &... tail) {
+			std::set<ActualInvocationsSource *> allMocks;
+			allMocks.insert(const_cast<ActualInvocationsSource *> (&head));
+			collectInvocationSources(allMocks, tail...);
+			InvocationsSourceProxy aggregateInvocationsSource{new AggregateInvocationsSource(allMocks)};
+			UsingProgress progress(_fakeit, aggregateInvocationsSource);
+			return progress;
+		}
 
-class UsingFunctor {
-
-	friend class VerifyFunctor;
-	FakeitContext& _fakeit;
-
-public:
-
-	UsingFunctor(FakeitContext& fakeit):_fakeit(fakeit) {
-	}
-
-	template<typename ... list>
-	UsingProgress operator()(const ActualInvocationsSource& head, const list&... tail) {
-		std::set<const ActualInvocationsSource*> allMocks;
-		allMocks.insert(&head);
-		collectInvocationSources(allMocks, tail...);
-		UsingProgress progress (_fakeit, allMocks);
-		return progress;
-	}
-
-};
-
+	};
 }
 
 #endif // UsingFunctor_hpp_

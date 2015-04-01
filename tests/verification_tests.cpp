@@ -40,6 +40,8 @@ struct BasicVerification: tpunit::TestFixture {
 	BasicVerification() :
 			tpunit::TestFixture(
 			//
+					TEST(BasicVerification::verifyWithUnverifiedFunctor), //
+					TEST(BasicVerification::verifyWithUnverifiedFunctorWithUsing), //
 					TEST(BasicVerification::verify_with_matcher), //
 					TEST(BasicVerification::verify_should_not_throw_exception_if_method_was_called), //
 					TEST(BasicVerification::verify_should_throw_VerificationException_if_method_was_not_called), //
@@ -474,6 +476,49 @@ struct BasicVerification: tpunit::TestFixture {
 		a2.state = 2;
 
 		Verify(2 * call_to_proc2_with_state_1);
+	}
+
+
+	void verifyWithUnverifiedFunctor(){
+
+        struct AnInterface {
+            virtual int func(int) = 0;
+        };
+        
+        Mock<AnInterface> mock;
+		When(Method(mock, func)).AlwaysReturn(0);
+
+		AnInterface& obj = mock.get();
+
+		obj.func(1);
+        Unverified.Verify(Method(mock, func)).Once();
+        ASSERT_THROW(Unverified.Verify(Method(mock, func)).Once(), fakeit::VerificationException);
+
+		obj.func(1);
+        obj.func(1);
+        Verify(Method(mock, func) * 3);
+        ASSERT_THROW(Unverified.Verify(Method(mock, func)), fakeit::VerificationException);
+
+        obj.func(1);
+        obj.func(1);
+        Verify(Method(mock, func));
+        ASSERT_THROW(Unverified.Verify(Method(mock, func)), fakeit::VerificationException);
+    }
+
+	void verifyWithUnverifiedFunctorWithUsing() {
+
+		struct AnInterface {
+			virtual int func(int) = 0;
+		};
+
+		Mock<AnInterface> mock;
+		When(Method(mock, func)).AlwaysReturn(0);
+
+		AnInterface &obj = mock.get();
+
+		obj.func(1);
+		Using(Unverified(mock)).Verify(Method(mock, func)).Once();
+		ASSERT_THROW(Using(Unverified(mock)).Verify(Method(mock, func)).Once(), fakeit::VerificationException);
 	}
 
 } __BasicVerification;

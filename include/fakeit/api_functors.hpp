@@ -13,6 +13,7 @@ namespace fakeit {
 	static UsingFunctor Using(Fakeit);
 	static VerifyFunctor Verify(Fakeit);
 	static VerifyNoOtherInvocationsFunctor VerifyNoOtherInvocations(Fakeit);
+	static UnverifiedFunctor Unverified(Fakeit);
 	static SpyFunctor Spy;
 	static FakeFunctor Fake;
 	static WhenFunctor When;

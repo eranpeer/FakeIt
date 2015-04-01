@@ -118,6 +118,7 @@ public:
 
 	void clear() {
 		_invocationHandlers.clear();
+		_actualInvocations.clear();
 	}
 
 

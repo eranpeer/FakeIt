@@ -120,7 +120,7 @@ private:
 			};
 			getStubbingContext().scanActualInvocations(scanner);
 		}
-
+		
 		/**
 		 * Used only by Verify phrase.
 		 */
@@ -152,7 +152,7 @@ private:
 			getStubbingContext().setMethodDetails(mockName, methodName);
 		}
 
-		void getInvolvedMocks(std::set<const ActualInvocationsSource*>& into) const {
+		void getInvolvedMocks(std::set<ActualInvocationsSource*>& into) const {
 			into.insert(&getStubbingContext().getInvolvedMock());
 		}
 
@@ -193,7 +193,7 @@ protected:
 	/**
 	 * Used only by Verify phrase.
 	 */
-	void getInvolvedMocks(std::set<const ActualInvocationsSource*>& into) const override {
+	void getInvolvedMocks(std::set<ActualInvocationsSource*>& into) const override {
 		_impl->getInvolvedMocks(into);
 	}
 
