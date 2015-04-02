@@ -43,6 +43,7 @@ private:
 	std::string _file;
 	int _line;
 	std::string _testMethod;
+	bool _isVerified;
 
 	SequenceVerificationExpectation(
 			FakeitContext& fakeit,
@@ -52,11 +53,15 @@ private:
 		_involvedMocks(mocks),
 		_expectedPattern(expectedPattern), //
 		_expectedCount(-1), //
-		_line(0) {
+		_line(0),
+		_isVerified(false){
 	}
 
 	void VerifyExpectation()
 	{
+		if (_isVerified)
+			return;
+		_isVerified = true;
 		std::unordered_set<Invocation*> actualIvocations;
 		collectActualInvocations(actualIvocations);
 

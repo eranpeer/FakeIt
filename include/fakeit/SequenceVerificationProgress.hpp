@@ -35,46 +35,77 @@ namespace fakeit {
 			_expectationPtr->setExpectedCount(times);
 		}
 
+		class Terminator {
+			smart_ptr<SequenceVerificationExpectation> _expectationPtr;
+		public:
+			Terminator(smart_ptr<SequenceVerificationExpectation> expectationPtr):_expectationPtr(expectationPtr){};
+			operator bool() {
+				try{
+					_expectationPtr->VerifyExpectation();
+					return true;
+				} catch(VerificationException&){
+					return false;
+				}
+			}
+		};
+
 	public:
 
 		~SequenceVerificationProgress() THROWS{};
 
-		void Never() {
+		operator bool() {
+			try{
+				_expectationPtr->VerifyExpectation();
+				return true;
+			} catch(VerificationException&){
+				return false;
+			}
+		}
+
+		Terminator Never() {
 			Exactly(0);
+			return Terminator(_expectationPtr);
 		}
 
-		void Once() {
+		Terminator Once() {
 			Exactly(1);
+			return Terminator(_expectationPtr);
 		}
 
-		void Twice() {
+		Terminator Twice() {
 			Exactly(2);
+			return Terminator(_expectationPtr);
 		}
 
-		void AtLeastOnce() {
+		Terminator AtLeastOnce() {
 			verifyInvocations(-1);
+			return Terminator(_expectationPtr);
 		}
 
-		void Exactly(const int times) {
+		Terminator Exactly(const int times) {
 			if (times < 0) {
 				throw std::invalid_argument(std::string("bad argument times:").append(fakeit::to_string(times)));
 			}
 			verifyInvocations(times);
+			return Terminator(_expectationPtr);
 		}
 
-		void Exactly(const Quantity & q) {
+		Terminator Exactly(const Quantity & q) {
 			Exactly(q.quantity);
+			return Terminator(_expectationPtr);
 		}
 
-		void AtLeast(const int times) {
+		Terminator AtLeast(const int times) {
 			if (times < 0) {
 				throw std::invalid_argument(std::string("bad argument times:").append(fakeit::to_string(times)));
 			}
 			verifyInvocations(-times);
+			return Terminator(_expectationPtr);
 		}
 
-		void AtLeast(const Quantity & q) {
+		Terminator AtLeast(const Quantity & q) {
 			AtLeast(q.quantity);
+			return Terminator(_expectationPtr);
 		}
 
 		SequenceVerificationProgress setFileInfo(std::string file, int line, std::string callingMethod) {

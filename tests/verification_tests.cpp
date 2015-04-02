@@ -40,6 +40,7 @@ struct BasicVerification: tpunit::TestFixture {
 	BasicVerification() :
 			tpunit::TestFixture(
 			//
+                    TEST(BasicVerification::verificationProgressShouldBeConvertibleToBool), //
 					TEST(BasicVerification::verifyWithUnverifiedFunctor), //
 					TEST(BasicVerification::verifyWithUnverifiedFunctorWithUsing), //
 					TEST(BasicVerification::verify_with_matcher), //
@@ -520,5 +521,27 @@ struct BasicVerification: tpunit::TestFixture {
 		Using(Unverified(mock)).Verify(Method(mock, func)).Once();
 		ASSERT_THROW(Using(Unverified(mock)).Verify(Method(mock, func)).Once(), fakeit::VerificationException);
 	}
+
+	void verificationProgressShouldBeConvertibleToBool(){
+
+		struct AnInterface {
+			virtual int func(int) = 0;
+		};
+
+		Mock<AnInterface> mock;
+		When(Method(mock, func)).AlwaysReturn(0);
+
+		AnInterface &obj = mock.get();
+		obj.func(1);
+
+		ASSERT_TRUE(Verify(Method(mock, func).Using(1)));
+        ASSERT_FALSE(Verify(Method(mock, func).Using(2)));
+        ASSERT_TRUE(Verify(Method(mock, func).Using(1)).AtLeast(1));
+        ASSERT_TRUE(Verify(Method(mock, func).Using(1)).AtLeastOnce());
+        ASSERT_TRUE(Verify(Method(mock, func).Using(1)).Exactly(1));
+        ASSERT_TRUE(Verify(Method(mock, func).Using(1)).Once());
+        ASSERT_FALSE(Verify(Method(mock, func).Using(1)).Twice());
+        ASSERT_FALSE(Verify(Method(mock, func).Using(1)).Never());
+    }
 
 } __BasicVerification;
