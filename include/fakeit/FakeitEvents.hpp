@@ -37,16 +37,17 @@ struct VerificationEvent {
 		return _verificationType;
 	}
 
-	void setFileInfo(std::string file, int line, std::string callingMethod) {
+    void setFileInfo(std::string file, int line, std::string callingMethod) {
 		_file = file;
 		_callingMethod = callingMethod;
 		_line = line;
 	}
 
-	const std::string& file() const {
+	std::string file() const {
 		return _file;
 	}
-	int line() const {
+	
+    int line() const {
 		return _line;
 	}
 	const std::string& callingMethod() const {
@@ -55,7 +56,7 @@ struct VerificationEvent {
 
 private:
 	VerificationType _verificationType;
-	std::string _file;
+    std::string _file;
 	int _line;
 	std::string _callingMethod;
 };

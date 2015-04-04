@@ -37,7 +37,6 @@ struct DefaultEventFormatter: public EventFormatter {
 	 */
 	virtual std::string format(const SequenceVerificationEvent& e) override {
 		std::ostringstream out;
-		out << e.file() << ":" << e.line() << ": ";
 		out << "Verification error" << std::endl;
 
 		out << "Expected pattern: ";
@@ -64,7 +63,7 @@ struct DefaultEventFormatter: public EventFormatter {
 
 	virtual std::string format(const NoMoreInvocationsVerificationEvent& e) override {
 		std::ostringstream out;
-		out << e.file() << ":" << e.line() << ": Verification error" << std::endl;
+		out << "Verification error" << std::endl;
 		out << "Expected no more invocations!! But the following unverified invocations were found:" << std::endl;
 		formatInvocationList(out, e.unverifedIvocations());
 		return out.str();

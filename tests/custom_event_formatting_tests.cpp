@@ -104,7 +104,7 @@ struct CustomEventFormatting : tpunit::TestFixture {
 			fakeit::Verify(Method(mock, func)).setFileInfo("test file", 1, "test method").Exactly(Once);
 		}
 		catch (SequenceVerificationException& e) {
-			std::string expectedMsg{ "SequenceVerificationEvent" };
+			std::string expectedMsg{ "test file:1: SequenceVerificationEvent" };
 			std::string actualMsg{ to_string(e) };
 			ASSERT_EQUAL(expectedMsg, actualMsg);
 		}
@@ -123,7 +123,7 @@ struct CustomEventFormatting : tpunit::TestFixture {
 				.setFileInfo("test file", 1, "test method");
 		}
 		catch (NoMoreInvocationsVerificationException& e) {
-			std::string expectedMsg{ "NoMoreInvocationsVerificationEvent" };
+			std::string expectedMsg{ "test file:1: NoMoreInvocationsVerificationEvent" };
 			std::string actualMsg{ to_string(e) };
 			ASSERT_EQUAL(expectedMsg, actualMsg);
 		}

@@ -18,14 +18,14 @@ namespace fakeit {
 		}
 
 		virtual void handle(const SequenceVerificationEvent &evt) override {
-			std::string format(_formatter.format(evt));
+			std::string format(evt.file() + ":" + std::to_string(evt.line()) + ": " + _formatter.format(evt));
 			SequenceVerificationException e(format);
 			e.setFileInfo(evt.file(), evt.line(), evt.callingMethod());
 			throw e;
 		}
 
 		virtual void handle(const NoMoreInvocationsVerificationEvent &evt) override {
-			std::string format = _formatter.format(evt);
+			std::string format = evt.file() + ":" + std::to_string(evt.line()) + ": " + _formatter.format(evt);
 			NoMoreInvocationsVerificationException e(format);
 			e.setFileInfo(evt.file(), evt.line(), evt.callingMethod());
 			throw e;
