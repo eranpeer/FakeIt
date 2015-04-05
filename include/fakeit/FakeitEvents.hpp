@@ -18,7 +18,7 @@
 namespace fakeit {
 
 enum class VerificationType {
-	Exact, AtLeast, NoMoreInvocatoins
+	Exact, AtLeast, NoMoreInvocations
 };
 
 enum class UnexpectedType {
@@ -68,7 +68,7 @@ struct NoMoreInvocationsVerificationEvent: public VerificationEvent {
 	NoMoreInvocationsVerificationEvent( //
 			std::vector<Invocation*>& allIvocations, //
 			std::vector<Invocation*>& unverifedIvocations) : //
-			VerificationEvent(VerificationType::NoMoreInvocatoins), //
+			VerificationEvent(VerificationType::NoMoreInvocations), //
 			_allIvocations(allIvocations), //
 			_unverifedIvocations(unverifedIvocations) { //
 	}

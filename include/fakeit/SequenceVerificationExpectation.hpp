@@ -72,11 +72,11 @@ private:
 		int count = countMatches(_expectedPattern, actualSequence, matchedInvocations);
 
 		if (isAtLeastVerification() && atLeastLimitNotReached(count)) {
-			handleAtLeastVerificationEvent(actualSequence, count);
+			return handleAtLeastVerificationEvent(actualSequence, count);
 		}
 
 		if (isExactVerification() && exactLimitNotMatched(count)) {
-			handleExactVerificationEvent(actualSequence, count);
+			return handleExactVerificationEvent(actualSequence, count);
 		}
 
 		markAsVerified(matchedInvocations);

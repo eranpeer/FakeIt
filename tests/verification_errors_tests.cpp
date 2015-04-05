@@ -85,7 +85,7 @@ struct ErrorFormattingTests: tpunit::TestFixture {
 			Verify(Method(mock,foo).Using(1));
 			VerifyNoOtherInvocations(Method(mock,foo));
 		} catch (NoMoreInvocationsVerificationException&) {
-//			ASSERT_EQUAL(VerificationType::NoMoreInvocatoins, e.verificationType());
+//			ASSERT_EQUAL(VerificationType::NoMoreInvocations, e.verificationType());
 //			ASSERT_EQUAL(2, e.allIvocations().size());
 //			ASSERT_EQUAL(1, e.unverifedIvocations().size());
 		}

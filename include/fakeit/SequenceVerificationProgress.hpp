@@ -43,7 +43,7 @@ namespace fakeit {
 				try{
 					_expectationPtr->VerifyExpectation();
 					return true;
-				} catch(VerificationException&){
+				} catch(...){
 					return false;
 				}
 			}
