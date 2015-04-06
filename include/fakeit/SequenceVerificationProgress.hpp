@@ -51,7 +51,7 @@ namespace fakeit {
 		public:
 			Terminator(smart_ptr<SequenceVerificationExpectation> expectationPtr):_expectationPtr(expectationPtr){};
 			operator bool() {
-                toBool();
+                return toBool();
             }
 
             bool operator ! () const { return !const_cast<Terminator*>(this)->toBool(); }
