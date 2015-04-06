@@ -66,7 +66,7 @@ private:
 		collectActualInvocations(actualIvocations);
 
 		std::vector<Invocation*> actualSequence;
-		sortByInvocationOrder(actualIvocations, actualSequence);
+        InvocationUtils::sortByInvocationOrder(actualIvocations, actualSequence);
 
 		std::vector<Invocation*> matchedInvocations;
 		int count = countMatches(_expectedPattern, actualSequence, matchedInvocations);
@@ -82,7 +82,10 @@ private:
 		markAsVerified(matchedInvocations);
 	}
 
-	static inline int AT_LEAST_ONCE() {
+    void DoVerify(){
+    }
+	
+    static inline int AT_LEAST_ONCE() {
 		return -1;
 	}
 
@@ -100,13 +103,13 @@ private:
 		_involvedMocks.getActualInvocations(actualIvocations);
 	}
 
-	void markAsVerified(std::vector<Invocation*>& matchedInvocations) {
+	static void markAsVerified(std::vector<Invocation*>& matchedInvocations) {
         for (auto i : matchedInvocations) {
             i->markAsVerified();
         }
 	}
 
-	int countMatches(std::vector<Sequence*> &pattern, std::vector<Invocation*>& actualSequence,
+	static int countMatches(std::vector<Sequence*> &pattern, std::vector<Invocation*>& actualSequence,
 		std::vector<Invocation*>& matchedInvocations) {
 		int end = -1;
 		int count = 0;
@@ -118,7 +121,7 @@ private:
 		return count;
 	}
 
-	void collectMatchedInvocations(std::vector<Invocation*>& actualSequence, std::vector<Invocation*>& matchedInvocations, int start,
+	static void collectMatchedInvocations(std::vector<Invocation*>& actualSequence, std::vector<Invocation*>& matchedInvocations, int start,
 		int length) {
 		int indexAfterMatchedPattern = start + length;
 		for (; start < indexAfterMatchedPattern; start++) {
@@ -126,7 +129,7 @@ private:
 		}
 	}
 
-	bool findNextMatch(std::vector<Sequence*> &pattern, std::vector<Invocation*>& actualSequence, int startSearchIndex, int& end,
+	static bool findNextMatch(std::vector<Sequence*> &pattern, std::vector<Invocation*>& actualSequence, int startSearchIndex, int& end,
 		std::vector<Invocation*>& matchedInvocations) {
 		for (auto sequence : pattern) {
 			int index = findNextMatch(sequence, actualSequence, startSearchIndex);
@@ -140,7 +143,7 @@ private:
 		return true;
 	}
 
-	bool isMatch(std::vector<Invocation*>& actualSequence, std::vector<Invocation::Matcher*>& expectedSequence, int start) {
+	static bool isMatch(std::vector<Invocation*>& actualSequence, std::vector<Invocation::Matcher*>& expectedSequence, int start) {
 		bool found = true;
 		for (unsigned int j = 0; found && j < expectedSequence.size(); j++) {
 			Invocation* actual = actualSequence[start + j];
@@ -150,7 +153,7 @@ private:
 		return found;
 	}
 
-	int findNextMatch(Sequence* &pattern, std::vector<Invocation*>& actualSequence, int startSearchIndex) {
+	static int findNextMatch(Sequence* &pattern, std::vector<Invocation*>& actualSequence, int startSearchIndex) {
 		std::vector<Invocation::Matcher*> expectedSequence;
 		pattern->getExpectedSequence(expectedSequence);
 		for (int i = startSearchIndex; i < ((int) actualSequence.size() - (int) expectedSequence.size() + 1); i++) {

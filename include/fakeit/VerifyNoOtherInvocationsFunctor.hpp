@@ -40,7 +40,7 @@ public:
 	VerifyNoOtherInvocationsVerificationProgress operator()(const ActualInvocationsSource& head, const list&... tail) {
 		std::set<ActualInvocationsSource*> invocationSources;
 		invocationSources.insert(const_cast<ActualInvocationsSource*>(&head));
-		collectInvocationSources(invocationSources, tail...);
+        InvocationUtils::collectInvocationSources(invocationSources, tail...);
 		VerifyNoOtherInvocationsVerificationProgress progress{_fakeit,invocationSources};
 		return progress;
 	}

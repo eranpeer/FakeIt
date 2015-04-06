@@ -53,17 +53,17 @@ class VerifyNoOtherInvocationsVerificationProgress {
 
 		void VerifyExpectation() {
 			std::unordered_set<Invocation*> actualInvocations;
-			collectActualInvocations(actualInvocations, _mocks);
+            InvocationUtils::collectActualInvocations(actualInvocations, _mocks);
 
 			std::unordered_set<Invocation*> nonVerifedIvocations;
-			selectNonVerifiedInvocations(actualInvocations, nonVerifedIvocations);
+            InvocationUtils::selectNonVerifiedInvocations(actualInvocations, nonVerifedIvocations);
 
 			if (nonVerifedIvocations.size() > 0) {
 				std::vector<Invocation*> sortedNonVerifedIvocations;
-				sortByInvocationOrder(nonVerifedIvocations, sortedNonVerifedIvocations);
+                InvocationUtils::sortByInvocationOrder(nonVerifedIvocations, sortedNonVerifedIvocations);
 
 				std::vector<Invocation*> sortedActualIvocations;
-				sortByInvocationOrder(actualInvocations, sortedActualIvocations);
+                InvocationUtils::sortByInvocationOrder(actualInvocations, sortedActualIvocations);
 
 				NoMoreInvocationsVerificationEvent evt(sortedActualIvocations, sortedNonVerifedIvocations);
 				evt.setFileInfo(_file, _line, _callingMethod);

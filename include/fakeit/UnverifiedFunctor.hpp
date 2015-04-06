@@ -22,10 +22,10 @@ namespace fakeit {
         template<typename ... list>
         SequenceVerificationProgress operator()(const Sequence &sequence, const list &... tail) {
             std::vector<Sequence *> allSequences;
-            collectSequences(allSequences, sequence, tail...);
+            InvocationUtils::collectSequences(allSequences, sequence, tail...);
 
             std::set<ActualInvocationsSource *> invlovedSources;
-            collectInvolvedMocks(allSequences, invlovedSources);
+            InvocationUtils::collectInvolvedMocks(allSequences, invlovedSources);
 
             InvocationsSourceProxy aggregateInvocationsSource{new AggregateInvocationsSource(invlovedSources)};
             InvocationsSourceProxy unverifiedInvocationsSource{new UnverifiedInvocationsSource(aggregateInvocationsSource)};
@@ -47,11 +47,24 @@ namespace fakeit {
         UnverifiedInvocationsSource operator()(const ActualInvocationsSource &head, const list &... tail) {
             std::set<ActualInvocationsSource *> allMocks;
             allMocks.insert(const_cast<ActualInvocationsSource *> (&head));
-            collectInvocationSources(allMocks, tail...);
+            InvocationUtils::collectInvocationSources(allMocks, tail...);
             InvocationsSourceProxy aggregateInvocationsSource{new AggregateInvocationsSource(allMocks)};
             UnverifiedInvocationsSource unverifiedInvocationsSource{aggregateInvocationsSource};
             return unverifiedInvocationsSource;
         }
+
+//        template<typename ... list>
+//        void operator()(const Sequence &sequence, const list &... tail) {
+//            std::vector<Sequence *> allSequences;
+//            collectSequences(allSequences, sequence, tail...);
+//
+//            std::set<ActualInvocationsSource *> involvedSources;
+//            collectInvolvedMocks(allSequences, involvedSources);
+//
+//            InvocationsSourceProxy aggregateInvocationsSource{new AggregateInvocationsSource(involvedSources)};
+//            InvocationsSourceProxy unverifiedInvocationsSource{new UnverifiedInvocationsSource(aggregateInvocationsSource)};
+//        }
+
     };
 }
 #endif //_TESTS_UNVERIFIEDFUNCTOR_HPP_

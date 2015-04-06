@@ -33,7 +33,7 @@ namespace fakeit {
 		UsingProgress operator()(const ActualInvocationsSource &head, const list &... tail) {
 			std::set<ActualInvocationsSource *> allMocks;
 			allMocks.insert(const_cast<ActualInvocationsSource *> (&head));
-			collectInvocationSources(allMocks, tail...);
+            InvocationUtils::collectInvocationSources(allMocks, tail...);
 			InvocationsSourceProxy aggregateInvocationsSource{new AggregateInvocationsSource(allMocks)};
 			UsingProgress progress(_fakeit, aggregateInvocationsSource);
 			return progress;

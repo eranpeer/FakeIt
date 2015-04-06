@@ -37,16 +37,24 @@ namespace fakeit {
 
 		class Terminator {
 			smart_ptr<SequenceVerificationExpectation> _expectationPtr;
+            
+            bool toBool()  {
+                try{
+                    _expectationPtr->VerifyExpectation();
+                    return true;
+                }
+                catch (...){
+                    return false;
+                }
+            }
+
 		public:
 			Terminator(smart_ptr<SequenceVerificationExpectation> expectationPtr):_expectationPtr(expectationPtr){};
 			operator bool() {
-				try{
-					_expectationPtr->VerifyExpectation();
-					return true;
-				} catch(...){
-					return false;
-				}
-			}
+                toBool();
+            }
+
+            bool operator ! () const { return !const_cast<Terminator*>(this)->toBool(); }
 		};
 
 	public:
@@ -54,13 +62,10 @@ namespace fakeit {
 		~SequenceVerificationProgress() THROWS{};
 
 		operator bool() {
-			try{
-				_expectationPtr->VerifyExpectation();
-				return true;
-			} catch(...){
-				return false;
-			}
+			return Terminator(_expectationPtr);
 		}
+
+		bool operator ! () const { return !Terminator(_expectationPtr); }
 
 		Terminator Never() {
 			Exactly(0);

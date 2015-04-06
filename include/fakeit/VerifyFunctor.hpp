@@ -33,10 +33,10 @@ namespace fakeit {
         template<typename ... list>
         SequenceVerificationProgress operator()(const Sequence& sequence, const list&... tail) {
             std::vector<Sequence*> allSequences;
-            collectSequences(allSequences, sequence, tail...);
+            InvocationUtils::collectSequences(allSequences, sequence, tail...);
 
             std::set<ActualInvocationsSource*> invlovedSources;
-            collectInvolvedMocks(allSequences, invlovedSources);
+            InvocationUtils::collectInvolvedMocks(allSequences, invlovedSources);
 
             InvocationsSourceProxy aggregateInvocationsSource{ new AggregateInvocationsSource(invlovedSources) };
             UsingProgress usingProgress(_fakeit, aggregateInvocationsSource);
