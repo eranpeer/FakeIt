@@ -11,6 +11,8 @@
 namespace fakeit {
 
 	struct ActualInvocationsSource {
+        virtual ~ActualInvocationsSource() = default;
+
 		virtual void getActualInvocations(std::unordered_set<fakeit::Invocation *> &into) const = 0;
 	};
 

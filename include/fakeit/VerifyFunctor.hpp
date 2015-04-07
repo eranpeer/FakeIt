@@ -37,7 +37,6 @@ namespace fakeit {
 
             std::set<ActualInvocationsSource*> invlovedSources;
             InvocationUtils::collectInvolvedMocks(allSequences, invlovedSources);
-
             InvocationsSourceProxy aggregateInvocationsSource{ new AggregateInvocationsSource(invlovedSources) };
             UsingProgress usingProgress(_fakeit, aggregateInvocationsSource);
             return usingProgress.Verify(sequence, tail...);
