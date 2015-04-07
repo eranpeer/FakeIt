@@ -25,7 +25,9 @@ class VerifyNoOtherInvocationsVerificationProgress {
 			if (std::uncaught_exception()) {
 				return;
 			}
+
 			VerifyExpectation();
+
 		}
 
 		void setFileInfo(std::string file, int line, std::string callingMethod) {
@@ -42,16 +44,21 @@ class VerifyNoOtherInvocationsVerificationProgress {
 		std::string _file;
 		int _line;
 		std::string _callingMethod;
-
+		bool _isVerified;
 		VerifyNoOtherInvocationsExpectation(FakeitContext& fakeit, std::set<ActualInvocationsSource*> mocks) :
 				_fakeit(fakeit),
 				_mocks(mocks), 
-				_line(0) {
+				_line(0),
+				_isVerified(false){
 		}
 
 		VerifyNoOtherInvocationsExpectation(VerifyNoOtherInvocationsExpectation& other) = default;
 
 		void VerifyExpectation() {
+			if (_isVerified)
+				return;
+			_isVerified = true;
+
 			std::unordered_set<Invocation*> actualInvocations;
             InvocationUtils::collectActualInvocations(actualInvocations, _mocks);
 
@@ -86,8 +93,19 @@ class VerifyNoOtherInvocationsVerificationProgress {
 	{
 	}
 
+	bool toBool()  {
+		try{
+			_ptr->VerifyExpectation();
+			return true;
+		}
+		catch (...){
+			return false;
+		}
+	}
+
 public:
-	
+
+
 	~VerifyNoOtherInvocationsVerificationProgress() THROWS {
 	};
 
@@ -95,6 +113,13 @@ public:
 		_ptr->setFileInfo(file, line, callingMethod);
 		return *this;
 	}
+
+	operator bool() {
+		return toBool();
+	}
+
+	bool operator ! () const { return !const_cast<VerifyNoOtherInvocationsVerificationProgress*>(this)->toBool(); }
+
 };
 
 }
