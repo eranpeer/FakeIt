@@ -6,13 +6,13 @@
 #include "mockutils/gcc/VirtualTable.hpp"
 #endif
 #include "mockutils/MethodProxy.hpp"
-#include "mockutils/Destructable.hpp"
+#include "Destructible.hpp"
 
 namespace fakeit {
 
     struct InvocationHandlerCollection {
         static const unsigned int VT_COOKIE_INDEX = 0;
-        virtual Destructable*getInvocatoinHandlerPtrById(unsigned int index) = 0;
+        virtual Destructible *getInvocatoinHandlerPtrById(unsigned int index) = 0;
 
         static InvocationHandlerCollection * getInvocationHandlerCollection(void * instance) {
         	VirtualTableBase & vt = VirtualTableBase::getVTable(instance);

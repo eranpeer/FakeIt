@@ -38,8 +38,8 @@ struct ActionSequence: public MethodInvocationHandler<R, arglist...> {
 	}
 
 	R handleMethodInvocation(arglist&... args) override {
-		std::shared_ptr<Destructable> destructablePtr = _recordedActions.front();
-		Destructable& destructable = *destructablePtr;
+		std::shared_ptr<Destructible> destructablePtr = _recordedActions.front();
+		Destructible & destructable = *destructablePtr;
 		Action<R, arglist...>& action = dynamic_cast<Action<R, arglist...>&>(destructable);
 		std::function < void() > finallyClause = [&]()->void {
 			if (action.isDone())
@@ -65,17 +65,17 @@ private:
 	};
 
 	void append(Action<R, arglist...>* action) {
-		std::shared_ptr<Destructable> destructable{action};
+		std::shared_ptr<Destructible> destructable{action};
 		_recordedActions.insert(_recordedActions.end() - 1, destructable);
 	}
 
 	void clear() {
 		_recordedActions.clear();
-		auto actionPtr = std::shared_ptr<Destructable> { new NoMoreRecordedAction() };
+		auto actionPtr = std::shared_ptr<Destructible> { new NoMoreRecordedAction() };
 		_recordedActions.push_back(actionPtr);
 	}
 
-	std::vector<std::shared_ptr<Destructable>>_recordedActions;
+	std::vector<std::shared_ptr<Destructible>>_recordedActions;
 };
 
 }

@@ -31,7 +31,7 @@
 namespace fakeit {
 
     class InvocationHandlers : public InvocationHandlerCollection {
-        std::vector<std::shared_ptr<Destructable>>& _methodMocks;
+        std::vector<std::shared_ptr<Destructible>>& _methodMocks;
         std::vector<unsigned int>& _offsets;
 
         unsigned int getOffset(unsigned int id) {
@@ -46,14 +46,14 @@ namespace fakeit {
 
     public:
         InvocationHandlers(
-                std::vector<std::shared_ptr<Destructable>>& methodMocks,
+                std::vector<std::shared_ptr<Destructible>>& methodMocks,
                 std::vector<unsigned int>& offsets) :
                 _methodMocks(methodMocks),_offsets(offsets){
         }
 
-        Destructable* getInvocatoinHandlerPtrById(unsigned int id) override {
+        Destructible * getInvocatoinHandlerPtrById(unsigned int id) override {
             unsigned int offset = getOffset(id);
-            std::shared_ptr<Destructable> ptr = _methodMocks[offset];
+            std::shared_ptr<Destructible> ptr = _methodMocks[offset];
             return ptr.get();
         }
 
@@ -119,15 +119,15 @@ namespace fakeit {
         }
 
         template<typename R, typename ... arglist>
-        Destructable * getMethodMock(R(C::*vMethod)(arglist...)) {
+        Destructible * getMethodMock(R(C::*vMethod)(arglist...)) {
             auto offset = VTUtils::getOffset(vMethod);
-            std::shared_ptr<Destructable> ptr = _methodMocks[offset];
+            std::shared_ptr<Destructible> ptr = _methodMocks[offset];
             return ptr.get();
         }
 
-        Destructable * getDtorMock() {
+        Destructible * getDtorMock() {
             auto offset = VTUtils::getDestructorOffset<C>();
-            std::shared_ptr<Destructable> ptr = _methodMocks[offset];
+            std::shared_ptr<Destructible> ptr = _methodMocks[offset];
             return ptr.get();
         }
 
@@ -143,7 +143,7 @@ namespace fakeit {
 
         template<typename DATA_TYPE>
         void getMethodMocks(std::vector<DATA_TYPE>& into) const {
-            for (std::shared_ptr<Destructable> ptr : _methodMocks) {
+            for (std::shared_ptr<Destructible> ptr : _methodMocks) {
                 DATA_TYPE p = dynamic_cast<DATA_TYPE>(ptr.get());
                 if (p) {
                     into.push_back(p);
@@ -159,7 +159,7 @@ namespace fakeit {
     private:
 
         template<typename DATA_TYPE, typename ... arglist>
-        class DataMemeberWrapper : public Destructable {
+        class DataMemeberWrapper : public Destructible {
         private:
             DATA_TYPE *dataMember;
         public:
@@ -177,8 +177,8 @@ namespace fakeit {
         C& instance;
         typename VirtualTable<C, baseclasses...>::Handle originalVtHandle; // avoid delete!! this is the original!
         VirtualTable<C, baseclasses...> _cloneVt;//
-        std::vector<std::shared_ptr<Destructable>> _methodMocks;
-        std::vector<std::shared_ptr<Destructable>> _members;
+        std::vector<std::shared_ptr<Destructible>> _methodMocks;
+        std::vector<std::shared_ptr<Destructible>> _members;
         std::vector<unsigned int> _offsets;
         InvocationHandlers _invocationHandlers;
 
@@ -186,13 +186,13 @@ namespace fakeit {
             return reinterpret_cast<FakeObject<C, baseclasses...>&>(instance);
         }
 
-        void bind(const MethodProxy &methodProxy, Destructable *invocationHandler) {
+        void bind(const MethodProxy &methodProxy, Destructible *invocationHandler) {
             getFake().setMethod(methodProxy.getOffset(), methodProxy.getProxy());
             _methodMocks[methodProxy.getOffset()].reset(invocationHandler);
             _offsets[methodProxy.getOffset()] = methodProxy.getId();
         }
 
-        void bindDtor(const MethodProxy &methodProxy, Destructable *invocationHandler) {
+        void bindDtor(const MethodProxy &methodProxy, Destructible *invocationHandler) {
             getFake().setDtor(methodProxy.getProxy());
             _methodMocks[methodProxy.getOffset()].reset(invocationHandler);
             _offsets[methodProxy.getOffset()] = methodProxy.getId();
@@ -200,7 +200,7 @@ namespace fakeit {
 
         template<typename DATA_TYPE>
         DATA_TYPE getMethodMock(unsigned int offset) {
-            std::shared_ptr<Destructable> ptr = _methodMocks[offset];
+            std::shared_ptr<Destructible> ptr = _methodMocks[offset];
             return dynamic_cast<DATA_TYPE>(ptr.get());
         }
 
@@ -217,7 +217,7 @@ namespace fakeit {
         }
 
         bool isBinded(unsigned int offset) {
-            std::shared_ptr<Destructable> ptr = _methodMocks[offset];
+            std::shared_ptr<Destructible> ptr = _methodMocks[offset];
             return ptr.get() != nullptr;
         }
 

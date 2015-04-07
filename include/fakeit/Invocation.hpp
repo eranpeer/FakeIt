@@ -16,11 +16,11 @@
 #include <sstream>
 
 #include "fakeit/DomainObjects.hpp"
-#include "mockutils/Destructable.hpp"
+#include "mockutils/Destructible.hpp"
 
 namespace fakeit {
 
-struct Invocation : public Destructable {
+struct Invocation : public Destructible {
 
     static unsigned int nextInvocationOrdinal(){
         static std::atomic_uint invocationOrdinal{ 0 };

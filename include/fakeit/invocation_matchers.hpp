@@ -31,7 +31,7 @@ struct ArgumentsMatcherInvocationMatcher: public ActualInvocation<arglist...>::M
 			delete _matchers[i];
 	}
 
-	ArgumentsMatcherInvocationMatcher(const std::vector<Destructable*>& args)
+	ArgumentsMatcherInvocationMatcher(const std::vector<Destructible *>& args)
 			: _matchers(args) {
 	}
 
@@ -55,7 +55,7 @@ struct ArgumentsMatcherInvocationMatcher: public ActualInvocation<arglist...>::M
 private:
 
 	struct MatchingLambda {
-		MatchingLambda(const std::vector<Destructable*>& matchers)
+		MatchingLambda(const std::vector<Destructible *>& matchers)
 				: _matchers(matchers) {
 		}
 
@@ -73,7 +73,7 @@ private:
 
 	private:
 		bool _matching = true;
-		const std::vector<Destructable*>& _matchers;
+		const std::vector<Destructible *>& _matchers;
 	};
 
 	virtual bool matches(const std::tuple<arglist...>& actualArgs) {
@@ -81,7 +81,7 @@ private:
 		fakeit::for_each(actualArgs, l);
 		return l.isMatching();
 	}
-	const std::vector<Destructable*> _matchers;
+	const std::vector<Destructible *> _matchers;
 };
 
 //template<typename ... arglist>

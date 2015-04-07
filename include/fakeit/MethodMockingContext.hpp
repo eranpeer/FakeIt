@@ -48,7 +48,7 @@ class MethodMockingContext:
 		private Invocation::Matcher {
 public:
 
-	struct Context: public Destructable {
+	struct Context: public Destructible {
 
 		virtual ~Context() = default;
 
@@ -230,7 +230,7 @@ protected:
 		_impl->setInvocationMatcher(matcher);
 	}
 
-	void setMatchingCriteria(const std::vector<Destructable*>& matchers) {
+	void setMatchingCriteria(const std::vector<Destructible *>& matchers) {
 		typename ActualInvocation<arglist...>::Matcher* matcher { new ArgumentsMatcherInvocationMatcher<arglist...>(matchers) };
 		_impl->setInvocationMatcher(matcher);
 	}
@@ -248,7 +248,7 @@ protected:
 
 	template<class ...matcherCreators, class = typename std::enable_if<sizeof...(matcherCreators)==sizeof...(arglist)>::type>
 	void setMatchingCriteria(const matcherCreators& ... matcherCreator) {
-		std::vector<Destructable*> matchers;
+		std::vector<Destructible *> matchers;
 
 		MatchersCollector<0, arglist...> c(matchers);
 		c.CollectMatchers(matcherCreator...);

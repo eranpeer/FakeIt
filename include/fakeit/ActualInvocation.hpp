@@ -27,7 +27,7 @@ namespace fakeit {
 template<typename ... arglist>
 struct ActualInvocation: public Invocation {
 
-	struct Matcher: public virtual Destructable {
+	struct Matcher: public virtual Destructible {
 		virtual bool matches(ActualInvocation<arglist...>& actualInvocation) = 0;
 		virtual std::string format() const = 0;
 	};

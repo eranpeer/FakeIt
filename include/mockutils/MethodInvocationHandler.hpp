@@ -9,7 +9,7 @@
 #ifndef MethodInvocationHandler_h__
 #define MethodInvocationHandler_h__
 
-#include "mockutils/Destructable.hpp"
+#include "mockutils/Destructible.hpp"
 
 namespace fakeit {
 
@@ -17,7 +17,7 @@ struct NoMoreRecordedActionException {
 };
 
 template<typename R, typename ... arglist>
-struct MethodInvocationHandler: public Destructable {
+struct MethodInvocationHandler: public Destructible {
 	virtual R handleMethodInvocation(arglist&... args) = 0;
 };
 

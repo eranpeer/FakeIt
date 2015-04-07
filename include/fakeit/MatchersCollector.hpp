@@ -15,8 +15,8 @@
 #include <memory>
 #include <vector>
 #include <unordered_set>
-#include <mockutils/Destructable.hpp>
 
+#include "mockutils/Destructible.hpp"
 #include "mockutils/type_utils.hpp"
 #include "fakeit/argument_matchers.hpp"
 
@@ -25,7 +25,7 @@ namespace fakeit {
 template<unsigned int index, typename ... arglist>
 class MatchersCollector {
 
-	std::vector<Destructable*>& _matchers;
+	std::vector<Destructible *>& _matchers;
 
 public:
 
@@ -39,7 +39,7 @@ public:
 	template<std::size_t N>
 		using ArgMatcherCreatorType = decltype(std::declval<TypedMatcherCreator<NakedArgType<N>>>());
 
-	MatchersCollector(std::vector<Destructable*>& matchers)
+	MatchersCollector(std::vector<Destructible *>& matchers)
 			: _matchers(matchers) {
 	}
 

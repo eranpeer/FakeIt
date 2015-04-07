@@ -11,7 +11,7 @@
 
 namespace fakeit {
 
-struct IMatcher: public Destructable {
+struct IMatcher: public Destructible {
 	virtual std::string format() const = 0;
 };
 

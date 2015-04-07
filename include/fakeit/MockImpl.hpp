@@ -242,7 +242,7 @@ private:
 		if (!proxy.isMethodStubbed(vMethod)) {
 			proxy.template stubMethod<id>(vMethod, createRecordedMethodBody < R, arglist...>(*this, vMethod));
 		}
-		Destructable * d = proxy.getMethodMock(vMethod);
+		Destructible * d = proxy.getMethodMock(vMethod);
 		RecordedMethodBody<R, arglist...> * methodMock = dynamic_cast<RecordedMethodBody<R, arglist...> *>(d);
 		return *methodMock;
 	}
@@ -251,7 +251,7 @@ private:
 		if (!proxy.isDtorStubbed()) {
 			proxy.stubDtor(createRecordedDtorBody(*this));
 		}
-		Destructable * d = proxy.getDtorMock();
+		Destructible * d = proxy.getDtorMock();
 		RecordedMethodBody<void> * dtorMock = dynamic_cast<RecordedMethodBody<void> *>(d);
 		return *dtorMock;
 	}

@@ -14,7 +14,7 @@
 #include "fakeit/FakeitContext.hpp"
 
 #include "mockutils/smart_ptr.hpp"
-#include "mockutils/Destructable.hpp"
+#include "mockutils/Destructible.hpp"
 
 namespace fakeit {
 

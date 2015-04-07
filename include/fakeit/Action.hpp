@@ -14,13 +14,13 @@
 #include <tuple>
 
 #include "mockutils/DefaultValue.hpp"
-#include "mockutils/Destructable.hpp"
+#include "mockutils/Destructible.hpp"
 #include "fakeit/FakeitExceptions.hpp"
 
 namespace fakeit {
 
 template<typename R, typename ... arglist>
-struct Action : public Destructable {
+struct Action : public Destructible {
 	virtual ~Action() = default;
 	virtual R invoke(arglist&... args) = 0;
 	virtual bool isDone() = 0;
