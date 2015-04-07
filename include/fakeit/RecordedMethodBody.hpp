@@ -97,7 +97,7 @@ public:
         _fakeit(fakeit), _method{ MethodInfo::nextMethodOrdinal(), name }
 	{}
 
-	virtual ~RecordedMethodBody() {
+	virtual ~RecordedMethodBody() THROWS {
 	}
 
 	MethodInfo & getMethod() {

@@ -36,7 +36,7 @@ public:
 		fake->getVirtualTable().setCookie(1, this);
 	}
 
-	virtual ~MockImpl() {
+	virtual ~MockImpl() THROWS {
 		_proxy.detach();
 		if (_isOwner) {
 			FakeObject<C, baseclasses...>* fake = reinterpret_cast<FakeObject<C, baseclasses...>*>(_instance);

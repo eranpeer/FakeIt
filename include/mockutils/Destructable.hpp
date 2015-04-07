@@ -12,7 +12,7 @@
 namespace fakeit {
 class Destructable {
 public:
-	virtual ~Destructable() {
+	virtual ~Destructable() THROWS {
 	}
 };
 }

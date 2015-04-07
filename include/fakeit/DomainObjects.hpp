@@ -17,7 +17,7 @@ struct FakeitContext;
 
 template<typename C>
 struct MockObject {
-	virtual ~MockObject() = default;
+	virtual ~MockObject() THROWS {};
 	virtual C & get() = 0;
 	virtual FakeitContext & getFakeIt() = 0;
 };
