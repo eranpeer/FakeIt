@@ -534,6 +534,7 @@ struct BasicVerification: tpunit::TestFixture {
 		AnInterface &obj = mock.get();
 		obj.func(1);
 
+		ASSERT_TRUE(Verify(Method(mock, func)));
 		ASSERT_TRUE(Verify(Method(mock, func).Using(1)));
         ASSERT_FALSE(Verify(Method(mock, func).Using(2)));
         ASSERT_TRUE(Verify(Method(mock, func).Using(1)).AtLeast(1));
@@ -542,6 +543,19 @@ struct BasicVerification: tpunit::TestFixture {
         ASSERT_TRUE(Verify(Method(mock, func).Using(1)).Once());
         ASSERT_FALSE(Verify(Method(mock, func).Using(1)).Twice());
         ASSERT_FALSE(Verify(Method(mock, func).Using(1)).Never());
+		ASSERT_TRUE(VerifyNoOtherInvocations(Method(mock, func)));
+
+
+		ASSERT_FALSE(!Verify(Method(mock, func)));
+		ASSERT_FALSE(!Verify(Method(mock, func).Using(1)));
+		ASSERT_TRUE(!Verify(Method(mock, func).Using(2)));
+		ASSERT_FALSE(!Verify(Method(mock, func).Using(1)).AtLeast(1));
+		ASSERT_FALSE(!Verify(Method(mock, func).Using(1)).AtLeastOnce());
+		ASSERT_FALSE(!Verify(Method(mock, func).Using(1)).Exactly(1));
+		ASSERT_FALSE(!Verify(Method(mock, func).Using(1)).Once());
+		ASSERT_TRUE(!Verify(Method(mock, func).Using(1)).Twice());
+		ASSERT_TRUE(!Verify(Method(mock, func).Using(1)).Never());
+		ASSERT_FALSE(!VerifyNoOtherInvocations(Method(mock, func)));
     }
 
 } __BasicVerification;
