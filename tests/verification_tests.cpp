@@ -534,7 +534,8 @@ struct BasicVerification: tpunit::TestFixture {
 		AnInterface &obj = mock.get();
 		obj.func(1);
 
-		ASSERT_TRUE(Verify(Method(mock, func)));
+        ASSERT_FALSE(VerifyNoOtherInvocations(Method(mock, func)));
+        ASSERT_TRUE(Verify(Method(mock, func)));
 		ASSERT_TRUE(Verify(Method(mock, func).Using(1)));
         ASSERT_FALSE(Verify(Method(mock, func).Using(2)));
         ASSERT_TRUE(Verify(Method(mock, func).Using(1)).AtLeast(1));
