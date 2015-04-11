@@ -152,8 +152,8 @@ private:
 			getStubbingContext().setMethodDetails(mockName, methodName);
 		}
 
-		void getInvolvedMocks(std::set<ActualInvocationsSource*>& into) const {
-			into.insert(&getStubbingContext().getInvolvedMock());
+		void getInvolvedMocks(std::vector<ActualInvocationsSource*>& into) const {
+			into.push_back(&getStubbingContext().getInvolvedMock());
 		}
 
 		typename std::function<R(arglist&...)> getOriginalMethod() {
@@ -193,7 +193,7 @@ protected:
 	/**
 	 * Used only by Verify phrase.
 	 */
-	void getInvolvedMocks(std::set<ActualInvocationsSource*>& into) const override {
+	void getInvolvedMocks(std::vector<ActualInvocationsSource*>& into) const override {
 		_impl->getInvolvedMocks(into);
 	}
 

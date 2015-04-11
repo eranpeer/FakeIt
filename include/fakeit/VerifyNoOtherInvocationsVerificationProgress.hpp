@@ -10,6 +10,7 @@
 #define VerifyNoOtherInvocationsVerificationProgress_hpp_
 
 #include "fakeit/FakeitContext.hpp"
+#include "fakeit/ThrowFalseEventHandler.hpp"
 
 namespace fakeit {
 
@@ -26,8 +27,7 @@ class VerifyNoOtherInvocationsVerificationProgress {
 				return;
 			}
 
-			VerifyExpectation();
-
+			VerifyExpectation(_fakeit);
 		}
 
 		void setFileInfo(std::string file, int line, std::string callingMethod) {
@@ -38,14 +38,14 @@ class VerifyNoOtherInvocationsVerificationProgress {
 
 	private:
 
-		FakeitContext& _fakeit;
-		std::set<ActualInvocationsSource*> _mocks;
+		EventHandler& _fakeit;
+		std::vector<ActualInvocationsSource*> _mocks;
 
 		std::string _file;
 		int _line;
 		std::string _callingMethod;
 		bool _isVerified;
-		VerifyNoOtherInvocationsExpectation(FakeitContext& fakeit, std::set<ActualInvocationsSource*> mocks) :
+		VerifyNoOtherInvocationsExpectation(EventHandler& fakeit, std::vector<ActualInvocationsSource*> mocks) :
 				_fakeit(fakeit),
 				_mocks(mocks), 
 				_line(0),
@@ -54,7 +54,7 @@ class VerifyNoOtherInvocationsVerificationProgress {
 
 		VerifyNoOtherInvocationsExpectation(VerifyNoOtherInvocationsExpectation& other) = default;
 
-		void VerifyExpectation() {
+		void VerifyExpectation(EventHandler& verificationErrorHandler) {
 			if (_isVerified)
 				return;
 			_isVerified = true;
@@ -62,19 +62,19 @@ class VerifyNoOtherInvocationsVerificationProgress {
 			std::unordered_set<Invocation*> actualInvocations;
             InvocationUtils::collectActualInvocations(actualInvocations, _mocks);
 
-			std::unordered_set<Invocation*> nonVerifedIvocations;
-            InvocationUtils::selectNonVerifiedInvocations(actualInvocations, nonVerifedIvocations);
+			std::unordered_set<Invocation*> nonVerifiedInvocations;
+            InvocationUtils::selectNonVerifiedInvocations(actualInvocations, nonVerifiedInvocations);
 
-			if (nonVerifedIvocations.size() > 0) {
-				std::vector<Invocation*> sortedNonVerifedIvocations;
-                InvocationUtils::sortByInvocationOrder(nonVerifedIvocations, sortedNonVerifedIvocations);
+			if (nonVerifiedInvocations.size() > 0) {
+				std::vector<Invocation*> sortedNonVerifiedInvocations;
+                InvocationUtils::sortByInvocationOrder(nonVerifiedInvocations, sortedNonVerifiedInvocations);
 
-				std::vector<Invocation*> sortedActualIvocations;
-                InvocationUtils::sortByInvocationOrder(actualInvocations, sortedActualIvocations);
+				std::vector<Invocation*> sortedActualInvocations;
+                InvocationUtils::sortByInvocationOrder(actualInvocations, sortedActualInvocations);
 
-				NoMoreInvocationsVerificationEvent evt(sortedActualIvocations, sortedNonVerifedIvocations);
+				NoMoreInvocationsVerificationEvent evt(sortedActualInvocations, sortedNonVerifiedInvocations);
 				evt.setFileInfo(_file, _line, _callingMethod);
-				_fakeit.handle(evt);
+				return verificationErrorHandler.handle(evt);
 			}
 		}
 
@@ -86,7 +86,7 @@ class VerifyNoOtherInvocationsVerificationProgress {
 			_ptr(ptr) {
 	}
 
-	VerifyNoOtherInvocationsVerificationProgress(FakeitContext& fakeit, std::set<ActualInvocationsSource*>& invocationSources)
+	VerifyNoOtherInvocationsVerificationProgress(FakeitContext& fakeit, std::vector<ActualInvocationsSource*>& invocationSources)
 		: VerifyNoOtherInvocationsVerificationProgress(
 			new VerifyNoOtherInvocationsExpectation(fakeit, invocationSources)
 			) 
@@ -95,11 +95,12 @@ class VerifyNoOtherInvocationsVerificationProgress {
 
 	bool toBool()  {
 		try{
-			_ptr->VerifyExpectation();
+			ThrowFalseEventHandler ev;
+			_ptr->VerifyExpectation(ev);
 			return true;
 		}
-		catch (...){
-			return false;
+		catch (bool e){
+			return e;
 		}
 	}
 

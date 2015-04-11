@@ -14,7 +14,7 @@
 
 namespace fakeit {
 
-struct FakeitContext: private EventHandler, protected EventFormatter {
+struct FakeitContext: public EventHandler, protected EventFormatter {
 	
 	virtual ~FakeitContext() = default;
 
@@ -29,14 +29,14 @@ struct FakeitContext: private EventHandler, protected EventFormatter {
 	{
 		fireEvent(e);
 		auto& eh = getTestingFrameworkAdapter();
-		eh.handle(e);
+		return eh.handle(e);
 	}
 
 	void handle(const NoMoreInvocationsVerificationEvent& e) override
 	{
 		fireEvent(e);
 		auto& eh = getTestingFrameworkAdapter();
-		eh.handle(e);
+		return eh.handle(e);
 	}
 
 	std::string format(const UnexpectedMethodCallEvent& e) override

@@ -32,7 +32,7 @@ namespace fakeit {
 		}
 
         static void collectActualInvocations(std::unordered_set<Invocation *> &actualInvocations,
-            std::set<ActualInvocationsSource *> &invocationSources) {
+            std::vector<ActualInvocationsSource *> &invocationSources) {
             for (auto source : invocationSources) {
                 source->getActualInvocations(actualInvocations);
             }
@@ -46,13 +46,13 @@ namespace fakeit {
             }
         }
 
-        static void collectInvocationSources(std::set<ActualInvocationsSource *> &) {
+        static void collectInvocationSources(std::vector<ActualInvocationsSource *> &) {
         }
 
         template<typename ... list>
-        static void collectInvocationSources(std::set<ActualInvocationsSource *> &into, const ActualInvocationsSource &mock,
+        static void collectInvocationSources(std::vector<ActualInvocationsSource *> &into, const ActualInvocationsSource &mock,
             const list &... tail) {
-            into.insert(const_cast<ActualInvocationsSource *>(&mock));
+            into.push_back(const_cast<ActualInvocationsSource *>(&mock));
             collectInvocationSources(into, tail...);
         }
 
@@ -65,10 +65,15 @@ namespace fakeit {
             collectSequences(vec, tail...);
         }
 
-        static void collectInvolvedMocks(std::vector<Sequence *> &allSequences, std::set<ActualInvocationsSource *> &invlovedMocks) {
+        static void collectInvolvedMocks(std::vector<Sequence *> &allSequences, std::vector<ActualInvocationsSource *> &involvedMocks) {
             for (auto sequence : allSequences) {
-                sequence->getInvolvedMocks(invlovedMocks);
+                sequence->getInvolvedMocks(involvedMocks);
             }
+        }
+
+        template <class T>
+        static T& remove_const(const T &s){
+            return const_cast<T&>(s);
         }
 
     };

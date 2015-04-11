@@ -50,17 +50,31 @@ namespace fakeit {
 
 	struct AggregateInvocationsSource : public ActualInvocationsSource {
 
-		AggregateInvocationsSource(std::set<ActualInvocationsSource *> &sources) : _sources(sources) {
+		AggregateInvocationsSource(std::vector<ActualInvocationsSource *> &sources) : _sources(sources) {
 		}
 
 		void getActualInvocations(std::unordered_set<fakeit::Invocation *> &into) const override {
+			std::unordered_set<fakeit::Invocation *> tmp;
 			for (ActualInvocationsSource *source : _sources) {
-				source->getActualInvocations(into);
+				source->getActualInvocations(tmp);
 			}
+			filter(tmp, into);
 		}
 
+	protected:
+		bool shouldInclude(fakeit::Invocation * invocation) const {
+			return true;
+		}
 	private:
-		std::set<ActualInvocationsSource *> _sources;
+		std::vector<ActualInvocationsSource *> _sources;
+
+		void filter(std::unordered_set<Invocation *> &source, std::unordered_set<Invocation *> &target) const {
+			for(Invocation * i:source){
+				if (shouldInclude(i)){
+					target.insert(i);
+				}
+			}
+		}
 	};
 }
 #endif //ACTUALINVOCATIONSSOURCE_HPP_

@@ -5,10 +5,11 @@
 #include "mockutils/smart_ptr.hpp"
 #include "fakeit/FakeitContext.hpp"
 #include "fakeit/SortInvocations.hpp"
+#include "fakeit/MatchAnalysis.hpp"
 
 namespace fakeit {
 
-struct SequenceVerificationExpectation {
+	struct SequenceVerificationExpectation {
 
 	friend class SequenceVerificationProgress;
 
@@ -16,7 +17,7 @@ struct SequenceVerificationExpectation {
 		if (std::uncaught_exception()) {
 			return;
 		}
-		VerifyExpectation();
+		VerifyExpectation(_fakeit);
 	}
 
 	void setExpectedPattern(std::vector<Sequence*> expectedPattern) {
@@ -35,8 +36,8 @@ struct SequenceVerificationExpectation {
 
 private:
 
-	FakeitContext& _fakeit;
-	InvocationsSourceProxy _involvedMocks;
+		EventHandler& _fakeit;
+	InvocationsSourceProxy _involvedInvocationSources;
 	std::vector<Sequence*> _expectedPattern;
 	int _expectedCount;
 
@@ -46,47 +47,36 @@ private:
 	bool _isVerified;
 
 	SequenceVerificationExpectation(
-			FakeitContext& fakeit,
+			EventHandler& fakeit,
 			InvocationsSourceProxy mocks,
 			std::vector<Sequence*>& expectedPattern) : //
 		_fakeit(fakeit),
-		_involvedMocks(mocks),
+		_involvedInvocationSources(mocks),
 		_expectedPattern(expectedPattern), //
-		_expectedCount(-1), //
+		_expectedCount(-1), // AT_LEAST_ONCE
 		_line(0),
 		_isVerified(false){
 	}
 
-	void VerifyExpectation()
+
+	void VerifyExpectation(EventHandler& verificationErrorHandler)
 	{
 		if (_isVerified)
 			return;
 		_isVerified = true;
-		std::unordered_set<Invocation*> actualIvocations;
-		collectActualInvocations(actualIvocations);
 
-		std::vector<Invocation*> actualSequence;
-        InvocationUtils::sortByInvocationOrder(actualIvocations, actualSequence);
+		MatchAnalysis ma;
+		ma.run(_involvedInvocationSources,	_expectedPattern);
 
-		std::vector<Invocation*> matchedInvocations;
-		int count = countMatches(_expectedPattern, actualSequence, matchedInvocations);
-
-		if (isAtLeastVerification() && atLeastLimitNotReached(count)) {
-			return handleAtLeastVerificationEvent(actualSequence, count);
+		if (isAtLeastVerification() && atLeastLimitNotReached(ma.count)) {
+			return handleAtLeastVerificationEvent(verificationErrorHandler, ma.actualSequence, ma.count);
 		}
 
-		if (isExactVerification() && exactLimitNotMatched(count)) {
-			return handleExactVerificationEvent(actualSequence, count);
+		if (isExactVerification() && exactLimitNotMatched(ma.count)) {
+			return handleExactVerificationEvent(verificationErrorHandler, ma.actualSequence, ma.count);
 		}
 
-		markAsVerified(matchedInvocations);
-	}
-
-    void DoVerify(){
-    }
-	
-    static inline int AT_LEAST_ONCE() {
-		return -1;
+		markAsVerified(ma.matchedInvocations);
 	}
 
 	std::vector<Sequence*>& collectSequences(std::vector<Sequence*>& vec) {
@@ -99,71 +89,12 @@ private:
 		return collectSequences(vec, tail...);
 	}
 
-	void collectActualInvocations(std::unordered_set<Invocation*>& actualIvocations) {
-		_involvedMocks.getActualInvocations(actualIvocations);
-	}
 
 	static void markAsVerified(std::vector<Invocation*>& matchedInvocations) {
         for (auto i : matchedInvocations) {
             i->markAsVerified();
         }
 	}
-
-	static int countMatches(std::vector<Sequence*> &pattern, std::vector<Invocation*>& actualSequence,
-		std::vector<Invocation*>& matchedInvocations) {
-		int end = -1;
-		int count = 0;
-		int startSearchIndex = 0;
-		while (findNextMatch(pattern, actualSequence, startSearchIndex, end, matchedInvocations)) {
-			count++;
-			startSearchIndex = end;
-		}
-		return count;
-	}
-
-	static void collectMatchedInvocations(std::vector<Invocation*>& actualSequence, std::vector<Invocation*>& matchedInvocations, int start,
-		int length) {
-		int indexAfterMatchedPattern = start + length;
-		for (; start < indexAfterMatchedPattern; start++) {
-			matchedInvocations.push_back(actualSequence[start]);
-		}
-	}
-
-	static bool findNextMatch(std::vector<Sequence*> &pattern, std::vector<Invocation*>& actualSequence, int startSearchIndex, int& end,
-		std::vector<Invocation*>& matchedInvocations) {
-		for (auto sequence : pattern) {
-			int index = findNextMatch(sequence, actualSequence, startSearchIndex);
-			if (index == -1) {
-				return false;
-			}
-			collectMatchedInvocations(actualSequence, matchedInvocations, index, sequence->size());
-			startSearchIndex = index + sequence->size();
-		}
-		end = startSearchIndex;
-		return true;
-	}
-
-	static bool isMatch(std::vector<Invocation*>& actualSequence, std::vector<Invocation::Matcher*>& expectedSequence, int start) {
-		bool found = true;
-		for (unsigned int j = 0; found && j < expectedSequence.size(); j++) {
-			Invocation* actual = actualSequence[start + j];
-			Invocation::Matcher* expected = expectedSequence[j];
-			found = found && expected->matches(*actual);
-		}
-		return found;
-	}
-
-	static int findNextMatch(Sequence* &pattern, std::vector<Invocation*>& actualSequence, int startSearchIndex) {
-		std::vector<Invocation::Matcher*> expectedSequence;
-		pattern->getExpectedSequence(expectedSequence);
-		for (int i = startSearchIndex; i < ((int) actualSequence.size() - (int) expectedSequence.size() + 1); i++) {
-			if (isMatch(actualSequence, expectedSequence, i)) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
 
 	bool isAtLeastVerification() {
 		// negative number represents an "AtLeast" search;
@@ -182,16 +113,16 @@ private:
 		return count != _expectedCount;
 	}
 
-	void handleExactVerificationEvent(std::vector<Invocation*> actualSequence, int count) {
+	void handleExactVerificationEvent(EventHandler& verificationErrorHandler, std::vector<Invocation*> actualSequence, int count) {
 		SequenceVerificationEvent evt(VerificationType::Exact, _expectedPattern, actualSequence, _expectedCount, count);
 		evt.setFileInfo(_file, _line, _testMethod);
-		_fakeit.handle(evt);
+		return verificationErrorHandler.handle(evt);
 	}
 
-	void handleAtLeastVerificationEvent(std::vector<Invocation*> actualSequence, int count) {
+	void handleAtLeastVerificationEvent(EventHandler& verificationErrorHandler, std::vector<Invocation*> actualSequence, int count) {
 		SequenceVerificationEvent evt(VerificationType::AtLeast, _expectedPattern, actualSequence, -_expectedCount, count);
 		evt.setFileInfo(_file, _line, _testMethod);
-		_fakeit.handle(evt);
+		return verificationErrorHandler.handle(evt);
 	}
 
 };

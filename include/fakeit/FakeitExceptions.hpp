@@ -40,57 +40,5 @@ private:
 	std::string _format;
 };
 
-struct VerificationException: public FakeitException {
-	virtual ~VerificationException() = default;
-
-	void setFileInfo(std::string file, int line, std::string callingMethod) {
-		_file = file;
-		_callingMethod = callingMethod;
-		_line = line;
-	}
-
-	const std::string& file() const {
-		return _file;
-	}
-	int line() const {
-		return _line;
-	}
-	const std::string& callingMethod() const {
-		return _callingMethod;
-	}
-
-private:
-	std::string _file;
-	int _line;
-	std::string _callingMethod;
-};
-
-struct NoMoreInvocationsVerificationException: public VerificationException {
-
-	NoMoreInvocationsVerificationException(std::string format) : //
-			_format(format) { //
-	}
-
-	virtual std::string what() const override {
-		return _format;
-	}
-private:
-	std::string _format;
-};
-
-struct SequenceVerificationException: public VerificationException {
-	SequenceVerificationException(const std::string& format) : //
-			_format(format) //
-	{
-	}
-
-	virtual std::string what() const override {
-		return _format;
-	}
-
-private:
-	std::string _format;
-};
-
 }
 #endif // FakeitExceptions_h__

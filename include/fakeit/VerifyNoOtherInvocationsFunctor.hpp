@@ -38,9 +38,7 @@ public:
 
 	template<typename ... list>
 	VerifyNoOtherInvocationsVerificationProgress operator()(const ActualInvocationsSource& head, const list&... tail) {
-		std::set<ActualInvocationsSource*> invocationSources;
-		invocationSources.insert(const_cast<ActualInvocationsSource*>(&head));
-        InvocationUtils::collectInvocationSources(invocationSources, tail...);
+		std::vector<ActualInvocationsSource *> invocationSources {&InvocationUtils::remove_const(head), &InvocationUtils::remove_const(tail)...};
 		VerifyNoOtherInvocationsVerificationProgress progress{_fakeit,invocationSources};
 		return progress;
 	}

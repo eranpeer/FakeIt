@@ -31,6 +31,7 @@
     <ClInclude Include="..\include\fakeit\Functional.hpp" />
     <ClInclude Include="..\include\fakeit\Invocation.hpp" />
     <ClInclude Include="..\include\fakeit\invocation_matchers.hpp" />
+    <ClInclude Include="..\include\fakeit\MatchAnalysis.hpp" />
     <ClInclude Include="..\include\fakeit\MatchersCollector.hpp" />
     <ClInclude Include="..\include\fakeit\MethodMockingContext.hpp" />
     <ClInclude Include="..\include\fakeit\Mock.hpp" />
@@ -47,6 +48,7 @@
     <ClInclude Include="..\include\fakeit\StubbingContext.hpp" />
     <ClInclude Include="..\include\fakeit\StubbingImpl.hpp" />
     <ClInclude Include="..\include\fakeit\StubbingProgress.hpp" />
+    <ClInclude Include="..\include\fakeit\UnverifiedFunctor.hpp" />
     <ClInclude Include="..\include\fakeit\UsingFunctor.hpp" />
     <ClInclude Include="..\include\fakeit\VerifyFunctor.hpp" />
     <ClInclude Include="..\include\fakeit\VerifyNoOtherInvocationsFunctor.hpp" />
@@ -54,7 +56,6 @@
     <ClInclude Include="..\include\fakeit\WhenFunctor.hpp" />
     <ClInclude Include="..\include\fakeit\Xaction.hpp" />
     <ClInclude Include="..\include\mockutils\DefaultValue.hpp" />
-    <ClInclude Include="..\include\mockutils\Destructable.hpp" />
     <ClInclude Include="..\include\mockutils\DynamicProxy.hpp" />
     <ClInclude Include="..\include\mockutils\FakeObject.hpp" />
     <ClInclude Include="..\include\mockutils\Finally.hpp" />

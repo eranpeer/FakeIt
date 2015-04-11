@@ -21,13 +21,12 @@ namespace fakeit {
 
         template<typename ... list>
         SequenceVerificationProgress operator()(const Sequence &sequence, const list &... tail) {
-            std::vector<Sequence *> allSequences;
-            InvocationUtils::collectSequences(allSequences, sequence, tail...);
+            std::vector<Sequence*> allSequences {&InvocationUtils::remove_const(sequence), &InvocationUtils::remove_const(tail)...};
 
-            std::set<ActualInvocationsSource *> invlovedSources;
-            InvocationUtils::collectInvolvedMocks(allSequences, invlovedSources);
+            std::vector<ActualInvocationsSource *> involvedSources;
+            InvocationUtils::collectInvolvedMocks(allSequences, involvedSources);
 
-            InvocationsSourceProxy aggregateInvocationsSource{new AggregateInvocationsSource(invlovedSources)};
+            InvocationsSourceProxy aggregateInvocationsSource{new AggregateInvocationsSource(involvedSources)};
             InvocationsSourceProxy unverifiedInvocationsSource{new UnverifiedInvocationsSource(aggregateInvocationsSource)};
 
             UsingProgress usingProgress(_fakeit, unverifiedInvocationsSource);
@@ -45,9 +44,7 @@ namespace fakeit {
 
         template<typename ... list>
         UnverifiedInvocationsSource operator()(const ActualInvocationsSource &head, const list &... tail) {
-            std::set<ActualInvocationsSource *> allMocks;
-            allMocks.insert(const_cast<ActualInvocationsSource *> (&head));
-            InvocationUtils::collectInvocationSources(allMocks, tail...);
+            std::vector<ActualInvocationsSource *> allMocks {&InvocationUtils::remove_const(head), &InvocationUtils::remove_const(tail)...};
             InvocationsSourceProxy aggregateInvocationsSource{new AggregateInvocationsSource(allMocks)};
             UnverifiedInvocationsSource unverifiedInvocationsSource{aggregateInvocationsSource};
             return unverifiedInvocationsSource;
@@ -58,7 +55,7 @@ namespace fakeit {
 //            std::vector<Sequence *> allSequences;
 //            collectSequences(allSequences, sequence, tail...);
 //
-//            std::set<ActualInvocationsSource *> involvedSources;
+//            std::vector<ActualInvocationsSource *> involvedSources;
 //            collectInvolvedMocks(allSequences, involvedSources);
 //
 //            InvocationsSourceProxy aggregateInvocationsSource{new AggregateInvocationsSource(involvedSources)};

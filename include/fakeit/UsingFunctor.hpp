@@ -31,9 +31,7 @@ namespace fakeit {
 
 		template<typename ... list>
 		UsingProgress operator()(const ActualInvocationsSource &head, const list &... tail) {
-			std::set<ActualInvocationsSource *> allMocks;
-			allMocks.insert(const_cast<ActualInvocationsSource *> (&head));
-            InvocationUtils::collectInvocationSources(allMocks, tail...);
+			std::vector<ActualInvocationsSource *> allMocks {&InvocationUtils::remove_const(head), &InvocationUtils::remove_const(tail)...};
 			InvocationsSourceProxy aggregateInvocationsSource{new AggregateInvocationsSource(allMocks)};
 			UsingProgress progress(_fakeit, aggregateInvocationsSource);
 			return progress;
