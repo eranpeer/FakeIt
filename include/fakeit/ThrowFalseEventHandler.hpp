@@ -8,10 +8,7 @@
 #include "fakeit/EventHandler.hpp"
 
 namespace fakeit {
-	class ThrowFalseEventHandler : public EventHandler {
-		void handle(const UnexpectedMethodCallEvent &e) override {
-			throw false;
-		}
+	class ThrowFalseEventHandler : public VerificationEventHandler {
 
 		void handle(const SequenceVerificationEvent &e) override {
 			throw false;

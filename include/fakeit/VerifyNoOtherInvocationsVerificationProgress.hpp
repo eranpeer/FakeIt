@@ -38,14 +38,14 @@ class VerifyNoOtherInvocationsVerificationProgress {
 
 	private:
 
-		EventHandler& _fakeit;
+		VerificationEventHandler& _fakeit;
 		std::vector<ActualInvocationsSource*> _mocks;
 
 		std::string _file;
 		int _line;
 		std::string _callingMethod;
 		bool _isVerified;
-		VerifyNoOtherInvocationsExpectation(EventHandler& fakeit, std::vector<ActualInvocationsSource*> mocks) :
+		VerifyNoOtherInvocationsExpectation(VerificationEventHandler& fakeit, std::vector<ActualInvocationsSource*> mocks) :
 				_fakeit(fakeit),
 				_mocks(mocks), 
 				_line(0),
@@ -54,7 +54,7 @@ class VerifyNoOtherInvocationsVerificationProgress {
 
 		VerifyNoOtherInvocationsExpectation(VerifyNoOtherInvocationsExpectation& other) = default;
 
-		void VerifyExpectation(EventHandler& verificationErrorHandler) {
+		void VerifyExpectation(VerificationEventHandler& verificationErrorHandler) {
 			if (_isVerified)
 				return;
 			_isVerified = true;
