@@ -16,7 +16,9 @@
 #ifdef _MSC_VER
 #include "mockutils/mscpp/VirtualTable.hpp"
 #else
+
 #include "mockutils/gcc/VirtualTable.hpp"
+
 #endif
 
 #include "mockutils/union_cast.hpp"
@@ -29,13 +31,13 @@
 namespace fakeit {
 
     class InvocationHandlers : public InvocationHandlerCollection {
-        std::vector<std::shared_ptr<Destructible>>& _methodMocks;
-        std::vector<unsigned int>& _offsets;
+        std::vector<std::shared_ptr<Destructible>> &_methodMocks;
+        std::vector<unsigned int> &_offsets;
 
         unsigned int getOffset(unsigned int id) {
             unsigned int offset = 0;
-            for(;offset<_offsets.size();offset++){
-                if (_offsets[offset] == id){
+            for (; offset < _offsets.size(); offset++) {
+                if (_offsets[offset] == id) {
                     break;
                 }
             }
@@ -44,12 +46,12 @@ namespace fakeit {
 
     public:
         InvocationHandlers(
-                std::vector<std::shared_ptr<Destructible>>& methodMocks,
-                std::vector<unsigned int>& offsets) :
-                _methodMocks(methodMocks),_offsets(offsets){
+                std::vector<std::shared_ptr<Destructible>> &methodMocks,
+                std::vector<unsigned int> &offsets) :
+                _methodMocks(methodMocks), _offsets(offsets) {
         }
 
-        Destructible * getInvocatoinHandlerPtrById(unsigned int id) override {
+        Destructible *getInvocatoinHandlerPtrById(unsigned int id) override {
             unsigned int offset = getOffset(id);
             std::shared_ptr<Destructible> ptr = _methodMocks[offset];
             return ptr.get();
@@ -62,19 +64,18 @@ namespace fakeit {
 
         static_assert(std::is_polymorphic<C>::value, "DynamicProxy requires a polymorphic type");
 
-        DynamicProxy(C& instance) :
-            instance(instance), originalVtHandle(VirtualTable<C, baseclasses...>::getVTable(instance).createHandle()),
-            _methodMocks(VTUtils::getVTSize<C>()),
-            _offsets(VTUtils::getVTSize<C>()),
-            _invocationHandlers(_methodMocks,_offsets)
-        {
+        DynamicProxy(C &instance) :
+                instance(instance),
+                originalVtHandle(VirtualTable<C, baseclasses...>::getVTable(instance).createHandle()),
+                _methodMocks(VTUtils::getVTSize<C>()),
+                _offsets(VTUtils::getVTSize<C>()),
+                _invocationHandlers(_methodMocks, _offsets) {
             _cloneVt.copyFrom(originalVtHandle.restore());
             _cloneVt.setCookie(InvocationHandlerCollection::VT_COOKIE_INDEX, &_invocationHandlers);
             getFake().setVirtualTable(_cloneVt);
         }
 
-        void detach()
-        {
+        void detach() {
             getFake().setVirtualTable(originalVtHandle.restore());
         }
 
@@ -82,12 +83,12 @@ namespace fakeit {
             _cloneVt.dispose();
         }
 
-        C& get() {
+        C &get() {
             return instance;
         }
 
         void Reset() {
-            _methodMocks = { {} };
+            _methodMocks = {{}};
             _members = {};
             _cloneVt.copyFrom(originalVtHandle.restore());
         }
@@ -96,13 +97,13 @@ namespace fakeit {
         void stubMethod(R(C::*vMethod)(arglist...), MethodInvocationHandler<R, arglist...> *methodInvocationHandler) {
             auto offset = VTUtils::getOffset(vMethod);
             MethodProxyCreator<R, arglist...> creator;
-            bind(creator.template createMethodProxy<id + 1>(offset),methodInvocationHandler);
+            bind(creator.template createMethodProxy<id + 1>(offset), methodInvocationHandler);
         }
 
-        void stubDtor(MethodInvocationHandler<void>* methodInvocationHandler) {
+        void stubDtor(MethodInvocationHandler<void> *methodInvocationHandler) {
             auto offset = VTUtils::getDestructorOffset<C>();
             MethodProxyCreator<void> creator;
-            bindDtor(creator.createMethodProxy<0>(offset),methodInvocationHandler);
+            bindDtor(creator.createMethodProxy<0>(offset), methodInvocationHandler);
         }
 
         template<typename R, typename ... arglist>
@@ -117,30 +118,31 @@ namespace fakeit {
         }
 
         template<typename R, typename ... arglist>
-        Destructible * getMethodMock(R(C::*vMethod)(arglist...)) {
+        Destructible *getMethodMock(R(C::*vMethod)(arglist...)) {
             auto offset = VTUtils::getOffset(vMethod);
             std::shared_ptr<Destructible> ptr = _methodMocks[offset];
             return ptr.get();
         }
 
-        Destructible * getDtorMock() {
+        Destructible *getDtorMock() {
             auto offset = VTUtils::getDestructorOffset<C>();
             std::shared_ptr<Destructible> ptr = _methodMocks[offset];
             return ptr.get();
         }
 
         template<typename DATA_TYPE, typename ... arglist>
-        void stubDataMember(DATA_TYPE C::*member, const arglist&... initargs) {
+        void stubDataMember(DATA_TYPE C::*member, const arglist &... initargs) {
             DATA_TYPE C::*theMember = (DATA_TYPE C::*) member;
-            C& mock = get();
+            C &mock = get();
             DATA_TYPE *memberPtr = &(mock.*theMember);
             _members.push_back(
-                std::shared_ptr < DataMemeberWrapper<DATA_TYPE, arglist...> > {new DataMemeberWrapper<DATA_TYPE, arglist...>(memberPtr,
-                initargs...)});
+                    std::shared_ptr<DataMemeberWrapper < DATA_TYPE, arglist...> >
+                    {new DataMemeberWrapper < DATA_TYPE, arglist...>(memberPtr,
+                    initargs...)});
         }
 
         template<typename DATA_TYPE>
-        void getMethodMocks(std::vector<DATA_TYPE>& into) const {
+        void getMethodMocks(std::vector<DATA_TYPE> &into) const {
             for (std::shared_ptr<Destructible> ptr : _methodMocks) {
                 DATA_TYPE p = dynamic_cast<DATA_TYPE>(ptr.get());
                 if (p) {
@@ -149,8 +151,8 @@ namespace fakeit {
             }
         }
 
-        VirtualTable<C, baseclasses...>& getOriginalVT() {
-            VirtualTable<C, baseclasses...>& vt = originalVtHandle.restore();
+        VirtualTable<C, baseclasses...> &getOriginalVT() {
+            VirtualTable<C, baseclasses...> &vt = originalVtHandle.restore();
             return vt;
         }
 
@@ -161,10 +163,11 @@ namespace fakeit {
         private:
             DATA_TYPE *dataMember;
         public:
-            DataMemeberWrapper(DATA_TYPE *dataMember, const arglist&... initargs) :
-                dataMember(dataMember) {
-                new (dataMember) DATA_TYPE{ initargs ... };
+            DataMemeberWrapper(DATA_TYPE *dataMember, const arglist &... initargs) :
+                    dataMember(dataMember) {
+                new(dataMember) DATA_TYPE{initargs ...};
             }
+
             ~DataMemeberWrapper() {
                 dataMember->~DATA_TYPE();
             }
@@ -172,16 +175,17 @@ namespace fakeit {
 
         static_assert(sizeof(C) == sizeof(FakeObject<C, baseclasses...>), "This is a problem");
 
-        C& instance;
+        C &instance;
         typename VirtualTable<C, baseclasses...>::Handle originalVtHandle; // avoid delete!! this is the original!
-        VirtualTable<C, baseclasses...> _cloneVt;//
+        VirtualTable<C, baseclasses...> _cloneVt;
+        //
         std::vector<std::shared_ptr<Destructible>> _methodMocks;
         std::vector<std::shared_ptr<Destructible>> _members;
         std::vector<unsigned int> _offsets;
         InvocationHandlers _invocationHandlers;
 
-        FakeObject<C, baseclasses...>& getFake() {
-            return reinterpret_cast<FakeObject<C, baseclasses...>&>(instance);
+        FakeObject<C, baseclasses...> &getFake() {
+            return reinterpret_cast<FakeObject<C, baseclasses...> &>(instance);
         }
 
         void bind(const MethodProxy &methodProxy, Destructible *invocationHandler) {
@@ -204,8 +208,8 @@ namespace fakeit {
 
         template<typename BaseClass>
         void checkMultipleInheritance() {
-            C* ptr = (C*) (unsigned int) 1;
-            BaseClass* basePtr = ptr;
+            C *ptr = (C *) (unsigned int) 1;
+            BaseClass *basePtr = ptr;
             int delta = (unsigned long) basePtr - (unsigned long) ptr;
             if (delta > 0) {
                 // base class does not start on same position as derived class.

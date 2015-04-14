@@ -13,8 +13,8 @@
 namespace fakeit {
 
 // For use in Fake & When phrases
-template<typename R, typename ... arglist>
-struct StubbingContext : public Xaction {
-	virtual void appendAction(Action<R, arglist...>* action) = 0;
-};
+    template<typename R, typename ... arglist>
+    struct StubbingContext : public Xaction {
+        virtual void appendAction(Action<R, arglist...> *action) = 0;
+    };
 }

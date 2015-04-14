@@ -15,130 +15,131 @@
 
 namespace fakeit {
 
-enum class VerificationType {
-	Exact, AtLeast, NoMoreInvocations
-};
+    enum class VerificationType {
+        Exact, AtLeast, NoMoreInvocations
+    };
 
-enum class UnexpectedType {
-	Unmocked, Unmatched
-};
+    enum class UnexpectedType {
+        Unmocked, Unmatched
+    };
 
-struct VerificationEvent {
+    struct VerificationEvent {
 
-	VerificationEvent(VerificationType verificationType) :
-			_verificationType(verificationType), _line(0) {
-	}
+        VerificationEvent(VerificationType verificationType) :
+                _verificationType(verificationType), _line(0) {
+        }
 
-	virtual ~VerificationEvent() = default;
+        virtual ~VerificationEvent() = default;
 
-	VerificationType verificationType() const {
-		return _verificationType;
-	}
+        VerificationType verificationType() const {
+            return _verificationType;
+        }
 
-    void setFileInfo(std::string file, int line, std::string callingMethod) {
-		_file = file;
-		_callingMethod = callingMethod;
-		_line = line;
-	}
+        void setFileInfo(std::string file, int line, std::string callingMethod) {
+            _file = file;
+            _callingMethod = callingMethod;
+            _line = line;
+        }
 
-	std::string file() const {
-		return _file;
-	}
-	
-    int line() const {
-		return _line;
-	}
-	const std::string& callingMethod() const {
-		return _callingMethod;
-	}
+        std::string file() const {
+            return _file;
+        }
 
-private:
-	VerificationType _verificationType;
-    std::string _file;
-	int _line;
-	std::string _callingMethod;
-};
+        int line() const {
+            return _line;
+        }
 
-struct NoMoreInvocationsVerificationEvent: public VerificationEvent {
+        const std::string &callingMethod() const {
+            return _callingMethod;
+        }
 
-	~NoMoreInvocationsVerificationEvent() = default;
+    private:
+        VerificationType _verificationType;
+        std::string _file;
+        int _line;
+        std::string _callingMethod;
+    };
 
-	NoMoreInvocationsVerificationEvent( //
-			std::vector<Invocation*>& allIvocations, //
-			std::vector<Invocation*>& unverifedIvocations) : //
-			VerificationEvent(VerificationType::NoMoreInvocations), //
-			_allIvocations(allIvocations), //
-			_unverifedIvocations(unverifedIvocations) { //
-	}
+    struct NoMoreInvocationsVerificationEvent : public VerificationEvent {
 
-	const std::vector<Invocation*>& allIvocations() const {
-		return _allIvocations;
-	}
+        ~NoMoreInvocationsVerificationEvent() = default;
 
-	const std::vector<Invocation*>& unverifedIvocations() const {
-		return _unverifedIvocations;
-	}
+        NoMoreInvocationsVerificationEvent( //
+                std::vector<Invocation *> &allIvocations, //
+                std::vector<Invocation *> &unverifedIvocations) : //
+                VerificationEvent(VerificationType::NoMoreInvocations), //
+                _allIvocations(allIvocations), //
+                _unverifedIvocations(unverifedIvocations) { //
+        }
 
-private:
-	const std::vector<Invocation*> _allIvocations;
-	const std::vector<Invocation*> _unverifedIvocations;
-};
+        const std::vector<Invocation *> &allIvocations() const {
+            return _allIvocations;
+        }
 
-struct SequenceVerificationEvent: public VerificationEvent {
+        const std::vector<Invocation *> &unverifedIvocations() const {
+            return _unverifedIvocations;
+        }
 
-	~SequenceVerificationEvent() = default;
+    private:
+        const std::vector<Invocation *> _allIvocations;
+        const std::vector<Invocation *> _unverifedIvocations;
+    };
 
-	SequenceVerificationEvent(VerificationType verificationType, //
-			std::vector<Sequence*>& expectedPattern, //
-			std::vector<Invocation*>& actualSequence, //
-			int expectedCount, //
-			int actualCount) : //
-			VerificationEvent(verificationType), //
-			_expectedPattern(expectedPattern), //
-			_actualSequence(actualSequence), //
-			_expectedCount(expectedCount), //
-			_actualCount(actualCount) //
-	{ //
-	}
+    struct SequenceVerificationEvent : public VerificationEvent {
 
-	const std::vector<Sequence*>& expectedPattern() const {
-		return _expectedPattern;
-	}
+        ~SequenceVerificationEvent() = default;
 
-	const std::vector<Invocation*>& actualSequence() const {
-		return _actualSequence;
-	}
+        SequenceVerificationEvent(VerificationType verificationType, //
+                                  std::vector<Sequence *> &expectedPattern, //
+                                  std::vector<Invocation *> &actualSequence, //
+                                  int expectedCount, //
+                                  int actualCount) : //
+                VerificationEvent(verificationType), //
+                _expectedPattern(expectedPattern), //
+                _actualSequence(actualSequence), //
+                _expectedCount(expectedCount), //
+                _actualCount(actualCount) //
+        { //
+        }
 
-	int expectedCount() const {
-		return _expectedCount;
-	}
+        const std::vector<Sequence *> &expectedPattern() const {
+            return _expectedPattern;
+        }
 
-	int actualCount() const {
-		return _actualCount;
-	}
+        const std::vector<Invocation *> &actualSequence() const {
+            return _actualSequence;
+        }
 
-private:
-	const std::vector<Sequence*> _expectedPattern;
-	const std::vector<Invocation*> _actualSequence;
-	const int _expectedCount;
-	const int _actualCount;
-};
+        int expectedCount() const {
+            return _expectedCount;
+        }
 
-struct UnexpectedMethodCallEvent {
-	UnexpectedMethodCallEvent(UnexpectedType unexpectedType, const Invocation& invocation) :
-			_unexpectedType(unexpectedType), _invocation(invocation) {
-	}
+        int actualCount() const {
+            return _actualCount;
+        }
 
-	const Invocation& getInvocation() const {
-		return _invocation;
-	}
+    private:
+        const std::vector<Sequence *> _expectedPattern;
+        const std::vector<Invocation *> _actualSequence;
+        const int _expectedCount;
+        const int _actualCount;
+    };
 
-	UnexpectedType getUnexpectedType() const {
-		return _unexpectedType;
-	}
+    struct UnexpectedMethodCallEvent {
+        UnexpectedMethodCallEvent(UnexpectedType unexpectedType, const Invocation &invocation) :
+                _unexpectedType(unexpectedType), _invocation(invocation) {
+        }
 
-	const UnexpectedType _unexpectedType;
-	const Invocation& _invocation;
-};
+        const Invocation &getInvocation() const {
+            return _invocation;
+        }
+
+        UnexpectedType getUnexpectedType() const {
+            return _unexpectedType;
+        }
+
+        const UnexpectedType _unexpectedType;
+        const Invocation &_invocation;
+    };
 
 }

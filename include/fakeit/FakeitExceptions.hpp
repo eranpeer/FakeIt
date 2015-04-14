@@ -11,31 +11,31 @@
 
 namespace fakeit {
 
-struct FakeitException {
+    struct FakeitException {
 
-	virtual ~FakeitException() = default;
+        virtual ~FakeitException() = default;
 
-	virtual std::string what() const = 0;
+        virtual std::string what() const = 0;
 
-	friend std::ostream & operator<<(std::ostream &os, const FakeitException& val) {
-		os << val.what();
-		return os;
-	}
-};
+        friend std::ostream &operator<<(std::ostream &os, const FakeitException &val) {
+            os << val.what();
+            return os;
+        }
+    };
 
 
-struct UnexpectedMethodCallException: public FakeitException {
+    struct UnexpectedMethodCallException : public FakeitException {
 
-	UnexpectedMethodCallException(std::string format) :
-			_format(format) {
-	}
+        UnexpectedMethodCallException(std::string format) :
+                _format(format) {
+        }
 
-	virtual std::string what() const override {
-		return _format;
-	}
+        virtual std::string what() const override {
+            return _format;
+        }
 
-private:
-	std::string _format;
-};
+    private:
+        std::string _format;
+    };
 
 }

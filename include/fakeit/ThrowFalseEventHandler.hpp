@@ -6,14 +6,14 @@
 #include "fakeit/EventHandler.hpp"
 
 namespace fakeit {
-	class ThrowFalseEventHandler : public VerificationEventHandler {
+    class ThrowFalseEventHandler : public VerificationEventHandler {
 
-		void handle(const SequenceVerificationEvent &e) override {
-			throw false;
-		}
+        void handle(const SequenceVerificationEvent &e) override {
+            throw false;
+        }
 
-		void handle(const NoMoreInvocationsVerificationEvent &e) override {
-			throw false;
-		}
-	};
+        void handle(const NoMoreInvocationsVerificationEvent &e) override {
+            throw false;
+        }
+    };
 }

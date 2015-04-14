@@ -8,15 +8,15 @@
 #pragma once
 namespace fakeit {
 
-template<typename TARGET, typename SOURCE>
-TARGET union_cast(SOURCE source) {
-	//static_assert(sizeof(TARGET) == sizeof(SOURCE), "can't convert");
-	union {
-		SOURCE source;
-		TARGET target;
-	} u;
-	u.source = source;
-	return u.target;
-}
+    template<typename TARGET, typename SOURCE>
+    TARGET union_cast(SOURCE source) {
+        //static_assert(sizeof(TARGET) == sizeof(SOURCE), "can't convert");
+        union {
+            SOURCE source;
+            TARGET target;
+        } u;
+        u.source = source;
+        return u.target;
+    }
 
 }

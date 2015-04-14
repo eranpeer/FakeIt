@@ -17,128 +17,129 @@
 
 namespace fakeit {
 
-class Sequence {
-private:
+    class Sequence {
+    private:
 
-protected:
+    protected:
 
-	Sequence() {
-	}
+        Sequence() {
+        }
 
-	virtual ~Sequence() THROWS {
-	}
+        virtual ~Sequence() THROWS {
+        }
 
-public:
+    public:
 
-	/**
-	 * Fetch the matchers that make-up this sequence.
-	 */
-	virtual void getExpectedSequence(std::vector<Invocation::Matcher*>& into) const = 0;
+        /**
+         * Fetch the matchers that make-up this sequence.
+         */
+        virtual void getExpectedSequence(std::vector<Invocation::Matcher *> &into) const = 0;
 
-	/**
-	 * Collect all mock objects that are involved in this sequence.
-	 */
-	virtual void getInvolvedMocks(std::vector<ActualInvocationsSource*>& into) const = 0;
+        /**
+         * Collect all mock objects that are involved in this sequence.
+         */
+        virtual void getInvolvedMocks(std::vector<ActualInvocationsSource *> &into) const = 0;
 
-	virtual unsigned int size() const = 0;
+        virtual unsigned int size() const = 0;
 
-	friend class VerifyFunctor;
-};
+        friend class VerifyFunctor;
+    };
 
-class ConcatenatedSequence: public virtual Sequence {
-private:
-	const Sequence &s1;
-	const Sequence &s2;
+    class ConcatenatedSequence : public virtual Sequence {
+    private:
+        const Sequence &s1;
+        const Sequence &s2;
 
-protected:
-	ConcatenatedSequence(const Sequence &s1, const Sequence &s2) :
-			s1(s1), s2(s2) {
-	}
+    protected:
+        ConcatenatedSequence(const Sequence &s1, const Sequence &s2) :
+                s1(s1), s2(s2) {
+        }
 
-public:
+    public:
 
-	virtual ~ConcatenatedSequence() {
-	}
+        virtual ~ConcatenatedSequence() {
+        }
 
-	unsigned int size() const override {
-		return s1.size() + s2.size();
-	}
+        unsigned int size() const override {
+            return s1.size() + s2.size();
+        }
 
-	const Sequence& getLeft() const {
-		return s1;
-	}
+        const Sequence &getLeft() const {
+            return s1;
+        }
 
-	const Sequence& getRight() const {
-		return s2;
-	}
+        const Sequence &getRight() const {
+            return s2;
+        }
 
-	void getExpectedSequence(std::vector<Invocation::Matcher*>& into) const override {
-		s1.getExpectedSequence(into);
-		s2.getExpectedSequence(into);
-	}
+        void getExpectedSequence(std::vector<Invocation::Matcher *> &into) const override {
+            s1.getExpectedSequence(into);
+            s2.getExpectedSequence(into);
+        }
 
-	virtual void getInvolvedMocks(std::vector<ActualInvocationsSource*>& into) const override {
-		s1.getInvolvedMocks(into);
-		s2.getInvolvedMocks(into);
-	}
+        virtual void getInvolvedMocks(std::vector<ActualInvocationsSource *> &into) const override {
+            s1.getInvolvedMocks(into);
+            s2.getInvolvedMocks(into);
+        }
 
-	friend inline ConcatenatedSequence operator+(const Sequence &s1, const Sequence &s2);
-};
+        friend inline ConcatenatedSequence operator+(const Sequence &s1, const Sequence &s2);
+    };
 
-class RepeatedSequence: public virtual Sequence {
-private:
-	const Sequence &_s;
-	const int times;
+    class RepeatedSequence : public virtual Sequence {
+    private:
+        const Sequence &_s;
+        const int times;
 
-protected:
-	RepeatedSequence(const Sequence &s, const int times) :
-			_s(s), times(times) {
-	}
+    protected:
+        RepeatedSequence(const Sequence &s, const int times) :
+                _s(s), times(times) {
+        }
 
-public:
+    public:
 
-	~RepeatedSequence() {
-	}
+        ~RepeatedSequence() {
+        }
 
-	unsigned int size() const override {
-		return _s.size() * times;
-	}
+        unsigned int size() const override {
+            return _s.size() * times;
+        }
 
-	friend inline RepeatedSequence operator*(const Sequence &s, int times);
-	friend inline RepeatedSequence operator*(int times, const Sequence &s);
+        friend inline RepeatedSequence operator*(const Sequence &s, int times);
 
-	void getInvolvedMocks(std::vector<ActualInvocationsSource*>& into) const override {
-		_s.getInvolvedMocks(into);
-	}
+        friend inline RepeatedSequence operator*(int times, const Sequence &s);
 
-	void getExpectedSequence(std::vector<Invocation::Matcher*>& into) const override {
-		for (int i = 0; i < times; i++)
-			_s.getExpectedSequence(into);
-	}
+        void getInvolvedMocks(std::vector<ActualInvocationsSource *> &into) const override {
+            _s.getInvolvedMocks(into);
+        }
 
-	int getTimes() const {
-		return times;
-	}
+        void getExpectedSequence(std::vector<Invocation::Matcher *> &into) const override {
+            for (int i = 0; i < times; i++)
+                _s.getExpectedSequence(into);
+        }
 
-	const Sequence& getSequence() const {
-		return _s;
-	}
-};
+        int getTimes() const {
+            return times;
+        }
 
-inline ConcatenatedSequence operator+(const Sequence &s1, const Sequence &s2) {
-	return ConcatenatedSequence(s1, s2);
-}
+        const Sequence &getSequence() const {
+            return _s;
+        }
+    };
 
-inline RepeatedSequence operator*(const Sequence &s, int times) {
-	if (times <= 0)
-		throw std::invalid_argument("times");
-	return RepeatedSequence(s, times);
-}
+    inline ConcatenatedSequence operator+(const Sequence &s1, const Sequence &s2) {
+        return ConcatenatedSequence(s1, s2);
+    }
 
-inline RepeatedSequence operator*(int times, const Sequence &s) {
-	if (times <= 0)
-		throw std::invalid_argument("times");
-	return RepeatedSequence(s, times);
-}
+    inline RepeatedSequence operator*(const Sequence &s, int times) {
+        if (times <= 0)
+            throw std::invalid_argument("times");
+        return RepeatedSequence(s, times);
+    }
+
+    inline RepeatedSequence operator*(int times, const Sequence &s) {
+        if (times <= 0)
+            throw std::invalid_argument("times");
+        return RepeatedSequence(s, times);
+    }
 
 }

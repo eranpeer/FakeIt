@@ -22,66 +22,68 @@
 
 namespace fakeit {
 
-template<typename ... arglist>
-struct ArgumentsMatcherInvocationMatcher: public ActualInvocation<arglist...>::Matcher {
+    template<typename ... arglist>
+    struct ArgumentsMatcherInvocationMatcher : public ActualInvocation<arglist...>::Matcher {
 
-	virtual ~ArgumentsMatcherInvocationMatcher() {
-		for (unsigned int i = 0; i < _matchers.size(); i++)
-			delete _matchers[i];
-	}
+        virtual ~ArgumentsMatcherInvocationMatcher() {
+            for (unsigned int i = 0; i < _matchers.size(); i++)
+                delete _matchers[i];
+        }
 
-	ArgumentsMatcherInvocationMatcher(const std::vector<Destructible *>& args)
-			: _matchers(args) {
-	}
+        ArgumentsMatcherInvocationMatcher(const std::vector<Destructible *> &args)
+                : _matchers(args) {
+        }
 
-	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
-		if (invocation.getActualMatcher() == this)
-			return true;
-		return matches(invocation.getActualArguments());
-	}
+        virtual bool matches(ActualInvocation<arglist...> &invocation) override {
+            if (invocation.getActualMatcher() == this)
+                return true;
+            return matches(invocation.getActualArguments());
+        }
 
-	virtual std::string format() const override {
-		std::ostringstream out;
-		out<<"(";
-		for (unsigned int i =0;i<_matchers.size();i++){
-			if (i>0) out<<", ";
-			IMatcher* m = dynamic_cast<IMatcher*>(_matchers[i]);
-			out<<m->format();
-		}
-		out<<")";
-		return out.str();
-	}
-private:
+        virtual std::string format() const override {
+            std::ostringstream out;
+            out << "(";
+            for (unsigned int i = 0; i < _matchers.size(); i++) {
+                if (i > 0) out << ", ";
+                IMatcher *m = dynamic_cast<IMatcher *>(_matchers[i]);
+                out << m->format();
+            }
+            out << ")";
+            return out.str();
+        }
 
-	struct MatchingLambda {
-		MatchingLambda(const std::vector<Destructible *>& matchers)
-				: _matchers(matchers) {
-		}
+    private:
 
-		template<typename A>
-		void operator()(int index, A& actualArg) {
-			TypedMatcher<typename naked_type<A>::type>* matcher =
-					dynamic_cast<TypedMatcher<typename naked_type<A>::type>*>(_matchers[index]);
-			if (_matching)
-				_matching = matcher->matches(actualArg);
-		}
+        struct MatchingLambda {
+            MatchingLambda(const std::vector<Destructible *> &matchers)
+                    : _matchers(matchers) {
+            }
 
-		bool isMatching(){
-			return _matching;
-		}
+            template<typename A>
+            void operator()(int index, A &actualArg) {
+                TypedMatcher<typename naked_type<A>::type> *matcher =
+                        dynamic_cast<TypedMatcher<typename naked_type<A>::type> *>(_matchers[index]);
+                if (_matching)
+                    _matching = matcher->matches(actualArg);
+            }
 
-	private:
-		bool _matching = true;
-		const std::vector<Destructible *>& _matchers;
-	};
+            bool isMatching() {
+                return _matching;
+            }
 
-	virtual bool matches(const std::tuple<arglist...>& actualArgs) {
-		MatchingLambda l(_matchers);
-		fakeit::for_each(actualArgs, l);
-		return l.isMatching();
-	}
-	const std::vector<Destructible *> _matchers;
-};
+        private:
+            bool _matching = true;
+            const std::vector<Destructible *> &_matchers;
+        };
+
+        virtual bool matches(const std::tuple<arglist...> &actualArgs) {
+            MatchingLambda l(_matchers);
+            fakeit::for_each(actualArgs, l);
+            return l.isMatching();
+        }
+
+        const std::vector<Destructible *> _matchers;
+    };
 
 //template<typename ... arglist>
 //struct ExpectedArgumentsInvocationMatcher: public ActualInvocation<arglist...>::Matcher {
@@ -114,51 +116,52 @@ private:
 //	const std::tuple<arglist...> expectedArguments;
 //};
 
-template<typename ... arglist>
-struct UserDefinedInvocationMatcher: public ActualInvocation<arglist...>::Matcher {
-	virtual ~UserDefinedInvocationMatcher() = default;
+    template<typename ... arglist>
+    struct UserDefinedInvocationMatcher : public ActualInvocation<arglist...>::Matcher {
+        virtual ~UserDefinedInvocationMatcher() = default;
 
-	UserDefinedInvocationMatcher(std::function<bool(arglist&...)> matcher)
-			: matcher { matcher } {
-	}
+        UserDefinedInvocationMatcher(std::function<bool(arglist &...)> matcher)
+                : matcher{matcher} {
+        }
 
-	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
-		if (invocation.getActualMatcher() == this)
-			return true;
-		return matches(invocation.getActualArguments());
-	}
+        virtual bool matches(ActualInvocation<arglist...> &invocation) override {
+            if (invocation.getActualMatcher() == this)
+                return true;
+            return matches(invocation.getActualArguments());
+        }
 
-	virtual std::string format() const {
-		return {"( user defined matcher )"};
-	}
+        virtual std::string format() const {
+            return {"( user defined matcher )"};
+        }
 
-private:
-	virtual bool matches(const std::tuple<arglist...>& actualArgs) {
-		return invoke<arglist...>(matcher, actualArgs);
-	}
-	const std::function<bool(arglist&...)> matcher;
-};
+    private:
+        virtual bool matches(const std::tuple<arglist...> &actualArgs) {
+            return invoke<arglist...>(matcher, actualArgs);
+        }
 
-template<typename ... arglist>
-struct DefaultInvocationMatcher: public ActualInvocation<arglist...>::Matcher {
+        const std::function<bool(arglist &...)> matcher;
+    };
 
-	virtual ~DefaultInvocationMatcher() = default;
+    template<typename ... arglist>
+    struct DefaultInvocationMatcher : public ActualInvocation<arglist...>::Matcher {
 
-	DefaultInvocationMatcher() {
-	}
+        virtual ~DefaultInvocationMatcher() = default;
 
-	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
-		return matches(invocation.getActualArguments());
-	}
+        DefaultInvocationMatcher() {
+        }
 
-	virtual std::string format() const {
-		return {"( Any arguments )"};
-	}
+        virtual bool matches(ActualInvocation<arglist...> &invocation) override {
+            return matches(invocation.getActualArguments());
+        }
 
-private:
-	virtual bool matches(const std::tuple<arglist...>&) {
-		return true;
-	}
-};
+        virtual std::string format() const {
+            return {"( Any arguments )"};
+        }
+
+    private:
+        virtual bool matches(const std::tuple<arglist...> &) {
+            return true;
+        }
+    };
 
 }

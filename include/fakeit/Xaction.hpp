@@ -10,7 +10,7 @@
 
 namespace fakeit {
 
-struct Xaction {
-	virtual void commit() = 0;
-};
+    struct Xaction {
+        virtual void commit() = 0;
+    };
 }

@@ -14,26 +14,26 @@
 
 namespace fakeit {
 
-class FakeFunctor {
-private:
-	template<typename R, typename ... arglist>
-	void fake(const StubbingContext<R, arglist...>& root) {
-		StubbingContext<R, arglist...>& rootWithoutConst = const_cast<StubbingContext<R, arglist...>&>(root);
-		rootWithoutConst.appendAction(new ReturnDefaultValue<R, arglist...>());
-		rootWithoutConst.commit();
-	}
+    class FakeFunctor {
+    private:
+        template<typename R, typename ... arglist>
+        void fake(const StubbingContext<R, arglist...> &root) {
+            StubbingContext<R, arglist...> &rootWithoutConst = const_cast<StubbingContext<R, arglist...> &>(root);
+            rootWithoutConst.appendAction(new ReturnDefaultValue<R, arglist...>());
+            rootWithoutConst.commit();
+        }
 
-	void operator()() {
-	}
+        void operator()() {
+        }
 
-public:
+    public:
 
-	template<typename H, typename ... M>
-	void operator()(const H& head, const M&... tail) {
-		fake(head);
-		this->operator()(tail...);
-	}
+        template<typename H, typename ... M>
+        void operator()(const H &head, const M &... tail) {
+            fake(head);
+            this->operator()(tail...);
+        }
 
-};
+    };
 
 }

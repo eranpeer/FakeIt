@@ -16,74 +16,74 @@
 
 namespace fakeit {
 
-class WhenFunctor {
+    class WhenFunctor {
 
-	struct StubbingChange {
+        struct StubbingChange {
 
-		friend class WhenFunctor;
+            friend class WhenFunctor;
 
-		virtual ~StubbingChange() THROWS {
+            virtual ~StubbingChange() THROWS {
 
-			if (std::uncaught_exception()) {
-				return;
-			}
+                if (std::uncaught_exception()) {
+                    return;
+                }
 
-			_xaction.commit();
-		}
+                _xaction.commit();
+            }
 
-		StubbingChange(StubbingChange& other) :
-				_xaction(other._xaction) {
-		}
+            StubbingChange(StubbingChange &other) :
+                    _xaction(other._xaction) {
+            }
 
-	private:
+        private:
 
-		StubbingChange(Xaction& xaction)
-				: _xaction(xaction) {
-		}
+            StubbingChange(Xaction &xaction)
+                    : _xaction(xaction) {
+            }
 
-		Xaction& _xaction;
-	};
+            Xaction &_xaction;
+        };
 
-public:
+    public:
 
-	template<typename R, typename ... arglist>
-	struct MethodProgress: public MethodStubbingProgress<R, arglist...> {
+        template<typename R, typename ... arglist>
+        struct MethodProgress : public MethodStubbingProgress<R, arglist...> {
 
-		friend class WhenFunctor;
+            friend class WhenFunctor;
 
-		virtual ~MethodProgress() override = default;
+            virtual ~MethodProgress() override = default;
 
-		MethodProgress(MethodProgress& other) :
-			_progress(other._progress), _context(other._context) {
-		}
+            MethodProgress(MethodProgress &other) :
+                    _progress(other._progress), _context(other._context) {
+            }
 
-		MethodProgress(StubbingContext<R, arglist...>& xaction) :
-			_progress(new StubbingChange(xaction)), _context(xaction) {
-		}
+            MethodProgress(StubbingContext<R, arglist...> &xaction) :
+                    _progress(new StubbingChange(xaction)), _context(xaction) {
+            }
 
-	protected:
+        protected:
 
-		virtual MethodStubbingProgress<R, arglist...>& DoImpl(Action<R, arglist...> * action) override {
-			_context.appendAction(action);
-			return *this;
-		}
+            virtual MethodStubbingProgress<R, arglist...> &DoImpl(Action<R, arglist...> *action) override {
+                _context.appendAction(action);
+                return *this;
+            }
 
-	private:
-		smart_ptr<StubbingChange> _progress;
-		StubbingContext<R, arglist...>& _context;
-	};
+        private:
+            smart_ptr<StubbingChange> _progress;
+            StubbingContext<R, arglist...> &_context;
+        };
 
 
-	WhenFunctor() {
-	}
+        WhenFunctor() {
+        }
 
-	template<typename R, typename ... arglist>
-	MethodProgress<R, arglist...> operator()(const StubbingContext<R, arglist...>& stubbingContext) {
-		StubbingContext<R, arglist...>& rootWithoutConst = const_cast<StubbingContext<R, arglist...>&>(stubbingContext);
-		MethodProgress<R, arglist...> progress(rootWithoutConst);
-		return progress;
-	}
+        template<typename R, typename ... arglist>
+        MethodProgress<R, arglist...> operator()(const StubbingContext<R, arglist...> &stubbingContext) {
+            StubbingContext<R, arglist...> &rootWithoutConst = const_cast<StubbingContext<R, arglist...> &>(stubbingContext);
+            MethodProgress<R, arglist...> progress(rootWithoutConst);
+            return progress;
+        }
 
-};
+    };
 
 }

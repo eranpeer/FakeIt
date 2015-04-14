@@ -14,10 +14,11 @@
 #include "union_cast.hpp"
 
 namespace fakeit {
-	class NoVirtualDtor {};
+    class NoVirtualDtor {
+    };
 
-class VTUtils {
-public:
+    class VTUtils {
+    public:
 
         template<typename C, typename R, typename ... arglist>
         static unsigned int getOffset(R (C::*vMethod)(arglist...)) {
@@ -27,7 +28,7 @@ public:
         }
 
         template<typename C>
-		static typename std::enable_if<std::has_virtual_destructor<C>::value, unsigned int>::type
+        static typename std::enable_if<std::has_virtual_destructor<C>::value, unsigned int>::type
         getDestructorOffset() {
             VirtualOffsetSelector offsetSelctor;
             union_cast<C *>(&offsetSelctor)->~C();

@@ -11,16 +11,16 @@
 
 namespace fakeit {
 
-	struct VerificationEventHandler {
-		virtual void handle(const SequenceVerificationEvent &e) = 0;
+    struct VerificationEventHandler {
+        virtual void handle(const SequenceVerificationEvent &e) = 0;
 
-		virtual void handle(const NoMoreInvocationsVerificationEvent &e) = 0;
-	};
+        virtual void handle(const NoMoreInvocationsVerificationEvent &e) = 0;
+    };
 
-	struct EventHandler : public VerificationEventHandler {
-		using VerificationEventHandler::handle;
+    struct EventHandler : public VerificationEventHandler {
+        using VerificationEventHandler::handle;
 
-		virtual void handle(const UnexpectedMethodCallEvent &e) = 0;
-	};
+        virtual void handle(const UnexpectedMethodCallEvent &e) = 0;
+    };
 
 }

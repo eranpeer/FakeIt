@@ -22,24 +22,26 @@
 #include "fakeit/FakeitContext.hpp"
 
 namespace fakeit {
-class VerifyNoOtherInvocationsFunctor {
+    class VerifyNoOtherInvocationsFunctor {
 
-	FakeitContext& _fakeit;
+        FakeitContext &_fakeit;
 
-public:
+    public:
 
-	VerifyNoOtherInvocationsFunctor(FakeitContext& fakeit):_fakeit(fakeit) {
-	}
+        VerifyNoOtherInvocationsFunctor(FakeitContext &fakeit) : _fakeit(fakeit) {
+        }
 
-	void operator()() {
-	}
+        void operator()() {
+        }
 
-	template<typename ... list>
-	VerifyNoOtherInvocationsVerificationProgress operator()(const ActualInvocationsSource& head, const list&... tail) {
-		std::vector<ActualInvocationsSource *> invocationSources {&InvocationUtils::remove_const(head), &InvocationUtils::remove_const(tail)...};
-		VerifyNoOtherInvocationsVerificationProgress progress{_fakeit,invocationSources};
-		return progress;
-	}
-};
+        template<typename ... list>
+        VerifyNoOtherInvocationsVerificationProgress operator()(const ActualInvocationsSource &head,
+                                                                const list &... tail) {
+            std::vector<ActualInvocationsSource *> invocationSources{&InvocationUtils::remove_const(head),
+                                                                     &InvocationUtils::remove_const(tail)...};
+            VerifyNoOtherInvocationsVerificationProgress progress{_fakeit, invocationSources};
+            return progress;
+        }
+    };
 
 }

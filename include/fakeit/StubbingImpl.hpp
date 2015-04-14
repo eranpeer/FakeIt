@@ -21,16 +21,17 @@
 
 namespace fakeit {
 
-template<typename C, typename DATA_TYPE>
-class DataMemberStubbingRoot {
-private:
-	//DataMemberStubbingRoot & operator= (const DataMemberStubbingRoot & other) = delete;
-public:
-	DataMemberStubbingRoot(const DataMemberStubbingRoot&) = default;
-	DataMemberStubbingRoot() = default;
+    template<typename C, typename DATA_TYPE>
+    class DataMemberStubbingRoot {
+    private:
+        //DataMemberStubbingRoot & operator= (const DataMemberStubbingRoot & other) = delete;
+    public:
+        DataMemberStubbingRoot(const DataMemberStubbingRoot &) = default;
 
-	void operator=(const DATA_TYPE& val) {
-	}
-};
+        DataMemberStubbingRoot() = default;
+
+        void operator=(const DATA_TYPE &val) {
+        }
+    };
 
 }

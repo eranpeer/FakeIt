@@ -16,7 +16,8 @@ namespace fakeit {
         }
 
         template<typename ... list>
-        void collectSequences(std::vector<fakeit::Sequence *> &vec, const fakeit::Sequence &sequence, const list &... tail) {
+        void collectSequences(std::vector<fakeit::Sequence *> &vec, const fakeit::Sequence &sequence,
+                              const list &... tail) {
             vec.push_back(&const_cast<fakeit::Sequence &>(sequence));
             collectSequences(vec, tail...);
         }
@@ -35,6 +36,6 @@ namespace fakeit {
             SequenceVerificationProgress progress(_fakeit, _sources, allSequences);
             return progress;
         }
-  
+
     };
 }

@@ -11,12 +11,12 @@
 
 namespace fakeit {
 
-struct NoMoreRecordedActionException {
-};
+    struct NoMoreRecordedActionException {
+    };
 
-template<typename R, typename ... arglist>
-struct MethodInvocationHandler: public Destructible {
-	virtual R handleMethodInvocation(arglist&... args) = 0;
-};
+    template<typename R, typename ... arglist>
+    struct MethodInvocationHandler : public Destructible {
+        virtual R handleMethodInvocation(arglist &... args) = 0;
+    };
 
 }

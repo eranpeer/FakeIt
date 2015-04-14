@@ -7,70 +7,72 @@
 
 namespace fakeit {
 
-	struct ActualInvocationsSource {
-		virtual void getActualInvocations(std::unordered_set<fakeit::Invocation *> &into) const = 0;
-		virtual ~ActualInvocationsSource() THROWS {};
-	};
+    struct ActualInvocationsSource {
+        virtual void getActualInvocations(std::unordered_set<fakeit::Invocation *> &into) const = 0;
 
-	struct InvocationsSourceProxy : public ActualInvocationsSource {
+        virtual ~ActualInvocationsSource() THROWS { };
+    };
 
-		InvocationsSourceProxy(ActualInvocationsSource *inner) :
-				_inner(inner) {
-		}
+    struct InvocationsSourceProxy : public ActualInvocationsSource {
 
-		void getActualInvocations(std::unordered_set<fakeit::Invocation *> &into) const override {
-			_inner->getActualInvocations(into);
-		}
+        InvocationsSourceProxy(ActualInvocationsSource *inner) :
+                _inner(inner) {
+        }
 
-	private:
-		std::shared_ptr<ActualInvocationsSource> _inner;
-	};
+        void getActualInvocations(std::unordered_set<fakeit::Invocation *> &into) const override {
+            _inner->getActualInvocations(into);
+        }
 
-	struct UnverifiedInvocationsSource : public ActualInvocationsSource {
+    private:
+        std::shared_ptr<ActualInvocationsSource> _inner;
+    };
 
-		UnverifiedInvocationsSource(InvocationsSourceProxy decorated) : _decorated(decorated) {
-		}
+    struct UnverifiedInvocationsSource : public ActualInvocationsSource {
 
-		void getActualInvocations(std::unordered_set<fakeit::Invocation *> &into) const override {
-			std::unordered_set<fakeit::Invocation *> all;
-			_decorated.getActualInvocations(all);
-			for (fakeit::Invocation *i : all) {
-				if (!i->isVerified()) {
-					into.insert(i);
-				}
-			}
-		}
+        UnverifiedInvocationsSource(InvocationsSourceProxy decorated) : _decorated(decorated) {
+        }
 
-	private:
-		InvocationsSourceProxy _decorated;
-	};
+        void getActualInvocations(std::unordered_set<fakeit::Invocation *> &into) const override {
+            std::unordered_set<fakeit::Invocation *> all;
+            _decorated.getActualInvocations(all);
+            for (fakeit::Invocation *i : all) {
+                if (!i->isVerified()) {
+                    into.insert(i);
+                }
+            }
+        }
 
-	struct AggregateInvocationsSource : public ActualInvocationsSource {
+    private:
+        InvocationsSourceProxy _decorated;
+    };
 
-		AggregateInvocationsSource(std::vector<ActualInvocationsSource *> &sources) : _sources(sources) {
-		}
+    struct AggregateInvocationsSource : public ActualInvocationsSource {
 
-		void getActualInvocations(std::unordered_set<fakeit::Invocation *> &into) const override {
-			std::unordered_set<fakeit::Invocation *> tmp;
-			for (ActualInvocationsSource *source : _sources) {
-				source->getActualInvocations(tmp);
-			}
-			filter(tmp, into);
-		}
+        AggregateInvocationsSource(std::vector<ActualInvocationsSource *> &sources) : _sources(sources) {
+        }
 
-	protected:
-		bool shouldInclude(fakeit::Invocation * invocation) const {
-			return true;
-		}
-	private:
-		std::vector<ActualInvocationsSource *> _sources;
+        void getActualInvocations(std::unordered_set<fakeit::Invocation *> &into) const override {
+            std::unordered_set<fakeit::Invocation *> tmp;
+            for (ActualInvocationsSource *source : _sources) {
+                source->getActualInvocations(tmp);
+            }
+            filter(tmp, into);
+        }
 
-		void filter(std::unordered_set<Invocation *> &source, std::unordered_set<Invocation *> &target) const {
-			for(Invocation * i:source){
-				if (shouldInclude(i)){
-					target.insert(i);
-				}
-			}
-		}
-	};
+    protected:
+        bool shouldInclude(fakeit::Invocation *invocation) const {
+            return true;
+        }
+
+    private:
+        std::vector<ActualInvocationsSource *> _sources;
+
+        void filter(std::unordered_set<Invocation *> &source, std::unordered_set<Invocation *> &target) const {
+            for (Invocation *i:source) {
+                if (shouldInclude(i)) {
+                    target.insert(i);
+                }
+            }
+        }
+    };
 }

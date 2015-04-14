@@ -21,21 +21,22 @@ namespace fakeit {
 
     class VerifyFunctor {
 
-        FakeitContext& _fakeit;
+        FakeitContext &_fakeit;
 
 
     public:
 
-        VerifyFunctor(FakeitContext& fakeit) :_fakeit(fakeit) {
+        VerifyFunctor(FakeitContext &fakeit) : _fakeit(fakeit) {
         }
 
         template<typename ... list>
-        SequenceVerificationProgress operator()(const Sequence& sequence, const list&... tail) {
-            std::vector<Sequence*> allSequences {&InvocationUtils::remove_const(sequence), &InvocationUtils::remove_const(tail)...};
+        SequenceVerificationProgress operator()(const Sequence &sequence, const list &... tail) {
+            std::vector<Sequence *> allSequences{&InvocationUtils::remove_const(sequence),
+                                                 &InvocationUtils::remove_const(tail)...};
 
-            std::vector<ActualInvocationsSource*> involvedSources;
+            std::vector<ActualInvocationsSource *> involvedSources;
             InvocationUtils::collectInvolvedMocks(allSequences, involvedSources);
-            InvocationsSourceProxy aggregateInvocationsSource{ new AggregateInvocationsSource(involvedSources) };
+            InvocationsSourceProxy aggregateInvocationsSource{new AggregateInvocationsSource(involvedSources)};
 
             UsingProgress usingProgress(_fakeit, aggregateInvocationsSource);
             return usingProgress.Verify(sequence, tail...);

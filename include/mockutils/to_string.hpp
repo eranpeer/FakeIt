@@ -13,12 +13,12 @@
 #include <iomanip>
 
 namespace fakeit {
-    
-	template < typename T > static std::string to_string( const T& n )
-    {
-        std::ostringstream stm ;
-        stm << n ;
-        return stm.str() ;
+
+    template<typename T>
+    static std::string to_string(const T &n) {
+        std::ostringstream stm;
+        stm << n;
+        return stm.str();
     }
 
 }

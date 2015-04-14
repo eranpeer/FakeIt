@@ -16,24 +16,25 @@
 
 namespace fakeit {
 
-	class UsingFunctor {
+    class UsingFunctor {
 
-		friend class VerifyFunctor;
+        friend class VerifyFunctor;
 
-		FakeitContext &_fakeit;
+        FakeitContext &_fakeit;
 
-	public:
+    public:
 
-		UsingFunctor(FakeitContext &fakeit) : _fakeit(fakeit) {
-		}
+        UsingFunctor(FakeitContext &fakeit) : _fakeit(fakeit) {
+        }
 
-		template<typename ... list>
-		UsingProgress operator()(const ActualInvocationsSource &head, const list &... tail) {
-			std::vector<ActualInvocationsSource *> allMocks {&InvocationUtils::remove_const(head), &InvocationUtils::remove_const(tail)...};
-			InvocationsSourceProxy aggregateInvocationsSource{new AggregateInvocationsSource(allMocks)};
-			UsingProgress progress(_fakeit, aggregateInvocationsSource);
-			return progress;
-		}
+        template<typename ... list>
+        UsingProgress operator()(const ActualInvocationsSource &head, const list &... tail) {
+            std::vector<ActualInvocationsSource *> allMocks{&InvocationUtils::remove_const(head),
+                                                            &InvocationUtils::remove_const(tail)...};
+            InvocationsSourceProxy aggregateInvocationsSource{new AggregateInvocationsSource(allMocks)};
+            UsingProgress progress(_fakeit, aggregateInvocationsSource);
+            return progress;
+        }
 
-	};
+    };
 }

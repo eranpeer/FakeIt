@@ -18,85 +18,92 @@
 
 namespace fakeit {
 
-template<typename R, typename ... arglist>
-struct Action : public Destructible {
-	virtual ~Action() = default;
-	virtual R invoke(arglist&... args) = 0;
-	virtual bool isDone() = 0;
-};
+    template<typename R, typename ... arglist>
+    struct Action : public Destructible {
+        virtual ~Action() = default;
 
-template<typename R, typename ... arglist>
-struct Repeat: public Action<R, arglist...> {
-	virtual ~Repeat() = default;
-	Repeat(std::function<R(arglist&...)> f) :
-			f(f), times(1) {
-	}
+        virtual R invoke(arglist &... args) = 0;
 
-	Repeat(std::function<R(arglist&...)> f, long times) :
-			f(f), times(times) {
-	}
+        virtual bool isDone() = 0;
+    };
 
-	virtual R invoke(arglist&... args) override {
-		times--;
-		return f(args...);
-	}
+    template<typename R, typename ... arglist>
+    struct Repeat : public Action<R, arglist...> {
+        virtual ~Repeat() = default;
 
-	virtual bool isDone() override {
-		return times == 0;
-	}
-private:
-	std::function<R(arglist&...)> f;
-	long times;
-};
+        Repeat(std::function<R(arglist &...)> f) :
+                f(f), times(1) {
+        }
 
-template<typename R, typename ... arglist>
-struct RepeatForever: public Action<R, arglist...> {
+        Repeat(std::function<R(arglist &...)> f, long times) :
+                f(f), times(times) {
+        }
 
-	virtual ~RepeatForever() = default;
+        virtual R invoke(arglist &... args) override {
+            times--;
+            return f(args...);
+        }
 
-	RepeatForever(std::function<R(arglist&...)> f) :
-			f(f) {
-	}
-	virtual R invoke(arglist&... args) override {
-		return f(args...);
-	}
+        virtual bool isDone() override {
+            return times == 0;
+        }
 
-	virtual bool isDone() override {
-		return false;
-	}
-private:
-	std::function<R(arglist&...)> f;
-};
+    private:
+        std::function<R(arglist &...)> f;
+        long times;
+    };
 
-template<typename R, typename ... arglist>
-struct ReturnDefaultValue: public Action<R, arglist...> {
-	virtual ~ReturnDefaultValue() = default;
+    template<typename R, typename ... arglist>
+    struct RepeatForever : public Action<R, arglist...> {
 
-	virtual R invoke(arglist&...) override {
-		return DefaultValue<R>::value();
-	}
+        virtual ~RepeatForever() = default;
 
-	virtual bool isDone() override {
-		return false;
-	}
-};
+        RepeatForever(std::function<R(arglist &...)> f) :
+                f(f) {
+        }
 
-template<typename R, typename ... arglist>
-struct ReturnDelegateValue: public Action<R, arglist...> {
+        virtual R invoke(arglist &... args) override {
+            return f(args...);
+        }
 
-	ReturnDelegateValue(std::function<R(arglist&...)> delegate):_delegate(delegate){}
-	virtual ~ReturnDelegateValue() = default;
+        virtual bool isDone() override {
+            return false;
+        }
 
-	virtual R invoke(arglist&... args) override {
-		return _delegate(args...);
-	}
+    private:
+        std::function<R(arglist &...)> f;
+    };
 
-	virtual bool isDone() override {
-		return false;
-	}
+    template<typename R, typename ... arglist>
+    struct ReturnDefaultValue : public Action<R, arglist...> {
+        virtual ~ReturnDefaultValue() = default;
 
-private:
-	std::function<R(arglist&...)> _delegate;
-};
+        virtual R invoke(arglist &...) override {
+            return DefaultValue<R>::value();
+        }
+
+        virtual bool isDone() override {
+            return false;
+        }
+    };
+
+    template<typename R, typename ... arglist>
+    struct ReturnDelegateValue : public Action<R, arglist...> {
+
+        ReturnDelegateValue(std::function<R(arglist &...)> delegate) : _delegate(delegate) { }
+
+        virtual ~ReturnDelegateValue() = default;
+
+        virtual R invoke(arglist &... args) override {
+            return _delegate(args...);
+        }
+
+        virtual bool isDone() override {
+            return false;
+        }
+
+    private:
+        std::function<R(arglist &...)> _delegate;
+    };
 
 }

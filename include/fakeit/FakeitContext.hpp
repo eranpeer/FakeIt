@@ -14,78 +14,74 @@
 
 namespace fakeit {
 
-struct FakeitContext: public EventHandler, protected EventFormatter {
-	
-	virtual ~FakeitContext() = default;
+    struct FakeitContext : public EventHandler, protected EventFormatter {
 
-	void handle(const UnexpectedMethodCallEvent& e) override
-	{
-		fireEvent(e);
-		auto& eh = getTestingFrameworkAdapter();
-		eh.handle(e);
-	}
+        virtual ~FakeitContext() = default;
 
-	void handle(const SequenceVerificationEvent& e) override
-	{
-		fireEvent(e);
-		auto& eh = getTestingFrameworkAdapter();
-		return eh.handle(e);
-	}
+        void handle(const UnexpectedMethodCallEvent &e) override {
+            fireEvent(e);
+            auto &eh = getTestingFrameworkAdapter();
+            eh.handle(e);
+        }
 
-	void handle(const NoMoreInvocationsVerificationEvent& e) override
-	{
-		fireEvent(e);
-		auto& eh = getTestingFrameworkAdapter();
-		return eh.handle(e);
-	}
+        void handle(const SequenceVerificationEvent &e) override {
+            fireEvent(e);
+            auto &eh = getTestingFrameworkAdapter();
+            return eh.handle(e);
+        }
 
-	std::string format(const UnexpectedMethodCallEvent& e) override
-	{
-		auto& eventFormatter = getEventFormatter();
-		return eventFormatter.format(e);
-	}
+        void handle(const NoMoreInvocationsVerificationEvent &e) override {
+            fireEvent(e);
+            auto &eh = getTestingFrameworkAdapter();
+            return eh.handle(e);
+        }
 
-	std::string format(const SequenceVerificationEvent& e) override
-	{
-		auto& eventFormatter = getEventFormatter();
-		return eventFormatter.format(e);
-	}
+        std::string format(const UnexpectedMethodCallEvent &e) override {
+            auto &eventFormatter = getEventFormatter();
+            return eventFormatter.format(e);
+        }
 
-	std::string format(const NoMoreInvocationsVerificationEvent& e) override
-	{
-		auto& eventFormatter = getEventFormatter();
-		return eventFormatter.format(e);
-	}
+        std::string format(const SequenceVerificationEvent &e) override {
+            auto &eventFormatter = getEventFormatter();
+            return eventFormatter.format(e);
+        }
 
-	void addEventHandler(EventHandler& eventListener) {
-		_eventListeners.push_back(&eventListener);
-	}
+        std::string format(const NoMoreInvocationsVerificationEvent &e) override {
+            auto &eventFormatter = getEventFormatter();
+            return eventFormatter.format(e);
+        }
 
-	void clearEventHandlers() {
-		_eventListeners.clear();
-	}
+        void addEventHandler(EventHandler &eventListener) {
+            _eventListeners.push_back(&eventListener);
+        }
 
-protected:
-	virtual EventHandler& getTestingFrameworkAdapter() = 0;
-	virtual EventFormatter& getEventFormatter() = 0;
-private:
-	std::vector<EventHandler*> _eventListeners;
+        void clearEventHandlers() {
+            _eventListeners.clear();
+        }
 
-	void fireEvent(const NoMoreInvocationsVerificationEvent& evt) {
-		for (auto listener : _eventListeners)
-			listener->handle(evt);
-	}
+    protected:
+        virtual EventHandler &getTestingFrameworkAdapter() = 0;
 
-	void fireEvent(const UnexpectedMethodCallEvent& evt) {
-		for (auto listener : _eventListeners)
-			listener->handle(evt);
-	}
+        virtual EventFormatter &getEventFormatter() = 0;
 
-	void fireEvent(const SequenceVerificationEvent& evt) {
-		for (auto listener : _eventListeners)
-			listener->handle(evt);
-	}
+    private:
+        std::vector<EventHandler *> _eventListeners;
 
-};
+        void fireEvent(const NoMoreInvocationsVerificationEvent &evt) {
+            for (auto listener : _eventListeners)
+                listener->handle(evt);
+        }
+
+        void fireEvent(const UnexpectedMethodCallEvent &evt) {
+            for (auto listener : _eventListeners)
+                listener->handle(evt);
+        }
+
+        void fireEvent(const SequenceVerificationEvent &evt) {
+            for (auto listener : _eventListeners)
+                listener->handle(evt);
+        }
+
+    };
 
 }

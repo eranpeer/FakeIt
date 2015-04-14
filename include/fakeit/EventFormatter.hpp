@@ -11,18 +11,18 @@
 
 namespace fakeit {
 
-struct UnexpectedMethodCallEvent;
-struct SequenceVerificationEvent;
-struct NoMoreInvocationsVerificationEvent;
+    struct UnexpectedMethodCallEvent;
+    struct SequenceVerificationEvent;
+    struct NoMoreInvocationsVerificationEvent;
 
-struct EventFormatter {
+    struct EventFormatter {
 
-	virtual std::string format(const fakeit::UnexpectedMethodCallEvent& e) = 0;
+        virtual std::string format(const fakeit::UnexpectedMethodCallEvent &e) = 0;
 
-	virtual std::string format(const fakeit::SequenceVerificationEvent& e) = 0;
+        virtual std::string format(const fakeit::SequenceVerificationEvent &e) = 0;
 
-	virtual std::string format(const fakeit::NoMoreInvocationsVerificationEvent& e) = 0;
+        virtual std::string format(const fakeit::NoMoreInvocationsVerificationEvent &e) = 0;
 
-};
+    };
 
 }

@@ -11,29 +11,29 @@
 
 namespace fakeit {
 
-	static UsingFunctor Using(Fakeit);
-	static VerifyFunctor Verify(Fakeit);
-	static VerifyNoOtherInvocationsFunctor VerifyNoOtherInvocations(Fakeit);
-	static UnverifiedFunctor Unverified(Fakeit);
-	static SpyFunctor Spy;
-	static FakeFunctor Fake;
-	static WhenFunctor When;
+    static UsingFunctor Using(Fakeit);
+    static VerifyFunctor Verify(Fakeit);
+    static VerifyNoOtherInvocationsFunctor VerifyNoOtherInvocations(Fakeit);
+    static UnverifiedFunctor Unverified(Fakeit);
+    static SpyFunctor Spy;
+    static FakeFunctor Fake;
+    static WhenFunctor When;
 
-	template<class T>
-	class SilenceUnusedVariableWarnings {
+    template<class T>
+    class SilenceUnusedVariableWarnings {
 
-		void use(void *) {
-		}
+        void use(void *) {
+        }
 
-		SilenceUnusedVariableWarnings() {
-			use(&Fake);
-			use(&When);
-			use(&Spy);
-			use(&Using);
-			use(&Verify);
-			use(&VerifyNoOtherInvocations);
-			use(&_);
-		}
-	};
+        SilenceUnusedVariableWarnings() {
+            use(&Fake);
+            use(&When);
+            use(&Spy);
+            use(&Using);
+            use(&Verify);
+            use(&VerifyNoOtherInvocations);
+            use(&_);
+        }
+    };
 
 }

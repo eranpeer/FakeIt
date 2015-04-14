@@ -7,22 +7,26 @@
  * Created on Aug 30, 2014
  */
 #pragma once
+
 #include <functional>
 
 namespace fakeit {
 
-class Finally {
-private:
-	std::function<void()> _finallyClause;
-	Finally(const Finally &);
-	Finally& operator=(const Finally &);
-public:
-	explicit Finally(std::function<void()> f) :
-			_finallyClause(f) {
-	}
+    class Finally {
+    private:
+        std::function<void()> _finallyClause;
 
-	~Finally() {
-		_finallyClause();
-	}
-};
+        Finally(const Finally &);
+
+        Finally &operator=(const Finally &);
+
+    public:
+        explicit Finally(std::function<void()> f) :
+                _finallyClause(f) {
+        }
+
+        ~Finally() {
+            _finallyClause();
+        }
+    };
 }

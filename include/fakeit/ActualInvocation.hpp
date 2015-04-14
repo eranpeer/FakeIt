@@ -23,49 +23,50 @@
 
 namespace fakeit {
 
-template<typename ... arglist>
-struct ActualInvocation: public Invocation {
+    template<typename ... arglist>
+    struct ActualInvocation : public Invocation {
 
-	struct Matcher: public virtual Destructible {
-		virtual bool matches(ActualInvocation<arglist...>& actualInvocation) = 0;
-		virtual std::string format() const = 0;
-	};
+        struct Matcher : public virtual Destructible {
+            virtual bool matches(ActualInvocation<arglist...> &actualInvocation) = 0;
 
-	ActualInvocation(unsigned int ordinal, MethodInfo & method, const arglist&... args) :
-			Invocation(ordinal, method), _matcher{nullptr}, actualArguments { args... } {
-	}
+            virtual std::string format() const = 0;
+        };
 
-	const std::tuple<arglist...>& getActualArguments() const {
-		return actualArguments;
-	}
+        ActualInvocation(unsigned int ordinal, MethodInfo &method, const arglist &... args) :
+                Invocation(ordinal, method), _matcher{nullptr}, actualArguments{args...} {
+        }
 
-	/**
-	 * The Matcher that was use to match this ActualInvocation.
-	 */
-	void setActualMatcher(Matcher* matcher){
-		this->_matcher = matcher;
-	}
+        const std::tuple<arglist...> &getActualArguments() const {
+            return actualArguments;
+        }
 
-	Matcher* getActualMatcher(){
-		return _matcher;
-	}
+        /**
+         * The Matcher that was use to match this ActualInvocation.
+         */
+        void setActualMatcher(Matcher *matcher) {
+            this->_matcher = matcher;
+        }
 
-	virtual std::string format() const {
-		std::ostringstream out;
-		out << getMethod().name();
-		print(out,actualArguments);
-		return out.str();
-	}
+        Matcher *getActualMatcher() {
+            return _matcher;
+        }
 
-private:
-	Matcher* _matcher;
-	std::tuple<arglist...> actualArguments;
-};
+        virtual std::string format() const {
+            std::ostringstream out;
+            out << getMethod().name();
+            print(out, actualArguments);
+            return out.str();
+        }
 
-template<typename ... arglist>
-std::ostream & operator<<(std::ostream &strm, const ActualInvocation<arglist...>& ai) {
-	strm << ai.format();
-	return strm;
-}
+    private:
+        Matcher *_matcher;
+        std::tuple<arglist...> actualArguments;
+    };
+
+    template<typename ... arglist>
+    std::ostream &operator<<(std::ostream &strm, const ActualInvocation<arglist...> &ai) {
+        strm << ai.format();
+        return strm;
+    }
 
 }

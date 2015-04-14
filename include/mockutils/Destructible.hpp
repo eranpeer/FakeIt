@@ -8,9 +8,9 @@
 #pragma once
 
 namespace fakeit {
-class Destructible {
-public:
-	virtual ~Destructible() THROWS {
-	}
-};
+    class Destructible {
+    public:
+        virtual ~Destructible() THROWS {
+        }
+    };
 }
