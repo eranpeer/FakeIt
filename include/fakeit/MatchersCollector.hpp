@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef MATCHERSCOLLECTOR_HPP_
-#define MATCHERSCOLLECTOR_HPP_
+#pragma once
 
 #include <functional>
 #include <type_traits>
@@ -102,5 +100,3 @@ public:
 };
 
 }
-
-#endif /* MATCHERSCOLLECTOR_HPP_ */

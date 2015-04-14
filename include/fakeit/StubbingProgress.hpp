@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef stubbing_h__
-#define stubbing_h__
+#pragma once
 
 #include <functional>
 #include <type_traits>
@@ -212,5 +210,3 @@ private:
 
 
 }
-
-#endif // stubbing_h__

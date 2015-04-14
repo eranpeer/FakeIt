@@ -6,8 +6,8 @@
  * 
  * Created on Jul 17, 2014
  */
-#ifndef SMART_PTR_HPP_
-#define SMART_PTR_HPP_
+#pragma once
+
 #include <exception>
 #include "mockutils/Macros.hpp"
 namespace fakeit {
@@ -94,4 +94,3 @@ public:
 };
 
 }
-#endif /* SMART_PTR_HPP_ */

@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef FakeitEvents_h__
-#define FakeitEvents_h__
+#pragma once
 
 #include <functional>
 #include <memory>
@@ -144,4 +142,3 @@ struct UnexpectedMethodCallEvent {
 };
 
 }
-#endif

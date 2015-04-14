@@ -5,10 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef HH_PRINT_TYPE
-#define HH_PRINT_TYPE
-
+#pragma once
 #include <ostream>
 #include <type_traits>
 #include <string>
@@ -90,4 +87,3 @@ template<> struct Formatter<float> {
 };
 
 }
-#endif

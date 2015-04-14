@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef WHENFUNCTOR_HPP_
-#define WHENFUNCTOR_HPP_
+#pragma once
 
 #include "fakeit/StubbingImpl.hpp"
 #include "fakeit/StubbingProgress.hpp"
@@ -89,5 +87,3 @@ public:
 };
 
 }
-
-#endif /* WHENFUNCTOR_HPP_ */

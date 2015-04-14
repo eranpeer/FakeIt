@@ -2,9 +2,6 @@
 // Created by eran on 01/04/2015.
 //
 
-#ifndef ACTUALINVOCATIONSSOURCE_HPP_
-#define ACTUALINVOCATIONSSOURCE_HPP_
-
 #include <unordered_set>
 #include "fakeit/Invocation.hpp"
 
@@ -77,4 +74,3 @@ namespace fakeit {
 		}
 	};
 }
-#endif //ACTUALINVOCATIONSSOURCE_HPP_

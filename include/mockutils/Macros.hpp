@@ -5,14 +5,10 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef Macros_h__
-#define Macros_h__
+#pragma once
 
 #if defined (__GNUG__)
 #define THROWS noexcept(false)
 #elif defined (_MSC_VER)
 #define THROWS throw(...)
-#endif
-
 #endif

@@ -6,8 +6,7 @@
  * 
  * Created on Oct 20, 2014
  */
-#ifndef SPYINGCONTEXT_HPP_
-#define SPYINGCONTEXT_HPP_
+#pragma once
 
 #include "fakeit/Xaction.hpp"
 
@@ -20,5 +19,3 @@ struct SpyingContext : public Xaction {
 	virtual typename std::function<R(arglist&...)> getOriginalMethod() = 0;
 };
 }
-
-#endif /* SPYINGCONTEXT_HPP_ */

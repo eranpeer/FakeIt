@@ -1,5 +1,4 @@
-#ifndef fakeit_root_h__
-#define fakeit_root_h__
+#pragma once
 
 #include "fakeit/Mock.hpp"
 #include "fakeit/WhenFunctor.hpp"
@@ -10,5 +9,3 @@
 #include "fakeit/SpyFunctor.hpp"
 #include "fakeit/api_functors.hpp"
 #include "fakeit/api_macros.hpp"
-
-#endif // fakeit_root_h__

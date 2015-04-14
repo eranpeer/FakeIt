@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef DynamicProxy_h__
-#define DynamicProxy_h__
+#pragma once
 
 #include <functional>
 #include <type_traits>
@@ -223,4 +221,3 @@ namespace fakeit {
 
     };
 }
-#endif // DynamicProxy_h__

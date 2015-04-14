@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef MethodMockingContext_h__
-#define MethodMockingContext_h__
+#pragma once
 
 #include <functional>
 #include <utility>
@@ -409,4 +407,3 @@ public:
 };
 
 }
-#endif

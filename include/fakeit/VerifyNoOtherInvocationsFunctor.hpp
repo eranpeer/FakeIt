@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef VerifyNoOtherInvocationsFunctor_hpp_
-#define VerifyNoOtherInvocationsFunctor_hpp_
+#pragma once
 
 #include <set>
 #include <memory>
@@ -45,5 +43,3 @@ public:
 };
 
 }
-
-#endif // VerifyNoOtherInvocationsFunctor_hpp_

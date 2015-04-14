@@ -6,8 +6,7 @@
  * 
  * Created on Aug 12, 2014
  */
-#ifndef MATCHERS_HPP_
-#define MATCHERS_HPP_
+#pragma once
 
 #include <functional>
 #include <tuple>
@@ -163,5 +162,3 @@ private:
 };
 
 }
-
-#endif /* MATCHERS_HPP_ */

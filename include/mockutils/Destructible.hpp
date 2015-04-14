@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef Destructible_h__
-#define Destructible_h__
+#pragma once
 
 namespace fakeit {
 class Destructible {
@@ -16,5 +14,3 @@ public:
 	}
 };
 }
-#endif // Destructible_h__
-

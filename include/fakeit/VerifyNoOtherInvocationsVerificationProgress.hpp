@@ -6,8 +6,7 @@
  * 
  * Created on Jul 21, 2014
  */
-#ifndef VerifyNoOtherInvocationsVerificationProgress_hpp_
-#define VerifyNoOtherInvocationsVerificationProgress_hpp_
+#pragma once
 
 #include "fakeit/FakeitContext.hpp"
 #include "fakeit/ThrowFalseEventHandler.hpp"
@@ -124,5 +123,3 @@ public:
 };
 
 }
-
-#endif

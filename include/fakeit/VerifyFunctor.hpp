@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef VerifyFunctor_hpp_
-#define VerifyFunctor_hpp_
+#pragma once
 
 #include <set>
 #include "fakeit/StubbingImpl.hpp"
@@ -46,5 +44,3 @@ namespace fakeit {
     };
 
 }
-
-#endif // VerifyFunctor_hpp_

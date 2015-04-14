@@ -1,9 +1,7 @@
 //
 // Created by eran on 11/04/2015.
 //
-
-#ifndef THROWFALSEEVENTHANDLER_HPP
-#define THROWFALSEEVENTHANDLER_HPP
+#pragma once
 
 #include "fakeit/EventHandler.hpp"
 
@@ -19,4 +17,3 @@ namespace fakeit {
 		}
 	};
 }
-#endif //THROWFALSEEVENTHANDLER_HPP

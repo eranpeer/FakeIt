@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef RecordedMethodBody_h__
-#define RecordedMethodBody_h__
+#pragma once
 
 #include <vector>
 #include <functional>
@@ -171,5 +169,3 @@ public:
 };
 
 }
-
-#endif // MethodMock_h__

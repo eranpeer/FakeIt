@@ -1,3 +1,5 @@
+#pragma once
+
 namespace fakeit{
 
 template< typename R, typename... Args > class function;
@@ -109,4 +111,3 @@ template< class C, typename R, typename... Args >
       type _m = nullptr;
   };
 }
-

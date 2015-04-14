@@ -6,8 +6,7 @@
  * 
  * Created on Jun 3, 2014
  */
-#ifndef VTUTILS_HPP_
-#define VTUTILS_HPP_
+#pragma once
 
 #include <functional>
 #include <type_traits>
@@ -55,6 +54,3 @@ public:
 
 
 }
-
-
-#endif /* VTUTILS_HPP_ */

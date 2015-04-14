@@ -6,9 +6,7 @@
  * 
  * Created on Aug 30, 2014
  */
-#ifndef FINALLY_HPP_
-#define FINALLY_HPP_
-
+#pragma once
 #include <functional>
 
 namespace fakeit {
@@ -28,5 +26,3 @@ public:
 	}
 };
 }
-
-#endif /* FINALLY_HPP_ */

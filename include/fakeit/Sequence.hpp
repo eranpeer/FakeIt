@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef SEQUENCE_HPP_
-#define SEQUENCE_HPP_
+#pragma once
 
 #include <set>
 #include <vector>
@@ -144,5 +142,3 @@ inline RepeatedSequence operator*(int times, const Sequence &s) {
 }
 
 }
-
-#endif /* SEQUENCE_HPP_ */

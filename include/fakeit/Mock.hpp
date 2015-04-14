@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef Mock_h__
-#define Mock_h__
+#pragma once
 
 #include "fakeit/DomainObjects.hpp"
 #include "fakeit/MockImpl.hpp"
@@ -110,4 +108,3 @@ public:
 };
 
 }
-#endif // Mock_h__

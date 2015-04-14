@@ -1,9 +1,7 @@
 //
 // Created by eran on 02/04/2015.
 //
-
-#ifndef _TESTS_UNVERIFIEDFUNCTOR_HPP_
-#define _TESTS_UNVERIFIEDFUNCTOR_HPP_
+#pragma once
 
 #include <vector>
 #include <set>
@@ -64,4 +62,3 @@ namespace fakeit {
 
     };
 }
-#endif //_TESTS_UNVERIFIEDFUNCTOR_HPP_

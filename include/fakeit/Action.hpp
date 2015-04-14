@@ -6,8 +6,7 @@
  * 
  * Created on Jun 5, 2014
  */
-#ifndef Action_hpp_
-#define Action_hpp_
+#pragma once
 
 #include <functional>
 #include <atomic>
@@ -101,5 +100,3 @@ private:
 };
 
 }
-
-#endif

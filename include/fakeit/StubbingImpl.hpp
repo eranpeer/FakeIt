@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef StubbingImpl_h__
-#define StubbingImpl_h__
+#pragma once
 
 #include <functional>
 #include <type_traits>
@@ -36,4 +34,3 @@ public:
 };
 
 }
-#endif // StubbingImpl_h__

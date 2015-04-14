@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef IS_SIMPLE_INHERITANCE_LAYOUT_H_
-#define IS_SIMPLE_INHERITANCE_LAYOUT_H_
+#pragma once
 
 #include <type_traits>
 #include <tr2/type_traits>
@@ -33,4 +31,3 @@ template<typename T>
 class is_simple_inheritance_layout: public has_one_base<typename std::tr2::direct_bases<T>::type> {
 };
 }
-#endif /* IS_SIMPLE_INHERITANCE_LAYOUT_H_ */

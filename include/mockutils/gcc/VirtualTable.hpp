@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef VirtualTable_h__
-#define VirtualTable_h__
+#pragma once
 
 #ifndef __clang__
 #include "mockutils/gcc/is_simple_inheritance_layout.hpp"
@@ -156,4 +154,3 @@ private:
 
 };
 }
-#endif // VirtualTable_h__

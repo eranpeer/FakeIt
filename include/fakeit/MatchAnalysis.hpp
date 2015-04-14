@@ -2,8 +2,7 @@
 // Created by eran on 09/04/2015.
 //
 
-#ifndef MATCHANALYSIS_HPP
-#define MATCHANALYSIS_HPP
+#pragma once
 
 #include <vector>
 #include <unordered_set>
@@ -94,4 +93,3 @@ namespace fakeit {
 
 	};
 }
-#endif //MATCHANALYSIS_HPP

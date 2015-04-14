@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef Invocation_h__
-#define Invocation_h__
+#pragma once
 
 #include <typeinfo>
 #include <tuple>
@@ -68,5 +66,3 @@ private:
 };
 
 }
-
-#endif // Invocation_h__

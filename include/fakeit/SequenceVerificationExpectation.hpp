@@ -1,5 +1,4 @@
-#ifndef SequenceVerificationExpectation_hpp_
-#define SequenceVerificationExpectation_hpp_
+#pragma once
 
 #include "mockutils/smart_ptr.hpp"
 #include "fakeit/FakeitExceptions.hpp"
@@ -132,5 +131,3 @@ namespace fakeit {
 	};
 
 }
-
-#endif

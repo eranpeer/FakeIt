@@ -6,8 +6,7 @@
  * 
  * Created on Oct 20, 2014
  */
-#ifndef STUBBINGCONTEXT_HPP_
-#define STUBBINGCONTEXT_HPP_
+#pragma once
 
 #include "fakeit/Xaction.hpp"
 
@@ -19,5 +18,3 @@ struct StubbingContext : public Xaction {
 	virtual void appendAction(Action<R, arglist...>* action) = 0;
 };
 }
-
-#endif /* STUBBINGCONTEXT_HPP_ */

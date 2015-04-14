@@ -6,8 +6,7 @@
  * 
  * Created on Jan 12, 2015
  */
-#ifndef ARGUMENT_MATCHERS_HPP_
-#define ARGUMENT_MATCHERS_HPP_
+#pragma once
 
 namespace fakeit {
 
@@ -287,5 +286,3 @@ internal::NeMatcherCreator<T> Ne(const T& arg) {
 }
 
 }
-
-#endif /* ARGUMENT_MATCHERS_HPP_ */

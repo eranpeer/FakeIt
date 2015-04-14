@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef SortInvocations_hpp_
-#define SortInvocations_hpp_
+#pragma once
 
 #include <set>
 
@@ -78,8 +76,4 @@ namespace fakeit {
 
     };
 
-
-
 }
-
-#endif // SortInvocations_hpp_

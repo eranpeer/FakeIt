@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef SpyFunctor_hpp_
-#define SpyFunctor_hpp_
+#pragma once
 
 #include "fakeit/StubbingProgress.hpp"
 #include "fakeit/StubbingImpl.hpp"
@@ -40,5 +38,3 @@ public:
 };
 
 }
-
-#endif /* FakeFunctor_hpp_ */

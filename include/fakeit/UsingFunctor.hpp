@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef UsingFunctor_hpp_
-#define UsingFunctor_hpp_
+#pragma once
 
 #include <set>
 
@@ -39,5 +37,3 @@ namespace fakeit {
 
 	};
 }
-
-#endif // UsingFunctor_hpp_

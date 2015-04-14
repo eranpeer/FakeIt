@@ -5,10 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef union_cast_h__
-#define union_cast_h__
-
+#pragma once
 namespace fakeit {
 
 template<typename TARGET, typename SOURCE>
@@ -23,5 +20,3 @@ TARGET union_cast(SOURCE source) {
 }
 
 }
-#endif // union_cast_h__
-

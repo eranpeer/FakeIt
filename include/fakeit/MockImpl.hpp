@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef MockImpl_h__
-#define MockImpl_h__
+#pragma once
 
 #include <type_traits>
 #include <unordered_set>
@@ -271,5 +269,3 @@ private:
 
 };
 }
-
-#endif

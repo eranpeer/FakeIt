@@ -5,10 +5,6 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef DefaultFakeit_h__
-#define DefaultFakeit_h__
-
 #include "fakeit/EventHandler.hpp"
 #include "fakeit/FakeitContext.hpp"
 #include "fakeit/DefaultEventLogger.hpp"
@@ -77,5 +73,3 @@ namespace fakeit {
 
     };
 }
-
-#endif //

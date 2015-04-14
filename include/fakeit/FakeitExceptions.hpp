@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef FakeitExceptions_h__
-#define FakeitExceptions_h__
+#pragma once
 
 #include "fakeit/FakeitEvents.hpp"
 
@@ -41,4 +39,3 @@ private:
 };
 
 }
-#endif // FakeitExceptions_h__

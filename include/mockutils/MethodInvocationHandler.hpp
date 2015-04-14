@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef MethodInvocationHandler_h__
-#define MethodInvocationHandler_h__
+#pragma once
 
 #include "mockutils/Destructible.hpp"
 
@@ -22,5 +20,3 @@ struct MethodInvocationHandler: public Destructible {
 };
 
 }
-#endif // MethodInvocationHandler_h__
-

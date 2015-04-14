@@ -1,5 +1,4 @@
-#ifndef SequenceVerificationProgress_hpp_
-#define SequenceVerificationProgress_hpp_
+#pragma once
 
 #include <memory>
 #include "fakeit/FakeitExceptions.hpp"
@@ -123,5 +122,3 @@ namespace fakeit {
 		}
 	};
 }
-
-#endif

@@ -6,9 +6,7 @@
  * 
  * Created on Jan 14, 2015
  */
-#ifndef TYPE_UTILS_HPP_
-#define TYPE_UTILS_HPP_
-
+#pragma once
 #include <type_traits>
 #include <typeinfo>
 #include "mockutils/type_utils.hpp"
@@ -20,6 +18,3 @@ struct naked_type {
 	typedef typename std::remove_cv<typename std::remove_reference<C>::type>::type type;
 };
 }
-
-
-#endif /* TYPE_UTILS_HPP_ */

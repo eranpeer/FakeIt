@@ -6,8 +6,7 @@
  * Created on Mar 10, 2014
  */
 
-#ifndef ActualInvocation_h__
-#define ActualInvocation_h__
+#pragma once
 
 #include <typeinfo>
 #include <unordered_set>
@@ -70,4 +69,3 @@ std::ostream & operator<<(std::ostream &strm, const ActualInvocation<arglist...>
 }
 
 }
-#endif // ActualInvocation_h__

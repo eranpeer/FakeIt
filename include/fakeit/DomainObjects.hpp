@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef DomainObjects_h__
-#define DomainObjects_h__
+#pragma once
 
 #include <string>
 
@@ -60,5 +58,3 @@ struct UnknownMethod {
 };
 
 }
-
-#endif // DomainObjects_h__

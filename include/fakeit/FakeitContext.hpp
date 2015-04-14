@@ -6,8 +6,8 @@
  * Created on Mar 10, 2014
  */
 
-#ifndef FakeitContext_h__
-#define FakeitContext_h__
+#pragma once
+
 #include <vector>
 #include "fakeit/EventHandler.hpp"
 #include "fakeit/EventFormatter.hpp"
@@ -89,5 +89,3 @@ private:
 };
 
 }
-
-#endif //

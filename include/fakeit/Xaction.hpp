@@ -6,9 +6,7 @@
  * 
  * Created on Oct 20, 2014
  */
-#ifndef XACTION_HPP_
-#define XACTION_HPP_
-
+#pragma once
 
 namespace fakeit {
 
@@ -16,7 +14,3 @@ struct Xaction {
 	virtual void commit() = 0;
 };
 }
-
-
-
-#endif /* XACTION_HPP_ */

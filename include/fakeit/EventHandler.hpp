@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef EventHandler_h__
-#define EventHandler_h__
+#pragma once
 
 #include "fakeit/FakeitEvents.hpp"
 
@@ -26,4 +24,3 @@ namespace fakeit {
 	};
 
 }
-#endif

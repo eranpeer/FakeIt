@@ -5,9 +5,7 @@
  *
  * Created on Mar 10, 2014
  */
-
-#ifndef QUANTIFIER_HPP_
-#define QUANTIFIER_HPP_
+#pragma once
 
 #include <functional>
 #include <type_traits>
@@ -81,5 +79,3 @@ inline QuantifierFunctor operator"" _Time(unsigned long long n)
 #endif
 
 }
-
-#endif /* QUANTIFIER_HPP_ */

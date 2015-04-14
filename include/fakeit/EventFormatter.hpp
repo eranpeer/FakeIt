@@ -5,8 +5,7 @@
  *
  * Created on August, 2014
  */
-#ifndef EventFormatter_h__
-#define EventFormatter_h__
+#pragma once
 
 #include <string>
 
@@ -27,4 +26,3 @@ struct EventFormatter {
 };
 
 }
-#endif

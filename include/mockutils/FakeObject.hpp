@@ -6,9 +6,7 @@
  * 
  * Created on Jun 8, 2014
  */
-#ifndef FAKEOBJECT_HPP_
-#define FAKEOBJECT_HPP_
-
+#pragma once
 #include <new>
 
 #ifdef _MSC_VER
@@ -86,5 +84,3 @@ public:
 #endif
 
 }
-
-#endif /* FAKEOBJECT_HPP_ */

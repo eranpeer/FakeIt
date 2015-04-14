@@ -1,9 +1,7 @@
 //
 // Created by eran on 01/04/2015.
 //
-
-#ifndef _TESTS_USINGPROGRESS_HPP_
-#define _TESTS_USINGPROGRESS_HPP_
+#pragma once
 
 #include "fakeit/FakeitContext.hpp"
 #include "fakeit/SequenceVerificationProgress.hpp"
@@ -40,5 +38,3 @@ namespace fakeit {
   
     };
 }
-
-#endif //_TESTS_USINGPROGRESS_HPP_

@@ -5,12 +5,11 @@
  *
  * Created on August, 2014
  */
+#pragma once
+
 #include <iosfwd>
 #include "fakeit/EventFormatter.hpp"
 #include "fakeit/FakeitEvents.hpp"
-
-#ifndef DefaultEventFormatter_h__
-#define DefaultEventFormatter_h__
 
 namespace fakeit {
 
@@ -146,5 +145,3 @@ private:
 	}
 };
 }
-
-#endif

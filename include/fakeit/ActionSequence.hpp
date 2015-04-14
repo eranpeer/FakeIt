@@ -6,8 +6,7 @@
  * 
  * Created on Aug 30, 2014
  */
-#ifndef ActionSequence_hpp_
-#define ActionSequence_hpp_
+#pragma once
 
 #include <vector>
 
@@ -79,4 +78,3 @@ private:
 };
 
 }
-#endif

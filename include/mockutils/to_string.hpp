@@ -1,3 +1,4 @@
+#pragma once
 /*
  * to_string.hpp
  * Copyright (c) 2014 Eran Pe'er.
@@ -6,10 +7,6 @@
  * 
  * Created on Sep 10, 2014
  */
-#ifndef TO_STRING_HPP_
-#define TO_STRING_HPP_
-
-
 
 #include <string>
 #include <sstream>
@@ -25,5 +22,3 @@ namespace fakeit {
     }
 
 }
-
-#endif /* TO_STRING_HPP_ */
