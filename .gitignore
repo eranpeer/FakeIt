@@ -37,6 +37,9 @@ TestResults/
 # CLion files
 .idea/
 
+# bii
+bii/
+
 # temporary
 *.tmp
 *.d
