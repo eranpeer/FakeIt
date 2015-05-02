@@ -115,7 +115,7 @@ run the tests by typing
 Open the tests/all_tests.vcxproj project file with Visual Studio 2013. Build and run the project and check the test results. 
 
 ### Pulling FakeIt form [**Biicode**](https://www.biicode.com/eranpeer/FakeIt)
-FakeIs is published on [**Biicode**](https://www.biicode.com/eranpeer/FakeIt).
+FakeIt is published on [**Biicode**](https://www.biicode.com/eranpeer/FakeIt).
 To use FakeIt from Biicode simply make the following changes to the biicode.conf file of your project:
 * Add the following line to the [Requirements] section:
 ```
