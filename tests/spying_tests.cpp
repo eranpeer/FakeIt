@@ -24,7 +24,8 @@ struct SpyingTests: tpunit::TestFixture {
 					TEST(SpyingTests::canVerifyMethodAfterSpying),//
 					TEST(SpyingTests::canVerifyProcedureAfterSpying),
                     TEST(SpyingTests::restoreObjectOnMockDelete),
-					TEST(SpyingTests::spyMultipleMethods)
+					TEST(SpyingTests::spyMultipleMethods),
+					TEST(SpyingTests::callMemberMethodFromSpiedMethod)
 					//
 	) //
 	{
@@ -165,5 +166,27 @@ struct SpyingTests: tpunit::TestFixture {
 		ASSERT_EQUAL(0, i.func1(1));
 		ASSERT_EQUAL(0, obj.func1(1));
 	}
+
+    class Dummy {
+    public:
+        virtual void method() {
+            printf("Method called\n");
+        }
+
+        virtual void callMethod() {
+            printf("this: %p\n", (void*)this);
+            this->method();
+        }
+    };
+
+    void callMemberMethodFromSpiedMethod() {
+        Dummy instance;
+        auto spy = Mock<Dummy>(instance);
+        Spy(Method(spy, method));
+		Spy(Method(spy, callMethod));
+        instance.callMethod();
+		spy.get().callMethod();
+		Verify(Method(spy, method)).Twice();
+    }
 
 } __SpyingTests;
