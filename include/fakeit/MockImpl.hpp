@@ -140,7 +140,12 @@ namespace fakeit {
         protected:
 
             R (C::*_vMethod)(arglist...);
+            
+#if defined (__GNUG__)
+            typedef R(*VTableMethodType)(void *, arglist...);
+#elif defined (_MSC_VER)
             typedef R(__thiscall *VTableMethodType)(void *, arglist...);
+#endif
 
         public:
             virtual ~MethodMockingContextImpl() = default;
