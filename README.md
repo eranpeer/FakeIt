@@ -1,6 +1,6 @@
 FakeIt
 ======
-
+ 
 [![Join the chat at https://gitter.im/eranpeer/FakeIt](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/eranpeer/FakeIt?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [Release 2](https://github.com/eranpeer/FakeIt/releases/latest) is out!
