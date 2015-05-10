@@ -1,6 +1,6 @@
 FakeIt
 ======
-
+ 
 [![Join the chat at https://gitter.im/eranpeer/FakeIt](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/eranpeer/FakeIt?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [Release 2](https://github.com/eranpeer/FakeIt/releases/latest) is out!
@@ -113,6 +113,22 @@ run the tests by typing
 
 ### Building and Running the Unit Tests with Visual Studio 
 Open the tests/all_tests.vcxproj project file with Visual Studio 2013. Build and run the project and check the test results. 
+
+### Pulling FakeIt form [**Biicode**](https://www.biicode.com/eranpeer/FakeIt)
+FakeIt is published on [**Biicode**](https://www.biicode.com/eranpeer/FakeIt).
+To use FakeIt from Biicode simply make the following changes to the biicode.conf file of your project:
+* Add the following line to the [Requirements] section:
+```
+eranpeer/FakeIt: 0 
+```
+* Add ONE of the following lines to the [includes] section:
+```
+fakeit.hpp: eranpeer/FakeIt/config/gtest       # To use fakeit with gtest
+fakeit.hpp: eranpeer/FakeIt/config/boost       # To use fakeit with boost test
+fakeit.hpp: eranpeer/FakeIt/config/mstest      # To use fakeit with mstest
+fakeit.hpp: eranpeer/FakeIt/config/tpunit      # To use fakeit with tpunit
+fakeit.hpp: eranpeer/FakeIt/config/standalone  # To use fakeit with standalone configuration.
+```
 
 ## Limitations
 * Currently only GCC, Clang and MSC++ are supported.

@@ -24,7 +24,7 @@ struct TypeInfoTests : tpunit::TestFixture {
 	TypeInfoTests() :
 	tpunit::TestFixture(
 	//
-	TEST(TypeInfoTests::mock_should_use_same_typeid_as_moked_class), //
+	TEST(TypeInfoTests::mock_should_use_same_typeid_as_mocked_class), //
 	TEST(TypeInfoTests::simple_inheritance_upcast), //
 	TEST(TypeInfoTests::dynamic_cast_to_same_type__with_concrete_type),
 	TEST(TypeInfoTests::dynamic_cast_to_same_type__with_abstract_type),
@@ -37,7 +37,7 @@ struct TypeInfoTests : tpunit::TestFixture {
 		virtual int func(int) = 0;
 	};
 
-	void mock_should_use_same_typeid_as_moked_class() {
+	void mock_should_use_same_typeid_as_mocked_class() {
 		Mock<SomeInterface> mock;
 		ASSERT_EQUAL(typeid(mock.get()), typeid(SomeInterface));
 	}

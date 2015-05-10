@@ -1,6 +1,5 @@
 #pragma once
 
-#include <fakeit_instance.hpp>
 #include <fakeit/UsingFunctor.hpp>
 #include <fakeit/VerifyFunctor.hpp>
 #include <fakeit/VerifyNoOtherInvocationsFunctor.hpp>

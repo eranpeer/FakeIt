@@ -140,6 +140,12 @@ namespace fakeit {
         protected:
 
             R (C::*_vMethod)(arglist...);
+            
+#if defined (__GNUG__)
+            typedef R(*VTableMethodType)(void *, arglist...);
+#elif defined (_MSC_VER)
+            typedef R(__thiscall *VTableMethodType)(void *, arglist...);
+#endif
 
         public:
             virtual ~MethodMockingContextImpl() = default;
@@ -150,10 +156,10 @@ namespace fakeit {
 
             virtual std::function<R(arglist &...)> getOriginalMethod() override {
                 void *mPtr = MethodMockingContextBase<R, arglist...>::_mock.getOriginalMethod(_vMethod);
-                C &instance = MethodMockingContextBase<R, arglist...>::_mock.get();
-                return [=, &instance](arglist &... args) -> R {
-                    auto m = union_cast<decltype(_vMethod)>(mPtr);
-                    return ((&instance)->*m)(args...);
+                C * instance = &(MethodMockingContextBase<R, arglist...>::_mock.get());
+                return [=](arglist &... args) -> R {
+                    auto m = union_cast<VTableMethodType>(mPtr);
+                    return m(instance, args...);
                 };
             }
         };
