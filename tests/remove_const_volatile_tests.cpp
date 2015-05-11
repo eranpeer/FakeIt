@@ -26,20 +26,20 @@ public:
 		) {
 		}
 		struct ConstVolatileFunctions{
-			virtual int func1() const = 0;
-			virtual int func2() volatile = 0;
-			virtual int func3() const volatile = 0;
-			virtual const int func4() = 0;
-			virtual const int func6() const = 0;
-			virtual const int func7() const volatile = 0;
+			virtual int * func1() const = 0;
+			virtual int * func2() volatile = 0;
+			virtual int * func3() const volatile = 0;
+			virtual const int * func4() = 0;
+			virtual const int * func6() const = 0;
+			virtual const int * func7() const volatile = 0;
 
-			virtual void proc1() const = 0;
-			virtual void proc2() volatile = 0;
-			virtual void proc3() const volatile = 0;
-			virtual const void proc4() = 0;
- 			virtual const void proc5() const = 0;
- 			virtual const void proc6() volatile = 0;
- 			virtual const void proc7() const volatile = 0;
+			virtual void * proc1() const = 0;
+			virtual void * proc2() volatile = 0;
+			virtual void * proc3() const volatile = 0;
+			virtual const void * proc4() = 0;
+ 			virtual const void * proc5() const = 0;
+ 			virtual const void * proc6() volatile = 0;
+ 			virtual const void * proc7() const volatile = 0;
 		};
 
 		void TestConstFunctions()

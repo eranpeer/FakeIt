@@ -60,7 +60,7 @@ namespace fakeit {
         }
 
     protected:
-        bool shouldInclude(fakeit::Invocation *invocation) const {
+        bool shouldInclude(fakeit::Invocation *) const {
             return true;
         }
 
