@@ -8,11 +8,11 @@
 namespace fakeit {
     class ThrowFalseEventHandler : public VerificationEventHandler {
 
-        void handle(const SequenceVerificationEvent &e) override {
+        void handle(const SequenceVerificationEvent &) override {
             throw false;
         }
 
-        void handle(const NoMoreInvocationsVerificationEvent &e) override {
+        void handle(const NoMoreInvocationsVerificationEvent &) override {
             throw false;
         }
     };
