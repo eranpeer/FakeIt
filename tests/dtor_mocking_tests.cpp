@@ -17,7 +17,7 @@ struct DtorMocking : tpunit::TestFixture
 {
 	DtorMocking() :
 		TestFixture(
-		    TEST(DtorMocking::mock_virtual_dtor_with_fake), //
+            TEST(DtorMocking::mock_virtual_dtor_with_fake), //
 		    TEST(DtorMocking::mock_virtual_dtor_with_when),
             TEST(DtorMocking::mock_virtual_dtor_by_assignment),
             TEST(DtorMocking::call_dtor_without_delete),
@@ -89,8 +89,9 @@ struct DtorMocking : tpunit::TestFixture
         Spy(Dtor(mock));
         A * i = &mock.get();
         delete i;
-        Verify(Dtor(mock)).Once();
-		ASSERT_THROW(Verify(Dtor(mock)).Twice(), fakeit::VerificationException);
+        delete i;
+        Verify(Dtor(mock)).Twice();
+		ASSERT_THROW(Verify(Dtor(mock)).Once(), fakeit::VerificationException);
     }
 
 } __DtorMocking;

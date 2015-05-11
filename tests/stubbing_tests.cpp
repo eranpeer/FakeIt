@@ -47,8 +47,8 @@ struct BasicStubbing : tpunit::TestFixture {
                     TEST(BasicStubbing::verify_all_functions_are_stubbed_correctly),
                     TEST(BasicStubbing::exception_while_stubbing_should_cancel_stubbing),
                     TEST(BasicStubbing::reset_mock_to_initial_state),
-                    TEST(BasicStubbing::use_lambda_to_change_ptr_value)
-                    //
+                    TEST(BasicStubbing::use_lambda_to_change_ptr_value), 
+                    TEST(BasicStubbing::assingOutParamsWithLambda)
             ) {
     }
 
@@ -1072,6 +1072,22 @@ struct BasicStubbing : tpunit::TestFixture {
         int num = 0;
         ASSERT_EQUAL(0, i.foo(&num));
         ASSERT_EQUAL(1, num);
+    }
+
+    void assingOutParamsWithLambda(){
+        struct ApiInterface {
+            virtual bool apiMethod(int a, int b, int& result) = 0;
+        };
+
+        Mock<ApiInterface> mock;
+        When(Method(mock, apiMethod)).AlwaysDo([](int a, int b, int& result) {
+            result = a + b;
+            return true;
+        });
+
+        int result;
+        ASSERT_TRUE(mock.get().apiMethod(1,2,result));
+        ASSERT_EQUAL(3,result);
     }
 
 } __BasicStubbing;

@@ -20,7 +20,8 @@ struct Cpp14Tests : tpunit::TestFixture {
 			//
 			TEST(Cpp14Tests::use_cpp14_lambda_in_do),
 			TEST(Cpp14Tests::use_cpp14_lambda_in_invocation_matching),
-			TEST(Cpp14Tests::use_cpp14_lambda_in_verifing)
+			TEST(Cpp14Tests::use_cpp14_lambda_in_verifing),
+			TEST(Cpp14Tests::assingOutParamsWithLambdaCpp14)
 	)//
 	{
 	}
@@ -69,6 +70,22 @@ struct Cpp14Tests : tpunit::TestFixture {
 						)
 				), fakeit::VerificationException);
 	}
+
+    void assingOutParamsWithLambdaCpp14(){
+        struct ApiInterface {
+            virtual bool apiMethod(int a, int b, int& result) = 0;
+        };
+
+        Mock<ApiInterface> mock;
+        When(Method(mock, apiMethod)).AlwaysDo([](auto a, auto b, auto& result) {
+            result = a + b;
+            return true;
+        });
+
+        int result;
+        ASSERT_TRUE(mock.get().apiMethod(1, 2, result));
+        ASSERT_EQUAL(3, result);
+    }
 
 }__Cpp14Tests;
 
