@@ -30,7 +30,7 @@ namespace fakeit {
 
         DataMemberStubbingRoot() = default;
 
-        void operator=(const DATA_TYPE &val) {
+        void operator=(const DATA_TYPE&) {
         }
     };
 

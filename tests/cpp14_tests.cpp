@@ -32,17 +32,17 @@ struct Cpp14Tests : tpunit::TestFixture {
 
 	void use_cpp14_lambda_in_do() {
 		Mock<SomeInterface> mock;
-		When(Method(mock,foo)).Do([](auto a, auto b) {return a;});
+		When(Method(mock,foo)).Do([](auto a, auto) {return a;});
 		ASSERT_EQUAL(1, mock().foo(1,""));
-		When(Method(mock,foo)).Do([](auto& a, auto& b) {return a;});
+		When(Method(mock,foo)).Do([](auto& a, auto&) {return a;});
 		ASSERT_EQUAL(2, mock().foo(2,""));
 	}
 
 	void use_cpp14_lambda_in_invocation_matching() {
 		Mock<SomeInterface> mock;
-		When(Method(mock,foo).Matching([](auto a, auto b) {return b == "A";})).Return(1);
-		When(Method(mock,foo).Matching([](auto &a, auto &b) {return b == "B";})).Return(2);
-		When(Method(mock,foo).Matching([](auto const a, auto const & b) {return b == "C";})).Return(3);
+		When(Method(mock,foo).Matching([](auto , auto b) {return b == "A";})).Return(1);
+		When(Method(mock,foo).Matching([](auto , auto &b) {return b == "B";})).Return(2);
+		When(Method(mock,foo).Matching([](auto const , auto const & b) {return b == "C";})).Return(3);
 
 		ASSERT_EQUAL(1, mock().foo(0,"A"));
 		ASSERT_EQUAL(2, mock().foo(0,"B"));
@@ -56,14 +56,14 @@ struct Cpp14Tests : tpunit::TestFixture {
 		mock().foo(1,"A");
 		mock().foo(2,"B");
 
-		Verify(Method(mock,foo).Matching([](auto a, auto b) {return b == "A";}));
-		Verify(Method(mock,foo).Matching([](auto &a, auto &b) {return b == "A";}));
-		Verify(Method(mock,foo).Matching([](const auto a, const auto b) {return b == "A";}));
+		Verify(Method(mock,foo).Matching([](auto , auto b) {return b == "A";}));
+		Verify(Method(mock,foo).Matching([](auto &, auto &b) {return b == "A";}));
+		Verify(Method(mock,foo).Matching([](const auto , const auto b) {return b == "A";}));
 
 		ASSERT_THROW(
 				Verify(
 						Method(mock,foo).Matching(
-								[](auto a, auto b) {
+								[](auto , auto b) {
 									return b == "C";
 								}
 						)

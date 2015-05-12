@@ -21,6 +21,7 @@ struct OverloadedMethods : tpunit::TestFixture {
                     TEST(OverloadedMethods::stub_const_overloaded_methods)) {
     }
 
+
     struct SomeInterface {
         virtual int func() = 0;
 
@@ -41,6 +42,7 @@ struct OverloadedMethods : tpunit::TestFixture {
         virtual void proc(const int&, std::string*) = 0;
 
     };
+
 
     void stub_overloaded_methods() {
         int x = 5;
