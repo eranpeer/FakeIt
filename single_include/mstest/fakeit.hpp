@@ -1,16 +1,20 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2015-05-16 14:14:39.654000
+ *  Generated: 2015-05-16 14:15:15.426000
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
 #pragma once
 // #included from: fakeit.hpp
+#ifndef fakeit_h__
+#define fakeit_h__
 
 // #included from: fakeit_instance.hpp
 
-// #included from: StandaloneFakeit.hpp
+// #included from: MsTestFakeit.hpp
+
+#include <ostream>
 
 // #included from: fakeit/DefaultFakeit.hpp
 /*
@@ -1208,118 +1212,86 @@ namespace fakeit {
 
     };
 }
+#include <CppUnitTestAssert.h>
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace fakeit {
 
-    struct VerificationException : public FakeitException {
-        virtual ~VerificationException() = default;
+class MsTestAdapter: public EventHandler {
+	EventFormatter& _formatter;
+public:
 
-        void setFileInfo(std::string file, int line, std::string callingMethod) {
-            _file = file;
-            _callingMethod = callingMethod;
-            _line = line;
-        }
+	virtual ~MsTestAdapter() = default;
+    MsTestAdapter(EventFormatter& formatter):_formatter(formatter){}
 
-        const std::string& file() const {
-            return _file;
-        }
-        int line() const {
-            return _line;
-        }
-        const std::string& callingMethod() const {
-            return _callingMethod;
-        }
+	virtual void handle(const UnexpectedMethodCallEvent& e) override
+	{
+		auto formattedMessage = _formatter.format(e);
+		std::wstring wFormattedMessage = to_wstring(formattedMessage);
+		Assert::Fail(wFormattedMessage.c_str());
+	}
 
-    private:
-        std::string _file;
-        int _line;
-        std::string _callingMethod;
-    };
+	virtual void handle(const SequenceVerificationEvent& e) override
+	{
+		auto formattedMessage = _formatter.format(e);
+		std::wstring wFormattedMessage = to_wstring(formattedMessage);
+		//std::wstring wfile = to_wstring(e.file());
+		//__LineInfo lineInfo(wfile.c_str(), e.callingMethod().c_str(), e.line());
+		//Assert::Fail(wFormattedMessage.c_str(), &lineInfo);
+		Assert::Fail(wFormattedMessage.c_str());
+	}
 
-    struct NoMoreInvocationsVerificationException : public VerificationException {
+	virtual void handle(const NoMoreInvocationsVerificationEvent& e) override
+	{
+		auto formattedMessage = _formatter.format(e);
+        std::wstring wFormattedMessage = to_wstring(formattedMessage);
+		//std::wstring wfile = to_wstring(e.file());
+		//__LineInfo lineInfo(wfile.c_str(), e.callingMethod().c_str(), e.line());
+		//Assert::Fail(wFormattedMessage.c_str(), &lineInfo);
+		Assert::Fail(wFormattedMessage.c_str());
+	}
 
-        NoMoreInvocationsVerificationException(std::string format) : //
-            _format(format) { //
-        }
 
-        virtual std::string what() const override {
-            return _format;
-        }
-    private:
-        std::string _format;
-    };
+    std::wstring to_wstring(const std::string string) {
+        return std::wstring(string.begin(), string.end());
+    }
+};
 
-    struct SequenceVerificationException : public VerificationException {
-        SequenceVerificationException(const std::string& format) : //
-            _format(format) //
-        {
-        }
+class MsTestFakeit: public DefaultFakeit {
 
-        virtual std::string what() const override {
-            return _format;
-        }
+public:
+	virtual ~MsTestFakeit() = default;
 
-    private:
-        std::string _format;
-    };
+    MsTestFakeit()
+			: _formatter(), _tpunitAdapter(*this) {
+	}
 
-    struct StandaloneAdapter : public EventHandler {
-        virtual ~StandaloneAdapter() = default;
+	static MsTestFakeit &getInstance() {
+		static MsTestFakeit instance;
+		return instance;
+	}
 
-        StandaloneAdapter(EventFormatter &formatter)
-            : _formatter(formatter) {
-        }
+protected:
 
-        virtual void handle(const UnexpectedMethodCallEvent &evt) override {
-            std::string format = _formatter.format(evt);
-            UnexpectedMethodCallException ex(format);
-            throw ex;
-        }
+	fakeit::EventHandler &accessTestingFrameworkAdapter() override {
+		return _tpunitAdapter;
+	}
 
-        virtual void handle(const SequenceVerificationEvent &evt) override {
-            std::string format(evt.file() + ":" + std::to_string(evt.line()) + ": " + _formatter.format(evt));
-            SequenceVerificationException e(format);
-            e.setFileInfo(evt.file(), evt.line(), evt.callingMethod());
-            throw e;
-        }
+	EventFormatter &accessEventFormatter() override {
+		return _formatter;
+	}
 
-        virtual void handle(const NoMoreInvocationsVerificationEvent &evt) override {
-            std::string format = evt.file() + ":" + std::to_string(evt.line()) + ": " + _formatter.format(evt);
-            NoMoreInvocationsVerificationException e(format);
-            e.setFileInfo(evt.file(), evt.line(), evt.callingMethod());
-            throw e;
-        }
+private:
 
-    private:
-        EventFormatter &_formatter;
-    };
+	DefaultEventFormatter _formatter;
+    MsTestAdapter _tpunitAdapter;
 
-    class StandaloneFakeit : public DefaultFakeit {
+};
 
-    public:
-        virtual ~StandaloneFakeit() = default;
-
-        StandaloneFakeit() : _standaloneAdapter(*this) {
-        }
-
-        static StandaloneFakeit &getInstance() {
-            static StandaloneFakeit instance;
-            return instance;
-        }
-
-    protected:
-
-        fakeit::EventHandler &accessTestingFrameworkAdapter() override {
-            return _standaloneAdapter;
-        }
-
-    private:
-
-        StandaloneAdapter _standaloneAdapter;
-    };
 }
 
-static fakeit::DefaultFakeit& Fakeit = fakeit::StandaloneFakeit::getInstance();
+static fakeit::DefaultFakeit& Fakeit = fakeit::MsTestFakeit::getInstance();
 // #included from: fakeit/fakeit_root.hpp
 
 // #included from: fakeit/Mock.hpp
@@ -9773,3 +9745,5 @@ namespace fakeit {
 #define When(call) \
     When(call)
 
+
+#endif

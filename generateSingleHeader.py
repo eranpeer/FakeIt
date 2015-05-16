@@ -38,8 +38,8 @@ def parseFile(out, config, filename):
             if not header in processedHeaders:
                 processedHeaders.add( header )
                 parseFile(out, config, header)
-            elif not pragmaOnceMatcher.match( line ):             
-                write(out, line.rstrip() + "\n" )
+        elif not pragmaOnceMatcher.match( line ):             
+            write(out, line.rstrip() + "\n" )
 
 def writeHeaderComment(out, config):
     out.write( "/*\n" )
@@ -63,3 +63,11 @@ outputPath = os.path.join( fakeitPath, 'single_include', config, 'fakeit.hpp' )
 out = open( outputPath, 'w' )
 
 generateFakeitIncludeFile(out, config)
+
+out.close()
+
+with open(outputPath, 'r') as myfile:
+    data=myfile.read()
+    print(data)
+
+#out = re.sub("(<[^>]+>)", '', txt)
