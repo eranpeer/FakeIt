@@ -69,6 +69,7 @@ Checkout the [Quickstart](https://github.com/eranpeer/FakeIt/wiki/Quickstart) fo
 Download the [Latest Release](https://github.com/eranpeer/FakeIt/releases/latest) and start using FakeIt now!
 
 ## Features
+* Packaged as a **single header file**.
 * Very simple API based on the expressiveness of C++11.
 * Supports all major compilers: GCC, Clang and MSC++.
 * Easily integrated with [**GTest**](https://code.google.com/p/googletest/), [**MS Test**](http://en.wikipedia.org/wiki/Visual_Studio_Unit_Testing_Framework) and [**Boost Test**](http://www.boost.org/doc/libs/1_56_0/libs/test/doc/html/index.html).
@@ -78,30 +79,45 @@ Download the [Latest Release](https://github.com/eranpeer/FakeIt/releases/latest
 * Supports dynamic casting.
 
 ## Installation
-FakeIt is a template library. It does not require any installation. All you need to do is to download the source files and add the "include" folder and the configuration folder of your choice to the include path of your project.
+FakeIt is a header only framework. It does not require any installation. For extra simplicity fakeit is packaged as a single header file.
+### Using a pre-packaged single header file
+Pre-packaged single header versions of FakeIt are located under the *single_header* folder.
+Depending on the unit testing framework you use, simply add one of the pre-packaged versions to the include path of your test project:
+* <fakeit_folder>/single_header/gtest
+* <fakeit_folder>/single_header/mstest
+* <fakeit_folder>/single_header/boost
+* <fakeit_folder>/single_header/tpunit
+* <fakeit_folder>/single_header/standalone
+
+For example, to use fakeit with **Google Test** simply add the *single_header/gtest* folder to the include path of your test project:
+```
+-I"<fakeit_folder>/config/gtest"
+```
+### Using the source header files
+Fakeit source code header files are located under the *include* foler. To use FakeIt dierctly from the source code all you need to do is to download the source files and add the *include* folder and the configuration folder of your choice to the include path of your project.
 For example:
-* To use fakeit with **Google Test** add the "include" folder and the "config/gtest" folder to the include path of your test project:
+* To use fakeit with **Google Test** add the *include* folder and the *config/gtest* folder to the include path of your test project:
 ```
 -I"<fakeit_folder>/include" -I"<fakeit_folder>/config/gtest"
 ```
-* To use fakeit with **MS Test** add the "include" folder and the "config/mstest" folder to the include path of your test project:
+* To use fakeit with **MS Test** add the 8include* folder and the *config/mstest* folder to the include path of your test project:
 ```
 -I"<fakeit_folder>/include" -I"<fakeit_folder>/config/mstest"
 ```
-* To use fakeit with **Boost Test** add the "include" folder and the "config/boost" folder to the include path of your test project:
+* To use fakeit with **Boost Test** add the *include* folder and the *config/boost* folder to the include path of your test project:
 ```
 -I"<fakeit_folder>/include" -I"<fakeit_folder>/config/boost"
 ```
-* To use fakeit with **tpunit** add the "include" folder and the "config/tpunit" folder to the include path of your test project:
+* To use fakeit with **tpunit** add the *include* folder and the *config/tpunit* folder to the include path of your test project:
 ```
 -I"<fakeit_folder>/include" -I"<fakeit_folder>/config/tpunit"
 ```
-* To use fakeit without any testing framework integration (**standalone**) add the "include" folder and the "config/standalone" folder to the include path of your test project:
+* To use fakeit without any testing framework integration (**standalone**) add the *include* folder and the *config/standalone* folder to the include path of your test project:
 ```
 -I"<fakeit_folder>/include" -I"<fakeit_folder>/config/standalone"
 ```
 It is recommended to build and run the unit tests to make sure FakeIt fits your environment.
-### Building and Running the Unit Tests with GCC
+#### Building and Running the Unit Tests with GCC
 ```
 cd build
 make all
@@ -110,10 +126,8 @@ run the tests by typing
 ```
 ./fakit_tests.exe
 ```
-
-### Building and Running the Unit Tests with Visual Studio 
+#### Building and Running the Unit Tests with Visual Studio 
 Open the tests/all_tests.vcxproj project file with Visual Studio 2013. Build and run the project and check the test results. 
-
 ### Pulling FakeIt form [**Biicode**](https://www.biicode.com/eranpeer/FakeIt)
 FakeIt is published on [**Biicode**](https://www.biicode.com/eranpeer/FakeIt).
 To use FakeIt from Biicode simply make the following changes to the biicode.conf file of your project:
@@ -129,7 +143,6 @@ fakeit.hpp: eranpeer/FakeIt/config/mstest      # To use fakeit with mstest
 fakeit.hpp: eranpeer/FakeIt/config/tpunit      # To use fakeit with tpunit
 fakeit.hpp: eranpeer/FakeIt/config/standalone  # To use fakeit with standalone configuration.
 ```
-
 ## Limitations
 * Currently only GCC, Clang and MSC++ are supported.
 * Can't mock classes with multiple inheritance.
