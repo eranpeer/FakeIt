@@ -1,117 +1,38 @@
+#pragma once
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2015-05-16 14:15:21.833000
+ *  Generated: 2015-05-16 15:37:05.576000
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
-#pragma once
-// #included from: fakeit.hpp
+
 #ifndef fakeit_h__
 #define fakeit_h__
 
-// #included from: fakeit_instance.hpp
 
-// #included from: BoostTestFakeit.hpp
-
-// #included from: fakeit/DefaultFakeit.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-// #included from: fakeit/EventHandler.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
-// #included from: fakeit/FakeitEvents.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
 
 #include <functional>
 #include <memory>
-
-// #included from: fakeit/Sequence.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
 #include <set>
 #include <vector>
 #include <stdexcept>
-
-// #included from: mockutils/Macros.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
 #if defined (__GNUG__)
 #define THROWS noexcept(false)
 #elif defined (_MSC_VER)
 #define THROWS throw(...)
 #endif
-// #included from: fakeit/ActualInvocation.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
-
 #include <typeinfo>
 #include <unordered_set>
 #include <tuple>
 #include <string>
 #include <iosfwd>
 #include <atomic>
-
-
-// #included from: fakeit/Invocation.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
 #include <typeinfo>
 #include <tuple>
 #include <string>
 #include <iosfwd>
 #include <sstream>
-
-// #included from: fakeit/DomainObjects.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
 #include <string>
 
 namespace fakeit {
@@ -164,15 +85,6 @@ namespace fakeit {
     };
 
 }
-// #included from: mockutils/Destructible.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
 namespace fakeit {
     class Destructible {
     public:
@@ -231,41 +143,13 @@ namespace fakeit {
     };
 
 }
-// #included from: mockutils/TuplePrinter.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
 #include <iosfwd>
 #include <tuple>
 #include <string>
 #include <sstream>
-// #included from: mockutils/Formatter.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
 #include <ostream>
 #include <type_traits>
 #include <string>
-// #included from: mockutils/to_string.hpp
-/*
- * to_string.hpp
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Sep 10, 2014
- */
-
 #include <string>
 #include <sstream>
 #include <iomanip>
@@ -371,7 +255,7 @@ namespace fakeit {
 
 namespace fakeit {
 
-// helper function to print a tuple of Any size
+
     template<class Tuple, std::size_t N>
     struct TuplePrinter {
         static void print(std::ostream &strm, const Tuple &t) {
@@ -428,9 +312,7 @@ namespace fakeit {
             return actualArguments;
         }
 
-        /**
-         * The Matcher that was use to match this ActualInvocation.
-         */
+
         void setActualMatcher(Matcher *matcher) {
             this->_matcher = matcher;
         }
@@ -458,10 +340,10 @@ namespace fakeit {
     }
 
 }
-// #included from: fakeit/ActualInvocationsSource.hpp
-//
-// Created by eran on 01/04/2015.
-//
+
+
+
+
 
 #include <unordered_set>
 
@@ -552,14 +434,10 @@ namespace fakeit {
 
     public:
 
-        /**
-         * Fetch the matchers that make-up this sequence.
-         */
+
         virtual void getExpectedSequence(std::vector<Invocation::Matcher *> &into) const = 0;
 
-        /**
-         * Collect all mock objects that are involved in this sequence.
-         */
+
         virtual void getInvolvedMocks(std::vector<ActualInvocationsSource *> &into) const = 0;
 
         virtual unsigned int size() const = 0;
@@ -717,12 +595,12 @@ namespace fakeit {
 
         ~NoMoreInvocationsVerificationEvent() = default;
 
-        NoMoreInvocationsVerificationEvent( //
-                std::vector<Invocation *> &allIvocations, //
-                std::vector<Invocation *> &unverifedIvocations) : //
-                VerificationEvent(VerificationType::NoMoreInvocations), //
-                _allIvocations(allIvocations), //
-                _unverifedIvocations(unverifedIvocations) { //
+        NoMoreInvocationsVerificationEvent(
+                std::vector<Invocation *> &allIvocations,
+                std::vector<Invocation *> &unverifedIvocations) :
+                VerificationEvent(VerificationType::NoMoreInvocations),
+                _allIvocations(allIvocations),
+                _unverifedIvocations(unverifedIvocations) {
         }
 
         const std::vector<Invocation *> &allIvocations() const {
@@ -742,17 +620,17 @@ namespace fakeit {
 
         ~SequenceVerificationEvent() = default;
 
-        SequenceVerificationEvent(VerificationType verificationType, //
-                                  std::vector<Sequence *> &expectedPattern, //
-                                  std::vector<Invocation *> &actualSequence, //
-                                  int expectedCount, //
-                                  int actualCount) : //
-                VerificationEvent(verificationType), //
-                _expectedPattern(expectedPattern), //
-                _actualSequence(actualSequence), //
-                _expectedCount(expectedCount), //
-                _actualCount(actualCount) //
-        { //
+        SequenceVerificationEvent(VerificationType verificationType,
+                                  std::vector<Sequence *> &expectedPattern,
+                                  std::vector<Invocation *> &actualSequence,
+                                  int expectedCount,
+                                  int actualCount) :
+                VerificationEvent(verificationType),
+                _expectedPattern(expectedPattern),
+                _actualSequence(actualSequence),
+                _expectedCount(expectedCount),
+                _actualCount(actualCount)
+        {
         }
 
         const std::vector<Sequence *> &expectedPattern() const {
@@ -812,26 +690,7 @@ namespace fakeit {
     };
 
 }
-// #included from: fakeit/FakeitContext.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
-
 #include <vector>
-// #included from: fakeit/EventFormatter.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on August, 2014
- */
-
 #include <string>
 
 namespace fakeit {
@@ -925,25 +784,7 @@ namespace fakeit {
     };
 
 }
-// #included from: fakeit/DefaultEventLogger.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
 #include <iostream>
-// #included from: fakeit/DefaultEventFormatter.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on August, 2014
- */
-
 #include <iosfwd>
 
 namespace fakeit {
@@ -962,13 +803,7 @@ namespace fakeit {
             return out.str();
         }
 
-        /*
-         test file:1: Verification error\n
-         Expected pattern: mock.all_types( 'a', true, 1, 1, 1, 1, 1, 1, 1.0, 1.0 )
-         Expected matches: exactly 2
-         Actual matches  : 0
-         Actual sequence : no actual invocations
-         */
+
         virtual std::string format(const SequenceVerificationEvent &e) override {
             std::ostringstream out;
             out << "Verification error" << std::endl;
@@ -1015,7 +850,7 @@ namespace fakeit {
                 return format(*rs);
             }
 
-            // This is a leaf sequence. It has exactly one matcher! Format this matcher.
+
             std::vector<Invocation::Matcher *> vec;
             val.getExpectedSequence(vec);
             return vec[0]->format();
@@ -1081,16 +916,6 @@ namespace fakeit {
         }
     };
 }
-// #included from: fakeit/FakeitExceptions.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
-
 namespace fakeit {
 
     struct FakeitException {
@@ -1210,120 +1035,76 @@ namespace fakeit {
 
     };
 }
-#include <boost/test/unit_test.hpp>
-
-#define BOOST_TEST_TOOL_IMPL2( func, P, check_descr, TL, CT, F, L )            \
-    ::boost::test_tools::tt_detail::func(                               \
-        P,                                                              \
-        ::boost::unit_test::lazy_ostream::instance() << check_descr,    \
-        F,                                         \
-        static_cast<std::size_t>(L),                             \
-        ::boost::test_tools::tt_detail::TL,                             \
-        ::boost::test_tools::tt_detail::CT      , 0)                        \
 
 namespace fakeit {
 
-	struct BoostTestAdapter : public EventHandler {
-		virtual ~BoostTestAdapter() = default;
+class TpUnitAdapter: public EventHandler {
+	EventFormatter& _formatter;
+public:
 
-        BoostTestAdapter(EventFormatter &formatter)
-			: _formatter(formatter) {
+	class AssertionException: public std::runtime_error {
+	public:
+		AssertionException(std::string msg)
+				: runtime_error(msg) {
 		}
-
-		virtual void handle(const UnexpectedMethodCallEvent &evt) override {
-            std::string format = _formatter.format(evt);
-            throw format;
-        }
-
-		virtual void handle(const SequenceVerificationEvent &evt) override {
-            std::string format = _formatter.format(evt);
-            boost_fail(evt.file(), evt.line(), format);
-        }
-
-        virtual void handle(const NoMoreInvocationsVerificationEvent &evt) override {
-            std::string format = _formatter.format(evt);
-            boost_fail(evt.file(), evt.line(), format);
-        }
-
-
-	private:
-		EventFormatter &_formatter;
-
-        void boost_fail(std::string file, int line, std::string format){
-            //::boost::unit_test::unit_test_log.set_checkpoint(
-            //    file,
-            //    static_cast<std::size_t>(line));
-
-            ::boost::test_tools::tt_detail::check_impl(
-                false,
-                ::boost::unit_test::lazy_ostream::instance() << format,
-                file,
-                static_cast<std::size_t>(line),
-                ::boost::test_tools::tt_detail::REQUIRE,
-                ::boost::test_tools::tt_detail::CHECK_MSG, 0);
-        }
 	};
 
-    class BoostTestFakeit : public DefaultFakeit {
+	virtual ~TpUnitAdapter() = default;
+	TpUnitAdapter(EventFormatter& formatter):_formatter(formatter){}
 
-    public:
-        virtual ~BoostTestFakeit() = default;
+	virtual void handle(const UnexpectedMethodCallEvent& e) {
+		throw AssertionException(_formatter.format(e));
+	}
 
-        BoostTestFakeit(): _boostTestAdapter(*this) {
-        }
+	virtual void handle(const SequenceVerificationEvent& e) {
+		throw AssertionException(_formatter.format(e));
+	}
 
-        static BoostTestFakeit &getInstance() {
-            static BoostTestFakeit instance;
-            return instance;
-        }
+	virtual void handle(const NoMoreInvocationsVerificationEvent& e) {
+		throw AssertionException(_formatter.format(e));
+	}
+};
 
-    protected:
+class TpUnitFakeit: public DefaultFakeit {
 
-        fakeit::EventHandler &accessTestingFrameworkAdapter() override {
-            return _boostTestAdapter;
-        }
+public:
+	virtual ~TpUnitFakeit() = default;
 
-    private:
+	TpUnitFakeit()
+			: _formatter(), _tpunitAdapter(*this) {
+	}
 
-        BoostTestAdapter _boostTestAdapter;
-    };
+	static TpUnitFakeit &getInstance() {
+		static TpUnitFakeit instance;
+		return instance;
+	}
+
+protected:
+
+	fakeit::EventHandler &accessTestingFrameworkAdapter() override {
+		return _tpunitAdapter;
+	}
+
+	EventFormatter &accessEventFormatter() override {
+		return _formatter;
+	}
+
+private:
+
+	DefaultEventFormatter _formatter;
+	TpUnitAdapter _tpunitAdapter;
+
+};
+
 }
 
-static fakeit::DefaultFakeit& Fakeit = fakeit::BoostTestFakeit::getInstance();
-// #included from: fakeit/fakeit_root.hpp
+static fakeit::DefaultFakeit& Fakeit = fakeit::TpUnitFakeit::getInstance();
 
-// #included from: fakeit/Mock.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
-// #included from: fakeit/MockImpl.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
 
 #include <type_traits>
 #include <unordered_set>
 
 #include <memory>
-
-// #included from: mockutils/DynamicProxy.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
 #include <functional>
 #include <type_traits>
 #include <vector>
@@ -1331,36 +1112,9 @@ static fakeit::DefaultFakeit& Fakeit = fakeit::BoostTestFakeit::getInstance();
 #include <new>
 
 #ifdef _MSC_VER
-// #included from: mockutils/mscpp/VirtualTable.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
-// #included from: mockutils/VTUtils.hpp
-/*
- * VTUtils.hpp
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Jun 3, 2014
- */
 
 #include <functional>
 #include <type_traits>
-// #included from: mockutils/VirtualOffestSelector.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
 namespace fakeit {
 
     struct VirtualOffsetSelector {
@@ -5381,19 +5135,11 @@ namespace fakeit {
 
     };
 }
-// #included from: mockutils/union_cast.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
 namespace fakeit {
 
     template<typename TARGET, typename SOURCE>
     TARGET union_cast(SOURCE source) {
-        //static_assert(sizeof(TARGET) == sizeof(SOURCE), "can't convert");
+
         union {
             SOURCE source;
             TARGET target;
@@ -5454,7 +5200,7 @@ namespace fakeit {
     struct TypeDescriptor {
         TypeDescriptor() :
                 ptrToVTable(0), spare(0) {
-            // ptrToVTable should contain the pointer to the virtual table of the type type_info!!!
+
             int **tiVFTPtr = (int **) (&typeid(void));
             int *i = (int *) tiVFTPtr[0];
             int type_info_vft_ptr = (int) i;
@@ -5468,16 +5214,12 @@ namespace fakeit {
 
     struct PMD {
 
-        /************************************************************************/
-        /* member displacement.
-    /* For a simple inheritance structure the member displacement is always 0.
-    /* since since the first member is placed at 0.
-    /* In the case of multiple inheritance, this value may have a positive value.
-    /************************************************************************/
+
+
         int mdisp;
 
-        int pdisp;  // vtable displacement
-        int vdisp;  //displacement inside vtable
+        int pdisp;
+        int vdisp;
 
         PMD() :
                 mdisp(0), pdisp(-1), vdisp(0) {
@@ -5489,10 +5231,10 @@ namespace fakeit {
                 pTypeDescriptor(nullptr), numContainedBases(0), attributes(0) {
         }
 
-        const std::type_info *pTypeDescriptor; //type descriptor of the class
-        DWORD numContainedBases; //number of nested classes following in the Base Class Array
-        struct PMD where;        //pointer-to-member displacement info
-        DWORD attributes;        //flags, usually 0
+        const std::type_info *pTypeDescriptor;
+        DWORD numContainedBases;
+        struct PMD where;
+        DWORD attributes;
     };
 
     template<typename C, typename... baseclasses>
@@ -5514,9 +5256,9 @@ namespace fakeit {
             delete[] pBaseClassArray;
         }
 
-        DWORD signature;      //always zero?
-        DWORD attributes;     //bit 0 set = multiple inheritance, bit 1 set = virtual inheritance
-        DWORD numBaseClasses; //number of classes in pBaseClassArray
+        DWORD signature;
+        DWORD attributes;
+        DWORD numBaseClasses;
         RTTIBaseClassDescriptor **pBaseClassArray;
 
         template<typename BaseType>
@@ -5552,11 +5294,11 @@ namespace fakeit {
             delete pClassDescriptor;
         }
 
-        DWORD signature; //always zero ?
-        DWORD offset;    //offset of this vtable in the complete class
-        DWORD cdOffset;  //constructor displacement offset
-        const std::type_info *pTypeDescriptor; //TypeDescriptor of the complete class
-        struct RTTIClassHierarchyDescriptor<C, baseclasses...> *pClassDescriptor; //describes inheritance hierarchy
+        DWORD signature;
+        DWORD offset;
+        DWORD cdOffset;
+        const std::type_info *pTypeDescriptor;
+        struct RTTIClassHierarchyDescriptor<C, baseclasses...> *pClassDescriptor;
     };
 
     struct VirtualTableBase {
@@ -5627,34 +5369,34 @@ namespace fakeit {
         }
 
         void dispose() {
-            _firstMethod--; // skip objectLocator
+            _firstMethod--;
             RTTICompleteObjectLocator<C, baseclasses...> *locator = (RTTICompleteObjectLocator<C, baseclasses...> *) _firstMethod[0];
             delete locator;
-            _firstMethod -= numOfCookies; // skip cookies
+            _firstMethod -= numOfCookies;
             delete[] _firstMethod;
         }
 
-        // the dtor VC++ must of the format: int dtor(int)
+
         unsigned int dtor(int) {
             C *c = (C *) this;
             C &cRef = *c;
             auto vt = VirtualTable<C, baseclasses...>::getVTable(cRef);
-            void *dtorPtr = vt.getCookie(numOfCookies - 1); // read the last cookie
+            void *dtorPtr = vt.getCookie(numOfCookies - 1);
             void(*method)(C *) = reinterpret_cast<void (*)(C *)>(dtorPtr);
             method(c);
             return 0;
         }
 
         void setDtor(void *method) {
-            // the dtor VC++ must of the format: int dtor(int).
-            // the method passed by the user is: void dtor().
-            // store the user method in a cookie and put the
-            // correct format method in the virtual table.
-            // the method stored in the vt will call the method in the cookie when invoked.
+
+
+
+
+
             void *dtorPtr = union_cast<void *>(&VirtualTable<C, baseclasses...>::dtor);
             unsigned int index = VTUtils::getDestructorOffset<C>();
             _firstMethod[index] = dtorPtr;
-            setCookie(numOfCookies - 1, method); // use the last cookie
+            setCookie(numOfCookies - 1, method);
         }
 
         unsigned int getSize() {
@@ -5687,9 +5429,9 @@ namespace fakeit {
             auto array = new void *[vtSize + numOfCookies + 1]{};
             RTTICompleteObjectLocator<C, baseclasses...> *objectLocator = new RTTICompleteObjectLocator<C, baseclasses...>(
                     typeid(C));
-            array += numOfCookies; // skip cookies
-            array[0] = objectLocator; // initialize RTTICompleteObjectLocator pointer
-            array++; // skip object locator
+            array += numOfCookies;
+            array[0] = objectLocator;
+            array++;
             return array;
         }
 
@@ -5698,27 +5440,7 @@ namespace fakeit {
     };
 }
 #else
-
-// #included from: mockutils/gcc/VirtualTable.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
 #ifndef __clang__
-
-// #included from: mockutils/gcc/is_simple_inheritance_layout.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
 #include <type_traits>
 #include <tr2/type_traits>
 
@@ -5810,7 +5532,7 @@ namespace fakeit {
 
         void copyFrom(VirtualTable<C, baseclasses...> &from) {
             unsigned int size = VTUtils::getVTSize<C>();
-            //firstMethod[-1] = from.firstMethod[-1]; // copy type_info
+
             for (size_t i = 0; i < size; ++i) {
                 _firstMethod[i] = from.getMethod(i);
             }
@@ -5821,9 +5543,9 @@ namespace fakeit {
         }
 
         void dispose() {
-            _firstMethod--; // type_info
-            _firstMethod--; // top_offset
-            _firstMethod -= numOfCookies; // skip cookies
+            _firstMethod--;
+            _firstMethod--;
+            _firstMethod -= numOfCookies;
             delete[] _firstMethod;
         }
 
@@ -5842,10 +5564,10 @@ namespace fakeit {
         void setDtor(void *method) {
             unsigned int index = VTUtils::getDestructorOffset<C>();
             void *dtorPtr = union_cast<void *>(&VirtualTable<C, baseclasses...>::dtor);
-            // replace the non deleting destructor.
-            // for example (c1->~C()) calls the non deleting dtor only
+
+
             _firstMethod[index] = method;
-            // replace the deleting destructor with a method that calls the non deleting one
+
             _firstMethod[index + 1] = dtorPtr;
         }
 
@@ -5876,10 +5598,10 @@ namespace fakeit {
         static void **buildVTArray() {
             int size = VTUtils::getVTSize<C>();
             auto array = new void *[size + 2 + numOfCookies]{};
-            array += numOfCookies; // skip cookies
-            array++; // skip top_offset
-            array[0] = (void *) &typeid(C); // type_info
-            array++; // skip type_info ptr
+            array += numOfCookies;
+            array++;
+            array[0] = (void *) &typeid(C);
+            array++;
             return array;
         }
 
@@ -5890,17 +5612,6 @@ namespace fakeit {
 }
 
 #endif
-
-// #included from: mockutils/MethodInvocationHandler.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
-
 namespace fakeit {
 
     struct NoMoreRecordedActionException {
@@ -5912,16 +5623,6 @@ namespace fakeit {
     };
 
 }
-// #included from: mockutils/FakeObject.hpp
-/*
- * FakeObject.hpp
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Jun 8, 2014
- */
-
 #include <new>
 
 #ifdef _MSC_VER
@@ -5931,14 +5632,14 @@ namespace fakeit {
 #endif
 
 namespace fakeit {
-// silent GCC compiler warning: iso c++ forbids zero-size array [-Wpedantic]
+
 #ifdef __GNUG__
 #ifndef __clang__
 #pragma GCC diagnostic ignored "-Wpedantic"
 #endif
 #endif
 
-// silent MSC++ compiler warning: C4200: nonstandard extension used : zero-sized array in struct/union.
+
 #ifdef _MSC_VER
 #pragma warning( push )
 #pragma warning( disable : 4200 )
@@ -5953,8 +5654,8 @@ namespace fakeit {
         static const size_t SIZE = sizeof(C) - sizeof(VirtualTable<C, baseclasses...>);
         char instanceArea[SIZE ? SIZE : 0];
 
-        FakeObject(FakeObject const &) = delete;            // undefined
-        FakeObject &operator=(FakeObject const &) = delete; // undefined
+        FakeObject(FakeObject const &) = delete;
+        FakeObject &operator=(FakeObject const &) = delete;
 
     public:
 
@@ -5998,9 +5699,6 @@ namespace fakeit {
 #endif
 
 }
-// #included from: mockutils/MethodProxy.hpp
-
-
 namespace fakeit {
 
     struct MethodProxy {
@@ -6029,8 +5727,6 @@ namespace fakeit {
         void *_vMethod;
     };
 }
-// #included from: mockutils/MethodProxyCreator.hpp
-
 #ifdef _MSC_VER
 #else
 #endif
@@ -6055,7 +5751,7 @@ namespace fakeit {
     template<typename R, typename ... arglist>
     class MethodProxyCreator {
 
-        //using MethodProxyPtrType = R(MethodProxyCreator::*)(arglist...);
+
 
     public:
 
@@ -6230,9 +5926,9 @@ namespace fakeit {
         static_assert(sizeof(C) == sizeof(FakeObject<C, baseclasses...>), "This is a problem");
 
         C &instance;
-        typename VirtualTable<C, baseclasses...>::Handle originalVtHandle; // avoid delete!! this is the original!
+        typename VirtualTable<C, baseclasses...>::Handle originalVtHandle;
         VirtualTable<C, baseclasses...> _cloneVt;
-        //
+
         std::vector<std::shared_ptr<Destructible>> _methodMocks;
         std::vector<std::shared_ptr<Destructible>> _members;
         std::vector<unsigned int> _offsets;
@@ -6266,8 +5962,8 @@ namespace fakeit {
             BaseClass *basePtr = ptr;
             int delta = (unsigned long) basePtr - (unsigned long) ptr;
             if (delta > 0) {
-                // base class does not start on same position as derived class.
-                // this is multiple inheritance.
+
+
                 throw std::invalid_argument(std::string("multiple inheritance is not supported"));
             }
         }
@@ -6279,42 +5975,13 @@ namespace fakeit {
 
     };
 }
-// #included from: fakeit/StubbingImpl.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
 #include <functional>
 #include <type_traits>
 #include <memory>
 #include <iosfwd>
-
-// #included from: fakeit/RecordedMethodBody.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
 #include <vector>
 #include <functional>
 #include <tuple>
-
-// #included from: mockutils/TupleDispatcher.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
 #include <tuple>
 
 namespace fakeit {
@@ -6330,7 +5997,7 @@ namespace fakeit {
     template<>
     struct apply_func<0> {
         template<typename ... ArgsF, typename ... ArgsT, typename ... Args>
-        static bool applyTuple(std::function<bool(ArgsF &...)> f, std::tuple<ArgsT...> & /* t */, Args &... args) {
+        static bool applyTuple(std::function<bool(ArgsF &...)> f, std::tuple<ArgsT...> & , Args &... args) {
             return f(args...);
         }
     };
@@ -6380,42 +6047,12 @@ namespace fakeit {
     }
 
 }
-// #included from: fakeit/invocation_matchers.hpp
-/*
- * matchers.hpp
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Aug 12, 2014
- */
-
 #include <functional>
 #include <tuple>
 #include <string>
 #include <iosfwd>
-
-// #included from: mockutils/DefaultValue.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
 #include <type_traits>
 #include <typeinfo>
-// #included from: mockutils/type_utils.hpp
-/*
- * type_utils.hpp
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Jan 14, 2015
- */
-
 #include <type_traits>
 #include <typeinfo>
 
@@ -6565,16 +6202,6 @@ namespace fakeit {
     };
 
 }
-// #included from: fakeit/argument_matchers.hpp
-/*
- * argument_matchers.hpp
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Jan 12, 2015
- */
-
 namespace fakeit {
 
     struct IMatcher : public Destructible {
@@ -6925,36 +6552,36 @@ namespace fakeit {
         const std::vector<Destructible *> _matchers;
     };
 
-//template<typename ... arglist>
-//struct ExpectedArgumentsInvocationMatcher: public ActualInvocation<arglist...>::Matcher {
-//
-//	virtual ~ExpectedArgumentsInvocationMatcher() = default;
-//
-//	ExpectedArgumentsInvocationMatcher(const arglist&... args)
-//			: expectedArguments(args...) {
-//	}
-//
-//	ExpectedArgumentsInvocationMatcher(const std::tuple<arglist...>& expectedArguments)
-//			: expectedArguments(expectedArguments) {
-//	}
-//
-//	virtual bool matches(ActualInvocation<arglist...>& invocation) override {
-//		if (invocation.getActualMatcher() == this)
-//			return true;
-//		return matches(invocation.getActualArguments());
-//	}
-//
-//	virtual std::string format() const override {
-//		std::ostringstream out;
-//		print(out, expectedArguments);
-//		return out.str();
-//	}
-//private:
-//	virtual bool matches(const std::tuple<arglist...>& actualArgs) {
-//		return expectedArguments == actualArgs;
-//	}
-//	const std::tuple<arglist...> expectedArguments;
-//};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     template<typename ... arglist>
     struct UserDefinedInvocationMatcher : public ActualInvocation<arglist...>::Matcher {
@@ -7008,9 +6635,7 @@ namespace fakeit {
 
 namespace fakeit {
 
-/**
- * A composite MethodInvocationHandler that holds a list of ActionSequence objects.
- */
+
     template<typename R, typename ... arglist>
     class RecordedMethodBody : public MethodInvocationHandler<R, arglist...>, public ActualInvocationsSource {
 
@@ -7088,7 +6713,7 @@ namespace fakeit {
         }
 
         bool isOfMethod(MethodInfo &method) {
-            //return &method == &_method;
+
             return method.id() == _method.id();
         }
 
@@ -7110,7 +6735,7 @@ namespace fakeit {
             MethodInfo &method = this->getMethod();
             auto actualInvoaction = new ActualInvocation<arglist...>(ordinal, method, args...);
 
-            // ensure deletion if not added to actual invocations.
+
             std::shared_ptr<Destructible> actualInvoactionDtor{actualInvoaction};
 
             auto invocationHandler = getInvocationHandlerForActualArgs(*actualInvoaction);
@@ -7154,29 +6779,10 @@ namespace fakeit {
     };
 
 }
-// #included from: fakeit/StubbingProgress.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
 #include <functional>
 #include <type_traits>
 #include <stdexcept>
 #include <utility>
-
-// #included from: fakeit/Quantifier.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
 #include <functional>
 #include <type_traits>
 
@@ -7253,16 +6859,6 @@ namespace fakeit {
 #endif
 
 }
-// #included from: fakeit/Action.hpp
-/*
- * Action.hpp
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Jun 5, 2014
- */
-
 #include <functional>
 #include <atomic>
 #include <tuple>
@@ -7548,29 +7144,7 @@ namespace fakeit {
 
 
 }
-// #included from: fakeit/ActionSequence.hpp
-/*
- * ActionSequence.hpp
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Aug 30, 2014
- */
-
 #include <vector>
-
-
-// #included from: mockutils/Finally.hpp
-/*
- * Finally.hpp
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Aug 30, 2014
- */
-
 #include <functional>
 
 namespace fakeit {
@@ -7596,11 +7170,7 @@ namespace fakeit {
 
 namespace fakeit {
 
-/**
- * Represents a list of recorded actions created by one stubbing line:
- * When(Method(mock,foo)).Return(1).Throw(e).AlwaysReturn(2);
- *                        ^--------Action-Sequence---------^
- */
+
     template<typename R, typename ... arglist>
     struct ActionSequence : public MethodInvocationHandler<R, arglist...> {
 
@@ -7660,7 +7230,7 @@ namespace fakeit {
     template<typename C, typename DATA_TYPE>
     class DataMemberStubbingRoot {
     private:
-        //DataMemberStubbingRoot & operator= (const DataMemberStubbingRoot & other) = delete;
+
     public:
         DataMemberStubbingRoot(const DataMemberStubbingRoot &) = default;
 
@@ -7671,15 +7241,6 @@ namespace fakeit {
     };
 
 }
-// #included from: fakeit/MethodMockingContext.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
 #include <functional>
 #include <utility>
 #include <type_traits>
@@ -7690,26 +7251,6 @@ namespace fakeit {
 #include <set>
 #include <iosfwd>
 
-// #included from: fakeit/SpyingContext.hpp
-/*
- * SpyingContext.hpp
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Oct 20, 2014
- */
-
-// #included from: fakeit/Xaction.hpp
-/*
- * Xaction.hpp
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Oct 20, 2014
- */
-
 namespace fakeit {
 
     struct Xaction {
@@ -7719,7 +7260,7 @@ namespace fakeit {
 
 namespace fakeit {
 
-// For use in Spy(...) phrases
+
     template<typename R, typename ... arglist>
     struct SpyingContext : public Xaction {
         virtual void appendAction(Action<R, arglist...> *action) = 0;
@@ -7727,34 +7268,14 @@ namespace fakeit {
         virtual typename std::function<R(arglist &...)> getOriginalMethod() = 0;
     };
 }
-// #included from: fakeit/StubbingContext.hpp
-/*
- * StubbingContext.hpp
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Oct 20, 2014
- */
-
-
 namespace fakeit {
 
-// For use in Fake & When phrases
+
     template<typename R, typename ... arglist>
     struct StubbingContext : public Xaction {
         virtual void appendAction(Action<R, arglist...> *action) = 0;
     };
 }
-// #included from: fakeit/MatchersCollector.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
 #include <functional>
 #include <type_traits>
 #include <tuple>
@@ -7772,7 +7293,7 @@ namespace fakeit {
 
     public:
 
-        // Fetch the Nth type from arglist...
+
         template<std::size_t N>
         using ArgType = typename std::tuple_element<N, std::tuple<arglist...>>::type;
 
@@ -7790,8 +7311,8 @@ namespace fakeit {
         }
 
         template<typename Head>
-        typename std::enable_if< //
-                std::is_constructible<NakedArgType<index>, Head>::value, void> //
+        typename std::enable_if<
+                std::is_constructible<NakedArgType<index>, Head>::value, void>
         ::type CollectMatchers(const Head &value) {
 
             TypedMatcher<NakedArgType<index>> *d = Eq<NakedArgType<index>>(value).createMatcher();
@@ -7799,9 +7320,9 @@ namespace fakeit {
         }
 
         template<typename Head, typename ...Tail>
-        typename std::enable_if< //
-                std::is_constructible<NakedArgType<index>, Head>::value //
-                , void> //
+        typename std::enable_if<
+                std::is_constructible<NakedArgType<index>, Head>::value
+                , void>
         ::type CollectMatchers(const Head &head, const Tail &... tail) {
             CollectMatchers(head);
             MatchersCollector<index + 1, arglist...> c(_matchers);
@@ -7809,17 +7330,17 @@ namespace fakeit {
         }
 
         template<typename Head>
-        typename std::enable_if< //
-                std::is_base_of<TypedMatcherCreator<NakedArgType<index>>, Head>::value, void> //
+        typename std::enable_if<
+                std::is_base_of<TypedMatcherCreator<NakedArgType<index>>, Head>::value, void>
         ::type CollectMatchers(const Head &creator) {
             TypedMatcher<NakedArgType<index>> *d = creator.createMatcher();
             _matchers.push_back(d);
         }
 
         template<typename Head, typename ...Tail>
-        //
-        typename std::enable_if< //
-                std::is_base_of<TypedMatcherCreator<NakedArgType<index>>, Head>::value, void> //
+
+        typename std::enable_if<
+                std::is_base_of<TypedMatcherCreator<NakedArgType<index>>, Head>::value, void>
         ::type CollectMatchers(const Head &head, const Tail &... tail) {
             CollectMatchers(head);
             MatchersCollector<index + 1, arglist...> c(_matchers);
@@ -7827,16 +7348,16 @@ namespace fakeit {
         }
 
         template<typename Head>
-        typename std::enable_if<//
-                std::is_same<AnyMatcher, Head>::value, void> //
+        typename std::enable_if<
+                std::is_same<AnyMatcher, Head>::value, void>
         ::type CollectMatchers(const Head &) {
             TypedMatcher<NakedArgType<index>> *d = Any<NakedArgType<index>>().createMatcher();
             _matchers.push_back(d);
         }
 
         template<typename Head, typename ...Tail>
-        typename std::enable_if< //
-                std::is_same<AnyMatcher, Head>::value, void> //
+        typename std::enable_if<
+                std::is_same<AnyMatcher, Head>::value, void>
         ::type CollectMatchers(const Head &head, const Tail &... tail) {
             CollectMatchers(head);
             MatchersCollector<index + 1, arglist...> c(_matchers);
@@ -7848,19 +7369,13 @@ namespace fakeit {
 }
 
 namespace fakeit {
-/**
- * Build recorded sequence and the matching criteria.
- * For example, for the following line:
- * When(Method(mock,foo)).Return(1).Return(2_Times(2)).Throw(e1);
- * The matching criteria is: Any invocation of mock.foo
- * The recorded sequence is: {Return(1), Return(2), Return(2), Throw(e1)}
- */
+
     template<typename R, typename ... arglist>
     class MethodMockingContext :
-            public Sequence,                // For use in Verify(sequence1,...)... phrases.
-            public ActualInvocationsSource, // For use in Using(source1,souece2,...) and VerifyNoOtherInvocations(source1,souece2...) phrases.
-            public virtual StubbingContext<R, arglist...>, // For use in Fake & When phrases
-            public virtual SpyingContext<R, arglist...>, // For use in Spy phrases
+            public Sequence,
+            public ActualInvocationsSource,
+            public virtual StubbingContext<R, arglist...>,
+            public virtual SpyingContext<R, arglist...>,
             private Invocation::Matcher {
     public:
 
@@ -7868,9 +7383,7 @@ namespace fakeit {
 
             virtual ~Context() = default;
 
-            /**
-             * Return the original method. not the mock.
-             */
+
             virtual std::function<R(arglist &...)> getOriginalMethod() = 0;
 
             virtual std::string getMethodName() = 0;
@@ -7912,7 +7425,7 @@ namespace fakeit {
             ~Implementation() {
                 delete _stubbingContext;
                 if (!_commited) {
-                    // no commit. delete the created objects.
+
                     delete _recordedActionSequence;
                     delete _invocationMatcher;
                 }
@@ -7937,9 +7450,7 @@ namespace fakeit {
                 getStubbingContext().scanActualInvocations(scanner);
             }
 
-            /**
-             * Used only by Verify phrase.
-             */
+
             bool matches(Invocation &invocation) {
                 MethodInfo &actualMethod = invocation.getMethod();
                 if (!getStubbingContext().isOfMethod(actualMethod)) {
@@ -7990,8 +7501,8 @@ namespace fakeit {
 
         MethodMockingContext(MethodMockingContext &) = default;
 
-        //we have to write move ctor by hand since VC 2013 doesn't support defaulted
-        //move constructor and move assignment
+
+
         MethodMockingContext(MethodMockingContext &&other)
                 : _impl(std::move(other._impl)) {
         }
@@ -8006,9 +7517,7 @@ namespace fakeit {
             return 1;
         }
 
-        /**
-         * Used only by Verify phrase.
-         */
+
         void getInvolvedMocks(std::vector<ActualInvocationsSource *> &into) const override {
             _impl->getInvolvedMocks(into);
         }
@@ -8019,16 +7528,12 @@ namespace fakeit {
             into.push_back(c);
         }
 
-        /**
-         * Used only by Verify phrase.
-         */
+
         void getActualInvocations(std::unordered_set<Invocation *> &into) const override {
             _impl->getActualInvocations(into);
         }
 
-        /**
-         * Used only by Verify phrase.
-         */
+
         bool matches(Invocation &invocation) override {
             return _impl->matches(invocation);
         }
@@ -8053,9 +7558,7 @@ namespace fakeit {
             _impl->setInvocationMatcher(matcher);
         }
 
-        /**
-         * Used by Fake, Spy & When functors
-         */
+
         void appendAction(Action<R, arglist...> *action) override {
             _impl->appendAction(action);
         }
@@ -8257,9 +7760,7 @@ namespace fakeit {
             _proxy.detach();
         }
 
-        /**
-         * Return all actual invocations of this mock.
-         */
+
         void getActualInvocations(std::unordered_set<Invocation *> &into) const override {
             std::vector<ActualInvocationsSource *> vec;
             _proxy.getMethodMocks(vec);
@@ -8302,7 +7803,7 @@ namespace fakeit {
 
     private:
         DynamicProxy<C, baseclasses...> _proxy;
-        C *_instance; //
+        C *_instance;
         bool _isOwner;
         FakeitContext &_fakeit;
 
@@ -8492,8 +7993,6 @@ namespace fakeit {
 
     };
 }
-// #included from: fakeit/Prototype.hpp
-
 namespace fakeit {
 
     template<typename R, typename... Args>
@@ -8533,10 +8032,10 @@ namespace fakeit {
         int uniqueId() {
             return X;
         }
-//        typedef typename std::remove_cv<R>::type naked_return_type;
-//        typedef naked_return_type method_type(Args...);
-//        //typedef naked_return_type(C::*member_type)(Args...);
-//        typedef method_type(C::*member_type);
+
+
+
+
     };
 
 }
@@ -8646,25 +8145,6 @@ namespace fakeit {
     };
 
 }
-// #included from: fakeit/WhenFunctor.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
-
-// #included from: mockutils/smart_ptr.hpp
-/*
- * smart_ptr.hpp
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Jul 17, 2014
- */
 
 #include <exception>
 
@@ -8722,15 +8202,15 @@ namespace fakeit {
 
         smart_ptr<T> &operator=(const smart_ptr<T> &sp) {
             if (this != &sp) {
-                // Decrement the old reference count
-                // if reference become zero delete the old data
+
+
                 if (reference->Release() == 0) {
                     delete reference;
                     delete pData;
                 }
 
-                // Copy the data and reference pointer
-                // and increment the reference count
+
+
                 pData = sp.pData;
                 reference = sp.reference;
                 reference->AddRef();
@@ -8814,16 +8294,6 @@ namespace fakeit {
     };
 
 }
-// #included from: fakeit/FakeFunctor.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
-
 namespace fakeit {
 
     class FakeFunctor {
@@ -8849,26 +8319,7 @@ namespace fakeit {
     };
 
 }
-// #included from: fakeit/UsingFunctor.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
 #include <set>
-
-// #included from: fakeit/SortInvocations.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
 #include <set>
 
 
@@ -8940,21 +8391,8 @@ namespace fakeit {
     };
 
 }
-// #included from: fakeit/UsingProgress.hpp
-//
-// Created by eran on 01/04/2015.
-//
-
-// #included from: fakeit/SequenceVerificationProgress.hpp
 
 #include <memory>
-// #included from: fakeit/SequenceVerificationExpectation.hpp
-
-// #included from: fakeit/MatchAnalysis.hpp
-//
-// Created by eran on 09/04/2015.
-//
-
 
 #include <vector>
 #include <unordered_set>
@@ -9088,11 +8526,11 @@ namespace fakeit {
         SequenceVerificationExpectation(
                 VerificationEventHandler &fakeit,
                 InvocationsSourceProxy mocks,
-                std::vector<Sequence *> &expectedPattern) : //
+                std::vector<Sequence *> &expectedPattern) :
                 _fakeit(fakeit),
                 _involvedInvocationSources(mocks),
-                _expectedPattern(expectedPattern), //
-                _expectedCount(-1), // AT_LEAST_ONCE
+                _expectedPattern(expectedPattern),
+                _expectedCount(-1),
                 _line(0),
                 _isVerified(false) {
         }
@@ -9136,7 +8574,7 @@ namespace fakeit {
         }
 
         bool isAtLeastVerification() {
-            // negative number represents an "AtLeast" search;
+
             return _expectedCount < 0;
         }
 
@@ -9171,12 +8609,6 @@ namespace fakeit {
     };
 
 }
-// #included from: fakeit/ThrowFalseEventHandler.hpp
-//
-// Created by eran on 11/04/2015.
-//
-
-
 namespace fakeit {
     class ThrowFalseEventHandler : public VerificationEventHandler {
 
@@ -9364,15 +8796,6 @@ namespace fakeit {
 
     };
 }
-// #included from: fakeit/VerifyFunctor.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
 #include <set>
 
 namespace fakeit {
@@ -9403,29 +8826,8 @@ namespace fakeit {
     };
 
 }
-// #included from: fakeit/VerifyNoOtherInvocationsFunctor.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
 #include <set>
 #include <memory>
-
-// #included from: fakeit/VerifyNoOtherInvocationsVerificationProgress.hpp
-/*
- * VerifyNoOtherInvocationsVerificationProgress.hpp
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Jul 21, 2014
- */
-
-
 namespace fakeit {
 
     class VerifyNoOtherInvocationsVerificationProgress {
@@ -9567,16 +8969,6 @@ namespace fakeit {
     };
 
 }
-// #included from: fakeit/SpyFunctor.hpp
-/*
- * Copyright (c) 2014 Eran Pe'er.
- *
- * This program is made available under the terms of the MIT License.
- *
- * Created on Mar 10, 2014
- */
-
-
 namespace fakeit {
 
     class SpyFunctor {
@@ -9604,12 +8996,6 @@ namespace fakeit {
     };
 
 }
-// #included from: fakeit/api_functors.hpp
-
-// #included from: fakeit/UnverifiedFunctor.hpp
-//
-// Created by eran on 02/04/2015.
-//
 
 #include <vector>
 #include <set>
@@ -9658,17 +9044,17 @@ namespace fakeit {
             return unverifiedInvocationsSource;
         }
 
-//        template<typename ... list>
-//        void operator()(const Sequence &sequence, const list &... tail) {
-//            std::vector<Sequence *> allSequences;
-//            collectSequences(allSequences, sequence, tail...);
-//
-//            std::vector<ActualInvocationsSource *> involvedSources;
-//            collectInvolvedMocks(allSequences, involvedSources);
-//
-//            InvocationsSourceProxy aggregateInvocationsSource{new AggregateInvocationsSource(involvedSources)};
-//            InvocationsSourceProxy unverifiedInvocationsSource{new UnverifiedInvocationsSource(aggregateInvocationsSource)};
-//        }
+
+
+
+
+
+
+
+
+
+
+
 
     };
 }
@@ -9701,8 +9087,6 @@ namespace fakeit {
     };
 
 }
-// #included from: fakeit/api_macros.hpp
-
 #ifdef _MSC_VER
 #define __func__ __FUNCTION__
 #endif
