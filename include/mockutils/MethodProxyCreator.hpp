@@ -1,11 +1,6 @@
 #pragma once
 
-#ifdef _MSC_VER
-#include "mockutils/mscpp/VirtualTable.hpp"
-#else
-#include "mockutils/gcc/VirtualTable.hpp"
-#endif
-
+#include "mockutils/VirtualTable.hpp"
 #include "mockutils/MethodProxy.hpp"
 #include "mockutils/Destructible.hpp"
 

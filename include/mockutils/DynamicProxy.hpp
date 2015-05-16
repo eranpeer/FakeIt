@@ -12,10 +12,8 @@
 #include <vector>
 #include <array>
 #include <new>
-#include "VirtualTable.hpp"
 
-
-#include "mockutils/VisualTable.hpp"
+#include "mockutils/VirtualTable.hpp"
 #include "mockutils/union_cast.hpp"
 #include "mockutils/MethodInvocationHandler.hpp"
 #include "mockutils/VTUtils.hpp"

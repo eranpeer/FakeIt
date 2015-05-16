@@ -9,14 +9,7 @@
 #pragma once
 
 #include <new>
-
-#ifdef _MSC_VER
-#include "mockutils/mscpp/VirtualTable.hpp"
-#else
-
-#include "mockutils/gcc/VirtualTable.hpp"
-
-#endif
+#include "mockutils/VirtualTable.hpp"
 
 namespace fakeit {
 // silent GCC compiler warning: iso c++ forbids zero-size array [-Wpedantic]
