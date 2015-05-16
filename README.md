@@ -91,7 +91,7 @@ Depending on the unit testing framework you use, simply add one of the pre-packa
 
 For example, to use fakeit with **Google Test** simply add the *single_header/gtest* folder to the include path of your test project:
 ```
--I"<fakeit_folder>/config/gtest"
+-I"<fakeit_folder>/single_header/gtest"
 ```
 ### Using the source header files
 Fakeit source code header files are located under the *include* foler. To use FakeIt dierctly from the source code all you need to do is to download the source files and add the *include* folder and the configuration folder of your choice to the include path of your project.
