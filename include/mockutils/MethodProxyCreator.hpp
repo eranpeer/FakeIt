@@ -3,13 +3,11 @@
 #ifdef _MSC_VER
 #include "mockutils/mscpp/VirtualTable.hpp"
 #else
-
 #include "mockutils/gcc/VirtualTable.hpp"
-
 #endif
 
 #include "mockutils/MethodProxy.hpp"
-#include "Destructible.hpp"
+#include "mockutils/Destructible.hpp"
 
 namespace fakeit {
 

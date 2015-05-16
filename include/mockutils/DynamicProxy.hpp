@@ -26,7 +26,7 @@
 #include "mockutils/VTUtils.hpp"
 #include "mockutils/FakeObject.hpp"
 #include "mockutils/MethodProxy.hpp"
-#include "MethodProxyCreator.hpp"
+#include "mockutils/MethodProxyCreator.hpp"
 
 namespace fakeit {
 

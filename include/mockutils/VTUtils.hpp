@@ -11,7 +11,7 @@
 #include <functional>
 #include <type_traits>
 #include "mockutils/VirtualOffestSelector.hpp"
-#include "union_cast.hpp"
+#include "mockutils/union_cast.hpp"
 
 namespace fakeit {
     class NoVirtualDtor {

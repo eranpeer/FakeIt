@@ -13,7 +13,6 @@
 
 #include "tpunit++.hpp"
 #include "fakeit.hpp"
-#include "mockutils/Formatter.hpp"
 
 struct A {
 	int state;

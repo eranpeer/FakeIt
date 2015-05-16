@@ -5,7 +5,7 @@
 
 #include <vector>
 #include <set>
-#include <fakeit/SortInvocations.hpp>
+#include "fakeit/SortInvocations.hpp"
 
 namespace fakeit {
     class VerifyUnverifiedFunctor {

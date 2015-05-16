@@ -16,8 +16,6 @@
 
 #include "tpunit++.hpp"
 #include "fakeit.hpp"
-#include "mockutils/Formatter.hpp"
-#include "mockutils/to_string.hpp"
 
 using namespace fakeit;
 
