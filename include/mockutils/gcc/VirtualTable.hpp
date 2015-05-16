@@ -13,9 +13,6 @@
 
 #endif
 
-#include "mockutils/VTUtils.hpp"
-#include "mockutils/union_cast.hpp"
-
 namespace fakeit {
 
     struct VirtualTableBase {

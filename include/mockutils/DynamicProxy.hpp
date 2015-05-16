@@ -12,15 +12,10 @@
 #include <vector>
 #include <array>
 #include <new>
+#include "VirtualTable.hpp"
 
-#ifdef _MSC_VER
-#include "mockutils/mscpp/VirtualTable.hpp"
-#else
 
-#include "mockutils/gcc/VirtualTable.hpp"
-
-#endif
-
+#include "mockutils/VisualTable.hpp"
 #include "mockutils/union_cast.hpp"
 #include "mockutils/MethodInvocationHandler.hpp"
 #include "mockutils/VTUtils.hpp"
