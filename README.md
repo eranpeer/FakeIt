@@ -100,7 +100,7 @@ For example:
 ```
 -I"<fakeit_folder>/include" -I"<fakeit_folder>/config/gtest"
 ```
-* To use fakeit with **MS Test** add the 8include* folder and the *config/mstest* folder to the include path of your test project:
+* To use fakeit with **MS Test** add the *include* folder and the *config/mstest* folder to the include path of your test project:
 ```
 -I"<fakeit_folder>/include" -I"<fakeit_folder>/config/mstest"
 ```
