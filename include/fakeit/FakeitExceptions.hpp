@@ -22,14 +22,11 @@ namespace fakeit {
             os << val.what();
             return os;
         }
-
-        using exception_type = std::string;
-        operator exception_type() const { 
-            return what();
-        }
     };
 
 
+    // Unlike verification exceptions (that are thrown from the test level), this exception 
+    // should not inherit from std::exception so that production code will not catch it.
     struct UnexpectedMethodCallException : public FakeitException {
 
         UnexpectedMethodCallException(std::string format) :

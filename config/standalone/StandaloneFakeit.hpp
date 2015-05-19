@@ -4,8 +4,17 @@
 
 namespace fakeit {
 
-    struct VerificationException : public FakeitException {
-        virtual ~VerificationException() = default;
+    struct VerificationException : public std::exception {
+        virtual ~VerificationException() NO_THROWS{};
+        
+        VerificationException(std::string format) : //
+            _format(format) { //
+        }
+
+        friend std::ostream &operator<<(std::ostream &os, const VerificationException &val) {
+            os << val.what();
+            return os;
+        }
 
         void setFileInfo(std::string file, int line, std::string callingMethod) {
             _file = file;
@@ -23,37 +32,26 @@ namespace fakeit {
             return _callingMethod;
         }
 
+        const char* what() const NO_THROWS override{
+            return _format.c_str();
+        }
     private:
         std::string _file;
         int _line;
         std::string _callingMethod;
+        std::string _format;
     };
 
     struct NoMoreInvocationsVerificationException : public VerificationException {
-
         NoMoreInvocationsVerificationException(std::string format) : //
-            _format(format) { //
+            VerificationException(format) { //
         }
-
-        virtual std::string what() const override {
-            return _format;
-        }
-    private:
-        std::string _format;
     };
 
     struct SequenceVerificationException : public VerificationException {
-        SequenceVerificationException(const std::string& format) : //
-            _format(format) //
-        {
+        SequenceVerificationException(std::string format) : //
+            VerificationException(format) { //
         }
-
-        virtual std::string what() const override {
-            return _format;
-        }
-
-    private:
-        std::string _format;
     };
 
     struct StandaloneAdapter : public EventHandler {
