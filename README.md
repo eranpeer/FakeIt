@@ -80,8 +80,10 @@ Download the [Latest Release](https://github.com/eranpeer/FakeIt/releases/latest
 
 ## Installation
 FakeIt is a header only framework. It does not require any installation. For extra simplicity fakeit is packaged as a single header file.
+
 FakeIt is pre-configured to work with some of the major unit testing frameworks. A pre-configured version will use the assertions mechanism of the unit testing framework to integrate the generated error messages into the unit testing framework output.
-If you don't find your unit testing framework on the list, simply use the *standalone" configuration.
+
+If you don't find your unit testing framework on the list, simply use the *standalone* configuration.
 
 ### Using a pre-packaged single header file
 Pre-packaged single header versions of FakeIt are located under the *single_header* folder.
