@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2015-05-19 08:47:59.766000
+ *  Generated: 2015-05-19 22:57:50.231000
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -19,8 +19,10 @@
 #include <stdexcept>
 #if defined (__GNUG__)
 #define THROWS noexcept(false)
+#define NO_THROWS noexcept(true)
 #elif defined (_MSC_VER)
 #define THROWS throw(...)
+#define NO_THROWS
 #endif
 #include <typeinfo>
 #include <unordered_set>
@@ -919,6 +921,7 @@ namespace fakeit {
 namespace fakeit {
 
     struct FakeitException {
+        std::exception err;
 
         virtual ~FakeitException() = default;
 
@@ -929,6 +932,8 @@ namespace fakeit {
             return os;
         }
     };
+
+
 
 
     struct UnexpectedMethodCallException : public FakeitException {
@@ -1035,6 +1040,13 @@ namespace fakeit {
 
     };
 }
+#if defined (__GNUG__)
+#define THROWS noexcept(false)
+#define NO_THROWS noexcept(true)
+#elif defined (_MSC_VER)
+#define THROWS throw(...)
+#define NO_THROWS
+#endif
 
 namespace fakeit {
 
@@ -1051,11 +1063,18 @@ class TpUnitAdapter: public EventHandler {
 
 public:
 
-	class AssertionException: public std::runtime_error {
+	class AssertionException: public std::exception{
+        std::string _msg;
 	public:
 		AssertionException(std::string msg)
-				: runtime_error(msg) {
+				: _msg(msg) {
 		}
+
+        const char* what() const NO_THROWS override{
+            return _msg.c_str();
+        }
+
+        virtual ~AssertionException() NO_THROWS {}
 	};
 
 	virtual ~TpUnitAdapter() = default;

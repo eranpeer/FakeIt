@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2015-05-19 08:47:53.119000
+ *  Generated: 2015-05-19 22:57:57.363000
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -18,8 +18,10 @@
 #include <stdexcept>
 #if defined (__GNUG__)
 #define THROWS noexcept(false)
+#define NO_THROWS noexcept(true)
 #elif defined (_MSC_VER)
 #define THROWS throw(...)
+#define NO_THROWS
 #endif
 #include <typeinfo>
 #include <unordered_set>
@@ -918,6 +920,7 @@ namespace fakeit {
 namespace fakeit {
 
     struct FakeitException {
+        std::exception err;
 
         virtual ~FakeitException() = default;
 
@@ -928,6 +931,8 @@ namespace fakeit {
             return os;
         }
     };
+
+
 
 
     struct UnexpectedMethodCallException : public FakeitException {
@@ -1037,8 +1042,17 @@ namespace fakeit {
 
 namespace fakeit {
 
-    struct VerificationException : public FakeitException {
-        virtual ~VerificationException() = default;
+    struct VerificationException : public std::exception {
+        virtual ~VerificationException() NO_THROWS{};
+
+        VerificationException(std::string format) :
+            _format(format) {
+        }
+
+        friend std::ostream &operator<<(std::ostream &os, const VerificationException &val) {
+            os << val.what();
+            return os;
+        }
 
         void setFileInfo(std::string file, int line, std::string callingMethod) {
             _file = file;
@@ -1056,37 +1070,26 @@ namespace fakeit {
             return _callingMethod;
         }
 
+        const char* what() const NO_THROWS override{
+            return _format.c_str();
+        }
     private:
         std::string _file;
         int _line;
         std::string _callingMethod;
+        std::string _format;
     };
 
     struct NoMoreInvocationsVerificationException : public VerificationException {
-
         NoMoreInvocationsVerificationException(std::string format) :
-            _format(format) {
+            VerificationException(format) {
         }
-
-        virtual std::string what() const override {
-            return _format;
-        }
-    private:
-        std::string _format;
     };
 
     struct SequenceVerificationException : public VerificationException {
-        SequenceVerificationException(const std::string& format) :
-            _format(format)
-        {
+        SequenceVerificationException(std::string format) :
+            VerificationException(format) {
         }
-
-        virtual std::string what() const override {
-            return _format;
-        }
-
-    private:
-        std::string _format;
     };
 
     struct StandaloneAdapter : public EventHandler {

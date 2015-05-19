@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2015-05-16 16:35:48.024000
+ *  Generated: 2015-05-19 22:57:38.017000
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -19,8 +19,10 @@
 #include <stdexcept>
 #if defined (__GNUG__)
 #define THROWS noexcept(false)
+#define NO_THROWS noexcept(true)
 #elif defined (_MSC_VER)
 #define THROWS throw(...)
+#define NO_THROWS
 #endif
 #include <typeinfo>
 #include <unordered_set>
@@ -919,6 +921,7 @@ namespace fakeit {
 namespace fakeit {
 
     struct FakeitException {
+        std::exception err;
 
         virtual ~FakeitException() = default;
 
@@ -929,6 +932,8 @@ namespace fakeit {
             return os;
         }
     };
+
+
 
 
     struct UnexpectedMethodCallException : public FakeitException {
