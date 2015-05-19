@@ -68,6 +68,14 @@ struct CustomEventFormatting : tpunit::TestFixture {
 		}
 	};
 
+    std::string formatLineNumner(std::string file, int num){
+#ifndef __GNUG__
+        return file + std::string("(") + std::to_string(num) + std::string(")");
+#else
+        return file + std::string(":") + std::to_string(num);
+#endif
+    }
+
 	static void setup() {
 		static CustomEventFormatter formatter;
 		Fakeit.setCustomEventFormatter(formatter);
@@ -103,7 +111,7 @@ struct CustomEventFormatting : tpunit::TestFixture {
 			fakeit::Verify(Method(mock, func)).setFileInfo("test file", 1, "test method").Exactly(Once);
 		}
 		catch (SequenceVerificationException& e) {
-			std::string expectedMsg{ "test file:1: SequenceVerificationEvent" };
+            std::string expectedMsg{ formatLineNumner("test file",1)  + ": SequenceVerificationEvent" };
 			std::string actualMsg{ to_string(e) };
 			ASSERT_EQUAL(expectedMsg, actualMsg);
 		}
@@ -122,7 +130,7 @@ struct CustomEventFormatting : tpunit::TestFixture {
 				.setFileInfo("test file", 1, "test method");
 		}
 		catch (NoMoreInvocationsVerificationException& e) {
-			std::string expectedMsg{ "test file:1: NoMoreInvocationsVerificationEvent" };
+            std::string expectedMsg{ formatLineNumner("test file", 1) + ": NoMoreInvocationsVerificationEvent" };
 			std::string actualMsg{ to_string(e) };
 			ASSERT_EQUAL(expectedMsg, actualMsg);
 		}

@@ -36,6 +36,15 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 	{
 	}
 
+
+    std::string formatLineNumner(std::string file, int num){
+#ifndef __GNUG__
+        return file + std::string("(") + std::to_string(num) + std::string(")");
+#else
+        return file + std::string(":") + std::to_string(num);
+#endif
+    }
+
 	template <typename T> std::string to_string(T& val){
 		std::stringstream stream;
 		stream << val;
@@ -98,8 +107,8 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 			fakeit::Verify(Method(mock, func)).setFileInfo("test file",1,"test method").Exactly(Once);
 		}
 		catch (SequenceVerificationException& e) {
-			std::string expectedMsg;
-			expectedMsg += "test file:1: Verification error\n";
+            std::string expectedMsg{ formatLineNumner("test file", 1) };
+			expectedMsg += ": Verification error\n";
 			expectedMsg += "Expected pattern: mock.func( Any arguments )\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
@@ -115,8 +124,8 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 			fakeit::Verify(Method(mock, func)).setFileInfo("test file",1,"test method").Exactly(Once);
 		}
 		catch (SequenceVerificationException& e) {
-			std::string expectedMsg;
-			expectedMsg += "test file:1: Verification error\n";
+            std::string expectedMsg{ formatLineNumner("test file", 1) };
+            expectedMsg += ": Verification error\n";
 			expectedMsg += "Expected pattern: mock.func( Any arguments )\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
@@ -133,8 +142,8 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 			fakeit::Verify(Method(mock, func)).setFileInfo("test file",1,"test method").AtLeast(Once);
 		}
 		catch (SequenceVerificationException& e) {
-			std::string expectedMsg;
-			expectedMsg += "test file:1: Verification error\n";
+            std::string expectedMsg{ formatLineNumner("test file", 1) };
+            expectedMsg += ": Verification error\n";
 			expectedMsg += "Expected pattern: mock.func( Any arguments )\n";
 			expectedMsg += "Expected matches: at least 1\n";
 			expectedMsg += "Actual matches  : 0\n";
@@ -156,8 +165,8 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 				.setFileInfo("test file",1,"test method");
 		}
 		catch (NoMoreInvocationsVerificationException& e) {
-			std::string expectedMsg;
-			expectedMsg += "test file:1: Verification error\n";
+            std::string expectedMsg{ formatLineNumner("test file", 1) };
+            expectedMsg += ": Verification error\n";
 			expectedMsg += "Expected no more invocations!! But the following unverified invocations were found:\n";
 			expectedMsg += "  mock.func(2)";//
 
@@ -177,8 +186,8 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 		}
 		catch (SequenceVerificationException& e)
 		{
-			std::string expectedMsg;
-			expectedMsg += "test file:1: Verification error\n";
+            std::string expectedMsg{ formatLineNumner("test file", 1) };
+            expectedMsg += ": Verification error\n";
 			expectedMsg += "Expected pattern: mock.func( user defined matcher )\n";
 			expectedMsg += "Expected matches: exactly 2\n";
 			expectedMsg += "Actual matches  : 0\n";
@@ -201,8 +210,8 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 		}
 		catch (SequenceVerificationException& e)
 		{
-			std::string expectedMsg;
-			expectedMsg += "test file:1: Verification error\n";
+            std::string expectedMsg{ formatLineNumner("test file", 1) };
+            expectedMsg += ": Verification error\n";
 			expectedMsg += "Expected pattern: mock.all_types( Any arguments )\n";
 			expectedMsg += "Expected matches: exactly 2\n";
 			expectedMsg += "Actual matches  : 1\n";
@@ -228,8 +237,8 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 		}
 		catch (SequenceVerificationException& e)
 		{
-			std::string expectedMsg;
-			expectedMsg += "test file:1: Verification error\n";
+            std::string expectedMsg{ formatLineNumner("test file", 1) };
+            expectedMsg += ": Verification error\n";
 			//expectedMsg += "Expected pattern: mock.all_types('a', true, 1, 1, 1, 1, 1.000000)\n";
 			expectedMsg += "Expected pattern: mock.all_types(?, true, 1, 1, 1, 1, 0, 0)\n";
 			expectedMsg += "Expected matches: exactly 2\n";
@@ -250,8 +259,8 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 		}
 		catch (SequenceVerificationException& e)
 		{
-			std::string expectedMsg;
-			expectedMsg += "test file:1: Verification error\n";
+            std::string expectedMsg{ formatLineNumner("test file", 1) };
+            expectedMsg += ": Verification error\n";
 			expectedMsg += "Expected pattern: mock.func(1) + mock.proc(2)\n";
 			expectedMsg += "Expected matches: at least 1\n";
 			expectedMsg += "Actual matches  : 0\n";
@@ -271,8 +280,8 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 		}
 		catch (SequenceVerificationException& e)
 		{
-			std::string expectedMsg;
-			expectedMsg += "test file:1: Verification error\n";
+            std::string expectedMsg{ formatLineNumner("test file", 1) };
+            expectedMsg += ": Verification error\n";
 			expectedMsg += "Expected pattern: mock.func(1) * 2\n";
 			expectedMsg += "Expected matches: at least 1\n";
 			expectedMsg += "Actual matches  : 0\n";
@@ -292,8 +301,8 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 		}
 		catch (SequenceVerificationException& e)
 		{
-			std::string expectedMsg;
-			expectedMsg += "test file:1: Verification error\n";
+            std::string expectedMsg{ formatLineNumner("test file", 1) };
+            expectedMsg += ": Verification error\n";
 			expectedMsg += "Expected pattern: (mock.func(1) + mock.proc(1)) * 2\n";
 			expectedMsg += "Expected matches: at least 1\n";
 			expectedMsg += "Actual matches  : 0\n";
@@ -310,8 +319,8 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 		}
 		catch (SequenceVerificationException& e)
 		{
-			std::string expectedMsg;
-			expectedMsg += "test file:1: Verification error\n";
+            std::string expectedMsg{ formatLineNumner("test file", 1) };
+            expectedMsg += ": Verification error\n";
 			expectedMsg += "Expected pattern: (mock.func(1) * 2) * 2\n";
 			expectedMsg += "Expected matches: at least 1\n";
 			expectedMsg += "Actual matches  : 0\n";

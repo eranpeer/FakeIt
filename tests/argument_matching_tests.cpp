@@ -32,6 +32,14 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 	{
 	}
 
+    std::string formatLineNumner(std::string file, int num){
+#ifndef __GNUG__
+        return file + std::string("(") + std::to_string(num) + std::string(")");
+#else
+        return file + std::string(":") + std::to_string(num);
+#endif
+    }
+
 	struct SomeInterface {
 		virtual int func(int) = 0;
 		virtual int func2(int, std::string) = 0;
@@ -186,8 +194,8 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		try {
 			fakeit::Verify(Method(mock, func).Using(_)).setFileInfo("test file", 1, "test method").Exactly(Once);
 		} catch (SequenceVerificationException& e) {
-			std::string expectedMsg;
-			expectedMsg += "test file:1: Verification error\n";
+            std::string expectedMsg{ formatLineNumner("test file", 1) };
+            expectedMsg += ": Verification error\n";
 			expectedMsg += "Expected pattern: mock.func(Any)\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
@@ -202,8 +210,8 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		try {
 			fakeit::Verify(Method(mock, func).Using(Eq(1))).setFileInfo("test file", 1, "test method").Exactly(Once);
 		} catch (SequenceVerificationException& e) {
-			std::string expectedMsg;
-			expectedMsg += "test file:1: Verification error\n";
+            std::string expectedMsg{ formatLineNumner("test file", 1) };
+            expectedMsg += ": Verification error\n";
 			expectedMsg += "Expected pattern: mock.func(1)\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
@@ -218,8 +226,8 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		try {
 			fakeit::Verify(Method(mock, func).Using(Gt(1))).setFileInfo("test file", 1, "test method").Exactly(Once);
 		} catch (SequenceVerificationException& e) {
-			std::string expectedMsg;
-			expectedMsg += "test file:1: Verification error\n";
+            std::string expectedMsg{ formatLineNumner("test file", 1) };
+            expectedMsg += ": Verification error\n";
 			expectedMsg += "Expected pattern: mock.func(>1)\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
@@ -234,8 +242,8 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		try {
 			fakeit::Verify(Method(mock, func).Using(Ge(1))).setFileInfo("test file", 1, "test method").Exactly(Once);
 		} catch (SequenceVerificationException& e) {
-			std::string expectedMsg;
-			expectedMsg += "test file:1: Verification error\n";
+            std::string expectedMsg{ formatLineNumner("test file", 1) };
+			expectedMsg += ": Verification error\n";
 			expectedMsg += "Expected pattern: mock.func(>=1)\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
@@ -250,8 +258,8 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		try {
 			fakeit::Verify(Method(mock, func).Using(Lt(1))).setFileInfo("test file", 1, "test method").Exactly(Once);
 		} catch (SequenceVerificationException& e) {
-			std::string expectedMsg;
-			expectedMsg += "test file:1: Verification error\n";
+            std::string expectedMsg{ formatLineNumner("test file", 1) };
+            expectedMsg += ": Verification error\n";
 			expectedMsg += "Expected pattern: mock.func(<1)\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
@@ -266,8 +274,8 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		try {
 			fakeit::Verify(Method(mock, func).Using(Le(1))).setFileInfo("test file", 1, "test method").Exactly(Once);
 		} catch (SequenceVerificationException& e) {
-			std::string expectedMsg;
-			expectedMsg += "test file:1: Verification error\n";
+            std::string expectedMsg{ formatLineNumner("test file", 1) };
+			expectedMsg += ": Verification error\n";
 			expectedMsg += "Expected pattern: mock.func(<=1)\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
@@ -282,8 +290,8 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		try {
 			fakeit::Verify(Method(mock, func).Using(Ne(1))).setFileInfo("test file", 1, "test method").Exactly(Once);
 		} catch (SequenceVerificationException& e) {
-			std::string expectedMsg;
-			expectedMsg += "test file:1: Verification error\n";
+            std::string expectedMsg{ formatLineNumner("test file", 1) };
+            expectedMsg += ": Verification error\n";
 			expectedMsg += "Expected pattern: mock.func(!=1)\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
