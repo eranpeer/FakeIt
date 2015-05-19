@@ -10,8 +10,9 @@
 #include "fakeit/FakeitEvents.hpp"
 
 namespace fakeit {
-
+    
     struct FakeitException {
+        std::exception err;
 
         virtual ~FakeitException() = default;
 
@@ -20,6 +21,11 @@ namespace fakeit {
         friend std::ostream &operator<<(std::ostream &os, const FakeitException &val) {
             os << val.what();
             return os;
+        }
+
+        using exception_type = std::string;
+        operator exception_type() const { 
+            return what();
         }
     };
 

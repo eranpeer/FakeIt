@@ -2,6 +2,7 @@
 
 #include "fakeit/DefaultFakeit.hpp"
 #include "fakeit/EventHandler.hpp"
+#include "mockutils//Macros.hpp"
 
 namespace fakeit {
 
@@ -18,11 +19,18 @@ class TpUnitAdapter: public EventHandler {
 
 public:
 
-	class AssertionException: public std::runtime_error {
+	class AssertionException: public std::exception{
+        std::string _msg;
 	public:
 		AssertionException(std::string msg)
-				: runtime_error(msg) {
+				: _msg(msg) {
 		}
+
+        const char* what() const NO_THROWS override{
+            return _msg.c_str();
+        }
+
+        virtual ~AssertionException() NO_THROWS {}
 	};
 
 	virtual ~TpUnitAdapter() = default;

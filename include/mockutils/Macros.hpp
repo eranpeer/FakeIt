@@ -9,6 +9,8 @@
 
 #if defined (__GNUG__)
 #define THROWS noexcept(false)
+#define NO_THROWS noexcept(true)
 #elif defined (_MSC_VER)
 #define THROWS throw(...)
+#define NO_THROWS
 #endif
