@@ -80,12 +80,16 @@ Download the [Latest Release](https://github.com/eranpeer/FakeIt/releases/latest
 
 ## Installation
 FakeIt is a header only framework. It does not require any installation. For extra simplicity fakeit is packaged as a single header file.
+FakeIt is pre-configured to work with some of the major unit testing frameworks. A pre-configured version will use the assertions mechanism of the unit testing framework to integrate the generated error messages into the unit testing framework output.
+If you don't find your unit testing framework on the list, simply use the *standalone" configuration.
+
 ### Using a pre-packaged single header file
 Pre-packaged single header versions of FakeIt are located under the *single_header* folder.
 Depending on the unit testing framework you use, simply add one of the pre-packaged versions to the include path of your test project:
 * <fakeit_folder>/single_header/gtest
 * <fakeit_folder>/single_header/mstest
 * <fakeit_folder>/single_header/boost
+* <fakeit_folder>/single_header/catch
 * <fakeit_folder>/single_header/tpunit
 * <fakeit_folder>/single_header/standalone
 
@@ -107,6 +111,10 @@ For example:
 * To use fakeit with **Boost Test** add the *include* folder and the *config/boost* folder to the include path of your test project:
 ```
 -I"<fakeit_folder>/include" -I"<fakeit_folder>/config/boost"
+```
+* To use fakeit with **Catch** add the *include* folder and the *config/catch* folder to the include path of your test project:
+```
+-I"<fakeit_folder>/include" -I"<fakeit_folder>/config/catch"
 ```
 * To use fakeit with **tpunit** add the *include* folder and the *config/tpunit* folder to the include path of your test project:
 ```
