@@ -150,6 +150,7 @@ eranpeer/FakeIt: 0
 fakeit.hpp: eranpeer/FakeIt/config/gtest       # To use fakeit with gtest
 fakeit.hpp: eranpeer/FakeIt/config/boost       # To use fakeit with boost test
 fakeit.hpp: eranpeer/FakeIt/config/mstest      # To use fakeit with mstest
+fakeit.hpp: eranpeer/FakeIt/config/catch       # To use fakeit with catch
 fakeit.hpp: eranpeer/FakeIt/config/tpunit      # To use fakeit with tpunit
 fakeit.hpp: eranpeer/FakeIt/config/standalone  # To use fakeit with standalone configuration.
 ```
