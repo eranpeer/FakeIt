@@ -7,6 +7,15 @@ namespace fakeit {
 
 class TpUnitAdapter: public EventHandler {
 	EventFormatter& _formatter;
+
+    std::string formatLineNumner(std::string file, int num){
+#ifndef __GNUG__
+        return file + std::string("(") + std::to_string(num) + std::string(")");
+#else
+        return file + std::string(":") + std::to_string(num);
+#endif
+    }
+
 public:
 
 	class AssertionException: public std::runtime_error {
@@ -24,12 +33,14 @@ public:
 	}
 
 	virtual void handle(const SequenceVerificationEvent& e) {
-		throw AssertionException(_formatter.format(e));
+        std::string format(formatLineNumner(e.file(), e.line()) + ": " + _formatter.format(e));
+        throw AssertionException(format);
 	}
 
 	virtual void handle(const NoMoreInvocationsVerificationEvent& e) {
-		throw AssertionException(_formatter.format(e));
-	}
+        std::string format(formatLineNumner(e.file(), e.line()) + ": " + _formatter.format(e));
+        throw AssertionException(format);
+    }
 };
 
 class TpUnitFakeit: public DefaultFakeit {

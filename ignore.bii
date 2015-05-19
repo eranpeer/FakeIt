@@ -3,3 +3,5 @@ tests/*
 samples/*
 docs/*
 bin/*
+makefile
+appveyor.yml

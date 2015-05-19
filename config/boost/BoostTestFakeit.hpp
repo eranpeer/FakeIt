@@ -50,7 +50,7 @@ namespace fakeit {
                 ::boost::unit_test::lazy_ostream::instance() << format,
                 file,
                 static_cast<std::size_t>(line),
-                ::boost::test_tools::tt_detail::REQUIRE,
+                ::boost::test_tools::tt_detail::CHECK,
                 ::boost::test_tools::tt_detail::CHECK_MSG, 0);
         }
 	};
