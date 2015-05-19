@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2015-05-16 16:35:46.407000
+ *  Generated: 2015-05-19 08:47:59.766000
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -1040,6 +1040,15 @@ namespace fakeit {
 
 class TpUnitAdapter: public EventHandler {
 	EventFormatter& _formatter;
+
+    std::string formatLineNumner(std::string file, int num){
+#ifndef __GNUG__
+        return file + std::string("(") + std::to_string(num) + std::string(")");
+#else
+        return file + std::string(":") + std::to_string(num);
+#endif
+    }
+
 public:
 
 	class AssertionException: public std::runtime_error {
@@ -1057,12 +1066,14 @@ public:
 	}
 
 	virtual void handle(const SequenceVerificationEvent& e) {
-		throw AssertionException(_formatter.format(e));
+        std::string format(formatLineNumner(e.file(), e.line()) + ": " + _formatter.format(e));
+        throw AssertionException(format);
 	}
 
 	virtual void handle(const NoMoreInvocationsVerificationEvent& e) {
-		throw AssertionException(_formatter.format(e));
-	}
+        std::string format(formatLineNumner(e.file(), e.line()) + ": " + _formatter.format(e));
+        throw AssertionException(format);
+    }
 };
 
 class TpUnitFakeit: public DefaultFakeit {

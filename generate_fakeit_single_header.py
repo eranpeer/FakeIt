@@ -86,8 +86,8 @@ def createFakeitFileText(config):
     return text
 
 def createFakeitFile(config,text):
-    os.makedirs(os.path.join( fakeitPath, 'single_include', config))
-    outputPath = os.path.join( fakeitPath, 'single_include', config, 'fakeit.hpp' )
+    os.makedirs(os.path.join( fakeitPath, 'single_header', config))
+    outputPath = os.path.join( fakeitPath, 'single_header', config, 'fakeit.hpp' )
     out = open( outputPath, 'w' )
     write_line(out, "#pragma once" )
     writeHeaderComment(out, config)

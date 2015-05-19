@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2015-05-16 16:35:48.781000
+ *  Generated: 2015-05-19 08:47:53.119000
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -1090,6 +1090,15 @@ namespace fakeit {
     };
 
     struct StandaloneAdapter : public EventHandler {
+
+        std::string formatLineNumner(std::string file, int num){
+#ifndef __GNUG__
+            return file + std::string("(") + std::to_string(num) + std::string(")");
+#else
+            return file + std::string(":") + std::to_string(num);
+#endif
+        }
+
         virtual ~StandaloneAdapter() = default;
 
         StandaloneAdapter(EventFormatter &formatter)
@@ -1103,14 +1112,14 @@ namespace fakeit {
         }
 
         virtual void handle(const SequenceVerificationEvent &evt) override {
-            std::string format(evt.file() + ":" + std::to_string(evt.line()) + ": " + _formatter.format(evt));
+            std::string format(formatLineNumner(evt.file(), evt.line()) + ": " + _formatter.format(evt));
             SequenceVerificationException e(format);
             e.setFileInfo(evt.file(), evt.line(), evt.callingMethod());
             throw e;
         }
 
         virtual void handle(const NoMoreInvocationsVerificationEvent &evt) override {
-            std::string format = evt.file() + ":" + std::to_string(evt.line()) + ": " + _formatter.format(evt);
+            std::string format(formatLineNumner(evt.file(), evt.line()) + ": " + _formatter.format(evt));
             NoMoreInvocationsVerificationException e(format);
             e.setFileInfo(evt.file(), evt.line(), evt.callingMethod());
             throw e;
