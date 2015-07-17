@@ -17,4 +17,8 @@ namespace fakeit {
     struct naked_type {
         typedef typename std::remove_cv<typename std::remove_reference<C>::type>::type type;
     };
+
+    template< class T > struct remove_r_reference         { typedef T type; };
+    template< class T > struct remove_r_reference < T& > { typedef T& type; };
+    template< class T > struct remove_r_reference < T&& > { typedef T type; };
 }
