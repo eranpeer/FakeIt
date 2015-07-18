@@ -11,6 +11,9 @@
 
 #include "tpunit++.hpp"
 #include "fakeit.hpp"
+#include <fakeit/Mock.hpp>
+#include <fakeit/ActualInvocation.hpp>
+#include <fakeit/api_functors.hpp>
 
 using namespace fakeit;
 
@@ -113,6 +116,27 @@ struct Miscellaneous: tpunit::TestFixture
         ASSERT_EQUAL(2, mock().b2());
         ASSERT_EQUAL(3, mock().a1());
         ASSERT_EQUAL(4, mock().a2());
+	}
+
+
+	void someTest() {
+        int i = 0;
+//        int& i2 = i;
+//        int&& x = 1;
+//        int&& y = (int&&) i;
+        fakeit::MethodInfo m(0,"method");
+//        ActualInvocation<int&> a1(1,m,i);
+        //ActualInvocation<const int&&> a2(2, m, i);
+        ActualInvocation<int&&> a3(2, m, 4);
+
+
+		struct foo {
+			virtual int bar(int &&) = 0;
+		};
+
+		Mock<foo> foo_mock;
+        //Method(foo_mock, bar);
+        //When(Method(foo_mock, bar)).AlwaysReturn(1);
 	}
 
 } __Miscellaneous;

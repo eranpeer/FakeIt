@@ -12,6 +12,7 @@
 
 #include <memory>
 
+#include "mockutils/type_utils.hpp"
 #include "mockutils/DynamicProxy.hpp"
 #include "fakeit/StubbingImpl.hpp"
 #include "fakeit/MethodMockingContext.hpp"

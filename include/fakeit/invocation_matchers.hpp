@@ -76,9 +76,9 @@ namespace fakeit {
             const std::vector<Destructible *> &_matchers;
         };
 
-        virtual bool matches(const std::tuple<arglist...> &actualArgs) {
+        virtual bool matches(ArgumentsTuple<arglist...>& actualArguments) {
             MatchingLambda l(_matchers);
-            fakeit::for_each(actualArgs, l);
+            fakeit::for_each(actualArguments, l);
             return l.isMatching();
         }
 
@@ -135,8 +135,8 @@ namespace fakeit {
         }
 
     private:
-        virtual bool matches(const std::tuple<arglist...> &actualArgs) {
-            return invoke<arglist...>(matcher, actualArgs);
+        virtual bool matches(ArgumentsTuple<arglist...>& actualArguments) {
+            return invoke<typename left_type<arglist>::type...>(matcher, actualArguments);
         }
 
         const std::function<bool(arglist &...)> matcher;
@@ -159,7 +159,8 @@ namespace fakeit {
         }
 
     private:
-        virtual bool matches(const std::tuple<arglist...> &) {
+        
+        virtual bool matches(const ArgumentsTuple<arglist...>&) {
             return true;
         }
     };
