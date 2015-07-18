@@ -33,7 +33,7 @@ namespace fakeit {
             virtual std::string format() const = 0;
         };
 
-        ActualInvocation(unsigned int ordinal, MethodInfo &method, const typename fakeit::left_type<arglist>::type&... args) :
+        ActualInvocation(unsigned int ordinal, MethodInfo &method, const typename fakeit::arg_type<arglist>::type... args) :
             Invocation(ordinal, method), _matcher{ nullptr }
             , actualArguments{ args... }
         {

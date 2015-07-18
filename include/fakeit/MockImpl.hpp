@@ -142,12 +142,6 @@ namespace fakeit {
 
             R (C::*_vMethod)(arglist...);
             
-#if defined (__GNUG__)
-            typedef R(*VTableMethodType)(void *, arglist...);
-#elif defined (_MSC_VER)
-            typedef R(__thiscall *VTableMethodType)(void *, arglist...);
-#endif
-
         public:
             virtual ~MethodMockingContextImpl() = default;
 
@@ -155,14 +149,24 @@ namespace fakeit {
                     : MethodMockingContextBase<R, arglist...>(mock), _vMethod(vMethod) {
             }
 
-            virtual std::function<R(arglist &...)> getOriginalMethod() override {
+            virtual std::function<R(typename arg_type<arglist>::type...)> getOriginalMethod() override {
                 void *mPtr = MethodMockingContextBase<R, arglist...>::_mock.getOriginalMethod(_vMethod);
                 C * instance = &(MethodMockingContextBase<R, arglist...>::_mock.get());
-                return [=](arglist &... args) -> R {
-                    auto m = union_cast<VTableMethodType>(mPtr);
+                return [=](typename arg_type<arglist>::type... args) -> R {
+                    auto m = union_cast<typename VTableMethodType<R,arglist...>::type>(mPtr);
                     return m(instance, args...);
                 };
             }
+
+//            virtual std::function<R(typename arg_type<arglist>::type...)> getOriginalMethod() override {
+//                void *mPtr = MethodMockingContextBase<R, arglist...>::_mock.getOriginalMethod(_vMethod);
+//                C * instance = &(MethodMockingContextBase<R, arglist...>::_mock.get());
+//                return [=](typename arg_type<arglist>::type... args) -> R {
+//                    auto m = union_cast<typename VTableMethodType<R, arglist...>::type>(mPtr);
+//                    return m(instance, args...);
+//                };
+//            }
+
         };
 
 

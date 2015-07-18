@@ -53,7 +53,7 @@ namespace fakeit {
             /**
              * Return the original method. not the mock.
              */
-            virtual std::function<R(arglist &...)> getOriginalMethod() = 0;
+            virtual typename std::function<R(typename arg_type<arglist>::type...)> getOriginalMethod() = 0;
 
             virtual std::string getMethodName() = 0;
 
@@ -259,7 +259,7 @@ namespace fakeit {
 
     private:
 
-        std::function<R(arglist &...)> getOriginalMethod() override {
+        typename std::function<R(typename arg_type<arglist>::type...)> getOriginalMethod() override {
             return _impl->getOriginalMethod();
         }
 

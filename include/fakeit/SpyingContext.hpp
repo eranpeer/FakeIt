@@ -8,6 +8,7 @@
  */
 #pragma once
 
+#include "mockutils/type_utils.hpp"
 #include "fakeit/Xaction.hpp"
 
 namespace fakeit {
@@ -17,6 +18,6 @@ namespace fakeit {
     struct SpyingContext : public Xaction {
         virtual void appendAction(Action<R, arglist...> *action) = 0;
 
-        virtual typename std::function<R(arglist &...)> getOriginalMethod() = 0;
+        virtual typename std::function<R(typename arg_type<arglist>::type...)> getOriginalMethod() = 0;
     };
 }
