@@ -25,7 +25,8 @@ struct Miscellaneous: tpunit::TestFixture
 			TEST(Miscellaneous::can_mock_class_without_default_constructor), //
 			TEST(Miscellaneous::can_mock_class_with_protected_constructor), //
 			TEST(Miscellaneous::mock_virtual_methods_of_base_class), //
-			TEST(Miscellaneous::create_and_delete_fakit_instatnce) //
+			TEST(Miscellaneous::create_and_delete_fakit_instatnce), //
+            TEST(Miscellaneous::testStubMethodWithRightValueParameter)
 		)
 	{
 	}
@@ -119,7 +120,7 @@ struct Miscellaneous: tpunit::TestFixture
 	}
 
 
-	void someTest() {
+	void testStubMethodWithRightValueParameter() {
 //        int i = 0;
 //        int& i2 = i;
 //        int&& x = 1;
@@ -137,6 +138,7 @@ struct Miscellaneous: tpunit::TestFixture
 		Mock<foo> foo_mock;
         Method(foo_mock, bar);
         When(Method(foo_mock, bar)).AlwaysReturn(1);
+		ASSERT_EQUAL(1,foo_mock.get().bar(5));
 	}
 
 } __Miscellaneous;
