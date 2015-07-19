@@ -151,10 +151,10 @@ namespace fakeit {
             }
 
             
-            virtual std::function<R(typename arg_type<arglist>::type...)> getOriginalMethod() override {
+            virtual std::function<R(arglist&...)> getOriginalMethod() override {
                 void *mPtr = MethodMockingContextBase<R, arglist...>::_mock.getOriginalMethod(_vMethod);
                 C * instance = &(MethodMockingContextBase<R, arglist...>::_mock.get());
-                return [=](typename arg_type<arglist>::type... args) -> R {
+                return [=](arglist&... args) -> R {
                     auto m = union_cast<typename VTableMethodType<R,arglist...>::type>(mPtr);
                     return m(instance, std::forward<arglist>(args)...);
                 };

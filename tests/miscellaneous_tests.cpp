@@ -120,11 +120,11 @@ struct Miscellaneous: tpunit::TestFixture
 
 
 	void someTest() {
-        int i = 0;
+//        int i = 0;
 //        int& i2 = i;
 //        int&& x = 1;
 //        int&& y = (int&&) i;
-        fakeit::MethodInfo m(0,"method");
+//        fakeit::MethodInfo m(0,"method");
 //        ActualInvocation<int&> a1(1,m,i);
         //ActualInvocation<const int&&> a2(2, m, i);
         //ActualInvocation<int&&> a3(2, m, 4);
@@ -136,7 +136,7 @@ struct Miscellaneous: tpunit::TestFixture
 
 		Mock<foo> foo_mock;
         Method(foo_mock, bar);
-        //When(Method(foo_mock, bar)).AlwaysReturn(1);
+        When(Method(foo_mock, bar)).AlwaysReturn(1);
 	}
 
 } __Miscellaneous;

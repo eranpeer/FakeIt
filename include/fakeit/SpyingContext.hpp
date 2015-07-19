@@ -15,9 +15,9 @@ namespace fakeit {
 
 // For use in Spy(...) phrases
     template<typename R, typename ... arglist>
-    struct SpyingContext : public Xaction {
+    struct SpyingContext : Xaction {
         virtual void appendAction(Action<R, arglist...> *action) = 0;
 
-        virtual typename std::function<R(typename arg_type<arglist>::type...)> getOriginalMethod() = 0;
+        virtual std::function<R(arglist&...)> getOriginalMethod() = 0;
     };
 }
