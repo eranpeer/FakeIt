@@ -21,6 +21,7 @@
 
 namespace fakeit {
 
+    
     template<typename C, typename ... baseclasses>
     class MockImpl : private MockObject<C>, public virtual ActualInvocationsSource {
     public:
@@ -149,24 +150,15 @@ namespace fakeit {
                     : MethodMockingContextBase<R, arglist...>(mock), _vMethod(vMethod) {
             }
 
+            
             virtual std::function<R(typename arg_type<arglist>::type...)> getOriginalMethod() override {
                 void *mPtr = MethodMockingContextBase<R, arglist...>::_mock.getOriginalMethod(_vMethod);
                 C * instance = &(MethodMockingContextBase<R, arglist...>::_mock.get());
                 return [=](typename arg_type<arglist>::type... args) -> R {
                     auto m = union_cast<typename VTableMethodType<R,arglist...>::type>(mPtr);
-                    return m(instance, args...);
+                    return m(instance, std::forward<arglist>(args)...);
                 };
             }
-
-//            virtual std::function<R(typename arg_type<arglist>::type...)> getOriginalMethod() override {
-//                void *mPtr = MethodMockingContextBase<R, arglist...>::_mock.getOriginalMethod(_vMethod);
-//                C * instance = &(MethodMockingContextBase<R, arglist...>::_mock.get());
-//                return [=](typename arg_type<arglist>::type... args) -> R {
-//                    auto m = union_cast<typename VTableMethodType<R, arglist...>::type>(mPtr);
-//                    return m(instance, args...);
-//                };
-//            }
-
         };
 
 

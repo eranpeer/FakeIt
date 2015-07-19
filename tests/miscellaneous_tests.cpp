@@ -127,7 +127,7 @@ struct Miscellaneous: tpunit::TestFixture
         fakeit::MethodInfo m(0,"method");
 //        ActualInvocation<int&> a1(1,m,i);
         //ActualInvocation<const int&&> a2(2, m, i);
-        ActualInvocation<int&&> a3(2, m, 4);
+        //ActualInvocation<int&&> a3(2, m, 4);
 
 
 		struct foo {
@@ -135,7 +135,7 @@ struct Miscellaneous: tpunit::TestFixture
 		};
 
 		Mock<foo> foo_mock;
-        //Method(foo_mock, bar);
+        Method(foo_mock, bar);
         //When(Method(foo_mock, bar)).AlwaysReturn(1);
 	}
 

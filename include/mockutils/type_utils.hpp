@@ -8,8 +8,6 @@
  */
 #pragma once
 
-#include <type_traits>
-#include <typeinfo>
 #include <tuple>
 
 
@@ -20,18 +18,16 @@ namespace fakeit {
         typedef typename std::remove_cv<typename std::remove_reference<C>::type>::type type;
     };
 
-    template< class T > struct left_type         { typedef T type; };
-    template< class T > struct left_type < T& > { typedef T& type; };
-    template< class T > struct left_type < T&& > { typedef T type; };
+    template< class T > struct left_type         { typedef T  type; };
+    template< class T > struct left_type < T& >  { typedef T& type; };
+    template< class T > struct left_type < T&& > { typedef T  type; };
 
     template<typename... arglist>
     using ArgumentsTuple = std::tuple<typename left_type<arglist>::type...>;
 
-
-    template< class T > struct arg_type        { typedef T& type; };
-    template< class T > struct arg_type < T& > { typedef T& type; };
-    template< class T > struct arg_type < T&& > { typedef T&& type; };
-
+    template< class T > struct arg_type          { typedef T& type; };
+    template< class T > struct arg_type < T& >   { typedef T& type; };
+    template< class T > struct arg_type < T&& >  { typedef T& type; };
 
     template<typename R, typename... arglist>
     struct VTableMethodType {
@@ -41,6 +37,4 @@ namespace fakeit {
         typedef R(__thiscall *type)(void *, arglist...);
 #endif
     };
-
-
 }
