@@ -51,8 +51,8 @@ namespace fakeit {
         const Sequence &s2;
 
     protected:
-        ConcatenatedSequence(const Sequence &s1, const Sequence &s2) :
-                s1(s1), s2(s2) {
+        ConcatenatedSequence(const Sequence &seq1, const Sequence &seq2) :
+                s1(seq1), s2(seq2) {
         }
 
     public:
@@ -91,8 +91,8 @@ namespace fakeit {
         const int times;
 
     protected:
-        RepeatedSequence(const Sequence &s, const int times) :
-                _s(s), times(times) {
+        RepeatedSequence(const Sequence &s, const int t) :
+                _s(s), times(t) {
         }
 
     public:

@@ -31,12 +31,12 @@ namespace fakeit {
     struct Repeat : public Action<R, arglist...> {
         virtual ~Repeat() = default;
 
-        Repeat(std::function<R(arglist &...)> f) :
-                f(f), times(1) {
+        Repeat(std::function<R(arglist &...)> func) :
+                f(func), times(1) {
         }
 
-        Repeat(std::function<R(arglist &...)> f, long times) :
-                f(f), times(times) {
+        Repeat(std::function<R(arglist &...)> func, long t) :
+                f(func), times(t) {
         }
 
         virtual R invoke(arglist &... args) override {
@@ -58,8 +58,8 @@ namespace fakeit {
 
         virtual ~RepeatForever() = default;
 
-        RepeatForever(std::function<R(arglist &...)> f) :
-                f(f) {
+        RepeatForever(std::function<R(arglist &...)> func) :
+                f(func) {
         }
 
         virtual R invoke(arglist &... args) override {

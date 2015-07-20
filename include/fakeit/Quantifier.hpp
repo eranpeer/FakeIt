@@ -13,8 +13,8 @@
 namespace fakeit {
 
     struct Quantity {
-        Quantity(const int quantity) :
-                quantity(quantity) {
+        Quantity(const int q) :
+                quantity(q) {
         }
 
         const int quantity;
@@ -22,8 +22,8 @@ namespace fakeit {
 
     template<typename R>
     struct Quantifier : public Quantity {
-        Quantifier(const int quantity, const R &value) :
-                Quantity(quantity), value(value) {
+        Quantifier(const int q, const R &val) :
+                Quantity(q), value(val) {
         }
 
         const R &value;
@@ -31,14 +31,14 @@ namespace fakeit {
 
     template<>
     struct Quantifier<void> : public Quantity {
-        explicit Quantifier(const int quantity) :
-                Quantity(quantity) {
+        explicit Quantifier(const int q) :
+                Quantity(q) {
         }
     };
 
     struct QuantifierFunctor : public Quantifier<void> {
-        QuantifierFunctor(const int quantity) :
-                Quantifier<void>(quantity) {
+        QuantifierFunctor(const int q) :
+                Quantifier<void>(q) {
         }
 
         template<typename R>

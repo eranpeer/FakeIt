@@ -120,8 +120,8 @@ namespace fakeit {
     struct UserDefinedInvocationMatcher : public ActualInvocation<arglist...>::Matcher {
         virtual ~UserDefinedInvocationMatcher() = default;
 
-        UserDefinedInvocationMatcher(std::function<bool(arglist &...)> matcher)
-                : matcher{matcher} {
+        UserDefinedInvocationMatcher(std::function<bool(arglist &...)> match)
+                : matcher{match} {
         }
 
         virtual bool matches(ActualInvocation<arglist...> &invocation) override {

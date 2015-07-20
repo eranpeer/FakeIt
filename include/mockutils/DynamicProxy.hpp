@@ -57,8 +57,8 @@ namespace fakeit {
 
         static_assert(std::is_polymorphic<C>::value, "DynamicProxy requires a polymorphic type");
 
-        DynamicProxy(C &instance) :
-                instance(instance),
+        DynamicProxy(C &inst) :
+                instance(inst),
                 originalVtHandle(VirtualTable<C, baseclasses...>::getVTable(instance).createHandle()),
                 _methodMocks(VTUtils::getVTSize<C>()),
                 _offsets(VTUtils::getVTSize<C>()),
@@ -156,8 +156,8 @@ namespace fakeit {
         private:
             DATA_TYPE *dataMember;
         public:
-            DataMemeberWrapper(DATA_TYPE *dataMember, const arglist &... initargs) :
-                    dataMember(dataMember) {
+            DataMemeberWrapper(DATA_TYPE *dataMem, const arglist &... initargs) :
+                    dataMember(dataMem) {
                 new(dataMember) DATA_TYPE{initargs ...};
             }
 
