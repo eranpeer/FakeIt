@@ -120,8 +120,8 @@ namespace fakeit {
     struct UserDefinedInvocationMatcher : public ActualInvocation<arglist...>::Matcher {
         virtual ~UserDefinedInvocationMatcher() = default;
 
-        UserDefinedInvocationMatcher(std::function<bool(arglist &...)> matcher)
-                : matcher{matcher} {
+        UserDefinedInvocationMatcher(std::function<bool(arglist &...)> match)
+                : matcher{match} {
         }
 
         virtual bool matches(ActualInvocation<arglist...> &invocation) override {
@@ -130,7 +130,7 @@ namespace fakeit {
             return matches(invocation.getActualArguments());
         }
 
-        virtual std::string format() const {
+        virtual std::string format() const override {
             return {"( user defined matcher )"};
         }
 
@@ -154,7 +154,7 @@ namespace fakeit {
             return matches(invocation.getActualArguments());
         }
 
-        virtual std::string format() const {
+        virtual std::string format() const override {
             return {"( Any arguments )"};
         }
 

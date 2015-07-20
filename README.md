@@ -3,19 +3,6 @@ FakeIt
  
 [![Join the chat at https://gitter.im/eranpeer/FakeIt](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/eranpeer/FakeIt?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[Release 2](https://github.com/eranpeer/FakeIt/releases/latest) is out!
-Old style mocking is not supported any more!!
-
-Not supported:
-```c++
-When(mock[&SomeInterface::foo]).Return(1); 
-```
-New style (usnig macros) must be used:
-```c++
-When(Method(mock,foo)).Return(1);
-When(OverloadedMethod(mock,foo, int(int) )).Return(1); // For overloaded method
-```
-
 GCC: [![Build Status GCC](https://travis-ci.org/eranpeer/FakeIt.svg?branch=master)](https://travis-ci.org/eranpeer/FakeIt)
 [![Coverage Status](https://coveralls.io/repos/eranpeer/FakeIt/badge.png?branch=master)](https://coveralls.io/r/eranpeer/FakeIt?branch=master)
 

@@ -56,8 +56,8 @@ namespace fakeit {
             friend struct VirtualTable<C, baseclasses...>;
             void **firstMethod;
 
-            Handle(void **firstMethod) :
-                    firstMethod(firstMethod) {
+            Handle(void **method) :
+                    firstMethod(method) {
             }
 
         public:
