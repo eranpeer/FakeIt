@@ -36,7 +36,7 @@ namespace fakeit {
 
     protected:
 
-        R methodProxy(unsigned int id, const typename fakeit::pass_arg<arglist>::type... args) {
+        R methodProxy(unsigned int id, const typename fakeit::production_arg<arglist>::type... args) {
             InvocationHandlerCollection *invocationHandlerCollection = InvocationHandlerCollection::getInvocationHandlerCollection(
                     this);
             MethodInvocationHandler<R, arglist...> *invocationHandler =

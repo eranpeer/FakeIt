@@ -136,7 +136,7 @@ namespace fakeit {
 
     private:
         virtual bool matches(ArgumentsTuple<arglist...>& actualArguments) {
-            return invoke<typename left_type<arglist>::type...>(matcher, actualArguments);
+            return invoke<typename tuple_arg<arglist>::type...>(matcher, actualArguments);
         }
 
         const std::function<bool(arglist &...)> matcher;

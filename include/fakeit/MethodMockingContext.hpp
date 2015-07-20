@@ -141,7 +141,7 @@ namespace fakeit {
                 getRecordedActionSequence().AppendDo(action);
             }
 
-            void setMethodBodyByAssignment(std::function<R(const typename fakeit::api_arg<arglist>::type...)> method) {
+            void setMethodBodyByAssignment(std::function<R(const typename fakeit::test_arg<arglist>::type...)> method) {
                 appendAction(new RepeatForever<R, arglist...>(method));
                 commit();
             }
@@ -242,7 +242,7 @@ namespace fakeit {
             _impl->appendAction(action);
         }
 
-        void setMethodBodyByAssignment(std::function<R(const typename fakeit::api_arg<arglist>::type...)> method) {
+        void setMethodBodyByAssignment(std::function<R(const typename fakeit::test_arg<arglist>::type...)> method) {
             _impl->setMethodBodyByAssignment(method);
         }
 
@@ -320,13 +320,13 @@ namespace fakeit {
 
         template<typename U = R>
         typename std::enable_if<!std::is_reference<U>::value, void>::type operator=(const R &r) {
-            auto method = [r](const typename fakeit::api_arg<arglist>::type...) -> R { return r; };
+            auto method = [r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; };
             MethodMockingContext<R, arglist...>::setMethodBodyByAssignment(method);
         }
 
         template<typename U = R>
         typename std::enable_if<std::is_reference<U>::value, void>::type operator=(const R &r) {
-            auto method = [&r](const typename fakeit::api_arg<arglist>::type...) -> R { return r; };
+            auto method = [&r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; };
             MethodMockingContext<R, arglist...>::setMethodBodyByAssignment(method);
         }
     };

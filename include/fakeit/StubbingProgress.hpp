@@ -32,13 +32,13 @@ namespace fakeit {
         template<typename U = R>
         typename std::enable_if<!std::is_reference<U>::value, MethodStubbingProgress<R, arglist...> &>::type
         Return(const R &r) {
-            return Do([r](const typename fakeit::api_arg<arglist>::type...) -> R { return r; });
+            return Do([r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
         }
 
         template<typename U = R>
         typename std::enable_if<std::is_reference<U>::value, MethodStubbingProgress<R, arglist...> &>::type
         Return(const R &r) {
-            return Do([&r](const typename fakeit::api_arg<arglist>::type...) -> R { return r; });
+            return Do([&r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
         }
 
         MethodStubbingProgress<R, arglist...> &
@@ -59,27 +59,27 @@ namespace fakeit {
         template<typename U = R>
         typename std::enable_if<!std::is_reference<U>::value, void>::type
         AlwaysReturn(const R &r) {
-            return AlwaysDo([r](const typename fakeit::api_arg<arglist>::type...) -> R { return r; });
+            return AlwaysDo([r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
         }
 
         template<typename U = R>
         typename std::enable_if<std::is_reference<U>::value, void>::type
         AlwaysReturn(const R &r) {
-            return AlwaysDo([&r](const typename fakeit::api_arg<arglist>::type...) -> R { return r; });
+            return AlwaysDo([&r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
         }
 
         MethodStubbingProgress<R, arglist...> &
         Return() {
-            return Do([](const typename fakeit::api_arg<arglist>::type...) -> R { return DefaultValue<R>::value(); });
+            return Do([](const typename fakeit::test_arg<arglist>::type...) -> R { return DefaultValue<R>::value(); });
         }
 
         void AlwaysReturn() {
-            return AlwaysDo([](const typename fakeit::api_arg<arglist>::type...) -> R { return DefaultValue<R>::value(); });
+            return AlwaysDo([](const typename fakeit::test_arg<arglist>::type...) -> R { return DefaultValue<R>::value(); });
         }
 
         template<typename E>
         MethodStubbingProgress<R, arglist...> &Throw(const E &e) {
-            return Do([e](const typename fakeit::api_arg<arglist>::type...) -> R { throw e; });
+            return Do([e](const typename fakeit::test_arg<arglist>::type...) -> R { throw e; });
         }
 
         template<typename E>
@@ -99,11 +99,11 @@ namespace fakeit {
 
         template<typename E>
         void AlwaysThrow(const E &e) {
-            return AlwaysDo([e](const typename fakeit::api_arg<arglist>::type...) -> R { throw e; });
+            return AlwaysDo([e](const typename fakeit::test_arg<arglist>::type...) -> R { throw e; });
         }
 
         virtual MethodStubbingProgress<R, arglist...> &
-            Do(std::function<R(const typename fakeit::api_arg<arglist>::type...)> method) {
+            Do(std::function<R(const typename fakeit::test_arg<arglist>::type...)> method) {
             return DoImpl(new Repeat<R, arglist...>(method));
         }
 
@@ -120,7 +120,7 @@ namespace fakeit {
             return Do(s, t...);
         }
 
-        virtual void AlwaysDo(std::function<R(const typename fakeit::api_arg<arglist>::type...)> method) {
+        virtual void AlwaysDo(std::function<R(const typename fakeit::test_arg<arglist>::type...)> method) {
             DoImpl(new RepeatForever<R, arglist...>(method));
         }
 
@@ -140,20 +140,20 @@ namespace fakeit {
         }
 
         MethodStubbingProgress<void, arglist...> &Return() {
-            auto lambda = [](const typename fakeit::api_arg<arglist>::type...) -> void {
+            auto lambda = [](const typename fakeit::test_arg<arglist>::type...) -> void {
                 return DefaultValue<void>::value(); 
             };
             return Do(lambda);
         }
 
         virtual MethodStubbingProgress<void, arglist...> &Do(
-            std::function<void(const typename fakeit::arg_type<arglist>::type...)> method) {
+            std::function<void(const typename fakeit::test_arg<arglist>::type...)> method) {
             return DoImpl(new Repeat<void, arglist...>(method));
         }
 
 
         void AlwaysReturn() {
-            return AlwaysDo([](const typename fakeit::api_arg<arglist>::type...) -> void { return DefaultValue<void>::value(); });
+            return AlwaysDo([](const typename fakeit::test_arg<arglist>::type...) -> void { return DefaultValue<void>::value(); });
         }
 
         MethodStubbingProgress<void, arglist...> &
@@ -164,14 +164,14 @@ namespace fakeit {
 
         template<typename E>
         MethodStubbingProgress<void, arglist...> &Throw(const E &e) {
-            return Do([e](const typename fakeit::api_arg<arglist>::type...) -> void { throw e; });
+            return Do([e](const typename fakeit::test_arg<arglist>::type...) -> void { throw e; });
         }
 
         template<typename E>
         MethodStubbingProgress<void, arglist...> &
         Throw(const Quantifier<E> &q) {
             const E &value = q.value;
-            auto method = [value](const typename fakeit::api_arg<arglist>::type...) -> void { throw value; };
+            auto method = [value](const typename fakeit::test_arg<arglist>::type...) -> void { throw value; };
             return DoImpl(new Repeat<void, arglist...>(method, q.quantity));
         }
 
@@ -184,7 +184,7 @@ namespace fakeit {
 
         template<typename E>
         void AlwaysThrow(const E e) {
-            return AlwaysDo([e](const typename fakeit::api_arg<arglist>::type...) -> void { throw e; });
+            return AlwaysDo([e](const typename fakeit::test_arg<arglist>::type...) -> void { throw e; });
         }
 
            template<typename F>
@@ -200,7 +200,7 @@ namespace fakeit {
             return Do(s, t...);
         }
 
-        virtual void AlwaysDo(std::function<void(const typename fakeit::api_arg<arglist>::type...)> method) {
+        virtual void AlwaysDo(std::function<void(const typename fakeit::test_arg<arglist>::type...)> method) {
             DoImpl(new RepeatForever<void, arglist...>(method));
         }
 

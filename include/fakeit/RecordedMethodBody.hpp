@@ -36,7 +36,7 @@ namespace fakeit {
                     _matcher{matcher}, _invocationHandler{invocationHandler} {
             }
 
-            R handleMethodInvocation(const typename fakeit::pass_arg<arglist>::type... args) override {
+            R handleMethodInvocation(const typename fakeit::production_arg<arglist>::type... args) override {
                 Destructible &destructable = *_invocationHandler;
                 MethodInvocationHandler<R, arglist...> &invocationHandler = dynamic_cast<MethodInvocationHandler<R, arglist...> &>(destructable);
                 return invocationHandler.handleMethodInvocation(args...);
@@ -118,7 +118,7 @@ namespace fakeit {
         }
 
 
-        R handleMethodInvocation(const typename fakeit::pass_arg<arglist>::type... args) override {
+        R handleMethodInvocation(const typename fakeit::production_arg<arglist>::type... args) override {
             unsigned int ordinal = Invocation::nextInvocationOrdinal();
             MethodInfo &method = this->getMethod();
             auto actualInvoaction = new ActualInvocation<arglist...>(ordinal, method, args...);

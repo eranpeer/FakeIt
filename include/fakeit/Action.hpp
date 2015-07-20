@@ -23,7 +23,7 @@ namespace fakeit {
     struct Action : public Destructible {
         virtual ~Action() = default;
 
-        virtual R invoke(const typename fakeit::pass_arg<arglist>::type... args) = 0;
+        virtual R invoke(const typename fakeit::production_arg<arglist>::type... args) = 0;
 
         virtual bool isDone() = 0;
     };
@@ -32,21 +32,17 @@ namespace fakeit {
     struct Repeat : Action<R, arglist...> {
         virtual ~Repeat() = default;
 
-        Repeat(std::function<R(typename fakeit::api_arg<arglist>::type...)> func) :
+        Repeat(std::function<R(typename fakeit::test_arg<arglist>::type...)> func) :
                 f(func), times(1) {
         }
 
-        Repeat(std::function<R(typename fakeit::api_arg<arglist>::type...)> func, long times) :
+        Repeat(std::function<R(typename fakeit::test_arg<arglist>::type...)> func, long times) :
                 f(func), times(times) {
         }
 
-        virtual R invoke(typename fakeit::pass_arg<arglist>::type... args) override {
+        virtual R invoke(typename fakeit::production_arg<arglist>::type... args) override {
             times--;
             return f(args...);
-//            return f(std::forward<arglist>(args)...);
-//            return f(static_cast<arglist>(args)...);
-//            return f(std::forward<arglist>(const_cast<arglist>(args))...);
-//            return f(args...);
         }
 
         virtual bool isDone() override {
@@ -54,7 +50,7 @@ namespace fakeit {
         }
 
     private:
-        std::function<R(typename fakeit::api_arg<arglist>::type...)> f;
+        std::function<R(typename fakeit::test_arg<arglist>::type...)> f;
         long times;
     };
 
@@ -63,11 +59,11 @@ namespace fakeit {
 
         virtual ~RepeatForever() = default;
 
-        RepeatForever(std::function<R(typename fakeit::api_arg<arglist>::type...)> func) :
+        RepeatForever(std::function<R(typename fakeit::test_arg<arglist>::type...)> func) :
                 f(func) {
         }
 
-        virtual R invoke(typename fakeit::pass_arg<arglist>::type... args) override {
+        virtual R invoke(typename fakeit::production_arg<arglist>::type... args) override {
             return f(args...);
         }
 
@@ -76,14 +72,14 @@ namespace fakeit {
         }
 
     private:
-        std::function<R(typename fakeit::api_arg<arglist>::type...)> f;
+        std::function<R(typename fakeit::test_arg<arglist>::type...)> f;
     };
 
     template<typename R, typename ... arglist>
     struct ReturnDefaultValue : public Action<R, arglist...> {
         virtual ~ReturnDefaultValue() = default;
 
-        virtual R invoke(const typename fakeit::pass_arg<arglist>::type...) override {
+        virtual R invoke(const typename fakeit::production_arg<arglist>::type...) override {
             return DefaultValue<R>::value();
         }
 
@@ -95,11 +91,11 @@ namespace fakeit {
     template<typename R, typename ... arglist>
     struct ReturnDelegateValue : public Action<R, arglist...> {
 
-        ReturnDelegateValue(std::function<R(const typename fakeit::api_arg<arglist>::type...)> delegate) : _delegate(delegate) { }
+        ReturnDelegateValue(std::function<R(const typename fakeit::test_arg<arglist>::type...)> delegate) : _delegate(delegate) { }
 
         virtual ~ReturnDelegateValue() = default;
 
-        virtual R invoke(const typename fakeit::pass_arg<arglist>::type... args) override {
+        virtual R invoke(const typename fakeit::production_arg<arglist>::type... args) override {
             return _delegate(args...);
         }
 
@@ -108,7 +104,7 @@ namespace fakeit {
         }
 
     private:
-        std::function<R(const typename fakeit::api_arg<arglist>::type...)> _delegate;
+        std::function<R(const typename fakeit::test_arg<arglist>::type...)> _delegate;
     };
 
 }
