@@ -131,12 +131,13 @@ struct Miscellaneous: tpunit::TestFixture
         When(Method(foo_mock, bar).Using(1)).AlwaysReturn(1);
         When(Method(foo_mock, bar).Using(2)).AlwaysDo([](int &&){return 2; });
         When(Method(foo_mock, bar).Using(3)).Do([](int &&){return 3; });
-        //Method(foo_mock, bar).Using(4) = 4;
+        Method(foo_mock, bar).Using(4) = 4;
 
         ASSERT_EQUAL(100, foo_mock.get().bar(5));
         ASSERT_EQUAL(1, foo_mock.get().bar(1));
         ASSERT_EQUAL(2, foo_mock.get().bar(2));
         ASSERT_EQUAL(3, foo_mock.get().bar(3));
+        ASSERT_EQUAL(4, foo_mock.get().bar(4));
     }
 
 } __Miscellaneous;

@@ -141,7 +141,7 @@ namespace fakeit {
                 getRecordedActionSequence().AppendDo(action);
             }
 
-            void setMethodBodyByAssignment(std::function<R(arglist &...)> method) {
+            void setMethodBodyByAssignment(std::function<R(typename fakeit::api_arg<arglist>::type...)> method) {
                 appendAction(new RepeatForever<R, arglist...>(method));
                 commit();
             }
@@ -242,7 +242,7 @@ namespace fakeit {
             _impl->appendAction(action);
         }
 
-        void setMethodBodyByAssignment(std::function<R(arglist &...)> method) {
+        void setMethodBodyByAssignment(std::function<R(typename fakeit::api_arg<arglist>::type...)> method) {
             _impl->setMethodBodyByAssignment(method);
         }
 
