@@ -8,6 +8,7 @@
 #pragma once
 
 #include "mockutils/Destructible.hpp"
+#include "mockutils/type_utils.hpp"
 
 namespace fakeit {
 
@@ -16,7 +17,7 @@ namespace fakeit {
 
     template<typename R, typename ... arglist>
     struct MethodInvocationHandler : public Destructible {
-        virtual R handleMethodInvocation(arglist &... args) = 0;
+        virtual R handleMethodInvocation(typename fakeit::api_arg<arglist>::type... args) = 0;
     };
 
 }

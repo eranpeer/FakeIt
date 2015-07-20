@@ -320,13 +320,13 @@ namespace fakeit {
 
         template<typename U = R>
         typename std::enable_if<!std::is_reference<U>::value, void>::type operator=(const R &r) {
-            auto method = [r](arglist &...) -> R { return r; };
+            auto method = [r](typename fakeit::api_arg<arglist>::type...) -> R { return r; };
             MethodMockingContext<R, arglist...>::setMethodBodyByAssignment(method);
         }
 
         template<typename U = R>
         typename std::enable_if<std::is_reference<U>::value, void>::type operator=(const R &r) {
-            auto method = [&r](arglist &...) -> R { return r; };
+            auto method = [&r](typename fakeit::api_arg<arglist>::type...) -> R { return r; };
             MethodMockingContext<R, arglist...>::setMethodBodyByAssignment(method);
         }
     };

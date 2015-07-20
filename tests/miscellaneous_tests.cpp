@@ -121,24 +121,22 @@ struct Miscellaneous: tpunit::TestFixture
 
 
 	void testStubMethodWithRightValueParameter() {
-//        int i = 0;
-//        int& i2 = i;
-//        int&& x = 1;
-//        int&& y = (int&&) i;
-//        fakeit::MethodInfo m(0,"method");
-//        ActualInvocation<int&> a1(1,m,i);
-        //ActualInvocation<const int&&> a2(2, m, i);
-        //ActualInvocation<int&&> a3(2, m, 4);
+        
+        struct foo {
+            virtual int bar(int &&) = 0;
+        };
 
+        Mock<foo> foo_mock;
+        When(Method(foo_mock, bar)).AlwaysReturn(100);
+        When(Method(foo_mock, bar).Using(1)).AlwaysReturn(1);
+        When(Method(foo_mock, bar).Using(2)).AlwaysDo([](int &&){return 2; });
+        When(Method(foo_mock, bar).Using(3)).Do([](int &&){return 3; });
+        //Method(foo_mock, bar).Using(4) = 4;
 
-		struct foo {
-			virtual int bar(int &&) = 0;
-		};
-
-		Mock<foo> foo_mock;
-        Method(foo_mock, bar);
-        When(Method(foo_mock, bar)).AlwaysReturn(1);
-		ASSERT_EQUAL(1,foo_mock.get().bar(5));
-	}
+        ASSERT_EQUAL(100, foo_mock.get().bar(5));
+        ASSERT_EQUAL(1, foo_mock.get().bar(1));
+        ASSERT_EQUAL(2, foo_mock.get().bar(2));
+        ASSERT_EQUAL(3, foo_mock.get().bar(3));
+    }
 
 } __Miscellaneous;

@@ -13,6 +13,7 @@
 
 #include "mockutils/smart_ptr.hpp"
 #include "mockutils/Destructible.hpp"
+#include "Xaction.hpp"
 
 namespace fakeit {
 
@@ -47,7 +48,7 @@ namespace fakeit {
     public:
 
         template<typename R, typename ... arglist>
-        struct MethodProgress : public MethodStubbingProgress<R, arglist...> {
+        struct MethodProgress : MethodStubbingProgress<R, arglist...> {
 
             friend class WhenFunctor;
 

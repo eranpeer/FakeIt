@@ -1,5 +1,7 @@
 #pragma once
+#include <utility>
 
+#include "mockutils/type_utils.hpp"
 #include "mockutils/VirtualTable.hpp"
 #include "mockutils/MethodProxy.hpp"
 #include "mockutils/Destructible.hpp"
@@ -34,18 +36,18 @@ namespace fakeit {
 
     protected:
 
-        R methodProxy(unsigned int id, arglist &... args) {
+        R methodProxy(unsigned int id, const typename fakeit::api_arg<arglist>::type... args) {
             InvocationHandlerCollection *invocationHandlerCollection = InvocationHandlerCollection::getInvocationHandlerCollection(
                     this);
             MethodInvocationHandler<R, arglist...> *invocationHandler =
                     (MethodInvocationHandler<R, arglist...> *) invocationHandlerCollection->getInvocatoinHandlerPtrById(
                             id);
-            return invocationHandler->handleMethodInvocation(args...);
+            return invocationHandler->handleMethodInvocation(static_cast<arglist>(args)...);
         }
 
         template<int id>
         R methodProxyX(arglist ... args) {
-            return methodProxy(id, args...);
+            return methodProxy(id, static_cast<arglist>(args)...);
         }
     };
 }
