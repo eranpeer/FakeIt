@@ -180,7 +180,7 @@ namespace fakeit {
 
         virtual ~MethodMockingContext() { }
 
-        std::string format() const {
+        std::string format() const override {
             return _impl->format();
         }
 

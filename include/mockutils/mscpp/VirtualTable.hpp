@@ -157,7 +157,7 @@ namespace fakeit {
 
             void **firstMethod;
 
-            Handle(void **firstMethod) : firstMethod(firstMethod) { }
+            Handle(void **method) : firstMethod(method) { }
 
         public:
 

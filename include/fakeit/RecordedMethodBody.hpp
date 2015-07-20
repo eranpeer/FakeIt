@@ -152,7 +152,7 @@ namespace fakeit {
             }
         }
 
-        void getActualInvocations(std::unordered_set<Invocation *> &into) const {
+        void getActualInvocations(std::unordered_set<Invocation *> &into) const override {
             for (auto destructablePtr : _actualInvocations) {
                 Invocation &invocation = asActualInvocation(*destructablePtr);
                 into.insert(&invocation);
