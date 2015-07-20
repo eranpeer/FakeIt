@@ -103,7 +103,7 @@ namespace fakeit {
         }
 
         virtual MethodStubbingProgress<R, arglist...> &
-            Do(std::function<R(typename fakeit::api_arg<arglist>::type...)> method) {
+            Do(std::function<R(const typename fakeit::api_arg<arglist>::type...)> method) {
             return DoImpl(new Repeat<R, arglist...>(method));
         }
 
@@ -120,7 +120,7 @@ namespace fakeit {
             return Do(s, t...);
         }
 
-        virtual void AlwaysDo(std::function<R(typename fakeit::api_arg<arglist>::type...)> method) {
+        virtual void AlwaysDo(std::function<R(const typename fakeit::api_arg<arglist>::type...)> method) {
             DoImpl(new RepeatForever<R, arglist...>(method));
         }
 
@@ -140,8 +140,17 @@ namespace fakeit {
         }
 
         MethodStubbingProgress<void, arglist...> &Return() {
-            return Do([](const typename fakeit::api_arg<arglist>::type...) -> void { return DefaultValue<void>::value(); });
+            auto lambda = [](const typename fakeit::api_arg<arglist>::type...) -> void {
+                return DefaultValue<void>::value(); 
+            };
+            return Do(lambda);
         }
+
+        virtual MethodStubbingProgress<void, arglist...> &Do(
+            std::function<void(const typename fakeit::arg_type<arglist>::type...)> method) {
+            return DoImpl(new Repeat<void, arglist...>(method));
+        }
+
 
         void AlwaysReturn() {
             return AlwaysDo([](const typename fakeit::api_arg<arglist>::type...) -> void { return DefaultValue<void>::value(); });
@@ -178,11 +187,7 @@ namespace fakeit {
             return AlwaysDo([e](const typename fakeit::api_arg<arglist>::type...) -> void { throw e; });
         }
 
-        virtual MethodStubbingProgress<void, arglist...> &Do(std::function<void(typename fakeit::arg_type<arglist>::type...)> method) {
-            return DoImpl(new Repeat<void, arglist...>(method));
-        }
-
-        template<typename F>
+           template<typename F>
         MethodStubbingProgress<void, arglist...> &
         Do(const Quantifier<F> &q) {
             return DoImpl(new Repeat<void, arglist...>(q.value, q.quantity));
@@ -195,7 +200,7 @@ namespace fakeit {
             return Do(s, t...);
         }
 
-        virtual void AlwaysDo(std::function<void(typename fakeit::api_arg<arglist>::type...)> method) {
+        virtual void AlwaysDo(std::function<void(const typename fakeit::api_arg<arglist>::type...)> method) {
             DoImpl(new RepeatForever<void, arglist...>(method));
         }
 

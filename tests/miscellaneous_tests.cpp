@@ -26,7 +26,8 @@ struct Miscellaneous: tpunit::TestFixture
 			TEST(Miscellaneous::can_mock_class_with_protected_constructor), //
 			TEST(Miscellaneous::mock_virtual_methods_of_base_class), //
 			TEST(Miscellaneous::create_and_delete_fakit_instatnce), //
-            TEST(Miscellaneous::testStubMethodWithRightValueParameter)
+            TEST(Miscellaneous::testStubFuncWithRightValueParameter), 
+            TEST(Miscellaneous::testStubProcWithRightValueParameter)
 		)
 	{
 	}
@@ -120,7 +121,7 @@ struct Miscellaneous: tpunit::TestFixture
 	}
 
 
-	void testStubMethodWithRightValueParameter() {
+	void testStubFuncWithRightValueParameter() {
         
         struct foo {
             virtual int bar(int &&) = 0;
@@ -129,8 +130,8 @@ struct Miscellaneous: tpunit::TestFixture
         Mock<foo> foo_mock;
         When(Method(foo_mock, bar)).AlwaysReturn(100);
         When(Method(foo_mock, bar).Using(1)).AlwaysReturn(1);
-        When(Method(foo_mock, bar).Using(2)).AlwaysDo([](int &&){return 2; });
-        When(Method(foo_mock, bar).Using(3)).Do([](int &&){return 3; });
+        When(Method(foo_mock, bar).Using(2)).AlwaysDo([](int &){return 2; });
+        When(Method(foo_mock, bar).Using(3)).Do([](int){return 3; });
         Method(foo_mock, bar).Using(4) = 4;
 
         ASSERT_EQUAL(100, foo_mock.get().bar(5));
@@ -138,6 +139,33 @@ struct Miscellaneous: tpunit::TestFixture
         ASSERT_EQUAL(2, foo_mock.get().bar(2));
         ASSERT_EQUAL(3, foo_mock.get().bar(3));
         ASSERT_EQUAL(4, foo_mock.get().bar(4));
+    }
+
+    void testStubProcWithRightValueParameter() {
+
+        struct foo {
+            virtual void bar(int &&) = 0;
+        };
+
+        int rv3 = 0;
+        int rv4 = 0;
+        int rv5 = 0;
+
+        Mock<foo> foo_mock;
+        When(Method(foo_mock, bar).Using(1)).Return();
+        When(Method(foo_mock, bar)).AlwaysReturn();
+        When(Method(foo_mock, bar).Using(3)).AlwaysDo([&](int &){rv3 = 3; });
+        When(Method(foo_mock, bar).Using(4)).Do([&](int &){rv4 = 4; });
+        Method(foo_mock, bar).Using(5) = [&](int &){rv5 = 5; };
+
+        foo_mock.get().bar(1);
+        foo_mock.get().bar(2);
+        foo_mock.get().bar(3);
+        ASSERT_EQUAL(3, rv3);
+        foo_mock.get().bar(4);
+        ASSERT_EQUAL(4, rv4);
+        foo_mock.get().bar(5);
+        ASSERT_EQUAL(5, rv5);
     }
 
 } __Miscellaneous;

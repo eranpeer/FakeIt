@@ -31,7 +31,11 @@ namespace fakeit {
 
     template< class T > struct api_arg          { typedef T& type; };
     template< class T > struct api_arg < T& >   { typedef T& type; };
-    template< class T > struct api_arg < T&& >  { typedef T&& type; };
+    template< class T > struct api_arg < T&& >  { typedef T& type; };
+
+    template< class T > struct pass_arg          { typedef T& type; };
+    template< class T > struct pass_arg < T& >   { typedef T& type; };
+    template< class T > struct pass_arg < T&& >  { typedef T type; };
 
     template<typename R, typename... arglist>
     struct VTableMethodType {

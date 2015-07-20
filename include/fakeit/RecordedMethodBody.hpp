@@ -36,10 +36,10 @@ namespace fakeit {
                     _matcher{matcher}, _invocationHandler{invocationHandler} {
             }
 
-            R handleMethodInvocation(typename fakeit::api_arg<arglist>::type... args) override {
+            R handleMethodInvocation(const typename fakeit::pass_arg<arglist>::type... args) override {
                 Destructible &destructable = *_invocationHandler;
                 MethodInvocationHandler<R, arglist...> &invocationHandler = dynamic_cast<MethodInvocationHandler<R, arglist...> &>(destructable);
-                return invocationHandler.handleMethodInvocation(static_cast<arglist>(args)...);
+                return invocationHandler.handleMethodInvocation(args...);
             }
 
             typename ActualInvocation<arglist...>::Matcher &getMatcher() const {
@@ -118,7 +118,7 @@ namespace fakeit {
         }
 
 
-        R handleMethodInvocation(typename fakeit::api_arg<arglist>::type... args) override {
+        R handleMethodInvocation(const typename fakeit::pass_arg<arglist>::type... args) override {
             unsigned int ordinal = Invocation::nextInvocationOrdinal();
             MethodInfo &method = this->getMethod();
             auto actualInvoaction = new ActualInvocation<arglist...>(ordinal, method, args...);
@@ -132,7 +132,7 @@ namespace fakeit {
                 actualInvoaction->setActualMatcher(&matcher);
                 _actualInvocations.push_back(actualInvoactionDtor);
                 try {
-                    return invocationHandler->handleMethodInvocation(static_cast<arglist>(args)...);
+                    return invocationHandler->handleMethodInvocation(args...);
                 } catch (NoMoreRecordedActionException &) {
                 }
             }

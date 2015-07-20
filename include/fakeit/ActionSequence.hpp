@@ -36,7 +36,7 @@ namespace fakeit {
             append(action);
         }
 
-        R handleMethodInvocation(typename fakeit::api_arg<arglist>::type... args) override {
+        R handleMethodInvocation(const typename fakeit::pass_arg<arglist>::type... args) override {
             std::shared_ptr<Destructible> destructablePtr = _recordedActions.front();
             Destructible &destructable = *destructablePtr;
             Action<R, arglist...> &action = dynamic_cast<Action<R, arglist...> &>(destructable);
@@ -45,7 +45,7 @@ namespace fakeit {
                     _recordedActions.erase(_recordedActions.begin());
             };
             Finally onExit(finallyClause);
-            return action.invoke(static_cast<arglist>(args)...);
+            return action.invoke(args...);
         }
 
     private:
@@ -54,7 +54,7 @@ namespace fakeit {
 
             virtual ~NoMoreRecordedAction() = default;
 
-            virtual R invoke(typename fakeit::api_arg<arglist>::type...) override {
+            virtual R invoke(const typename fakeit::pass_arg<arglist>::type...) override {
                 throw NoMoreRecordedActionException();
             }
 
