@@ -130,7 +130,7 @@ namespace fakeit {
             return matches(invocation.getActualArguments());
         }
 
-        virtual std::string format() const {
+        virtual std::string format() const override {
             return {"( user defined matcher )"};
         }
 
@@ -154,7 +154,7 @@ namespace fakeit {
             return matches(invocation.getActualArguments());
         }
 
-        virtual std::string format() const {
+        virtual std::string format() const override {
             return {"( Any arguments )"};
         }
 
