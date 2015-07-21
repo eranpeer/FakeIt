@@ -42,12 +42,12 @@ namespace fakeit {
             MethodInvocationHandler<R, arglist...> *invocationHandler =
                     (MethodInvocationHandler<R, arglist...> *) invocationHandlerCollection->getInvocatoinHandlerPtrById(
                             id);
-            return invocationHandler->handleMethodInvocation(args...);
+            return invocationHandler->handleMethodInvocation(std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
         }
 
         template<int id>
         R methodProxyX(arglist ... args) {
-            return methodProxy(id, args...);
+            return methodProxy(id, std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
         }
     };
 }
