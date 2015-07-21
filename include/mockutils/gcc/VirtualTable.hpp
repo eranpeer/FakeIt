@@ -143,7 +143,7 @@ namespace fakeit {
             auto array = new void *[size + 2 + numOfCookies]{};
             array += numOfCookies; // skip cookies
             array++; // skip top_offset
-            array[0] = (void *) &typeid(C); // type_info
+            array[0] = const_cast<std::type_info *>(&typeid(C)); // type_info
             array++; // skip type_info ptr
             return array;
         }
