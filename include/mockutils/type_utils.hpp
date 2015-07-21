@@ -20,7 +20,7 @@ namespace fakeit {
 
     template< class T > struct tuple_arg         { typedef T  type; };
     template< class T > struct tuple_arg < T& >  { typedef T& type; };
-    template< class T > struct tuple_arg < T&& > { typedef T  type; };
+    template< class T > struct tuple_arg < T&& > { typedef T&&  type; };
 
     template<typename... arglist>
     using ArgumentsTuple = std::tuple<typename tuple_arg<arglist>::type...>;
@@ -31,7 +31,7 @@ namespace fakeit {
 
     template< class T > struct production_arg         { typedef T& type; };
     template< class T > struct production_arg< T& >   { typedef T& type; };
-    template< class T > struct production_arg< T&& >  { typedef T type; };
+    template< class T > struct production_arg< T&& >  { typedef T&&  type; };
 
     template<typename R, typename... arglist>
     struct VTableMethodType {

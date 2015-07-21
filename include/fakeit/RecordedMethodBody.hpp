@@ -39,7 +39,7 @@ namespace fakeit {
             R handleMethodInvocation(const typename fakeit::production_arg<arglist>::type... args) override {
                 Destructible &destructable = *_invocationHandler;
                 MethodInvocationHandler<R, arglist...> &invocationHandler = dynamic_cast<MethodInvocationHandler<R, arglist...> &>(destructable);
-                return invocationHandler.handleMethodInvocation(args...);
+                return invocationHandler.handleMethodInvocation(std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
             }
 
             typename ActualInvocation<arglist...>::Matcher &getMatcher() const {
@@ -121,7 +121,7 @@ namespace fakeit {
         R handleMethodInvocation(const typename fakeit::production_arg<arglist>::type... args) override {
             unsigned int ordinal = Invocation::nextInvocationOrdinal();
             MethodInfo &method = this->getMethod();
-            auto actualInvoaction = new ActualInvocation<arglist...>(ordinal, method, args...);
+            auto actualInvoaction = new ActualInvocation<arglist...>(ordinal, method, std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
 
             // ensure deletion if not added to actual invocations.
             std::shared_ptr<Destructible> actualInvoactionDtor{actualInvoaction};
@@ -132,7 +132,7 @@ namespace fakeit {
                 actualInvoaction->setActualMatcher(&matcher);
                 _actualInvocations.push_back(actualInvoactionDtor);
                 try {
-                    return invocationHandler->handleMethodInvocation(args...);
+                    return invocationHandler->handleMethodInvocation(std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
                 } catch (NoMoreRecordedActionException &) {
                 }
             }

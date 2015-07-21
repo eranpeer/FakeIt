@@ -45,7 +45,7 @@ namespace fakeit {
                     _recordedActions.erase(_recordedActions.begin());
             };
             Finally onExit(finallyClause);
-            return action.invoke(args...);
+            return action.invoke(std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
         }
 
     private:
