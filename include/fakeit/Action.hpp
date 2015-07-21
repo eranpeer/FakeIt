@@ -36,8 +36,8 @@ namespace fakeit {
                 f(func), times(1) {
         }
 
-        Repeat(std::function<R(typename fakeit::test_arg<arglist>::type...)> func, long times) :
-                f(func), times(times) {
+        Repeat(std::function<R(typename fakeit::test_arg<arglist>::type...)> func, long t) :
+                f(func), times(t) {
         }
 
         virtual R invoke(typename fakeit::production_arg<arglist>::type... args) override {
