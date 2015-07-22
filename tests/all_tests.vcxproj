@@ -81,6 +81,7 @@
     <ClCompile Include="overloadded_methods_tests.cpp" />
     <ClCompile Include="referece_types_tests.cpp" />
     <ClCompile Include="remove_const_volatile_tests.cpp" />
+    <ClCompile Include="rvalue_arguments_tests.cpp" />
     <ClCompile Include="sequence_verification_tests.cpp" />
     <ClCompile Include="spying_tests.cpp" />
     <ClCompile Include="functional.cpp" />
