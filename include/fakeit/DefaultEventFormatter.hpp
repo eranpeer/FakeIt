@@ -98,7 +98,7 @@ namespace fakeit {
         }
 
         static void formatInvocationList(std::ostream &out, const std::vector<fakeit::Invocation *> &actualSequence) {
-            unsigned int max_size = actualSequence.size();
+            size_t max_size = actualSequence.size();
             if (max_size > 5)
                 max_size = 5;
 
