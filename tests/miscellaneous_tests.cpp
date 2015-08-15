@@ -24,7 +24,8 @@ struct Miscellaneous : tpunit::TestFixture
         TEST(Miscellaneous::mock_virtual_methods_of_base_class), //
         TEST(Miscellaneous::create_and_delete_fakit_instatnce), //
         TEST(Miscellaneous::testStubFuncWithRightValueParameter),
-        TEST(Miscellaneous::testStubProcWithRightValueParameter)
+        TEST(Miscellaneous::testStubProcWithRightValueParameter),
+        TEST(Miscellaneous::can_stub_method_after_reset)
         )
     {
     }
@@ -163,6 +164,20 @@ struct Miscellaneous : tpunit::TestFixture
         ASSERT_EQUAL(4, rv4);
         foo_mock.get().bar(5);
         ASSERT_EQUAL(5, rv5);
+    }
+
+    struct foo_bar {
+      virtual ~foo_bar() {}
+      virtual int foo() = 0;
+      virtual int bar() = 0;
+    };
+
+    void can_stub_method_after_reset() {
+      Mock<foo_bar> mock;
+      mock.Reset();
+      When(Method(mock, bar)).Return(42);
+      ASSERT_EQUAL(mock.get().bar(), 42);
+      Verify(Method(mock, bar)).Once();
     }
 
 
