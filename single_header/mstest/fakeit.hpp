@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2015-08-14 10:22:58.014098
+ *  Generated: 2015-08-16 07:28:50.217000
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -906,7 +906,7 @@ namespace fakeit {
         }
 
         static void formatInvocationList(std::ostream &out, const std::vector<fakeit::Invocation *> &actualSequence) {
-            unsigned int max_size = actualSequence.size();
+            size_t max_size = actualSequence.size();
             if (max_size > 5)
                 max_size = 5;
 
