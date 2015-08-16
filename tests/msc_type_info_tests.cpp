@@ -13,6 +13,8 @@
 #include <stdexcept>
 #include <tuple>
 #include <type_traits>
+#include "wrl\implements.h"
+#include "TlHelp32.h"
 
 #include "tpunit++.hpp"
 #include "fakeit.hpp"
@@ -20,7 +22,6 @@
 using namespace fakeit;
 
 struct MscTypeInfoTests : tpunit::TestFixture {
-
 	MscTypeInfoTests() :
 	tpunit::TestFixture(
 		TEST(MscTypeInfoTests::try_type_info)//
@@ -90,8 +91,54 @@ struct MscTypeInfoTests : tpunit::TestFixture {
 	{
 	};
 
+#ifdef _WIN64 
+	DWORD_PTR findBaseAddress(DWORD_PTR address) {
+		HANDLE ModuleList = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, GetCurrentProcessId());
+		MODULEENTRY32 ModInfo;
+		BOOL rm = Module32First(ModuleList, &ModInfo);
+		ModInfo.dwSize = sizeof(MODULEENTRY32);
+		DWORD_PTR retval = 0;
+		if ((int)ModuleList != -1)
+		{
+			BOOL rm = Module32First(ModuleList, &ModInfo);
+			while (rm)
+			{
+				auto start = (DWORD_PTR)ModInfo.modBaseAddr;
+				auto end = start + (DWORD_PTR)ModInfo.modBaseAddr;
+				if (start < address && address < end) {
+					retval = start;
+					break;
+				}
+				rm = Module32Next(ModuleList, &ModInfo);
+			}
+			CloseHandle(ModuleList);
+		}
+		return retval;
+	}
+
+#endif
+
 	void try_type_info()
 	{
+#ifdef _WIN64
+		Aclass* aPtr = new Bclass;
+		uint64_t ** aVFTPtr = (uint64_t**)(aPtr);
+		RTTICompleteObjectLocator<Aclass>*  aObjectLocatorPtr =
+			((RTTICompleteObjectLocator<Aclass> *)(*((uint64_t*)aVFTPtr[0] - 1)));
+
+		//Find pointer to std::type_info from the BaseAddress of this module and the typeDescriptorOffset found in *aVFTPtr[-1]
+		DWORD_PTR baseAddress = findBaseAddress(reinterpret_cast<DWORD_PTR>(aObjectLocatorPtr));
+		auto type_info_ptr = reinterpret_cast<const std::type_info *>((uint64_t)baseAddress + aObjectLocatorPtr->typeDescriptorOffset);
+		
+		//Get and print class name
+		std::string classname{ type_info_ptr->name() };
+		std::cout << classname << std::endl;
+
+		//Assert that type_info read from typeid() is the same as the one read through type_info_ptr we found previously.
+		auto &type_info_of_Bclass = typeid(Bclass);
+		ASSERT_EQUAL(std::string{ type_info_ptr->name() }, std::string{ type_info_of_Bclass.name() });
+
+#else
 		Dclass* dPtr = new Dclass;
 		Aclass* aPtr=new Bclass;
 		Aclass* cPtr = new Cclass;
@@ -130,6 +177,7 @@ struct MscTypeInfoTests : tpunit::TestFixture {
 
 		RTTICompleteObjectLocator<void>*  tiObjectLocatorPtr =
 			((RTTICompleteObjectLocator<void> *)(*((int*)tiVFTPtr[0] - 1)));
+#endif
 	}
 
 } __MscTypeInfoTests;
