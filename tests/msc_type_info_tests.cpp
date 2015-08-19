@@ -92,30 +92,36 @@ struct MscTypeInfoTests : tpunit::TestFixture {
 	};
 
 #ifdef _WIN64 
+	/*
+	 *  for how this works, see https://msdn.microsoft.com/en-us/library/windows/desktop/ms686849(v=vs.85).aspx
+	 */
 	DWORD_PTR findBaseAddress(DWORD_PTR address) {
-		HANDLE ModuleList = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, GetCurrentProcessId());
-		MODULEENTRY32 ModInfo;
-		BOOL rm = Module32First(ModuleList, &ModInfo);
-		ModInfo.dwSize = sizeof(MODULEENTRY32);
-		DWORD_PTR retval = 0;
-		if ((int)ModuleList != -1)
-		{
-			BOOL rm = Module32First(ModuleList, &ModInfo);
-			while (rm)
-			{
-				auto start = (DWORD_PTR)ModInfo.modBaseAddr;
-				auto end = start + (DWORD_PTR)ModInfo.modBaseAddr;
-				if (start < address && address < end) {
-					retval = start;
-					break;
-				}
-				rm = Module32Next(ModuleList, &ModInfo);
-			}
-			CloseHandle(ModuleList);
+		HANDLE hModuleSnap = INVALID_HANDLE_VALUE;
+		MODULEENTRY32 me32;
+
+		hModuleSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, GetCurrentProcessId());
+		if (hModuleSnap == INVALID_HANDLE_VALUE) {
+			return 0;
 		}
+		me32.dwSize = sizeof(MODULEENTRY32);
+		if (!Module32First(hModuleSnap, &me32)) {
+			CloseHandle(hModuleSnap);
+			return 0;
+		}
+			
+		DWORD_PTR retval = 0;
+		do
+		{
+			auto start = me32.modBaseAddr;
+			auto end = start + me32.modBaseSize;
+			if (start <= (BYTE *)address && (BYTE *)address <= end) {
+				retval = (DWORD_PTR)start;
+				break;
+			}
+		} while (Module32Next(hModuleSnap, &me32));
+		CloseHandle(hModuleSnap);
 		return retval;
 	}
-
 #endif
 
 	void try_type_info()
