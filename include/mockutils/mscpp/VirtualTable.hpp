@@ -17,11 +17,11 @@ namespace fakeit {
             // ptrToVTable should contain the pointer to the virtual table of the type type_info!!!
             int **tiVFTPtr = (int **) (&typeid(void));
             int *i = (int *) tiVFTPtr[0];
-            int type_info_vft_ptr = (int) i;
+			char *type_info_vft_ptr = (char *) i;
             ptrToVTable = type_info_vft_ptr;
         }
 
-        DWORD ptrToVTable;
+		char *ptrToVTable;
         DWORD spare;
         char name[8];
     };
@@ -100,24 +100,39 @@ namespace fakeit {
 
     };
 
-    template<typename C, typename... baseclasses>
-    struct RTTICompleteObjectLocator {
-        RTTICompleteObjectLocator(const std::type_info &info) :
-                signature(0), offset(0), cdOffset(0),
-                pTypeDescriptor(&info),
-                pClassDescriptor(new RTTIClassHierarchyDescriptor<C, baseclasses...>()) {
-        }
+	template<typename C, typename... baseclasses>
+	struct RTTICompleteObjectLocator {
+#ifdef _WIN64
+		RTTICompleteObjectLocator(const std::type_info &unused) :
+			signature(0), offset(0), cdOffset(0),
+			typeDescriptorOffset(0), classDescriptorOffset(0)
+		{
+		}
 
-        ~RTTICompleteObjectLocator() {
-            delete pClassDescriptor;
-        }
+		DWORD signature; //always zero ?
+		DWORD offset;    //offset of this vtable in the complete class
+		DWORD cdOffset;  //constructor displacement offset
+		DWORD typeDescriptorOffset;
+		DWORD classDescriptorOffset;
+#else
+		RTTICompleteObjectLocator(const std::type_info &info) :
+			signature(0), offset(0), cdOffset(0),
+			pTypeDescriptor(&info),
+			pClassDescriptor(new RTTIClassHierarchyDescriptor<C, baseclasses...>()) {
+		}
 
-        DWORD signature; //always zero ?
-        DWORD offset;    //offset of this vtable in the complete class
-        DWORD cdOffset;  //constructor displacement offset
-        const std::type_info *pTypeDescriptor; //TypeDescriptor of the complete class
-        struct RTTIClassHierarchyDescriptor<C, baseclasses...> *pClassDescriptor; //describes inheritance hierarchy
-    };
+		~RTTICompleteObjectLocator() {
+			delete pClassDescriptor;
+		}
+
+		DWORD signature; //always zero ?
+		DWORD offset;    //offset of this vtable in the complete class
+		DWORD cdOffset;  //constructor displacement offset
+		const std::type_info *pTypeDescriptor; //TypeDescriptor of the complete class
+		struct RTTIClassHierarchyDescriptor<C, baseclasses...> *pClassDescriptor; //describes inheritance hierarchy
+#endif
+	};
+
 
     struct VirtualTableBase {
 
