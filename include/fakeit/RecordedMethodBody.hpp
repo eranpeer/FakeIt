@@ -121,23 +121,23 @@ namespace fakeit {
         R handleMethodInvocation(const typename fakeit::production_arg<arglist>::type... args) override {
             unsigned int ordinal = Invocation::nextInvocationOrdinal();
             MethodInfo &method = this->getMethod();
-            auto actualInvoaction = new ActualInvocation<arglist...>(ordinal, method, std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
+            auto actualInvocation = new ActualInvocation<arglist...>(ordinal, method, std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
 
             // ensure deletion if not added to actual invocations.
-            std::shared_ptr<Destructible> actualInvoactionDtor{actualInvoaction};
+            std::shared_ptr<Destructible> actualInvocationDtor{actualInvocation};
 
-            auto invocationHandler = getInvocationHandlerForActualArgs(*actualInvoaction);
+            auto invocationHandler = getInvocationHandlerForActualArgs(*actualInvocation);
             if (invocationHandler) {
                 auto &matcher = invocationHandler->getMatcher();
-                actualInvoaction->setActualMatcher(&matcher);
-                _actualInvocations.push_back(actualInvoactionDtor);
+                actualInvocation->setActualMatcher(&matcher);
+                _actualInvocations.push_back(actualInvocationDtor);
                 try {
                     return invocationHandler->handleMethodInvocation(std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
                 } catch (NoMoreRecordedActionException &) {
                 }
             }
 
-            UnexpectedMethodCallEvent event(UnexpectedType::Unmatched, *actualInvoaction);
+            UnexpectedMethodCallEvent event(UnexpectedType::Unmatched, *actualInvocation);
             _fakeit.handle(event);
             std::string format{_fakeit.format(event)};
             UnexpectedMethodCallException e(format);
