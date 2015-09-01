@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2015-08-16 07:29:11.095000
+ *  Generated: 2015-09-01 23:08:34.122000
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -5267,11 +5267,11 @@ namespace fakeit {
 
             int **tiVFTPtr = (int **) (&typeid(void));
             int *i = (int *) tiVFTPtr[0];
-            int type_info_vft_ptr = (int) i;
+			char *type_info_vft_ptr = (char *) i;
             ptrToVTable = type_info_vft_ptr;
         }
 
-        DWORD ptrToVTable;
+		char *ptrToVTable;
         DWORD spare;
         char name[8];
     };
@@ -5346,24 +5346,39 @@ namespace fakeit {
 
     };
 
-    template<typename C, typename... baseclasses>
-    struct RTTICompleteObjectLocator {
-        RTTICompleteObjectLocator(const std::type_info &info) :
-                signature(0), offset(0), cdOffset(0),
-                pTypeDescriptor(&info),
-                pClassDescriptor(new RTTIClassHierarchyDescriptor<C, baseclasses...>()) {
-        }
+	template<typename C, typename... baseclasses>
+	struct RTTICompleteObjectLocator {
+#ifdef _WIN64
+		RTTICompleteObjectLocator(const std::type_info &unused) :
+			signature(0), offset(0), cdOffset(0),
+			typeDescriptorOffset(0), classDescriptorOffset(0)
+		{
+		}
 
-        ~RTTICompleteObjectLocator() {
-            delete pClassDescriptor;
-        }
+		DWORD signature;
+		DWORD offset;
+		DWORD cdOffset;
+		DWORD typeDescriptorOffset;
+		DWORD classDescriptorOffset;
+#else
+		RTTICompleteObjectLocator(const std::type_info &info) :
+			signature(0), offset(0), cdOffset(0),
+			pTypeDescriptor(&info),
+			pClassDescriptor(new RTTIClassHierarchyDescriptor<C, baseclasses...>()) {
+		}
 
-        DWORD signature;
-        DWORD offset;
-        DWORD cdOffset;
-        const std::type_info *pTypeDescriptor;
-        struct RTTIClassHierarchyDescriptor<C, baseclasses...> *pClassDescriptor;
-    };
+		~RTTICompleteObjectLocator() {
+			delete pClassDescriptor;
+		}
+
+		DWORD signature;
+		DWORD offset;
+		DWORD cdOffset;
+		const std::type_info *pTypeDescriptor;
+		struct RTTIClassHierarchyDescriptor<C, baseclasses...> *pClassDescriptor;
+#endif
+	};
+
 
     struct VirtualTableBase {
 
@@ -6779,23 +6794,23 @@ namespace fakeit {
         R handleMethodInvocation(const typename fakeit::production_arg<arglist>::type... args) override {
             unsigned int ordinal = Invocation::nextInvocationOrdinal();
             MethodInfo &method = this->getMethod();
-            auto actualInvoaction = new ActualInvocation<arglist...>(ordinal, method, std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
+            auto actualInvocation = new ActualInvocation<arglist...>(ordinal, method, std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
 
 
-            std::shared_ptr<Destructible> actualInvoactionDtor{actualInvoaction};
+            std::shared_ptr<Destructible> actualInvocationDtor{actualInvocation};
 
-            auto invocationHandler = getInvocationHandlerForActualArgs(*actualInvoaction);
+            auto invocationHandler = getInvocationHandlerForActualArgs(*actualInvocation);
             if (invocationHandler) {
                 auto &matcher = invocationHandler->getMatcher();
-                actualInvoaction->setActualMatcher(&matcher);
-                _actualInvocations.push_back(actualInvoactionDtor);
+                actualInvocation->setActualMatcher(&matcher);
+                _actualInvocations.push_back(actualInvocationDtor);
                 try {
                     return invocationHandler->handleMethodInvocation(std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
                 } catch (NoMoreRecordedActionException &) {
                 }
             }
 
-            UnexpectedMethodCallEvent event(UnexpectedType::Unmatched, *actualInvoaction);
+            UnexpectedMethodCallEvent event(UnexpectedType::Unmatched, *actualInvocation);
             _fakeit.handle(event);
             std::string format{_fakeit.format(event)};
             UnexpectedMethodCallException e(format);
