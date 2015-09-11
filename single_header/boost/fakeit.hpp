@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2015-09-01 23:07:41.701000
+ *  Generated: 2015-09-11 22:31:10.187000
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -5491,7 +5491,7 @@ namespace fakeit {
         };
 
         static_assert(sizeof(unsigned int (SimpleType::*)()) == sizeof(unsigned int (C::*)()),
-                      "Can't mock a type with multiple inheritance");
+            "Can't mock a type with multiple inheritance or with non-polymorphic base class");
         static const unsigned int numOfCookies = 3;
 
         static void **buildVTArray() {

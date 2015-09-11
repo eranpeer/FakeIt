@@ -214,4 +214,83 @@ struct Miscellaneous : tpunit::TestFixture
         MockProxyClass<DummyType<2> > proxy(3);
     }
 
+
+    class IBase
+    {
+    public:
+        virtual void methodA() = 0;
+    };
+
+    class Base : public IBase
+    {
+    public:
+        void methodA() override
+        {
+            std::cout << "Base::methodA";
+        }
+    };
+
+    class Derived : public Base
+    {
+    public:
+        void methodA() override
+        {
+            std::cout << "Derived::methodA";
+        }
+    };
+
+    void foo()
+    {
+        Mock<Derived> mock;
+
+        When(Method(mock, methodA)).AlwaysReturn();
+
+        Derived& derived = mock.get();
+
+        struct DoNotDelete { void operator()(Derived* p) const { } };
+        std::shared_ptr<Derived> derivedSPtr = std::shared_ptr<Derived>(&derived, DoNotDelete());
+
+        //This version works #1
+        //shared_ptr<Derived> derivedSPtr(new Derived());
+
+        std::set<std::shared_ptr<Base>> set;
+
+        set.insert(derivedSPtr);
+
+        for (auto item : set)
+        {
+            std::shared_ptr<Base> b1 = item;
+            b1->methodA();
+
+            std::shared_ptr<Derived> d1 = std::dynamic_pointer_cast<Derived>(b1);
+            //Next line fails.
+            //d1 is always null for the mocked version. If a real Derived object is used like the line commented out above #1 it works fine.
+
+            d1->methodA();
+        }
+
+    }
+
+
+    class HandlerBase
+    {};
+
+    class TMessage {};
+
+    class Handler : public HandlerBase
+    {
+    public:
+        void Handle(TMessage message)
+        {
+            HandleMessage(message);
+        }
+
+        virtual void HandleMessage(TMessage m) {};
+    };
+
+    void bar()
+    {
+        static_assert(std::is_polymorphic<Handler>::value, "Can only mock a polymorphic type");
+
+    }
 } __Miscellaneous;
