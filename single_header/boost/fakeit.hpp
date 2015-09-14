@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2015-09-11 22:31:10.187000
+ *  Generated: 2015-09-14 14:16:40.674000
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -1117,16 +1117,27 @@ namespace fakeit {
 
         void boost_fail(std::string file, int line, std::string format){
 
-
-
-
+#if (BOOST_VERSION >=  105900)
+            ::boost::test_tools::tt_detail::
+                BOOST_PP_IF(2, report_assertion, 2) (
+                false,
+                BOOST_TEST_LAZY_MSG(format),
+                file,
+                static_cast<std::size_t>(line),
+                ::boost::test_tools::tt_detail::REQUIRE,
+                ::boost::test_tools::tt_detail::CHECK_MSG,
+                0);
+#else
             ::boost::test_tools::tt_detail::check_impl(
                 false,
                 ::boost::unit_test::lazy_ostream::instance() << format,
                 file,
                 static_cast<std::size_t>(line),
                 ::boost::test_tools::tt_detail::CHECK,
-                ::boost::test_tools::tt_detail::CHECK_MSG, 0);
+                ::boost::test_tools::tt_detail::CHECK_MSG,
+				0);
+#endif
+
         }
 	};
 
