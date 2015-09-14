@@ -41,17 +41,28 @@ namespace fakeit {
 		EventFormatter &_formatter;
 
         void boost_fail(std::string file, int line, std::string format){
-            //::boost::unit_test::unit_test_log.set_checkpoint(
-            //    file,
-            //    static_cast<std::size_t>(line));
 
+#if (BOOST_VERSION >=  105900)
+            ::boost::test_tools::tt_detail::                                            
+                BOOST_PP_IF(2, report_assertion, 2) (
+                false, 
+                BOOST_TEST_LAZY_MSG(format), 
+                file, 
+                static_cast<std::size_t>(line), 
+                ::boost::test_tools::tt_detail::REQUIRE,                                     
+                ::boost::test_tools::tt_detail::CHECK_MSG,
+                0);
+#else
             ::boost::test_tools::tt_detail::check_impl(
                 false,
                 ::boost::unit_test::lazy_ostream::instance() << format,
                 file,
                 static_cast<std::size_t>(line),
                 ::boost::test_tools::tt_detail::CHECK,
-                ::boost::test_tools::tt_detail::CHECK_MSG, 0);
+                ::boost::test_tools::tt_detail::CHECK_MSG, 
+				0);
+#endif
+
         }
 	};
 
