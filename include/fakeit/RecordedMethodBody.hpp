@@ -93,7 +93,7 @@ namespace fakeit {
         RecordedMethodBody(FakeitContext &fakeit, std::string name) :
                 _fakeit(fakeit), _method{MethodInfo::nextMethodOrdinal(), name} { }
 
-        virtual ~RecordedMethodBody() THROWS {
+        virtual ~RecordedMethodBody() NO_THROWS {
         }
 
         MethodInfo &getMethod() {

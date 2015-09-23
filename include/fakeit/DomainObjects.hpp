@@ -29,8 +29,8 @@ namespace fakeit {
             return ++ordinal;
         }
 
-        MethodInfo(unsigned int id, std::string name) :
-                _id(id), _name(name) { }
+        MethodInfo(unsigned int anId, std::string aName) :
+                _id(anId), _name(aName) { }
 
         unsigned int id() const {
             return _id;
@@ -40,8 +40,8 @@ namespace fakeit {
             return _name;
         }
 
-        void setName(const std::string &name) {
-            _name = name;
+        void setName(const std::string &value) {
+            _name = value;
         }
 
     private:
