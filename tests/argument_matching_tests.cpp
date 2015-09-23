@@ -16,6 +16,7 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 	ArgumentMatchingTests()
 			: tpunit::TestFixture(
 					//
+                    TEST(ArgumentMatchingTests::pass_reference_by_value),
 					TEST(ArgumentMatchingTests::test_eq_matcher), TEST(ArgumentMatchingTests::test_ge_matcher),
 					TEST(ArgumentMatchingTests::test_lt_matcher), TEST(ArgumentMatchingTests::test_le_matcher),
 					TEST(ArgumentMatchingTests::test_ne_matcher), TEST(ArgumentMatchingTests::test_gt_matcher),
@@ -43,7 +44,8 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 	struct SomeInterface {
 		virtual int func(int) = 0;
 		virtual int func2(int, std::string) = 0;
-	};
+        virtual int func3(const int&) = 0;
+    };
 
 	void mixed_matchers() {
 		Mock<SomeInterface> mock;
@@ -188,6 +190,18 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 
 		Verify(Method(mock, func).Using(_)).Twice();
 	}
+
+    void pass_reference_by_value() {
+//        Mock<SomeInterface> mock;
+//        When(Method(mock, func3).Using(1)).AlwaysReturn(1);
+//        SomeInterface &i = mock.get();
+//        {
+//            int a = 1;
+//            i.func3(a);
+//            a = 2;
+//        }
+//        Verify(Method(mock, func3).Using(Eq(1)));
+    }
 
     void format_Any() {
 		Mock<SomeInterface> mock;
