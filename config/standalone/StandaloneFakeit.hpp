@@ -16,10 +16,10 @@ namespace fakeit {
             return os;
         }
 
-        void setFileInfo(std::string file, int line, std::string callingMethod) {
-            _file = file;
-            _callingMethod = callingMethod;
-            _line = line;
+        void setFileInfo(std::string aFile, int aLine, std::string aCallingMethod) {
+            _file = aFile;
+            _callingMethod = aCallingMethod;
+            _line = aLine;
         }
 
         const std::string& file() const {

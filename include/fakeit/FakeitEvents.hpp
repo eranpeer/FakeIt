@@ -25,8 +25,8 @@ namespace fakeit {
 
     struct VerificationEvent {
 
-        VerificationEvent(VerificationType verificationType) :
-                _verificationType(verificationType), _line(0) {
+        VerificationEvent(VerificationType aVerificationType) :
+                _verificationType(aVerificationType), _line(0) {
         }
 
         virtual ~VerificationEvent() = default;
@@ -35,10 +35,10 @@ namespace fakeit {
             return _verificationType;
         }
 
-        void setFileInfo(std::string file, int line, std::string callingMethod) {
-            _file = file;
-            _callingMethod = callingMethod;
-            _line = line;
+        void setFileInfo(std::string aFile, int aLine, std::string aCallingMethod) {
+            _file = aFile;
+            _callingMethod = aCallingMethod;
+            _line = aLine;
         }
 
         std::string file() const {
@@ -65,11 +65,11 @@ namespace fakeit {
         ~NoMoreInvocationsVerificationEvent() = default;
 
         NoMoreInvocationsVerificationEvent( //
-                std::vector<Invocation *> &allIvocations, //
-                std::vector<Invocation *> &unverifedIvocations) : //
+                std::vector<Invocation *> &allTheIvocations, //
+                std::vector<Invocation *> &anUnverifedIvocations) : //
                 VerificationEvent(VerificationType::NoMoreInvocations), //
-                _allIvocations(allIvocations), //
-                _unverifedIvocations(unverifedIvocations) { //
+                _allIvocations(allTheIvocations), //
+                _unverifedIvocations(anUnverifedIvocations) { //
         }
 
         const std::vector<Invocation *> &allIvocations() const {
@@ -89,16 +89,16 @@ namespace fakeit {
 
         ~SequenceVerificationEvent() = default;
 
-        SequenceVerificationEvent(VerificationType verificationType, //
-                                  std::vector<Sequence *> &expectedPattern, //
-                                  std::vector<Invocation *> &actualSequence, //
-                                  int expectedCount, //
-                                  int actualCount) : //
-                VerificationEvent(verificationType), //
-                _expectedPattern(expectedPattern), //
-                _actualSequence(actualSequence), //
-                _expectedCount(expectedCount), //
-                _actualCount(actualCount) //
+        SequenceVerificationEvent(VerificationType aVerificationType, //
+                                  std::vector<Sequence *> &anExpectedPattern, //
+                                  std::vector<Invocation *> &anActualSequence, //
+                                  int anExpectedCount, //
+                                  int anActualCount) : //
+                VerificationEvent(aVerificationType), //
+                _expectedPattern(anExpectedPattern), //
+                _actualSequence(anActualSequence), //
+                _expectedCount(anExpectedCount), //
+                _actualCount(anActualCount) //
         { //
         }
 

@@ -122,11 +122,11 @@ struct Miscellaneous : tpunit::TestFixture
 
     void testStubFuncWithRightValueParameter() {
 
-        struct foo {
+        struct Foo {
             virtual int bar(int &&) = 0;
         };
 
-        Mock<foo> foo_mock;
+        Mock<Foo> foo_mock;
         When(Method(foo_mock, bar)).AlwaysReturn(100);
         When(Method(foo_mock, bar).Using(1)).AlwaysReturn(1);
         When(Method(foo_mock, bar).Using(2)).AlwaysDo([](int &){return 2; });
@@ -142,7 +142,7 @@ struct Miscellaneous : tpunit::TestFixture
 
     void testStubProcWithRightValueParameter() {
 
-        struct foo {
+        struct Foo {
             virtual void bar(int &&) = 0;
         };
 
@@ -150,7 +150,7 @@ struct Miscellaneous : tpunit::TestFixture
         int rv4 = 0;
         int rv5 = 0;
 
-        Mock<foo> foo_mock;
+        Mock<Foo> foo_mock;
         When(Method(foo_mock, bar).Using(1)).Return();
         When(Method(foo_mock, bar)).AlwaysReturn();
         When(Method(foo_mock, bar).Using(3)).AlwaysDo([&](int &){rv3 = 3; });

@@ -10,7 +10,7 @@ namespace fakeit {
     struct ActualInvocationsSource {
         virtual void getActualInvocations(std::unordered_set<fakeit::Invocation *> &into) const = 0;
 
-        virtual ~ActualInvocationsSource() THROWS { };
+        virtual ~ActualInvocationsSource() NO_THROWS { };
     };
 
     struct InvocationsSourceProxy : public ActualInvocationsSource {

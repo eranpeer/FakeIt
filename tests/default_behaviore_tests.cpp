@@ -63,13 +63,13 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 
 	struct NotDefaultConstructible {
 		NotDefaultConstructible(int a)
-				: a(a) {
+				: _a(a) {
 		}
 		bool operator==(const NotDefaultConstructible &other) const {
-			return a == other.a;
+			return _a == other._a;
 		}
 	private:
-		int a;
+		int _a;
 	};
 
 	struct NonDefaultConstructibleFunctions {

@@ -121,7 +121,16 @@ make all
 ```
 run the tests by typing
 ```
-./fakit_tests.exe
+./fakeit_tests.exe
+```
+#### Building and Running the Unit Tests with Clang
+```
+cd build
+make -f clang_makefile all
+```
+run the tests by typing
+```
+./fakeit_tests.exe
 ```
 #### Building and Running the Unit Tests with Visual Studio 
 Open the tests/all_tests.vcxproj project file with Visual Studio 2013. Build and run the project and check the test results. 
