@@ -18,6 +18,7 @@
 #include "fakeit/MethodMockingContext.hpp"
 #include "fakeit/DomainObjects.hpp"
 #include "fakeit/FakeitContext.hpp"
+#include "fakeit/ActualInvocationHandler.hpp"
 
 namespace fakeit {
 
@@ -111,7 +112,7 @@ namespace fakeit {
             virtual ~MethodMockingContextBase() = default;
 
             void addMethodInvocationHandler(typename ActualInvocation<arglist...>::Matcher *matcher,
-                                            MethodInvocationHandler<R, arglist...> *invocationHandler) {
+                ActualInvocationHandler<R, arglist...> *invocationHandler) {
                 getRecordedMethodBody().addMethodInvocationHandler(matcher, invocationHandler);
             }
 

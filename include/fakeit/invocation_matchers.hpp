@@ -78,7 +78,7 @@ namespace fakeit {
 
         virtual bool matches(ArgumentsTuple<arglist...>& actualArguments) {
             MatchingLambda l(_matchers);
-            fakeit::for_each(actualArguments, l);
+            fakeit::TupleDispatcher::for_each(actualArguments, l);
             return l.isMatching();
         }
 
@@ -117,7 +117,7 @@ namespace fakeit {
 //};
 
     template<typename ... arglist>
-    struct UserDefinedInvocationMatcher : public ActualInvocation<arglist...>::Matcher {
+    struct UserDefinedInvocationMatcher : ActualInvocation<arglist...>::Matcher {
         virtual ~UserDefinedInvocationMatcher() = default;
 
         UserDefinedInvocationMatcher(std::function<bool(arglist &...)> match)
@@ -136,7 +136,7 @@ namespace fakeit {
 
     private:
         virtual bool matches(ArgumentsTuple<arglist...>& actualArguments) {
-            return invoke<typename tuple_arg<arglist>::type...>(matcher, actualArguments);
+            return TupleDispatcher::invoke<bool, typename tuple_arg<arglist>::type...>(matcher, actualArguments);
         }
 
         const std::function<bool(arglist &...)> matcher;
