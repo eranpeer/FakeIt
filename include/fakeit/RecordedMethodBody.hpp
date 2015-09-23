@@ -14,6 +14,7 @@
 #include "mockutils/TupleDispatcher.hpp"
 #include "fakeit/DomainObjects.hpp"
 #include "fakeit/ActualInvocation.hpp"
+#include "fakeit/ActualInvocationHandler.hpp"
 #include "fakeit/invocation_matchers.hpp"
 #include "fakeit/FakeitEvents.hpp"
 #include "fakeit/FakeitExceptions.hpp"
@@ -27,19 +28,20 @@ namespace fakeit {
     template<typename R, typename ... arglist>
     class RecordedMethodBody : public MethodInvocationHandler<R, arglist...>, public ActualInvocationsSource {
 
-        struct MatchedInvocationHandler : public MethodInvocationHandler<R, arglist...> {
+        struct MatchedInvocationHandler : ActualInvocationHandler<R, arglist...> {
 
             virtual ~MatchedInvocationHandler() = default;
 
             MatchedInvocationHandler(typename ActualInvocation<arglist...>::Matcher *matcher,
-                                     MethodInvocationHandler<R, arglist...> *invocationHandler) :
+                ActualInvocationHandler<R, arglist...> *invocationHandler) :
                     _matcher{matcher}, _invocationHandler{invocationHandler} {
             }
 
-            R handleMethodInvocation(const typename fakeit::production_arg<arglist>::type... args) override {
+            virtual R handleMethodInvocation(ArgumentsTuple<arglist...> & args) override
+            {
                 Destructible &destructable = *_invocationHandler;
-                MethodInvocationHandler<R, arglist...> &invocationHandler = dynamic_cast<MethodInvocationHandler<R, arglist...> &>(destructable);
-                return invocationHandler.handleMethodInvocation(std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
+                ActualInvocationHandler<R, arglist...> &invocationHandler = dynamic_cast<ActualInvocationHandler<R, arglist...> &>(destructable);
+                return invocationHandler.handleMethodInvocation(args);
             }
 
             typename ActualInvocation<arglist...>::Matcher &getMatcher() const {
@@ -62,15 +64,15 @@ namespace fakeit {
 
         MatchedInvocationHandler *buildMatchedInvocationHandler(
                 typename ActualInvocation<arglist...>::Matcher *invocationMatcher,
-                MethodInvocationHandler<R, arglist...> *invocationHandler) {
+                ActualInvocationHandler<R, arglist...> *invocationHandler) {
             return new MatchedInvocationHandler(invocationMatcher, invocationHandler);
         }
 
         MatchedInvocationHandler *getInvocationHandlerForActualArgs(ActualInvocation<arglist...> &invocation) {
             for (auto i = _invocationHandlers.rbegin(); i != _invocationHandlers.rend(); ++i) {
                 std::shared_ptr<Destructible> curr = *i;
-                Destructible &Destructable = *curr;
-                MatchedInvocationHandler &im = asMatchedInvocationHandler(Destructable);
+                Destructible &destructable = *curr;
+                MatchedInvocationHandler &im = asMatchedInvocationHandler(destructable);
                 if (im.getMatcher().matches(invocation)) {
                     return &im;
                 }
@@ -106,8 +108,8 @@ namespace fakeit {
         }
 
         void addMethodInvocationHandler(typename ActualInvocation<arglist...>::Matcher *matcher,
-                                        MethodInvocationHandler<R, arglist...> *invocationHandler) {
-            auto *mock = buildMatchedInvocationHandler(matcher, invocationHandler);
+            ActualInvocationHandler<R, arglist...> *invocationHandler) {
+            ActualInvocationHandler<R, arglist...> *mock = buildMatchedInvocationHandler(matcher, invocationHandler);
             std::shared_ptr<Destructible> destructable{mock};
             _invocationHandlers.push_back(destructable);
         }
@@ -121,6 +123,7 @@ namespace fakeit {
         R handleMethodInvocation(const typename fakeit::production_arg<arglist>::type... args) override {
             unsigned int ordinal = Invocation::nextInvocationOrdinal();
             MethodInfo &method = this->getMethod();
+            //ArgumentsTuple<arglist...>* actualArguments = new ArgumentsTuple < arglist... > { std::forward<const typename fakeit::production_arg<arglist>::type>(args)... };
             auto actualInvocation = new ActualInvocation<arglist...>(ordinal, method, std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
 
             // ensure deletion if not added to actual invocations.
@@ -132,7 +135,7 @@ namespace fakeit {
                 actualInvocation->setActualMatcher(&matcher);
                 _actualInvocations.push_back(actualInvocationDtor);
                 try {
-                    return invocationHandler->handleMethodInvocation(std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
+                    return invocationHandler->handleMethodInvocation(actualInvocation->getActualArguments());
                 } catch (NoMoreRecordedActionException &) {
                 }
             }
@@ -142,7 +145,6 @@ namespace fakeit {
             std::string format{_fakeit.format(event)};
             UnexpectedMethodCallException e(format);
             throw e;
-
         }
 
         void scanActualInvocations(const std::function<void(ActualInvocation<arglist...> &)> &scanner) {

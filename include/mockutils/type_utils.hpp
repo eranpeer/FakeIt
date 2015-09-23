@@ -22,8 +22,11 @@ namespace fakeit {
     template< class T > struct tuple_arg < T& >  { typedef T& type; };
     template< class T > struct tuple_arg < T&& > { typedef T&&  type; };
 
+    //template<typename... arglist>
+    //using ArgumentsTuple = std::tuple<typename tuple_arg<arglist>::type...>;
+
     template<typename... arglist>
-    using ArgumentsTuple = std::tuple<typename tuple_arg<arglist>::type...>;
+    using ArgumentsTuple = std::tuple < arglist... > ;
 
     template< class T > struct test_arg         { typedef T& type; };
     template< class T > struct test_arg< T& >   { typedef T& type; };

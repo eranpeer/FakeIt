@@ -149,6 +149,7 @@
     <ClCompile Include="VirtualOffsetSelectorTest.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\fakeit\ActualInvocationHandler.hpp" />
     <ClInclude Include="tpunit++.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

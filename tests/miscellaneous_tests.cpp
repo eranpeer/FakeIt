@@ -24,7 +24,8 @@ struct Miscellaneous : tpunit::TestFixture
         TEST(Miscellaneous::mock_virtual_methods_of_base_class), //
         TEST(Miscellaneous::create_and_delete_fakit_instatnce), //
         TEST(Miscellaneous::testStubFuncWithRightValueParameter),
-        TEST(Miscellaneous::testStubProcWithRightValueParameter),
+			TEST(Miscellaneous::testStubProcWithRightValueParameter),
+			TEST(Miscellaneous::aaa),
         TEST(Miscellaneous::can_stub_method_after_reset)
         )
     {
@@ -293,4 +294,19 @@ struct Miscellaneous : tpunit::TestFixture
         static_assert(std::is_polymorphic<Handler>::value, "Can only mock a polymorphic type");
 
     }
+
+	class Product {};
+	class IFactory {
+	public:
+		virtual std::unique_ptr<Product>Create() = 0;
+	};
+		
+	void aaa()
+	{
+		Mock<IFactory> factory;
+//		When(Method(factory, Create)).Return(std::make_unique<Product>());
+//		auto a = factory.get().Create();
+//		Verify(Method(factory, Create)).Once();
+	}
+
 } __Miscellaneous;

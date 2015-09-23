@@ -14,6 +14,7 @@
 #include "fakeit/ActualInvocation.hpp"
 #include "fakeit/Action.hpp"
 #include "fakeit/invocation_matchers.hpp"
+#include "fakeit/ActualInvocationHandler.hpp"
 
 #include "mockutils/Finally.hpp"
 #include "mockutils/MethodInvocationHandler.hpp"
@@ -26,7 +27,7 @@ namespace fakeit {
  *                        ^--------Action-Sequence---------^
  */
     template<typename R, typename ... arglist>
-    struct ActionSequence : public MethodInvocationHandler<R, arglist...> {
+    struct ActionSequence : ActualInvocationHandler<R,arglist...> {
 
         ActionSequence() {
             clear();
@@ -36,7 +37,8 @@ namespace fakeit {
             append(action);
         }
 
-        R handleMethodInvocation(const typename fakeit::production_arg<arglist>::type... args) override {
+        virtual R handleMethodInvocation(ArgumentsTuple<arglist...> & args) override
+        {
             std::shared_ptr<Destructible> destructablePtr = _recordedActions.front();
             Destructible &destructable = *destructablePtr;
             Action<R, arglist...> &action = dynamic_cast<Action<R, arglist...> &>(destructable);
@@ -45,7 +47,7 @@ namespace fakeit {
                     _recordedActions.erase(_recordedActions.begin());
             };
             Finally onExit(finallyClause);
-            return action.invoke(std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
+            return action.invoke(args);
         }
 
     private:
@@ -55,6 +57,10 @@ namespace fakeit {
             virtual ~NoMoreRecordedAction() = default;
 
             virtual R invoke(const typename fakeit::production_arg<arglist>::type...) override {
+                throw NoMoreRecordedActionException();
+            }
+
+            virtual R invoke(const ArgumentsTuple<arglist...> &) override {
                 throw NoMoreRecordedActionException();
             }
 

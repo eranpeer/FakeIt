@@ -21,6 +21,7 @@
 #include "fakeit/StubbingProgress.hpp"
 #include "fakeit/Sequence.hpp"
 #include "fakeit/ActualInvocation.hpp"
+#include "fakeit/ActualInvocationHandler.hpp"
 #include "fakeit/EventHandler.hpp"
 #include "fakeit/ActionSequence.hpp"
 #include "fakeit/DomainObjects.hpp"
@@ -58,7 +59,7 @@ namespace fakeit {
             virtual std::string getMethodName() = 0;
 
             virtual void addMethodInvocationHandler(typename ActualInvocation<arglist...>::Matcher *matcher,
-                                                    MethodInvocationHandler<R, arglist...> *invocationHandler) = 0;
+                ActualInvocationHandler<R, arglist...> *invocationHandler) = 0;
 
             virtual void scanActualInvocations(const std::function<void(ActualInvocation<arglist...> &)> &scanner) = 0;
 
