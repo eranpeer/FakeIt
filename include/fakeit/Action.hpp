@@ -27,7 +27,7 @@ namespace fakeit {
 
         virtual R invoke(const typename fakeit::production_arg<arglist>::type... args) = 0;
 
-        virtual R invoke(const ArgumentsTuple<arglist...> & args) = 0;
+        virtual R invoke(const ArgumentsTuple<arglist...> &) = 0;
 
         virtual bool isDone() = 0;
     };
