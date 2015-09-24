@@ -101,7 +101,7 @@ namespace fakeit {
             return DefaultValue<R>::value();
         }
 
-        virtual R invoke(const ArgumentsTuple<arglist...> & args) override {
+        virtual R invoke(const ArgumentsTuple<arglist...> &) override {
             return DefaultValue<R>::value();
         }
 
