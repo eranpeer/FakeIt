@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2015-09-11 22:30:22.622000
+ *  Generated: 2015-09-24 07:14:42.116000
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -44,8 +44,11 @@ namespace fakeit {
     template< class T > struct tuple_arg < T& >  { typedef T& type; };
     template< class T > struct tuple_arg < T&& > { typedef T&&  type; };
 
+
+
+
     template<typename... arglist>
-    using ArgumentsTuple = std::tuple<typename tuple_arg<arglist>::type...>;
+    using ArgumentsTuple = std::tuple < arglist... > ;
 
     template< class T > struct test_arg         { typedef T& type; };
     template< class T > struct test_arg< T& >   { typedef T& type; };
@@ -91,8 +94,8 @@ namespace fakeit {
             return ++ordinal;
         }
 
-        MethodInfo(unsigned int id, std::string name) :
-                _id(id), _name(name) { }
+        MethodInfo(unsigned int anId, std::string aName) :
+                _id(anId), _name(aName) { }
 
         unsigned int id() const {
             return _id;
@@ -102,8 +105,8 @@ namespace fakeit {
             return _name;
         }
 
-        void setName(const std::string &name) {
-            _name = name;
+        void setName(const std::string &value) {
+            _name = value;
         }
 
     private:
@@ -390,7 +393,7 @@ namespace fakeit {
     struct ActualInvocationsSource {
         virtual void getActualInvocations(std::unordered_set<fakeit::Invocation *> &into) const = 0;
 
-        virtual ~ActualInvocationsSource() THROWS { };
+        virtual ~ActualInvocationsSource() NO_THROWS { };
     };
 
     struct InvocationsSourceProxy : public ActualInvocationsSource {
@@ -594,8 +597,8 @@ namespace fakeit {
 
     struct VerificationEvent {
 
-        VerificationEvent(VerificationType verificationType) :
-                _verificationType(verificationType), _line(0) {
+        VerificationEvent(VerificationType aVerificationType) :
+                _verificationType(aVerificationType), _line(0) {
         }
 
         virtual ~VerificationEvent() = default;
@@ -604,10 +607,10 @@ namespace fakeit {
             return _verificationType;
         }
 
-        void setFileInfo(std::string file, int line, std::string callingMethod) {
-            _file = file;
-            _callingMethod = callingMethod;
-            _line = line;
+        void setFileInfo(std::string aFile, int aLine, std::string aCallingMethod) {
+            _file = aFile;
+            _callingMethod = aCallingMethod;
+            _line = aLine;
         }
 
         std::string file() const {
@@ -634,11 +637,11 @@ namespace fakeit {
         ~NoMoreInvocationsVerificationEvent() = default;
 
         NoMoreInvocationsVerificationEvent(
-                std::vector<Invocation *> &allIvocations,
-                std::vector<Invocation *> &unverifedIvocations) :
+                std::vector<Invocation *> &allTheIvocations,
+                std::vector<Invocation *> &anUnverifedIvocations) :
                 VerificationEvent(VerificationType::NoMoreInvocations),
-                _allIvocations(allIvocations),
-                _unverifedIvocations(unverifedIvocations) {
+                _allIvocations(allTheIvocations),
+                _unverifedIvocations(anUnverifedIvocations) {
         }
 
         const std::vector<Invocation *> &allIvocations() const {
@@ -658,16 +661,16 @@ namespace fakeit {
 
         ~SequenceVerificationEvent() = default;
 
-        SequenceVerificationEvent(VerificationType verificationType,
-                                  std::vector<Sequence *> &expectedPattern,
-                                  std::vector<Invocation *> &actualSequence,
-                                  int expectedCount,
-                                  int actualCount) :
-                VerificationEvent(verificationType),
-                _expectedPattern(expectedPattern),
-                _actualSequence(actualSequence),
-                _expectedCount(expectedCount),
-                _actualCount(actualCount)
+        SequenceVerificationEvent(VerificationType aVerificationType,
+                                  std::vector<Sequence *> &anExpectedPattern,
+                                  std::vector<Invocation *> &anActualSequence,
+                                  int anExpectedCount,
+                                  int anActualCount) :
+                VerificationEvent(aVerificationType),
+                _expectedPattern(anExpectedPattern),
+                _actualSequence(anActualSequence),
+                _expectedCount(anExpectedCount),
+                _actualCount(anActualCount)
         {
         }
 
@@ -15534,65 +15537,74 @@ namespace fakeit {
 
 namespace fakeit {
 
-    template<int N>
-    struct apply_func {
-        template<typename ... ArgsF, typename ... ArgsT, typename ... Args>
-        static bool applyTuple(std::function<bool(ArgsF &...)> f, std::tuple<ArgsT...> &t, Args &... args) {
-            return apply_func<N - 1>::applyTuple(f, t, std::get<N - 1>(t), args...);
+    struct TupleDispatcher {
+        template<int N>
+        struct apply_func {
+            template<typename R, typename ... ArgsF, typename ... ArgsT, typename ... Args>
+            static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> &t, Args &... args) {
+                return apply_func<N - 1>::applyTuple(f, t, std::get<N - 1>(t), args...);
+            }
+        };
+
+        template<>
+        struct apply_func < 0 > {
+            template<typename R, typename ... ArgsF, typename ... ArgsT, typename ... Args>
+            static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> & , Args &... args) {
+                return f(args...);
+            }
+        };
+
+        template<typename R, typename ... ArgsF, typename ... ArgsT>
+        static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> &t) {
+            return apply_func<sizeof...(ArgsT)>::applyTuple(f, t);
         }
-    };
 
-    template<>
-    struct apply_func<0> {
-        template<typename ... ArgsF, typename ... ArgsT, typename ... Args>
-        static bool applyTuple(std::function<bool(ArgsF &...)> f, std::tuple<ArgsT...> & , Args &... args) {
-            return f(args...);
+        template<typename R, typename ...arglist>
+        static R invoke(std::function<R(arglist &...)> func, const std::tuple<arglist...> &arguments) {
+            std::tuple<arglist...> &args = const_cast<std::tuple<arglist...> &>(arguments);
+            return applyTuple(func, args);
         }
-    };
 
-    template<typename ... ArgsF, typename ... ArgsT>
-    bool applyTuple(std::function<bool(ArgsF &...)> f, std::tuple<ArgsT...> &t) {
-        return apply_func<sizeof...(ArgsT)>::applyTuple(f, t);
-    }
+        template<typename TupleType, typename FunctionType>
+        static void for_each(TupleType &&, FunctionType &,
+            std::integral_constant<size_t, std::tuple_size<typename std::remove_reference<TupleType>::type>::value>) { }
 
-    template<typename ...arglist>
-    bool invoke(std::function<bool(arglist &...)> func, const std::tuple<arglist...> &arguments) {
-        std::tuple<arglist...> &args = const_cast<std::tuple<arglist...> &>(arguments);
-        return applyTuple(func, args);
-    }
-
-    template<typename TupleType, typename FunctionType>
-    void for_each(TupleType &&, FunctionType &,
-                  std::integral_constant<size_t, std::tuple_size<typename std::remove_reference<TupleType>::type>::value>) { }
-
-    template<std::size_t I, typename TupleType, typename FunctionType, typename = typename std::enable_if<
+        template<std::size_t I, typename TupleType, typename FunctionType, typename = typename std::enable_if<
             I != std::tuple_size<typename std::remove_reference<TupleType>::type>::value>::type>
-    void for_each(TupleType &&t, FunctionType &f, std::integral_constant<size_t, I>) {
-        f(I, std::get<I>(t));
-        for_each(std::forward<TupleType>(t), f, std::integral_constant<size_t, I + 1>());
-    }
+            static void for_each(TupleType &&t, FunctionType &f, std::integral_constant<size_t, I>) {
+            f(I, std::get<I>(t));
+            for_each(std::forward<TupleType>(t), f, std::integral_constant<size_t, I + 1>());
+        }
 
-    template<typename TupleType, typename FunctionType>
-    void for_each(TupleType &&t, FunctionType &f) {
-        for_each(std::forward<TupleType>(t), f, std::integral_constant<size_t, 0>());
-    }
+        template<typename TupleType, typename FunctionType>
+        static void for_each(TupleType &&t, FunctionType &f) {
+            for_each(std::forward<TupleType>(t), f, std::integral_constant<size_t, 0>());
+        }
 
 
-    template<typename TupleType1, typename TupleType2, typename FunctionType>
-    void for_each(TupleType1 &&, TupleType2 &&, FunctionType &,
-                  std::integral_constant<size_t, std::tuple_size<typename std::remove_reference<TupleType1>::type>::value>) { }
+        template<typename TupleType1, typename TupleType2, typename FunctionType>
+        static void for_each(TupleType1 &&, TupleType2 &&, FunctionType &,
+            std::integral_constant<size_t, std::tuple_size<typename std::remove_reference<TupleType1>::type>::value>) { }
 
-    template<std::size_t I, typename TupleType1, typename TupleType2, typename FunctionType, typename = typename std::enable_if<
+        template<std::size_t I, typename TupleType1, typename TupleType2, typename FunctionType, typename = typename std::enable_if<
             I != std::tuple_size<typename std::remove_reference<TupleType1>::type>::value>::type>
-    void for_each(TupleType1 &&t, TupleType2 &&t2, FunctionType &f, std::integral_constant<size_t, I>) {
-        f(I, std::get<I>(t), std::get<I>(t2));
-        for_each(std::forward<TupleType1>(t), std::forward<TupleType2>(t2), f, std::integral_constant<size_t, I + 1>());
-    }
+            static void for_each(TupleType1 &&t, TupleType2 &&t2, FunctionType &f, std::integral_constant<size_t, I>) {
+            f(I, std::get<I>(t), std::get<I>(t2));
+            for_each(std::forward<TupleType1>(t), std::forward<TupleType2>(t2), f, std::integral_constant<size_t, I + 1>());
+        }
 
-    template<typename TupleType1, typename TupleType2, typename FunctionType>
-    void for_each(TupleType1 &&t, TupleType2 &&t2, FunctionType &f) {
-        for_each(std::forward<TupleType1>(t), std::forward<TupleType2>(t2), f, std::integral_constant<size_t, 0>());
-    }
+        template<typename TupleType1, typename TupleType2, typename FunctionType>
+        static void for_each(TupleType1 &&t, TupleType2 &&t2, FunctionType &f) {
+            for_each(std::forward<TupleType1>(t), std::forward<TupleType2>(t2), f, std::integral_constant<size_t, 0>());
+        }
+    };
+}
+namespace fakeit {
+
+    template<typename R, typename ... arglist>
+    struct ActualInvocationHandler : public Destructible {
+        virtual R handleMethodInvocation(ArgumentsTuple<arglist...> & args) = 0;
+    };
 
 }
 #include <functional>
@@ -16083,7 +16095,7 @@ namespace fakeit {
 
         virtual bool matches(ArgumentsTuple<arglist...>& actualArguments) {
             MatchingLambda l(_matchers);
-            fakeit::for_each(actualArguments, l);
+            fakeit::TupleDispatcher::for_each(actualArguments, l);
             return l.isMatching();
         }
 
@@ -16122,7 +16134,7 @@ namespace fakeit {
 
 
     template<typename ... arglist>
-    struct UserDefinedInvocationMatcher : public ActualInvocation<arglist...>::Matcher {
+    struct UserDefinedInvocationMatcher : ActualInvocation<arglist...>::Matcher {
         virtual ~UserDefinedInvocationMatcher() = default;
 
         UserDefinedInvocationMatcher(std::function<bool(arglist &...)> match)
@@ -16141,7 +16153,7 @@ namespace fakeit {
 
     private:
         virtual bool matches(ArgumentsTuple<arglist...>& actualArguments) {
-            return invoke<typename tuple_arg<arglist>::type...>(matcher, actualArguments);
+            return TupleDispatcher::invoke<bool, typename tuple_arg<arglist>::type...>(matcher, actualArguments);
         }
 
         const std::function<bool(arglist &...)> matcher;
@@ -16178,19 +16190,20 @@ namespace fakeit {
     template<typename R, typename ... arglist>
     class RecordedMethodBody : public MethodInvocationHandler<R, arglist...>, public ActualInvocationsSource {
 
-        struct MatchedInvocationHandler : public MethodInvocationHandler<R, arglist...> {
+        struct MatchedInvocationHandler : ActualInvocationHandler<R, arglist...> {
 
             virtual ~MatchedInvocationHandler() = default;
 
             MatchedInvocationHandler(typename ActualInvocation<arglist...>::Matcher *matcher,
-                                     MethodInvocationHandler<R, arglist...> *invocationHandler) :
+                ActualInvocationHandler<R, arglist...> *invocationHandler) :
                     _matcher{matcher}, _invocationHandler{invocationHandler} {
             }
 
-            R handleMethodInvocation(const typename fakeit::production_arg<arglist>::type... args) override {
+            virtual R handleMethodInvocation(ArgumentsTuple<arglist...> & args) override
+            {
                 Destructible &destructable = *_invocationHandler;
-                MethodInvocationHandler<R, arglist...> &invocationHandler = dynamic_cast<MethodInvocationHandler<R, arglist...> &>(destructable);
-                return invocationHandler.handleMethodInvocation(std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
+                ActualInvocationHandler<R, arglist...> &invocationHandler = dynamic_cast<ActualInvocationHandler<R, arglist...> &>(destructable);
+                return invocationHandler.handleMethodInvocation(args);
             }
 
             typename ActualInvocation<arglist...>::Matcher &getMatcher() const {
@@ -16213,15 +16226,15 @@ namespace fakeit {
 
         MatchedInvocationHandler *buildMatchedInvocationHandler(
                 typename ActualInvocation<arglist...>::Matcher *invocationMatcher,
-                MethodInvocationHandler<R, arglist...> *invocationHandler) {
+                ActualInvocationHandler<R, arglist...> *invocationHandler) {
             return new MatchedInvocationHandler(invocationMatcher, invocationHandler);
         }
 
         MatchedInvocationHandler *getInvocationHandlerForActualArgs(ActualInvocation<arglist...> &invocation) {
             for (auto i = _invocationHandlers.rbegin(); i != _invocationHandlers.rend(); ++i) {
                 std::shared_ptr<Destructible> curr = *i;
-                Destructible &Destructable = *curr;
-                MatchedInvocationHandler &im = asMatchedInvocationHandler(Destructable);
+                Destructible &destructable = *curr;
+                MatchedInvocationHandler &im = asMatchedInvocationHandler(destructable);
                 if (im.getMatcher().matches(invocation)) {
                     return &im;
                 }
@@ -16244,7 +16257,7 @@ namespace fakeit {
         RecordedMethodBody(FakeitContext &fakeit, std::string name) :
                 _fakeit(fakeit), _method{MethodInfo::nextMethodOrdinal(), name} { }
 
-        virtual ~RecordedMethodBody() THROWS {
+        virtual ~RecordedMethodBody() NO_THROWS {
         }
 
         MethodInfo &getMethod() {
@@ -16257,8 +16270,8 @@ namespace fakeit {
         }
 
         void addMethodInvocationHandler(typename ActualInvocation<arglist...>::Matcher *matcher,
-                                        MethodInvocationHandler<R, arglist...> *invocationHandler) {
-            auto *mock = buildMatchedInvocationHandler(matcher, invocationHandler);
+            ActualInvocationHandler<R, arglist...> *invocationHandler) {
+            ActualInvocationHandler<R, arglist...> *mock = buildMatchedInvocationHandler(matcher, invocationHandler);
             std::shared_ptr<Destructible> destructable{mock};
             _invocationHandlers.push_back(destructable);
         }
@@ -16272,6 +16285,7 @@ namespace fakeit {
         R handleMethodInvocation(const typename fakeit::production_arg<arglist>::type... args) override {
             unsigned int ordinal = Invocation::nextInvocationOrdinal();
             MethodInfo &method = this->getMethod();
+
             auto actualInvocation = new ActualInvocation<arglist...>(ordinal, method, std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
 
 
@@ -16283,7 +16297,7 @@ namespace fakeit {
                 actualInvocation->setActualMatcher(&matcher);
                 _actualInvocations.push_back(actualInvocationDtor);
                 try {
-                    return invocationHandler->handleMethodInvocation(std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
+                    return invocationHandler->handleMethodInvocation(actualInvocation->getActualArguments());
                 } catch (NoMoreRecordedActionException &) {
                 }
             }
@@ -16293,7 +16307,6 @@ namespace fakeit {
             std::string format{_fakeit.format(event)};
             UnexpectedMethodCallException e(format);
             throw e;
-
         }
 
         void scanActualInvocations(const std::function<void(ActualInvocation<arglist...> &)> &scanner) {
@@ -16407,10 +16420,12 @@ namespace fakeit {
 namespace fakeit {
 
     template<typename R, typename ... arglist>
-    struct Action : public Destructible {
+    struct Action : Destructible {
         virtual ~Action() = default;
 
         virtual R invoke(const typename fakeit::production_arg<arglist>::type... args) = 0;
+
+        virtual R invoke(const ArgumentsTuple<arglist...> & args) = 0;
 
         virtual bool isDone() = 0;
     };
@@ -16428,8 +16443,15 @@ namespace fakeit {
         }
 
         virtual R invoke(typename fakeit::production_arg<arglist>::type... args) override {
+            ArgumentsTuple<arglist...> actualArguments{ std::forward<const typename fakeit::production_arg<arglist>::type>(args)... };
+            return invoke(actualArguments);
+
+
+        }
+
+        virtual R invoke(const ArgumentsTuple<arglist...> & args) override {
             times--;
-            return f(args...);
+            return TupleDispatcher::invoke<R, arglist...>(f, args);
         }
 
         virtual bool isDone() override {
@@ -16451,7 +16473,14 @@ namespace fakeit {
         }
 
         virtual R invoke(typename fakeit::production_arg<arglist>::type... args) override {
-            return f(args...);
+            ArgumentsTuple<arglist...> actualArguments{ std::forward<const typename fakeit::production_arg<arglist>::type>(args)... };
+            return invoke(actualArguments);
+
+
+        }
+
+        virtual R invoke(const ArgumentsTuple<arglist...> & args) override {
+            return TupleDispatcher::invoke<R, arglist...>(f, args);
         }
 
         virtual bool isDone() override {
@@ -16470,6 +16499,10 @@ namespace fakeit {
             return DefaultValue<R>::value();
         }
 
+        virtual R invoke(const ArgumentsTuple<arglist...> & args) override {
+            return DefaultValue<R>::value();
+        }
+
         virtual bool isDone() override {
             return false;
         }
@@ -16483,7 +16516,14 @@ namespace fakeit {
         virtual ~ReturnDelegateValue() = default;
 
         virtual R invoke(const typename fakeit::production_arg<arglist>::type... args) override {
-            return _delegate(args...);
+            ArgumentsTuple<arglist...> actualArguments{ std::forward<const typename fakeit::production_arg<arglist>::type>(args)... };
+            return invoke(actualArguments);
+
+
+        }
+
+        virtual R invoke(const ArgumentsTuple<arglist...> & args) override {
+            return TupleDispatcher::invoke<R, arglist...>(_delegate, args);
         }
 
         virtual bool isDone() override {
@@ -16717,7 +16757,7 @@ namespace fakeit {
 
 
     template<typename R, typename ... arglist>
-    struct ActionSequence : public MethodInvocationHandler<R, arglist...> {
+    struct ActionSequence : ActualInvocationHandler<R,arglist...> {
 
         ActionSequence() {
             clear();
@@ -16727,7 +16767,8 @@ namespace fakeit {
             append(action);
         }
 
-        R handleMethodInvocation(const typename fakeit::production_arg<arglist>::type... args) override {
+        virtual R handleMethodInvocation(ArgumentsTuple<arglist...> & args) override
+        {
             std::shared_ptr<Destructible> destructablePtr = _recordedActions.front();
             Destructible &destructable = *destructablePtr;
             Action<R, arglist...> &action = dynamic_cast<Action<R, arglist...> &>(destructable);
@@ -16736,7 +16777,7 @@ namespace fakeit {
                     _recordedActions.erase(_recordedActions.begin());
             };
             Finally onExit(finallyClause);
-            return action.invoke(std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
+            return action.invoke(args);
         }
 
     private:
@@ -16746,6 +16787,10 @@ namespace fakeit {
             virtual ~NoMoreRecordedAction() = default;
 
             virtual R invoke(const typename fakeit::production_arg<arglist>::type...) override {
+                throw NoMoreRecordedActionException();
+            }
+
+            virtual R invoke(const ArgumentsTuple<arglist...> &) override {
                 throw NoMoreRecordedActionException();
             }
 
@@ -16934,7 +16979,7 @@ namespace fakeit {
             virtual std::string getMethodName() = 0;
 
             virtual void addMethodInvocationHandler(typename ActualInvocation<arglist...>::Matcher *matcher,
-                                                    MethodInvocationHandler<R, arglist...> *invocationHandler) = 0;
+                ActualInvocationHandler<R, arglist...> *invocationHandler) = 0;
 
             virtual void scanActualInvocations(const std::function<void(ActualInvocation<arglist...> &)> &scanner) = 0;
 
@@ -17052,7 +17097,7 @@ namespace fakeit {
                 : _impl(std::move(other._impl)) {
         }
 
-        virtual ~MethodMockingContext() { }
+        virtual ~MethodMockingContext() NO_THROWS { }
 
         std::string format() const override {
             return _impl->format();
@@ -17293,7 +17338,7 @@ namespace fakeit {
             fake->getVirtualTable().setCookie(1, this);
         }
 
-        virtual ~MockImpl() THROWS {
+        virtual ~MockImpl() NO_THROWS {
             _proxy.detach();
             if (_isOwner) {
                 FakeObject<C, baseclasses...> *fake = reinterpret_cast<FakeObject<C, baseclasses...> *>(_instance);
@@ -17366,7 +17411,7 @@ namespace fakeit {
             virtual ~MethodMockingContextBase() = default;
 
             void addMethodInvocationHandler(typename ActualInvocation<arglist...>::Matcher *matcher,
-                                            MethodInvocationHandler<R, arglist...> *invocationHandler) {
+                ActualInvocationHandler<R, arglist...> *invocationHandler) {
                 getRecordedMethodBody().addMethodInvocationHandler(matcher, invocationHandler);
             }
 
