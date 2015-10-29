@@ -11,26 +11,27 @@
 
 namespace fakeit {
 
-    struct TupleDispatcher {
-        template<int N>
-        struct apply_func {
-            template<typename R, typename ... ArgsF, typename ... ArgsT, typename ... Args>
-            static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> &t, Args &... args) {
-                return apply_func<N - 1>::applyTuple(f, t, std::get<N - 1>(t), args...);
-            }
-        };
+    template<int N>
+    struct apply_func {
+        template<typename R, typename ... ArgsF, typename ... ArgsT, typename ... Args>
+        static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> &t, Args &... args) {
+            return apply_func<N - 1>::template applyTuple(f, t, std::get<N - 1>(t), args...);
+        }
+    };
 
-        template<>
-        struct apply_func < 0 > {
-            template<typename R, typename ... ArgsF, typename ... ArgsT, typename ... Args>
-            static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> & /* t */, Args &... args) {
-                return f(args...);
-            }
-        };
+    template<>
+    struct apply_func < 0 > {
+        template<typename R, typename ... ArgsF, typename ... ArgsT, typename ... Args>
+        static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> & /* t */, Args &... args) {
+            return f(args...);
+        }
+    };
+
+    struct TupleDispatcher {
 
         template<typename R, typename ... ArgsF, typename ... ArgsT>
         static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> &t) {
-            return apply_func<sizeof...(ArgsT)>::applyTuple(f, t);
+            return apply_func<sizeof...(ArgsT)>::template applyTuple(f, t);
         }
 
         template<typename R, typename ...arglist>
@@ -67,9 +68,5 @@ namespace fakeit {
             for_each(std::forward<TupleType1>(t), std::forward<TupleType2>(t2), f, std::integral_constant<size_t, I + 1>());
         }
 
-        template<typename TupleType1, typename TupleType2, typename FunctionType>
-        static void for_each(TupleType1 &&t, TupleType2 &&t2, FunctionType &f) {
-            for_each(std::forward<TupleType1>(t), std::forward<TupleType2>(t2), f, std::integral_constant<size_t, 0>());
-        }
     };
 }
