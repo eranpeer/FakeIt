@@ -10,12 +10,13 @@
 
 namespace fakeit {
 
-    struct IMatcher : public Destructible {
+    struct IMatcher : Destructible {
+        ~IMatcher() = default;
         virtual std::string format() const = 0;
     };
 
     template<typename T>
-    struct TypedMatcher : public IMatcher {
+    struct TypedMatcher : IMatcher {
         virtual bool matches(const T &actual) const = 0;
     };
 

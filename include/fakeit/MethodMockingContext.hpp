@@ -47,9 +47,7 @@ namespace fakeit {
             private Invocation::Matcher {
     public:
 
-        struct Context : public Destructible {
-
-            virtual ~Context() = default;
+        struct Context : Destructible {
 
             /**
              * Return the original method. not the mock.

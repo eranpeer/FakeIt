@@ -16,7 +16,7 @@ namespace fakeit {
     };
 
     template<typename R, typename ... arglist>
-    struct MethodInvocationHandler : public Destructible {
+    struct MethodInvocationHandler : Destructible {
         virtual R handleMethodInvocation(const typename fakeit::production_arg<arglist>::type... args) = 0;
     };
 
