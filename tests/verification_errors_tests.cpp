@@ -26,11 +26,12 @@ struct A {
 };
 
 namespace fakeit {
-template<> struct Formatter<A> {
-	static std::string format(const A&) {
-		return {"a"};
-	}
-};
+
+	template<> struct Formatter<A> {
+		static std::string format(const A&) {
+			return{ "a" };
+		}
+	};
 
 }
 

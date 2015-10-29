@@ -87,7 +87,7 @@ namespace fakeit {
                 }
 
                 virtual std::string format() const override {
-                    return Formatter<T>::format(this->_expected);
+                    return TypeFormatter<T>::format(this->_expected);
                 }
 
                 virtual bool matches(const T &actual) const override {
@@ -120,7 +120,7 @@ namespace fakeit {
                 }
 
                 virtual std::string format() const override {
-                    return std::string(">") + Formatter<T>::format(this->_expected);
+                    return std::string(">") + TypeFormatter<T>::format(this->_expected);
                 }
             };
 
@@ -148,7 +148,7 @@ namespace fakeit {
                 }
 
                 virtual std::string format() const override {
-                    return std::string(">=") + Formatter<T>::format(this->_expected);
+                    return std::string(">=") + TypeFormatter<T>::format(this->_expected);
                 }
             };
 
@@ -176,7 +176,7 @@ namespace fakeit {
                 }
 
                 virtual std::string format() const override {
-                    return std::string("<") + Formatter<T>::format(this->_expected);
+                    return std::string("<") + TypeFormatter<T>::format(this->_expected);
                 }
             };
 
@@ -205,7 +205,7 @@ namespace fakeit {
                 }
 
                 virtual std::string format() const override {
-                    return std::string("<=") + Formatter<T>::format(this->_expected);
+                    return std::string("<=") + TypeFormatter<T>::format(this->_expected);
                 }
             };
 
@@ -234,7 +234,7 @@ namespace fakeit {
                 }
 
                 virtual std::string format() const override {
-                    return std::string("!=") + Formatter<T>::format(this->_expected);
+                    return std::string("!=") + TypeFormatter<T>::format(this->_expected);
                 }
 
             };

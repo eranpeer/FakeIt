@@ -123,7 +123,6 @@ namespace fakeit {
         R handleMethodInvocation(const typename fakeit::production_arg<arglist>::type... args) override {
             unsigned int ordinal = Invocation::nextInvocationOrdinal();
             MethodInfo &method = this->getMethod();
-            //ArgumentsTuple<arglist...>* actualArguments = new ArgumentsTuple < arglist... > { std::forward<const typename fakeit::production_arg<arglist>::type>(args)... };
             auto actualInvocation = new ActualInvocation<arglist...>(ordinal, method, std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
 
             // ensure deletion if not added to actual invocations.
