@@ -7,7 +7,7 @@
  */
 #pragma once
 
-#if defined (__GNUG__)
+#if defined (__GNUG__) || _MSC_VER >= 1900
 #define THROWS noexcept(false)
 #define NO_THROWS noexcept(true)
 #elif defined (_MSC_VER)

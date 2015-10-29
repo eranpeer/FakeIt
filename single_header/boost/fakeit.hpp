@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2015-09-24 07:15:28.017000
+ *  Generated: 2015-10-01 16:07:05.937965
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -17,7 +17,7 @@
 #include <set>
 #include <vector>
 #include <stdexcept>
-#if defined (__GNUG__)
+#if defined (__GNUG__) || _MSC_VER >= 1900
 #define THROWS noexcept(false)
 #define NO_THROWS noexcept(true)
 #elif defined (_MSC_VER)
@@ -6061,67 +6061,69 @@ namespace fakeit {
 
 namespace fakeit {
 
-    struct TupleDispatcher {
-        template<int N>
-        struct apply_func {
-            template<typename R, typename ... ArgsF, typename ... ArgsT, typename ... Args>
-            static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> &t, Args &... args) {
-                return apply_func<N - 1>::applyTuple(f, t, std::get<N - 1>(t), args...);
-            }
-        };
+template<int N>
+struct apply_func {
+	template<typename R, typename ... ArgsF, typename ... ArgsT, typename ... Args>
+	static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> &t, Args &... args) {
+		return apply_func<N - 1>::applyTuple(f, t, std::get < N - 1 > (t), args...);
+	}
+};
 
-        template<>
-        struct apply_func < 0 > {
-            template<typename R, typename ... ArgsF, typename ... ArgsT, typename ... Args>
-            static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> & , Args &... args) {
-                return f(args...);
-            }
-        };
+template<>
+struct apply_func<0> {
+	template<typename R, typename ... ArgsF, typename ... ArgsT, typename ... Args>
+	static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> & , Args &... args) {
+		return f(args...);
+	}
+};
 
-        template<typename R, typename ... ArgsF, typename ... ArgsT>
-        static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> &t) {
-            return apply_func<sizeof...(ArgsT)>::applyTuple(f, t);
-        }
+template<typename R, typename ... ArgsF, typename ... ArgsT>
+static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> &t) {
+	return apply_func<sizeof...(ArgsT)>::applyTuple(f, t);
+}
 
-        template<typename R, typename ...arglist>
-        static R invoke(std::function<R(arglist &...)> func, const std::tuple<arglist...> &arguments) {
-            std::tuple<arglist...> &args = const_cast<std::tuple<arglist...> &>(arguments);
-            return applyTuple(func, args);
-        }
+struct TupleDispatcher {
 
-        template<typename TupleType, typename FunctionType>
-        static void for_each(TupleType &&, FunctionType &,
-            std::integral_constant<size_t, std::tuple_size<typename std::remove_reference<TupleType>::type>::value>) { }
+	template<typename R, typename ...arglist>
+	static R invoke(std::function<R(arglist &...)> func, const std::tuple<arglist...> &arguments) {
+		std::tuple<arglist...> &args = const_cast<std::tuple<arglist...> &>(arguments);
+		return applyTuple(func, args);
+	}
 
-        template<std::size_t I, typename TupleType, typename FunctionType, typename = typename std::enable_if<
-            I != std::tuple_size<typename std::remove_reference<TupleType>::type>::value>::type>
-            static void for_each(TupleType &&t, FunctionType &f, std::integral_constant<size_t, I>) {
-            f(I, std::get<I>(t));
-            for_each(std::forward<TupleType>(t), f, std::integral_constant<size_t, I + 1>());
-        }
+	template<typename TupleType, typename FunctionType>
+	static void for_each(TupleType &&, FunctionType &,
+			std::integral_constant<size_t, std::tuple_size<typename std::remove_reference<TupleType>::type>::value>) {
+	}
 
-        template<typename TupleType, typename FunctionType>
-        static void for_each(TupleType &&t, FunctionType &f) {
-            for_each(std::forward<TupleType>(t), f, std::integral_constant<size_t, 0>());
-        }
+	template<std::size_t I, typename TupleType, typename FunctionType, typename = typename std::enable_if<
+			I != std::tuple_size<typename std::remove_reference<TupleType>::type>::value>::type>
+	static void for_each(TupleType &&t, FunctionType &f, std::integral_constant<size_t, I>) {
+		f(I, std::get < I > (t));
+		for_each(std::forward < TupleType > (t), f, std::integral_constant<size_t, I + 1>());
+	}
 
+	template<typename TupleType, typename FunctionType>
+	static void for_each(TupleType &&t, FunctionType &f) {
+		for_each(std::forward < TupleType > (t), f, std::integral_constant<size_t, 0>());
+	}
 
-        template<typename TupleType1, typename TupleType2, typename FunctionType>
-        static void for_each(TupleType1 &&, TupleType2 &&, FunctionType &,
-            std::integral_constant<size_t, std::tuple_size<typename std::remove_reference<TupleType1>::type>::value>) { }
+	template<typename TupleType1, typename TupleType2, typename FunctionType>
+	static void for_each(TupleType1 &&, TupleType2 &&, FunctionType &,
+			std::integral_constant<size_t, std::tuple_size<typename std::remove_reference<TupleType1>::type>::value>) {
+	}
 
-        template<std::size_t I, typename TupleType1, typename TupleType2, typename FunctionType, typename = typename std::enable_if<
-            I != std::tuple_size<typename std::remove_reference<TupleType1>::type>::value>::type>
-            static void for_each(TupleType1 &&t, TupleType2 &&t2, FunctionType &f, std::integral_constant<size_t, I>) {
-            f(I, std::get<I>(t), std::get<I>(t2));
-            for_each(std::forward<TupleType1>(t), std::forward<TupleType2>(t2), f, std::integral_constant<size_t, I + 1>());
-        }
+	template<std::size_t I, typename TupleType1, typename TupleType2, typename FunctionType, typename = typename std::enable_if<
+			I != std::tuple_size<typename std::remove_reference<TupleType1>::type>::value>::type>
+	static void for_each(TupleType1 &&t, TupleType2 &&t2, FunctionType &f, std::integral_constant<size_t, I>) {
+		f(I, std::get < I > (t), std::get < I > (t2));
+		for_each(std::forward < TupleType1 > (t), std::forward < TupleType2 > (t2), f, std::integral_constant<size_t, I + 1>());
+	}
 
-        template<typename TupleType1, typename TupleType2, typename FunctionType>
-        static void for_each(TupleType1 &&t, TupleType2 &&t2, FunctionType &f) {
-            for_each(std::forward<TupleType1>(t), std::forward<TupleType2>(t2), f, std::integral_constant<size_t, 0>());
-        }
-    };
+	template<typename TupleType1, typename TupleType2, typename FunctionType>
+	static void for_each(TupleType1 &&t, TupleType2 &&t2, FunctionType &f) {
+		for_each(std::forward < TupleType1 > (t), std::forward < TupleType2 > (t2), f, std::integral_constant<size_t, 0>());
+	}
+};
 }
 namespace fakeit {
 
@@ -6947,9 +6949,7 @@ namespace fakeit {
     struct Action : Destructible {
         virtual ~Action() = default;
 
-        virtual R invoke(const typename fakeit::production_arg<arglist>::type... args) = 0;
-
-        virtual R invoke(const ArgumentsTuple<arglist...> & args) = 0;
+        virtual R invoke(const ArgumentsTuple<arglist...> &) = 0;
 
         virtual bool isDone() = 0;
     };
@@ -6964,13 +6964,6 @@ namespace fakeit {
 
         Repeat(std::function<R(typename fakeit::test_arg<arglist>::type...)> func, long t) :
                 f(func), times(t) {
-        }
-
-        virtual R invoke(typename fakeit::production_arg<arglist>::type... args) override {
-            ArgumentsTuple<arglist...> actualArguments{ std::forward<const typename fakeit::production_arg<arglist>::type>(args)... };
-            return invoke(actualArguments);
-
-
         }
 
         virtual R invoke(const ArgumentsTuple<arglist...> & args) override {
@@ -6996,13 +6989,6 @@ namespace fakeit {
                 f(func) {
         }
 
-        virtual R invoke(typename fakeit::production_arg<arglist>::type... args) override {
-            ArgumentsTuple<arglist...> actualArguments{ std::forward<const typename fakeit::production_arg<arglist>::type>(args)... };
-            return invoke(actualArguments);
-
-
-        }
-
         virtual R invoke(const ArgumentsTuple<arglist...> & args) override {
             return TupleDispatcher::invoke<R, arglist...>(f, args);
         }
@@ -7019,11 +7005,7 @@ namespace fakeit {
     struct ReturnDefaultValue : public Action<R, arglist...> {
         virtual ~ReturnDefaultValue() = default;
 
-        virtual R invoke(const typename fakeit::production_arg<arglist>::type...) override {
-            return DefaultValue<R>::value();
-        }
-
-        virtual R invoke(const ArgumentsTuple<arglist...> & args) override {
+        virtual R invoke(const ArgumentsTuple<arglist...> &) override {
             return DefaultValue<R>::value();
         }
 
@@ -7038,13 +7020,6 @@ namespace fakeit {
         ReturnDelegateValue(std::function<R(const typename fakeit::test_arg<arglist>::type...)> delegate) : _delegate(delegate) { }
 
         virtual ~ReturnDelegateValue() = default;
-
-        virtual R invoke(const typename fakeit::production_arg<arglist>::type... args) override {
-            ArgumentsTuple<arglist...> actualArguments{ std::forward<const typename fakeit::production_arg<arglist>::type>(args)... };
-            return invoke(actualArguments);
-
-
-        }
 
         virtual R invoke(const ArgumentsTuple<arglist...> & args) override {
             return TupleDispatcher::invoke<R, arglist...>(_delegate, args);
@@ -7310,9 +7285,9 @@ namespace fakeit {
 
             virtual ~NoMoreRecordedAction() = default;
 
-            virtual R invoke(const typename fakeit::production_arg<arglist>::type...) override {
-                throw NoMoreRecordedActionException();
-            }
+
+
+
 
             virtual R invoke(const ArgumentsTuple<arglist...> &) override {
                 throw NoMoreRecordedActionException();

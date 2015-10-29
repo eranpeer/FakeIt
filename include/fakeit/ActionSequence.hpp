@@ -55,10 +55,10 @@ namespace fakeit {
         struct NoMoreRecordedAction : public Action<R, arglist...> {
 
             virtual ~NoMoreRecordedAction() = default;
-
-            virtual R invoke(const typename fakeit::production_arg<arglist>::type...) override {
-                throw NoMoreRecordedActionException();
-            }
+//
+//            virtual R invoke(const typename fakeit::production_arg<arglist>::type...) override {
+//                throw NoMoreRecordedActionException();
+//            }
 
             virtual R invoke(const ArgumentsTuple<arglist...> &) override {
                 throw NoMoreRecordedActionException();

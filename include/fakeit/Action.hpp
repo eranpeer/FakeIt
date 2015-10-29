@@ -25,9 +25,7 @@ namespace fakeit {
     struct Action : Destructible {
         virtual ~Action() = default;
 
-        virtual R invoke(const typename fakeit::production_arg<arglist>::type... args) = 0;
-
-        virtual R invoke(const ArgumentsTuple<arglist...> & args) = 0;
+        virtual R invoke(const ArgumentsTuple<arglist...> &) = 0;
 
         virtual bool isDone() = 0;
     };
@@ -42,13 +40,6 @@ namespace fakeit {
 
         Repeat(std::function<R(typename fakeit::test_arg<arglist>::type...)> func, long t) :
                 f(func), times(t) {
-        }
-
-        virtual R invoke(typename fakeit::production_arg<arglist>::type... args) override {
-            ArgumentsTuple<arglist...> actualArguments{ std::forward<const typename fakeit::production_arg<arglist>::type>(args)... };
-            return invoke(actualArguments);
-//            times--;
-//            return f(args...);
         }
 
         virtual R invoke(const ArgumentsTuple<arglist...> & args) override {
@@ -74,13 +65,6 @@ namespace fakeit {
                 f(func) {
         }
 
-        virtual R invoke(typename fakeit::production_arg<arglist>::type... args) override {
-            ArgumentsTuple<arglist...> actualArguments{ std::forward<const typename fakeit::production_arg<arglist>::type>(args)... };
-            return invoke(actualArguments);
-//
-//            return f(args...);
-        }
-
         virtual R invoke(const ArgumentsTuple<arglist...> & args) override {
             return TupleDispatcher::invoke<R, arglist...>(f, args);
         }
@@ -97,11 +81,7 @@ namespace fakeit {
     struct ReturnDefaultValue : public Action<R, arglist...> {
         virtual ~ReturnDefaultValue() = default;
 
-        virtual R invoke(const typename fakeit::production_arg<arglist>::type...) override {
-            return DefaultValue<R>::value();
-        }
-
-        virtual R invoke(const ArgumentsTuple<arglist...> & args) override {
+        virtual R invoke(const ArgumentsTuple<arglist...> &) override {
             return DefaultValue<R>::value();
         }
 
@@ -116,13 +96,6 @@ namespace fakeit {
         ReturnDelegateValue(std::function<R(const typename fakeit::test_arg<arglist>::type...)> delegate) : _delegate(delegate) { }
 
         virtual ~ReturnDelegateValue() = default;
-
-        virtual R invoke(const typename fakeit::production_arg<arglist>::type... args) override {
-            ArgumentsTuple<arglist...> actualArguments{ std::forward<const typename fakeit::production_arg<arglist>::type>(args)... };
-            return invoke(actualArguments);
-
-            //return _delegate(args...);
-        }
 
         virtual R invoke(const ArgumentsTuple<arglist...> & args) override {
             return TupleDispatcher::invoke<R, arglist...>(_delegate, args);
