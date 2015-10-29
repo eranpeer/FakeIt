@@ -18,7 +18,7 @@
 
 namespace fakeit {
 
-    struct Invocation : public Destructible {
+    struct Invocation : Destructible {
 
         static unsigned int nextInvocationOrdinal() {
             static std::atomic_uint invocationOrdinal{0};
@@ -39,7 +39,7 @@ namespace fakeit {
                 _ordinal(ordinal), _method(method), _isVerified(false) {
         }
 
-        virtual ~Invocation() = default;
+        virtual ~Invocation() override = default;
 
         unsigned int getOrdinal() const {
             return _ordinal;

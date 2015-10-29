@@ -13,7 +13,7 @@
 namespace fakeit {
 
     template<typename R, typename ... arglist>
-    struct ActualInvocationHandler : public Destructible {
+    struct ActualInvocationHandler : Destructible {
         virtual R handleMethodInvocation(ArgumentsTuple<arglist...> & args) = 0;
     };
 

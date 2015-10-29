@@ -23,8 +23,6 @@ namespace fakeit {
 
     template<typename R, typename ... arglist>
     struct Action : Destructible {
-        virtual ~Action() = default;
-
         virtual R invoke(const ArgumentsTuple<arglist...> &) = 0;
 
         virtual bool isDone() = 0;

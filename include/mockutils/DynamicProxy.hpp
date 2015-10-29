@@ -162,7 +162,8 @@ namespace fakeit {
                 new(dataMember) DATA_TYPE{initargs ...};
             }
 
-            ~DataMemeberWrapper() {
+            ~DataMemeberWrapper() override
+            {
                 dataMember->~DATA_TYPE();
             }
         };
