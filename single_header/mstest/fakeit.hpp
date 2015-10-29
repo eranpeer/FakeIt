@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2015-10-01 16:06:57.353853
+ *  Generated: 2015-10-29 23:45:13.863000
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -57,6 +57,17 @@ namespace fakeit {
     template< class T > struct production_arg         { typedef T& type; };
     template< class T > struct production_arg< T& >   { typedef T& type; };
     template< class T > struct production_arg< T&& >  { typedef T&&  type; };
+
+	template <typename T>
+	class is_ostreamable {
+		struct no {};
+		template <typename T1>
+		static auto test(std::ostream &s, const T1 &t) -> decltype(s << t);
+		static no test(...);
+	public:
+		static const bool value = std::is_same<decltype(test(*(std::ostream *)nullptr,
+			std::declval<T>())), std::ostream &>::value;
+	};
 
     template<typename R, typename... arglist>
     struct VTableMethodType {
@@ -127,14 +138,13 @@ namespace fakeit {
 namespace fakeit {
     class Destructible {
     public:
-        virtual ~Destructible() THROWS {
-        }
+        virtual ~Destructible() {}
     };
 }
 
 namespace fakeit {
 
-    struct Invocation : public Destructible {
+    struct Invocation : Destructible {
 
         static unsigned int nextInvocationOrdinal() {
             static std::atomic_uint invocationOrdinal{0};
@@ -155,7 +165,7 @@ namespace fakeit {
                 _ordinal(ordinal), _method(method), _isVerified(false) {
         }
 
-        virtual ~Invocation() = default;
+        virtual ~Invocation() override = default;
 
         unsigned int getOrdinal() const {
             return _ordinal;
@@ -187,109 +197,55 @@ namespace fakeit {
 #include <string>
 #include <sstream>
 #include <ostream>
-#include <type_traits>
-#include <string>
-#include <string>
-#include <sstream>
-#include <iomanip>
 
 namespace fakeit {
 
-    template<typename T>
-    static std::string to_string(const T &n) {
-        std::ostringstream stm;
-        stm << n;
-        return stm.str();
-    }
+	template<typename T, class Enable = void>
+	struct Formatter;
 
-}
+	template <>
+	struct Formatter<bool>
+	{
+		static std::string format(bool const &val)
+		{
+			return val ? "true" : "false";
+		}
+	};
 
-namespace fakeit {
+	template <>
+	struct Formatter<char>
+	{
+		static std::string format(char const &val)
+		{
+			std::string s;
+			s += "'";
+			s += val;
+			s += "'";
+			return s;
+		}
+	};
 
-    template<class T>
-    struct Formatter {
-        static std::string format(const T &val) {
-            if (std::is_const<T>::value)
-                return Formatter<typename std::remove_const<T>::type>::format(val);
-            if (std::is_reference<T>::value)
-                return Formatter<typename std::remove_reference<T>::type>::format(val);
-            if (std::is_volatile<T>::value)
-                return Formatter<typename std::remove_volatile<T>::type>::format(val);
+	template<class C>
+	struct Formatter<C, typename std::enable_if<!is_ostreamable<C>::value>::type> {
+		static std::string format(C const &)
+		{
+			return "?";
+		}
+	};
 
-            return {"?"};
-        }
-    };
+	template<class C>
+	struct Formatter<C, typename std::enable_if<is_ostreamable<C>::value>::type> {
+		static std::string format(C const &val)
+		{
+			std::ostringstream os;
+			os << val;
+			return os.str();
+		}
+	};
 
-    template<>
-    struct Formatter<bool> {
-        static std::string format(const bool &val) {
-            return val ? "true" : "false";
-        }
-    };
 
-    template<>
-    struct Formatter<int> {
-        static std::string format(const int &val) {
-            return fakeit::to_string(val);
-        }
-    };
-
-    template<>
-    struct Formatter<unsigned int> {
-        static std::string format(const unsigned int &val) {
-            return fakeit::to_string(val);
-        }
-    };
-
-    template<>
-    struct Formatter<long> {
-        static std::string format(const long &val) {
-            return fakeit::to_string(val);
-        }
-    };
-
-    template<>
-    struct Formatter<unsigned long> {
-        static std::string format(const unsigned long &val) {
-            return fakeit::to_string(val);
-        }
-    };
-
-    template<>
-    struct Formatter<long long> {
-        static std::string format(const long long &val) {
-            return fakeit::to_string(val);
-        }
-    };
-
-    template<>
-    struct Formatter<unsigned long long> {
-        static std::string format(const unsigned long long &val) {
-            return fakeit::to_string(val);
-        }
-    };
-
-    template<>
-    struct Formatter<double> {
-        static std::string format(const double &val) {
-            return fakeit::to_string(val);
-        }
-    };
-
-    template<>
-    struct Formatter<long double> {
-        static std::string format(const long double &val) {
-            return fakeit::to_string(val);
-        }
-    };
-
-    template<>
-    struct Formatter<float> {
-        static std::string format(const float &val) {
-            return fakeit::to_string(val);
-        }
-    };
-
+	template <typename T>
+	using TypeFormatter = Formatter<typename fakeit::naked_type<T>::type>;
 }
 
 namespace fakeit {
@@ -299,14 +255,14 @@ namespace fakeit {
     struct TuplePrinter {
         static void print(std::ostream &strm, const Tuple &t) {
             TuplePrinter<Tuple, N - 1>::print(strm, t);
-            strm << ", " << fakeit::Formatter<decltype(std::get<N - 1>(t))>::format(std::get<N - 1>(t));
+            strm << ", " << fakeit::TypeFormatter<decltype(std::get<N - 1>(t))>::format(std::get<N - 1>(t));
         }
     };
 
     template<class Tuple>
     struct TuplePrinter<Tuple, 1> {
         static void print(std::ostream &strm, const Tuple &t) {
-            strm << fakeit::Formatter<decltype(std::get<0>(t))>::format(std::get<0>(t));
+            strm << fakeit::TypeFormatter<decltype(std::get<0>(t))>::format(std::get<0>(t));
         }
     };
 
@@ -333,6 +289,23 @@ namespace fakeit {
 
 
 namespace fakeit {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     template<typename ... arglist>
     struct ActualInvocation : public Invocation {
@@ -370,6 +343,7 @@ namespace fakeit {
         }
 
     private:
+
         Matcher *_matcher;
         ArgumentsTuple<arglist...> actualArguments;
     };
@@ -5689,7 +5663,7 @@ namespace fakeit {
     };
 
     template<typename R, typename ... arglist>
-    struct MethodInvocationHandler : public Destructible {
+    struct MethodInvocationHandler : Destructible {
         virtual R handleMethodInvocation(const typename fakeit::production_arg<arglist>::type... args) = 0;
     };
 
@@ -5982,7 +5956,8 @@ namespace fakeit {
                 new(dataMember) DATA_TYPE{initargs ...};
             }
 
-            ~DataMemeberWrapper() {
+            ~DataMemeberWrapper() override
+            {
                 dataMember->~DATA_TYPE();
             }
         };
@@ -6050,74 +6025,74 @@ namespace fakeit {
 
 namespace fakeit {
 
-template<int N>
-struct apply_func {
-	template<typename R, typename ... ArgsF, typename ... ArgsT, typename ... Args>
-	static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> &t, Args &... args) {
-		return apply_func<N - 1>::applyTuple(f, t, std::get < N - 1 > (t), args...);
-	}
-};
+    template<int N>
+    struct apply_func {
+        template<typename R, typename ... ArgsF, typename ... ArgsT, typename ... Args>
+        static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> &t, Args &... args) {
+            return apply_func<N - 1>::template applyTuple(f, t, std::get<N - 1>(t), args...);
+        }
+    };
 
-template<>
-struct apply_func<0> {
-	template<typename R, typename ... ArgsF, typename ... ArgsT, typename ... Args>
-	static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> & , Args &... args) {
-		return f(args...);
-	}
-};
+    template<>
+    struct apply_func < 0 > {
+        template<typename R, typename ... ArgsF, typename ... ArgsT, typename ... Args>
+        static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> & , Args &... args) {
+            return f(args...);
+        }
+    };
 
-template<typename R, typename ... ArgsF, typename ... ArgsT>
-static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> &t) {
-	return apply_func<sizeof...(ArgsT)>::applyTuple(f, t);
-}
+    struct TupleDispatcher {
 
-struct TupleDispatcher {
+        template<typename R, typename ... ArgsF, typename ... ArgsT>
+        static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> &t) {
+            return apply_func<sizeof...(ArgsT)>::template applyTuple(f, t);
+        }
 
-	template<typename R, typename ...arglist>
-	static R invoke(std::function<R(arglist &...)> func, const std::tuple<arglist...> &arguments) {
-		std::tuple<arglist...> &args = const_cast<std::tuple<arglist...> &>(arguments);
-		return applyTuple(func, args);
-	}
+        template<typename R, typename ...arglist>
+        static R invoke(std::function<R(arglist &...)> func, const std::tuple<arglist...> &arguments) {
+            std::tuple<arglist...> &args = const_cast<std::tuple<arglist...> &>(arguments);
+            return applyTuple(func, args);
+        }
 
-	template<typename TupleType, typename FunctionType>
-	static void for_each(TupleType &&, FunctionType &,
-			std::integral_constant<size_t, std::tuple_size<typename std::remove_reference<TupleType>::type>::value>) {
-	}
+        template<typename TupleType, typename FunctionType>
+        static void for_each(TupleType &&, FunctionType &,
+            std::integral_constant<size_t, std::tuple_size<typename std::remove_reference<TupleType>::type>::value>) {
+        }
 
-	template<std::size_t I, typename TupleType, typename FunctionType, typename = typename std::enable_if<
-			I != std::tuple_size<typename std::remove_reference<TupleType>::type>::value>::type>
-	static void for_each(TupleType &&t, FunctionType &f, std::integral_constant<size_t, I>) {
-		f(I, std::get < I > (t));
-		for_each(std::forward < TupleType > (t), f, std::integral_constant<size_t, I + 1>());
-	}
+        template<std::size_t I, typename TupleType, typename FunctionType, typename = typename std::enable_if<
+            I != std::tuple_size<typename std::remove_reference<TupleType>::type>::value>::type>
+            static void for_each(TupleType &&t, FunctionType &f, std::integral_constant<size_t, I>) {
+            f(I, std::get < I >(t));
+            for_each(std::forward < TupleType >(t), f, std::integral_constant<size_t, I + 1>());
+        }
 
-	template<typename TupleType, typename FunctionType>
-	static void for_each(TupleType &&t, FunctionType &f) {
-		for_each(std::forward < TupleType > (t), f, std::integral_constant<size_t, 0>());
-	}
+        template<typename TupleType, typename FunctionType>
+        static void for_each(TupleType &&t, FunctionType &f) {
+            for_each(std::forward < TupleType >(t), f, std::integral_constant<size_t, 0>());
+        }
 
-	template<typename TupleType1, typename TupleType2, typename FunctionType>
-	static void for_each(TupleType1 &&, TupleType2 &&, FunctionType &,
-			std::integral_constant<size_t, std::tuple_size<typename std::remove_reference<TupleType1>::type>::value>) {
-	}
+        template<typename TupleType1, typename TupleType2, typename FunctionType>
+        static void for_each(TupleType1 &&, TupleType2 &&, FunctionType &,
+            std::integral_constant<size_t, std::tuple_size<typename std::remove_reference<TupleType1>::type>::value>) {
+        }
 
-	template<std::size_t I, typename TupleType1, typename TupleType2, typename FunctionType, typename = typename std::enable_if<
-			I != std::tuple_size<typename std::remove_reference<TupleType1>::type>::value>::type>
-	static void for_each(TupleType1 &&t, TupleType2 &&t2, FunctionType &f, std::integral_constant<size_t, I>) {
-		f(I, std::get < I > (t), std::get < I > (t2));
-		for_each(std::forward < TupleType1 > (t), std::forward < TupleType2 > (t2), f, std::integral_constant<size_t, I + 1>());
-	}
+        template<std::size_t I, typename TupleType1, typename TupleType2, typename FunctionType, typename = typename std::enable_if<
+            I != std::tuple_size<typename std::remove_reference<TupleType1>::type>::value>::type>
+            static void for_each(TupleType1 &&t, TupleType2 &&t2, FunctionType &f, std::integral_constant<size_t, I>) {
+            f(I, std::get < I >(t), std::get < I >(t2));
+            for_each(std::forward < TupleType1 >(t), std::forward < TupleType2 >(t2), f, std::integral_constant<size_t, I + 1>());
+        }
 
-	template<typename TupleType1, typename TupleType2, typename FunctionType>
-	static void for_each(TupleType1 &&t, TupleType2 &&t2, FunctionType &f) {
-		for_each(std::forward < TupleType1 > (t), std::forward < TupleType2 > (t2), f, std::integral_constant<size_t, 0>());
-	}
-};
+        template<typename TupleType1, typename TupleType2, typename FunctionType>
+        static void for_each(TupleType1 &&t, TupleType2 &&t2, FunctionType &f) {
+            for_each(std::forward < TupleType1 >(t), std::forward < TupleType2 >(t2), f, std::integral_constant<size_t, 0>());
+        }
+    };
 }
 namespace fakeit {
 
     template<typename R, typename ... arglist>
-    struct ActualInvocationHandler : public Destructible {
+    struct ActualInvocationHandler : Destructible {
         virtual R handleMethodInvocation(ArgumentsTuple<arglist...> & args) = 0;
     };
 
@@ -6269,12 +6244,13 @@ namespace fakeit {
 }
 namespace fakeit {
 
-    struct IMatcher : public Destructible {
+    struct IMatcher : Destructible {
+        ~IMatcher() = default;
         virtual std::string format() const = 0;
     };
 
     template<typename T>
-    struct TypedMatcher : public IMatcher {
+    struct TypedMatcher : IMatcher {
         virtual bool matches(const T &actual) const = 0;
     };
 
@@ -6346,7 +6322,7 @@ namespace fakeit {
                 }
 
                 virtual std::string format() const override {
-                    return Formatter<T>::format(this->_expected);
+                    return TypeFormatter<T>::format(this->_expected);
                 }
 
                 virtual bool matches(const T &actual) const override {
@@ -6379,7 +6355,7 @@ namespace fakeit {
                 }
 
                 virtual std::string format() const override {
-                    return std::string(">") + Formatter<T>::format(this->_expected);
+                    return std::string(">") + TypeFormatter<T>::format(this->_expected);
                 }
             };
 
@@ -6407,7 +6383,7 @@ namespace fakeit {
                 }
 
                 virtual std::string format() const override {
-                    return std::string(">=") + Formatter<T>::format(this->_expected);
+                    return std::string(">=") + TypeFormatter<T>::format(this->_expected);
                 }
             };
 
@@ -6435,7 +6411,7 @@ namespace fakeit {
                 }
 
                 virtual std::string format() const override {
-                    return std::string("<") + Formatter<T>::format(this->_expected);
+                    return std::string("<") + TypeFormatter<T>::format(this->_expected);
                 }
             };
 
@@ -6464,7 +6440,7 @@ namespace fakeit {
                 }
 
                 virtual std::string format() const override {
-                    return std::string("<=") + Formatter<T>::format(this->_expected);
+                    return std::string("<=") + TypeFormatter<T>::format(this->_expected);
                 }
             };
 
@@ -6493,7 +6469,7 @@ namespace fakeit {
                 }
 
                 virtual std::string format() const override {
-                    return std::string("!=") + Formatter<T>::format(this->_expected);
+                    return std::string("!=") + TypeFormatter<T>::format(this->_expected);
                 }
 
             };
@@ -6800,7 +6776,6 @@ namespace fakeit {
         R handleMethodInvocation(const typename fakeit::production_arg<arglist>::type... args) override {
             unsigned int ordinal = Invocation::nextInvocationOrdinal();
             MethodInfo &method = this->getMethod();
-
             auto actualInvocation = new ActualInvocation<arglist...>(ordinal, method, std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
 
 
@@ -6936,8 +6911,6 @@ namespace fakeit {
 
     template<typename R, typename ... arglist>
     struct Action : Destructible {
-        virtual ~Action() = default;
-
         virtual R invoke(const ArgumentsTuple<arglist...> &) = 0;
 
         virtual bool isDone() = 0;
@@ -7270,9 +7243,9 @@ namespace fakeit {
 
     private:
 
-        struct NoMoreRecordedAction : public Action<R, arglist...> {
+        struct NoMoreRecordedAction : Action<R, arglist...> {
 
-            virtual ~NoMoreRecordedAction() = default;
+
 
 
 
@@ -7457,9 +7430,7 @@ namespace fakeit {
             private Invocation::Matcher {
     public:
 
-        struct Context : public Destructible {
-
-            virtual ~Context() = default;
+        struct Context : Destructible {
 
 
             virtual typename std::function<R(arglist&...)> getOriginalMethod() = 0;
@@ -8694,6 +8665,20 @@ namespace fakeit {
             throw false;
         }
     };
+}
+#include <string>
+#include <sstream>
+#include <iomanip>
+
+namespace fakeit {
+
+    template<typename T>
+    static std::string to_string(const T &n) {
+        std::ostringstream stm;
+        stm << n;
+        return stm.str();
+    }
+
 }
 
 
