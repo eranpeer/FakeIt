@@ -13,6 +13,7 @@
 
 #include "tpunit++.hpp"
 #include "fakeit.hpp"
+#include <fakeit/api_functors.hpp>
 
 using namespace fakeit;
 
@@ -216,11 +217,9 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 			expectedMsg += "Expected matches: exactly 2\n";
 			expectedMsg += "Actual matches  : 1\n";
 			expectedMsg += "Actual sequence : total of 1 actual invocations:\n";
-			//expectedMsg += "  mock.all_types(?, true, 1, 1, 1, 1, 1, 1, 1.000000, 1.000000)";
-			expectedMsg += "  mock.all_types(?, true, 1, 1, 1, 1, 0, 0)";
+			expectedMsg += "  mock.all_types('a', true, 1, 1, 1, 1, 0, 0)";
 
 			std::string actualMsg {to_string(e)};
-			std::cout << actualMsg;
 			ASSERT_EQUAL(expectedMsg, actualMsg);
 
 		}
@@ -239,8 +238,7 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 		{
             std::string expectedMsg{ formatLineNumner("test file", 1) };
             expectedMsg += ": Verification error\n";
-			//expectedMsg += "Expected pattern: mock.all_types('a', true, 1, 1, 1, 1, 1.000000)\n";
-			expectedMsg += "Expected pattern: mock.all_types(?, true, 1, 1, 1, 1, 0, 0)\n";
+			expectedMsg += "Expected pattern: mock.all_types('a', true, 1, 1, 1, 1, 0, 0)\n";
 			expectedMsg += "Expected matches: exactly 2\n";
 			expectedMsg += "Actual matches  : 0\n";
 			expectedMsg += "Actual sequence : total of 0 actual invocations.";

@@ -8,94 +8,54 @@
 #pragma once
 
 #include <ostream>
-#include <type_traits>
-#include <string>
-#include "mockutils/to_string.hpp"
+#include "mockutils/type_utils.hpp"
 
 namespace fakeit {
 
-    template<class T>
-    struct Formatter {
-        static std::string format(const T &val) {
-            if (std::is_const<T>::value)
-                return Formatter<typename std::remove_const<T>::type>::format(val);
-            if (std::is_reference<T>::value)
-                return Formatter<typename std::remove_reference<T>::type>::format(val);
-            if (std::is_volatile<T>::value)
-                return Formatter<typename std::remove_volatile<T>::type>::format(val);
+	template<typename T, class Enable = void>
+	struct Formatter;
 
-            return {"?"};
-        }
-    };
+	template <>
+	struct Formatter<bool>
+	{
+		static std::string format(bool const &val)
+		{
+			return val ? "true" : "false";
+		}
+	};
 
-    template<>
-    struct Formatter<bool> {
-        static std::string format(const bool &val) {
-            return val ? "true" : "false";
-        }
-    };
+	template <>
+	struct Formatter<char>
+	{
+		static std::string format(char const &val)
+		{
+			std::string s;
+			s += "'";
+			s += val;
+			s += "'";
+			return s;
+		}
+	};
 
-    template<>
-    struct Formatter<int> {
-        static std::string format(const int &val) {
-            return fakeit::to_string(val);
-        }
-    };
+	template<class C>
+	struct Formatter<C, typename std::enable_if<!is_ostreamable<C>::value>::type> {
+		static std::string format(C const &)
+		{
+			return "?";
+		}
+	};
 
-    template<>
-    struct Formatter<unsigned int> {
-        static std::string format(const unsigned int &val) {
-            return fakeit::to_string(val);
-        }
-    };
+	template<class C>
+	struct Formatter<C, typename std::enable_if<is_ostreamable<C>::value>::type> {
+		static std::string format(C const &val)
+		{
+			std::ostringstream os;
+			os << val;
+			return os.str();
+		}
+	};
 
-    template<>
-    struct Formatter<long> {
-        static std::string format(const long &val) {
-            return fakeit::to_string(val);
-        }
-    };
 
-    template<>
-    struct Formatter<unsigned long> {
-        static std::string format(const unsigned long &val) {
-            return fakeit::to_string(val);
-        }
-    };
-
-    template<>
-    struct Formatter<long long> {
-        static std::string format(const long long &val) {
-            return fakeit::to_string(val);
-        }
-    };
-
-    template<>
-    struct Formatter<unsigned long long> {
-        static std::string format(const unsigned long long &val) {
-            return fakeit::to_string(val);
-        }
-    };
-
-    template<>
-    struct Formatter<double> {
-        static std::string format(const double &val) {
-            return fakeit::to_string(val);
-        }
-    };
-
-    template<>
-    struct Formatter<long double> {
-        static std::string format(const long double &val) {
-            return fakeit::to_string(val);
-        }
-    };
-
-    template<>
-    struct Formatter<float> {
-        static std::string format(const float &val) {
-            return fakeit::to_string(val);
-        }
-    };
-
+	template <typename T>
+	using TypeFormatter = Formatter<typename fakeit::naked_type<T>::type>;
 }

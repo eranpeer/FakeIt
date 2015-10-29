@@ -27,13 +27,13 @@ struct A {
 	}
 };
 
-namespace fakeit {
-template<> struct Formatter<A> {
-	static std::string format(const A&) {
-		return {"a"};
-	}
-};
-}
+//namespace fakeit {
+//template<> struct Formatter<A> {
+//	static std::string format(const A&) {
+//		return {"a"};
+//	}
+//};
+//}
 
 struct BasicVerification: tpunit::TestFixture {
 	BasicVerification() :

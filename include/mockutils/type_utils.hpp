@@ -36,6 +36,17 @@ namespace fakeit {
     template< class T > struct production_arg< T& >   { typedef T& type; };
     template< class T > struct production_arg< T&& >  { typedef T&&  type; };
 
+	template <typename T>
+	class is_ostreamable {
+		struct no {};
+		template <typename T1>
+		static auto test(std::ostream &s, const T1 &t) -> decltype(s << t);
+		static no test(...);
+	public:
+		static const bool value = std::is_same<decltype(test(*(std::ostream *)nullptr,
+			std::declval<T>())), std::ostream &>::value;
+	};
+
     template<typename R, typename... arglist>
     struct VTableMethodType {
 #if defined (__GNUG__)
