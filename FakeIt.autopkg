@@ -1,0 +1,49 @@
+nuget {
+	nuspec {
+		id = FakeIt;
+		version : ${MYVERSION};
+		title: FakeIt;
+		authors: {"Eran Pe'er"};
+		owners: {"Eran Pe'er"};
+		licenseUrl: "https://github.com/eranpeer/FakeIt/blob/master/LICENSE";
+		projectUrl: "https://github.com/eranpeer/FakeIt";
+		//iconUrl: "";
+		requireLicenseAcceptance : false;
+		summary: @"C++ mocking made easy. A simple yet very expressive, headers only library for c++ mocking.";
+
+		// if you need to span several lines you can prefix a string with an @ symbol (exactly like c# does).
+		description: @"FakeIt is a simple mocking framework for C++. It supports GCC, Clang and MS Visual C++.
+			FakeIt is written in C++11 and can be used for testing both C++11 and C++ projects.
+
+			Features
+			
+			-Packaged as a single header file.
+			-Very simple API based on the expressiveness of C++11.
+			-Supports all major compilers: GCC, Clang and MSC++.
+			-Easily integrated with GTest, MS Test and Boost Test.
+			-Expressive Arrange-Act-Assert syntax.
+			-Create mock classes or spy existing objects instantly in one simple line.
+			-No limitation on number of method arguments.
+			-Supports dynamic casting.		
+			";
+
+		//releaseNotes: @"";
+		copyright: "Copyright 2015 - 2016, Eran Pe'er";
+
+		tags: { "native", "coapp", "test", "mock", "framework", "c++11", "gcc", "mstest", "gtest", "boost", "clang", "msc++" };  
+		language: en-US;
+	};
+
+	// the files that go into the content folders  
+	files {
+		#defines {  
+			SDK_ROOT = ./;  
+		}  
+		
+		//include: ${SDK_ROOT}/single_header/**/FakeIt.hpp;
+		nestedInclude: {
+			#destination = ${d_include}FakeIt;
+			"${SDK_ROOT}/single_header/**/FakeIt.hpp"
+		};
+	};
+}

@@ -54,3 +54,4 @@ bii/
 *.pyc
 
 *.*~
+*.nupkg
