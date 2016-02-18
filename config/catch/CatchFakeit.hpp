@@ -99,34 +99,12 @@ public:
 
 class CatchFakeit: public DefaultFakeit {
 
-	
+
 public:
 
 	virtual ~CatchFakeit() = default;
 
-	template<typename T>
-	class ExceptionTranslator : public Catch::IExceptionTranslator {
-	public:
-	ExceptionTranslator(){}
-		virtual std::string translate() const {
-			try {
-				throw;
-			}
-			catch( T& ex ) {
-				return ex.what();
-			}
-		}
-	};
-
-	CatchFakeit()
-        : _formatter(), _catchAdapter(_formatter) {
-			Catch::getMutableRegistryHub().registerTranslator
-                (new ExceptionTranslator<UnexpectedMethodCallException>());
-			Catch::getMutableRegistryHub().registerTranslator
-                (new ExceptionTranslator<SequenceVerificationException>());
-			Catch::getMutableRegistryHub().registerTranslator
-                (new ExceptionTranslator<NoMoreInvocationsVerificationException>());
-	}
+	CatchFakeit() : _formatter(), _catchAdapter(_formatter) {}
 
 	static CatchFakeit &getInstance() {
 		static CatchFakeit instance;
@@ -149,4 +127,16 @@ private:
 	CatchAdapter _catchAdapter;
 };
 
+}
+
+CATCH_TRANSLATE_EXCEPTION(fakeit::UnexpectedMethodCallException& ex) {
+    return ex.what();
+}
+
+CATCH_TRANSLATE_EXCEPTION(fakeit::SequenceVerificationException& ex) {
+    return ex.what();
+}
+
+CATCH_TRANSLATE_EXCEPTION(fakeit::NoMoreInvocationsVerificationException& ex) {
+    return ex.what();
 }
