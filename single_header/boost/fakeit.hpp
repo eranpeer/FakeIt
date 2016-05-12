@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2015-10-29 23:45:30.560000
+ *  Generated: 2016-05-12 09:58:05.070214
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -58,16 +58,44 @@ namespace fakeit {
     template< class T > struct production_arg< T& >   { typedef T& type; };
     template< class T > struct production_arg< T&& >  { typedef T&&  type; };
 
-	template <typename T>
-	class is_ostreamable {
-		struct no {};
-		template <typename T1>
-		static auto test(std::ostream &s, const T1 &t) -> decltype(s << t);
-		static no test(...);
-	public:
-		static const bool value = std::is_same<decltype(test(*(std::ostream *)nullptr,
-			std::declval<T>())), std::ostream &>::value;
-	};
+    template <typename T>
+    class is_ostreamable {
+        struct no {};
+#if defined(_MSC_VER) && _MSC_VER < 1900
+        template <typename T1>
+        static decltype(operator<<(std::declval<std::ostream&>(), std::declval<const T1>())) test(std::ostream &s, const T1 &t);
+#else
+        template <typename T1>
+        static auto test(std::ostream &s, const T1 &t) -> decltype(s << t);
+#endif
+        static no test(...);
+    public:
+
+        static const bool value =
+            std::is_arithmetic<T>::value ||
+            std::is_pointer<T>::value ||
+            std::is_same<decltype(test(*(std::ostream *)nullptr,
+                std::declval<T>())), std::ostream &>::value;
+    };
+
+
+    template <>
+    class is_ostreamable<std::ios_base& (*)(std::ios_base&)> {
+    public:
+        static const bool value = true;
+    };
+
+    template <typename CharT, typename Traits>
+    class is_ostreamable<std::basic_ios<CharT,Traits>& (*)(std::basic_ios<CharT,Traits>&)> {
+    public:
+        static const bool value = true;
+    };
+
+    template <typename CharT, typename Traits>
+    class is_ostreamable<std::basic_ostream<CharT,Traits>& (*)(std::basic_ostream<CharT,Traits>&)> {
+    public:
+        static const bool value = true;
+    };
 
     template<typename R, typename... arglist>
     struct VTableMethodType {
