@@ -140,6 +140,7 @@
     <ClCompile Include="sequence_verification_tests.cpp" />
     <ClCompile Include="spying_tests.cpp" />
     <ClCompile Include="functional.cpp" />
+    <ClCompile Include="streaming_tests.cpp" />
     <ClCompile Include="stubbing_tests.cpp" />
     <ClCompile Include="tpunit++main.cpp" />
     <ClCompile Include="type_info_tests.cpp" />
