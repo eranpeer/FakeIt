@@ -164,8 +164,8 @@ private:
 	 * An internal class representing a TestFixture class.
 	 */
 	struct method {
-		method(TestFixture* obj, void (TestFixture::*addr)(), const char* name, unsigned char type) :
-		_this(obj), _addr(addr), _name(), _type(type), _next(0) {
+		method(TestFixture* obj, void (TestFixture::*addr)(), const char* name, unsigned char type)
+				: _this(obj), _addr(addr), _name(), _type(type), _next(0) {
 			char* dest = _name;
 			while (name && *name != 0) {
 				*dest++ = *name++;
@@ -193,8 +193,8 @@ private:
 	 * An internal class representing a TestFixture class.
 	 */
 	struct fixture {
-		fixture() :
-				_afters(0), _after_classes(0), _befores(0), _before_classes(0), _tests(0), _next(0) {
+		fixture()
+				: _afters(0), _after_classes(0), _befores(0), _before_classes(0), _tests(0), _next(0) {
 		}
 
 		~fixture() {
@@ -219,8 +219,8 @@ private:
 	 * A struct holding test statistics. 
 	 */
 	struct stats {
-		stats() :
-				_assertions(0), _exceptions(0), _failures(0), _passes(0), _traces(0) {
+		stats()
+				: _assertions(0), _exceptions(0), _failures(0), _passes(0), _traces(0) {
 		}
 
 		int _assertions;
@@ -497,26 +497,31 @@ private:
 			int _prev_exceptions = __stats()._exceptions;
 			printf("[ RUN          ] %s\n", t->_name);
 			__TPUNITPP_TRY
-			{	(*t->_this.*t->_addr)();}
-			__TPUNITPP_CATCH(const std::exception& e)
-			{	__exception(e.what());}
-			__TPUNITPP_CATCH(...)
-			{	__exception("caught unknown exception type");}
-			if(_prev_assertions == __stats()._assertions &&
-			_prev_exceptions == __stats()._exceptions)
 			{
-				printf("[       PASSED ] %s\n", t->_name);
-				__stats()._passes++;
+				(*t->_this.*t->_addr)();
+			}
+			__TPUNITPP_CATCH(const std::exception& e)
+			{
+				__exception(e.what());
+			}
+			__TPUNITPP_CATCH(...)
+			{
+				__exception("caught unknown exception type");
+			}
+			if(_prev_assertions == __stats()._assertions &&
+			  _prev_exceptions == __stats()._exceptions)
+	        {
+			  printf("[       PASSED ] %s\n", t->_name);
+				  __stats()._passes++;
 			}
 			else
 			{
-				printf("[       FAILED ] %s\n", t->_name);
-				__stats()._failures++;
+			  printf("[       FAILED ] %s\n", t->_name);
+			  __stats()._failures++;
 			}
 			t = t->_next;
-
 			__do_methods(f->_afters);
-		}
+		  }
 	}
 
 	static stats& __stats()
@@ -551,8 +556,8 @@ public:
 
 private:
 
-	Tests() :
-			TestFixture(0) { /* disable instance creation */
+	Tests()
+			: TestFixture(0) { /* disable instance creation */
 	}
 };
 } // namespace tpunit

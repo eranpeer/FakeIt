@@ -41,6 +41,19 @@ namespace fakeit {
             throw NoVirtualDtor();
         }
 
+
+    	template<typename C>
+    	static typename std::enable_if<std::has_virtual_destructor<C>::value, bool>::type
+    	hasVirtualDestructor() {
+    		return true;
+    	}
+
+    	template<typename C>
+    	static typename std::enable_if<!std::has_virtual_destructor<C>::value, bool>::type
+    	hasVirtualDestructor() {
+    		return false;
+    	}
+
         template<typename C>
         static unsigned int getVTSize() {
             struct Derrived : public C {
