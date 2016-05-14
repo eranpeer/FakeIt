@@ -19,6 +19,7 @@
 #include "fakeit/DomainObjects.hpp"
 #include "fakeit/FakeitContext.hpp"
 #include "fakeit/ActualInvocationHandler.hpp"
+#include "fakeit/WhenFunctor.hpp"
 
 namespace fakeit {
 
@@ -266,6 +267,11 @@ namespace fakeit {
 
         MockImpl(FakeitContext &fakeit, C &obj, bool isSpy)
                 : _proxy{obj}, _instance(&obj), _isOwner(!isSpy), _fakeit(fakeit) {
+		    if (_isOwner && VTUtils::hasVirtualDestructor<C>()) {
+		    	WhenFunctor f;
+		    	//static UnexpectedMethodCallException e("Unexpected destructor invocation. An implicitly stubbed destructor can only be called once.");
+		    	f(stubDtor()).Return();
+		    }
         }
 
         template<typename R, typename ... arglist>

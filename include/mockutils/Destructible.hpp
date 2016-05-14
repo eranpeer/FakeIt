@@ -9,6 +9,6 @@
 namespace fakeit {
     class Destructible {
     public:
-        virtual ~Destructible() {}
+        virtual ~Destructible() = default;
     };
 }
