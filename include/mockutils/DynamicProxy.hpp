@@ -84,6 +84,8 @@ namespace fakeit {
             _methodMocks = {{}};
             _methodMocks.resize(VTUtils::getVTSize<C>());
             _members = {};
+            _offsets = {};
+            _offsets.resize(VTUtils::getVTSize<C>());
             _cloneVt.copyFrom(originalVtHandle.restore());
         }
 
