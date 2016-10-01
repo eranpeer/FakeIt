@@ -18,6 +18,7 @@ CPP_SRCS += \
 	rvalue_arguments_tests.cpp \
 	sequence_verification_tests.cpp \
 	spying_tests.cpp \
+	streaming_tests.cpp \
 	stubbing_tests.cpp \
 	tpunit++main.cpp \
 	type_info_tests.cpp \
