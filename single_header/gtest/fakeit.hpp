@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2016-05-12 09:58:05.214705
+ *  Generated: 2016-10-01 07:49:49.459156
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -5881,6 +5881,8 @@ namespace fakeit {
             _methodMocks = {{}};
             _methodMocks.resize(VTUtils::getVTSize<C>());
             _members = {};
+            _offsets = {};
+            _offsets.resize(VTUtils::getVTSize<C>());
             _cloneVt.copyFrom(originalVtHandle.restore());
         }
 
