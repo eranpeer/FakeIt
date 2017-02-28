@@ -24,23 +24,6 @@
 
 namespace fakeit {
 
-//    template<typename T>
-//    class ArgumetCaptor{
-//        T _value;
-//    public:
-//
-//        ArgumetCaptor(T & v) :_value(v)
-//        {
-//            
-//        }
-//
-//        T & value()
-//        {
-//            return _value;
-//        }
-//    };
-
-
     template<typename ... arglist>
     struct ActualInvocation : public Invocation {
 

@@ -62,6 +62,7 @@ struct BasicVerification: tpunit::TestFixture {
 					TEST(BasicVerification::use_same_filter_for_both_stubbing_and_verification), //
 					TEST(BasicVerification::verify_after_paramter_was_changed__with_Matching), //
 					TEST(BasicVerification::verify_after_paramter_was_changed_with_argument_matcher), //
+					TEST(BasicVerification::verify_no_invocations),
 					TEST(BasicVerification::verify_after_paramter_was_changed_with_Using)) //
 	{
 	}
@@ -71,7 +72,18 @@ struct BasicVerification: tpunit::TestFixture {
 		virtual void proc(int) = 0;
 		virtual void proc2(const A&) = 0;
 		virtual void proc3(const A*) = 0;
+		virtual void proc4(std::unique_ptr<int>) const = 0;
 	};
+
+	void verify_no_invocations()
+	{
+		Mock<SomeInterface> mock;
+		Verify(Method(mock, func)).Never();
+		Verify(Method(mock, proc)).Never();
+		Verify(Method(mock, proc2)).Never();
+		Verify(Method(mock, proc3)).Never();
+		Verify(Method(mock, proc4)).Never();
+	}
 
 	void verify_with_matcher() {
 		Mock<SomeInterface> mock;
