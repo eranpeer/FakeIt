@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2017-01-12 11:17:47.348892
+ *  Generated: 2017-02-28 13:49:37.806594
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -317,23 +317,6 @@ namespace fakeit {
 
 
 namespace fakeit {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     template<typename ... arglist>
     struct ActualInvocation : public Invocation {
