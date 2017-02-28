@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2016-05-12 09:58:05.323377
+ *  Generated: 2017-01-12 11:18:13.721858
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -346,7 +346,7 @@ namespace fakeit {
 
         ActualInvocation(unsigned int ordinal, MethodInfo &method, const typename fakeit::production_arg<arglist>::type... args) :
             Invocation(ordinal, method), _matcher{ nullptr }
-            , actualArguments{ std::forward<const typename fakeit::production_arg<arglist>::type>(args)... }
+            , actualArguments{ std::forward<arglist>(args)... }
         {
         }
 
@@ -5890,6 +5890,8 @@ namespace fakeit {
             _methodMocks = {{}};
             _methodMocks.resize(VTUtils::getVTSize<C>());
             _members = {};
+            _offsets = {};
+            _offsets.resize(VTUtils::getVTSize<C>());
             _cloneVt.copyFrom(originalVtHandle.restore());
         }
 

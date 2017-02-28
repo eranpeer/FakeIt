@@ -39,4 +39,4 @@ struct StreamingTests : tpunit::TestFixture {
         Verify(Method(mock, func)).Exactly(1);
     }
 
-} __TypeInfoTests;
+} __StreamingTests;
