@@ -75,11 +75,11 @@ If you don't find your unit testing framework on the list, simply use the *stand
 ### Using a pre-packaged single header file
 Pre-packaged single header versions of FakeIt are located under the *single_header* folder.
 Depending on the unit testing framework you use, simply add one of the pre-packaged versions to the include path of your test project:
-* <fakeit_folder>/single_header/gtest
+* <fakeit_folder>/single_header/[gtest](https://github.com/google/googletest)
 * <fakeit_folder>/single_header/mstest
 * <fakeit_folder>/single_header/boost
-* <fakeit_folder>/single_header/catch
-* <fakeit_folder>/single_header/tpunit
+* <fakeit_folder>/single_header/[catch](https://github.com/philsquared/Catch)
+* <fakeit_folder>/single_header/[tpunit](https://github.com/tpounds/tpunitpp)
 * <fakeit_folder>/single_header/[mettle](https://github.com/jimporter/mettle)
 * <fakeit_folder>/single_header/standalone
 
