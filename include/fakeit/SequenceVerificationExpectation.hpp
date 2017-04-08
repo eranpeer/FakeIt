@@ -27,7 +27,7 @@ namespace fakeit {
             _expectedCount = count;
         }
 
-        void setFileInfo(std::string file, int line, std::string callingMethod) {
+        void setFileInfo(const char * file, int line, const char * callingMethod) {
             _file = file;
             _line = line;
             _testMethod = callingMethod;
@@ -40,9 +40,9 @@ namespace fakeit {
         std::vector<Sequence *> _expectedPattern;
         int _expectedCount;
 
-        std::string _file;
+        const char * _file;
         int _line;
-        std::string _testMethod;
+		const char * _testMethod;
         bool _isVerified;
 
         SequenceVerificationExpectation(

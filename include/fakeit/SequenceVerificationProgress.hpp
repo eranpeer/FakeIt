@@ -116,7 +116,7 @@ namespace fakeit {
             return Terminator(_expectationPtr);
         }
 
-        SequenceVerificationProgress setFileInfo(std::string file, int line, std::string callingMethod) {
+        SequenceVerificationProgress setFileInfo(const char * file, int line, const char * callingMethod) {
             _expectationPtr->setFileInfo(file, line, callingMethod);
             return *this;
         }

@@ -8,26 +8,26 @@ namespace fakeit {
     struct VerificationException : public FakeitException {
         virtual ~VerificationException() = default;
 
-        void setFileInfo(std::string file, int line, std::string callingMethod) {
+        void setFileInfo(const char * file, int line, const char * callingMethod) {
             _file = file;
             _callingMethod = callingMethod;
             _line = line;
         }
 
-        const std::string& file() const {
+		const char * file() const {
             return _file;
         }
         int line() const {
             return _line;
         }
-        const std::string& callingMethod() const {
+		const char * callingMethod() const {
             return _callingMethod;
         }
 
     private:
-        std::string _file;
+		const char * _file;
         int _line;
-        std::string _callingMethod;
+		const char * _callingMethod;
     };
 
     struct NoMoreInvocationsVerificationException : public VerificationException {
@@ -60,7 +60,7 @@ namespace fakeit {
 class CatchAdapter: public EventHandler {
     EventFormatter& _formatter;
 
-    std::string formatLineNumner(std::string file, int num){
+    std::string formatLineNumber(std::string file, int num){
 #ifndef __GNUG__
         return file + std::string("(") + std::to_string(num) + std::string(")");
 #else
@@ -81,14 +81,14 @@ public:
     }
 
     virtual void handle(const SequenceVerificationEvent &evt) override {
-        std::string format(formatLineNumner(evt.file(),evt.line()) + ": " + _formatter.format(evt));
+        std::string format(formatLineNumber(evt.file(),evt.line()) + ": " + _formatter.format(evt));
         SequenceVerificationException e(format);
         e.setFileInfo(evt.file(), evt.line(), evt.callingMethod());
         throw e;
     }
 
     virtual void handle(const NoMoreInvocationsVerificationEvent &evt) override {
-        std::string format(formatLineNumner(evt.file(), evt.line()) + ": " + _formatter.format(evt));
+        std::string format(formatLineNumber(evt.file(), evt.line()) + ": " + _formatter.format(evt));
         NoMoreInvocationsVerificationException e(format);
         e.setFileInfo(evt.file(), evt.line(), evt.callingMethod());
         throw e;

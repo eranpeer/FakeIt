@@ -29,7 +29,7 @@ namespace fakeit {
                 VerifyExpectation(_fakeit);
             }
 
-            void setFileInfo(std::string file, int line, std::string callingMethod) {
+            void setFileInfo(const char * file, int line, const char * callingMethod) {
                 _file = file;
                 _line = line;
                 _callingMethod = callingMethod;
@@ -40,9 +40,9 @@ namespace fakeit {
             VerificationEventHandler &_fakeit;
             std::vector<ActualInvocationsSource *> _mocks;
 
-            std::string _file;
+			const char * _file;
             int _line;
-            std::string _callingMethod;
+			const char * _callingMethod;
             bool _isVerified;
 
             VerifyNoOtherInvocationsExpectation(VerificationEventHandler &fakeit,
@@ -111,8 +111,8 @@ namespace fakeit {
         ~VerifyNoOtherInvocationsVerificationProgress() THROWS {
         };
 
-        VerifyNoOtherInvocationsVerificationProgress setFileInfo(std::string file, int line,
-                                                                 std::string callingMethod) {
+        VerifyNoOtherInvocationsVerificationProgress setFileInfo(const char * file, int line,
+			const char * callingMethod) {
             _ptr->setFileInfo(file, line, callingMethod);
             return *this;
         }
