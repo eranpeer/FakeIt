@@ -35,7 +35,7 @@ namespace fakeit {
             return _verificationType;
         }
 
-        void setFileInfo(const char * aFile, int aLine, std::string aCallingMethod) {
+        void setFileInfo(const char * aFile, int aLine, const char * aCallingMethod) {
             _file = aFile;
             _callingMethod = aCallingMethod;
             _line = aLine;
@@ -49,7 +49,7 @@ namespace fakeit {
             return _line;
         }
 
-        const std::string &callingMethod() const {
+        const char * callingMethod() const {
             return _callingMethod;
         }
 
@@ -57,7 +57,7 @@ namespace fakeit {
         VerificationType _verificationType;
 		const char * _file;
         int _line;
-        std::string _callingMethod;
+        const char * _callingMethod;
     };
 
     struct NoMoreInvocationsVerificationEvent : public VerificationEvent {
