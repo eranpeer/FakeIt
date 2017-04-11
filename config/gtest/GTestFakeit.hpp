@@ -19,12 +19,12 @@ namespace fakeit {
 
 		virtual void handle(const SequenceVerificationEvent &evt) override {
 			std::string format(_formatter.format(evt));
-			GTEST_MESSAGE_AT_(evt.file().c_str(), evt.line(), format.c_str(), ::testing::TestPartResult::kFatalFailure);
+			GTEST_MESSAGE_AT_(evt.file(), evt.line(), format.c_str(), ::testing::TestPartResult::kFatalFailure);
         }
 
 		virtual void handle(const NoMoreInvocationsVerificationEvent &evt) override {
 			std::string format = _formatter.format(evt);
-			GTEST_MESSAGE_AT_(evt.file().c_str(), evt.line(), format.c_str(), ::testing::TestPartResult::kFatalFailure);
+			GTEST_MESSAGE_AT_(evt.file(), evt.line(), format.c_str(), ::testing::TestPartResult::kFatalFailure);
         }
 
 	private:

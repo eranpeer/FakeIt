@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2017-02-28 13:49:49.912899
+ *  Generated: 2017-04-11 09:34:14.860416
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -592,13 +592,13 @@ namespace fakeit {
             return _verificationType;
         }
 
-        void setFileInfo(std::string aFile, int aLine, std::string aCallingMethod) {
+        void setFileInfo(const char * aFile, int aLine, const char * aCallingMethod) {
             _file = aFile;
             _callingMethod = aCallingMethod;
             _line = aLine;
         }
 
-        std::string file() const {
+        const char * file() const {
             return _file;
         }
 
@@ -606,15 +606,15 @@ namespace fakeit {
             return _line;
         }
 
-        const std::string &callingMethod() const {
+        const char * callingMethod() const {
             return _callingMethod;
         }
 
     private:
         VerificationType _verificationType;
-        std::string _file;
+		const char * _file;
         int _line;
-        std::string _callingMethod;
+        const char * _callingMethod;
     };
 
     struct NoMoreInvocationsVerificationEvent : public VerificationEvent {
@@ -1081,12 +1081,12 @@ namespace fakeit {
 
 		virtual void handle(const SequenceVerificationEvent &evt) override {
 			std::string format(_formatter.format(evt));
-			GTEST_MESSAGE_AT_(evt.file().c_str(), evt.line(), format.c_str(), ::testing::TestPartResult::kFatalFailure);
+			GTEST_MESSAGE_AT_(evt.file(), evt.line(), format.c_str(), ::testing::TestPartResult::kFatalFailure);
         }
 
 		virtual void handle(const NoMoreInvocationsVerificationEvent &evt) override {
 			std::string format = _formatter.format(evt);
-			GTEST_MESSAGE_AT_(evt.file().c_str(), evt.line(), format.c_str(), ::testing::TestPartResult::kFatalFailure);
+			GTEST_MESSAGE_AT_(evt.file(), evt.line(), format.c_str(), ::testing::TestPartResult::kFatalFailure);
         }
 
 	private:
@@ -8538,7 +8538,7 @@ namespace fakeit {
             _expectedCount = count;
         }
 
-        void setFileInfo(std::string file, int line, std::string callingMethod) {
+        void setFileInfo(const char * file, int line, const char * callingMethod) {
             _file = file;
             _line = line;
             _testMethod = callingMethod;
@@ -8551,9 +8551,9 @@ namespace fakeit {
         std::vector<Sequence *> _expectedPattern;
         int _expectedCount;
 
-        std::string _file;
+        const char * _file;
         int _line;
-        std::string _testMethod;
+		const char * _testMethod;
         bool _isVerified;
 
         SequenceVerificationExpectation(
@@ -8778,7 +8778,7 @@ namespace fakeit {
             return Terminator(_expectationPtr);
         }
 
-        SequenceVerificationProgress setFileInfo(std::string file, int line, std::string callingMethod) {
+        SequenceVerificationProgress setFileInfo(const char * file, int line, const char * callingMethod) {
             _expectationPtr->setFileInfo(file, line, callingMethod);
             return *this;
         }
@@ -8893,7 +8893,7 @@ namespace fakeit {
                 VerifyExpectation(_fakeit);
             }
 
-            void setFileInfo(std::string file, int line, std::string callingMethod) {
+            void setFileInfo(const char * file, int line, const char * callingMethod) {
                 _file = file;
                 _line = line;
                 _callingMethod = callingMethod;
@@ -8904,9 +8904,9 @@ namespace fakeit {
             VerificationEventHandler &_fakeit;
             std::vector<ActualInvocationsSource *> _mocks;
 
-            std::string _file;
+			const char * _file;
             int _line;
-            std::string _callingMethod;
+			const char * _callingMethod;
             bool _isVerified;
 
             VerifyNoOtherInvocationsExpectation(VerificationEventHandler &fakeit,
@@ -8975,8 +8975,8 @@ namespace fakeit {
         ~VerifyNoOtherInvocationsVerificationProgress() THROWS {
         };
 
-        VerifyNoOtherInvocationsVerificationProgress setFileInfo(std::string file, int line,
-                                                                 std::string callingMethod) {
+        VerifyNoOtherInvocationsVerificationProgress setFileInfo(const char * file, int line,
+			const char * callingMethod) {
             _ptr->setFileInfo(file, line, callingMethod);
             return *this;
         }
