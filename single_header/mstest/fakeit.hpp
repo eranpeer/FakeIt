@@ -6305,7 +6305,7 @@ namespace fakeit {
             }
 
             struct Matcher : public TypedMatcher<T> {
-                virtual bool matches(const T &) const {
+                virtual bool matches(const T &) const override {
                     return true;
                 }
 
