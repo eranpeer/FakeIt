@@ -44,6 +44,10 @@ namespace fakeit {
             impl.reset();
         }
 
+		void ClearInvocationHistory() {
+			impl.clear();
+		}
+
         template<class DATA_TYPE, typename ... arglist,
                 class = typename std::enable_if<std::is_member_object_pointer<DATA_TYPE C::*>::value>::type>
         DataMemberStubbingRoot<C, DATA_TYPE> Stub(DATA_TYPE C::* member, const arglist &... ctorargs) {

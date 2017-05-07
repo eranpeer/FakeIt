@@ -26,7 +26,7 @@ namespace fakeit {
  * A composite MethodInvocationHandler that holds a list of ActionSequence objects.
  */
     template<typename R, typename ... arglist>
-    class RecordedMethodBody : public MethodInvocationHandler<R, arglist...>, public ActualInvocationsSource {
+    class RecordedMethodBody : public MethodInvocationHandler<R, arglist...>, public ActualInvocationsSource, public ActualInvocationsContainer {
 
         struct MatchedInvocationHandler : ActualInvocationHandler<R, arglist...> {
 
@@ -114,11 +114,14 @@ namespace fakeit {
             _invocationHandlers.push_back(destructable);
         }
 
-        void clear() {
+        void reset() { // this method is never used!! Delete !!!
             _invocationHandlers.clear();
             _actualInvocations.clear();
         }
 
+		void clear() override { // this method is never used!! Delete !!!
+			_actualInvocations.clear();
+		}
 
         R handleMethodInvocation(const typename fakeit::production_arg<arglist>::type... args) override {
             unsigned int ordinal = Invocation::nextInvocationOrdinal();

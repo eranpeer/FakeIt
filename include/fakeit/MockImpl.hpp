@@ -61,12 +61,27 @@ namespace fakeit {
             }
         }
 
-        void reset() {
+	    void initDataMembersIfOwner()
+	    {
+		    if (_isOwner) {
+			    FakeObject<C, baseclasses...> *fake = reinterpret_cast<FakeObject<C, baseclasses...> *>(_instance);
+			    fake->initializeDataMembersArea();
+		    }
+	    }
+
+	    void reset() {
             _proxy.Reset();
-            if (_isOwner) {
-                FakeObject<C, baseclasses...> *fake = reinterpret_cast<FakeObject<C, baseclasses...> *>(_instance);
-                fake->initializeDataMembersArea();
-            }
+		    initDataMembersIfOwner();
+	    }
+
+		void clear()
+        {
+			std::vector<ActualInvocationsContainer *> vec;
+			_proxy.getMethodMocks(vec);
+			for (ActualInvocationsContainer *s : vec) {
+				s->clear();
+			}
+			initDataMembersIfOwner();
         }
 
         virtual C &get() override {

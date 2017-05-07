@@ -23,11 +23,13 @@ struct Miscellaneous : tpunit::TestFixture
         TEST(Miscellaneous::can_mock_class_with_protected_constructor), //
         TEST(Miscellaneous::mock_virtual_methods_of_base_class), //
         TEST(Miscellaneous::create_and_delete_fakit_instatnce), //
-        TEST(Miscellaneous::testStubFuncWithRightValueParameter),
-			TEST(Miscellaneous::testStubProcWithRightValueParameter),
-			TEST(Miscellaneous::aaa),
-        TEST(Miscellaneous::can_stub_method_after_reset)
-        )
+        TEST(Miscellaneous::testStubFuncWithRightValueParameter), //
+		TEST(Miscellaneous::testStubProcWithRightValueParameter),//
+		TEST(Miscellaneous::aaa),//
+		TEST(Miscellaneous::can_stub_method_after_reset),//
+		TEST(Miscellaneous::method_is_still_stubbed_after_clear),//
+		TEST(Miscellaneous::method_is_not_verified_after_clear)//
+		)
     {
     }
 
@@ -181,6 +183,20 @@ struct Miscellaneous : tpunit::TestFixture
       Verify(Method(mock, bar)).Once();
     }
 
+	void method_is_still_stubbed_after_clear() {
+		Mock<foo_bar> mock;
+		When(Method(mock, bar)).Return(42);
+		mock.ClearInvocationHistory();
+		ASSERT_EQUAL(mock.get().bar(), 42);
+	}
+
+	void method_is_not_verified_after_clear() {
+		Mock<foo_bar> mock;
+		When(Method(mock, bar)).Return(42);
+		ASSERT_EQUAL(mock.get().bar(), 42);
+		mock.ClearInvocationHistory();
+		Verify(Method(mock, bar)).Never();
+	}
 
     template <int discriminator>
     struct DummyType {

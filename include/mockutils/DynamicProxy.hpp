@@ -27,7 +27,8 @@ namespace fakeit {
         std::vector<std::shared_ptr<Destructible>> &_methodMocks;
         std::vector<unsigned int> &_offsets;
 
-        unsigned int getOffset(unsigned int id) {
+        unsigned int getOffset(unsigned int id) const
+        {
             unsigned int offset = 0;
             for (; offset < _offsets.size(); offset++) {
                 if (_offsets[offset] == id) {
@@ -81,12 +82,16 @@ namespace fakeit {
         }
 
         void Reset() {
-            _methodMocks = {{}};
+			_methodMocks = {};
             _methodMocks.resize(VTUtils::getVTSize<C>());
             _members = {};
-            _offsets = {};
+			_offsets = {};
             _offsets.resize(VTUtils::getVTSize<C>());
             _cloneVt.copyFrom(originalVtHandle.restore());
+        }
+
+		void Clear()
+        {
         }
 
         template<int id, typename R, typename ... arglist>
