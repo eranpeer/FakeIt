@@ -8140,7 +8140,6 @@ namespace fakeit {
 namespace fakeit {
     namespace internal {
     }
-    using namespace fakeit;
     using namespace fakeit::internal;
 
     template<typename C, typename ... baseclasses>
