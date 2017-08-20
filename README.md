@@ -81,6 +81,7 @@ Depending on the unit testing framework you use, simply add one of the pre-packa
 * <fakeit_folder>/single_header/[catch](https://github.com/philsquared/Catch)
 * <fakeit_folder>/single_header/[tpunit](https://github.com/tpounds/tpunitpp)
 * <fakeit_folder>/single_header/[mettle](https://github.com/jimporter/mettle)
+* <fakeit_folder>/single_header/qtest
 * <fakeit_folder>/single_header/standalone
 
 For example, to use fakeit with **Google Test** simply add the *single_header/gtest* folder to the include path of your test project:
@@ -113,6 +114,10 @@ For example:
 * To use fakeit with **Mettle** add the *include* folder and the *config/mettle* folder to the include path of your test project:
 ```
 -I"<fakeit_folder>/include" -I"<fakeit_folder>/config/mettle"
+```
+* To use fakeit with **QTest** add the *include* folder and the *config/qtest* folder to the include path of your test project:
+```
+-I"<fakeit_folder>/include" -I"<fakeit_folder>/config/qtest
 ```
 * To use fakeit without any testing framework integration (**standalone**) add the *include* folder and the *config/standalone* folder to the include path of your test project:
 ```
