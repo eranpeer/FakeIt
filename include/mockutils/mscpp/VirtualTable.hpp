@@ -9,7 +9,7 @@
 
 namespace fakeit {
 
-    typedef unsigned long DWORD;
+    typedef unsigned long dword_;
 
     struct TypeDescriptor {
         TypeDescriptor() :
@@ -22,7 +22,7 @@ namespace fakeit {
         }
 
 		char *ptrToVTable;
-        DWORD spare;
+        dword_ spare;
         char name[8];
     };
 
@@ -50,9 +50,9 @@ namespace fakeit {
         }
 
         const std::type_info *pTypeDescriptor; //type descriptor of the class
-        DWORD numContainedBases; //number of nested classes following in the Base Class Array
+        dword_ numContainedBases; //number of nested classes following in the Base Class Array
         struct PMD where;        //pointer-to-member displacement info
-        DWORD attributes;        //flags, usually 0
+        dword_ attributes;        //flags, usually 0
     };
 
     template<typename C, typename... baseclasses>
@@ -74,9 +74,9 @@ namespace fakeit {
             delete[] pBaseClassArray;
         }
 
-        DWORD signature;      //always zero?
-        DWORD attributes;     //bit 0 set = multiple inheritance, bit 1 set = virtual inheritance
-        DWORD numBaseClasses; //number of classes in pBaseClassArray
+        dword_ signature;      //always zero?
+        dword_ attributes;     //bit 0 set = multiple inheritance, bit 1 set = virtual inheritance
+        dword_ numBaseClasses; //number of classes in pBaseClassArray
         RTTIBaseClassDescriptor **pBaseClassArray;
 
         template<typename BaseType>
@@ -109,11 +109,11 @@ namespace fakeit {
 		{
 		}
 
-		DWORD signature; //always zero ?
-		DWORD offset;    //offset of this vtable in the complete class
-		DWORD cdOffset;  //constructor displacement offset
-		DWORD typeDescriptorOffset;
-		DWORD classDescriptorOffset;
+		dword_ signature; //always zero ?
+		dword_ offset;    //offset of this vtable in the complete class
+		dword_ cdOffset;  //constructor displacement offset
+		dword_ typeDescriptorOffset;
+		dword_ classDescriptorOffset;
 #else
 		RTTICompleteObjectLocator(const std::type_info &info) :
 			signature(0), offset(0), cdOffset(0),
@@ -125,9 +125,9 @@ namespace fakeit {
 			delete pClassDescriptor;
 		}
 
-		DWORD signature; //always zero ?
-		DWORD offset;    //offset of this vtable in the complete class
-		DWORD cdOffset;  //constructor displacement offset
+		dword_ signature; //always zero ?
+		dword_ offset;    //offset of this vtable in the complete class
+		dword_ cdOffset;  //constructor displacement offset
 		const std::type_info *pTypeDescriptor; //TypeDescriptor of the complete class
 		struct RTTIClassHierarchyDescriptor<C, baseclasses...> *pClassDescriptor; //describes inheritance hierarchy
 #endif
