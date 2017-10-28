@@ -3,6 +3,7 @@
 #include "fakeit/DefaultFakeit.hpp"
 #include "fakeit/EventHandler.hpp"
 #include "mockutils//Macros.hpp"
+#include "mockutils/to_string.hpp"
 
 namespace fakeit {
 
@@ -11,9 +12,9 @@ class TpUnitAdapter: public EventHandler {
 
     std::string formatLineNumner(std::string file, int num){
 #ifndef __GNUG__
-        return file + std::string("(") + std::to_string(num) + std::string(")");
+        return file + std::string("(") + fakeit::to_string(num) + std::string(")");
 #else
-        return file + std::string(":") + std::to_string(num);
+        return file + std::string(":") + fakeit::to_string(num);
 #endif
     }
 

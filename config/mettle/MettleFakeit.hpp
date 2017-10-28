@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fakeit/DefaultFakeit.hpp"
+#include "mockutils/to_string.hpp"
 
 namespace fakeit {
 
@@ -8,9 +9,9 @@ namespace fakeit {
 
         std::string formatLineNumner(std::string file, int num){
 #ifndef __GNUG__
-            return file + std::string("(") + std::to_string(num) + std::string(")");
+            return file + std::string("(") + fakeit::to_string(num) + std::string(")");
 #else
-            return file + std::string(":") + std::to_string(num);
+            return file + std::string(":") + fakeit::to_string(num);
 #endif
         }
 

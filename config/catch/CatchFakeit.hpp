@@ -2,6 +2,7 @@
 
 #include "fakeit/DefaultFakeit.hpp"
 #include "fakeit/EventHandler.hpp"
+#include "mockutils/to_string.hpp"
 #include "catch.hpp"
 
 namespace fakeit {
@@ -66,9 +67,9 @@ namespace fakeit {
 
         std::string formatLineNumber(std::string file, int num) {
 #ifndef __GNUG__
-            return file + std::string("(") + std::to_string(num) + std::string(")");
+            return file + std::string("(") + fakeit::to_string(num) + std::string(")");
 #else
-            return file + std::string(":") + std::to_string(num);
+            return file + std::string(":") + fakeit::to_string(num);
 #endif
         }
 
