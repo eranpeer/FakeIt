@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2017-10-28 14:12:18.402288
+ *  Generated: 2017-10-28 14:16:26.132959
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -1080,6 +1080,20 @@ namespace fakeit {
 #define THROWS throw(...)
 #define NO_THROWS
 #endif
+#include <string>
+#include <sstream>
+#include <iomanip>
+
+namespace fakeit {
+
+    template<typename T>
+    static std::string to_string(const T &n) {
+        std::ostringstream stm;
+        stm << n;
+        return stm.str();
+    }
+
+}
 
 namespace fakeit {
 
@@ -1088,9 +1102,9 @@ class TpUnitAdapter: public EventHandler {
 
     std::string formatLineNumner(std::string file, int num){
 #ifndef __GNUG__
-        return file + std::string("(") + std::to_string(num) + std::string(")");
+        return file + std::string("(") + fakeit::to_string(num) + std::string(")");
 #else
-        return file + std::string(":") + std::to_string(num);
+        return file + std::string(":") + fakeit::to_string(num);
 #endif
     }
 
@@ -8722,20 +8736,6 @@ namespace fakeit {
             throw false;
         }
     };
-}
-#include <string>
-#include <sstream>
-#include <iomanip>
-
-namespace fakeit {
-
-    template<typename T>
-    static std::string to_string(const T &n) {
-        std::ostringstream stm;
-        stm << n;
-        return stm.str();
-    }
-
 }
 
 
