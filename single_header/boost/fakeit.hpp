@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2017-05-07 09:26:48.645797
+ *  Generated: 2017-10-28 14:16:24.428377
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -752,6 +752,9 @@ namespace fakeit {
         void handle(const UnexpectedMethodCallEvent &e) override {
             fireEvent(e);
             auto &eh = getTestingFrameworkAdapter();
+            #ifdef FAKEIT_ASSERT_ON_UNEXPECTED_METHOD_INVOCATION
+            assert(!"Unexpected method invocation");
+            #endif
             eh.handle(e);
         }
 
@@ -5255,7 +5258,7 @@ namespace fakeit {
 #ifdef _MSC_VER
 namespace fakeit {
 
-    typedef unsigned long DWORD;
+    typedef unsigned long dword_;
 
     struct TypeDescriptor {
         TypeDescriptor() :
@@ -5268,7 +5271,7 @@ namespace fakeit {
         }
 
 		char *ptrToVTable;
-        DWORD spare;
+        dword_ spare;
         char name[8];
     };
 
@@ -5292,9 +5295,9 @@ namespace fakeit {
         }
 
         const std::type_info *pTypeDescriptor;
-        DWORD numContainedBases;
+        dword_ numContainedBases;
         struct PMD where;
-        DWORD attributes;
+        dword_ attributes;
     };
 
     template<typename C, typename... baseclasses>
@@ -5316,9 +5319,9 @@ namespace fakeit {
             delete[] pBaseClassArray;
         }
 
-        DWORD signature;
-        DWORD attributes;
-        DWORD numBaseClasses;
+        dword_ signature;
+        dword_ attributes;
+        dword_ numBaseClasses;
         RTTIBaseClassDescriptor **pBaseClassArray;
 
         template<typename BaseType>
@@ -5351,11 +5354,11 @@ namespace fakeit {
 		{
 		}
 
-		DWORD signature;
-		DWORD offset;
-		DWORD cdOffset;
-		DWORD typeDescriptorOffset;
-		DWORD classDescriptorOffset;
+		dword_ signature;
+		dword_ offset;
+		dword_ cdOffset;
+		dword_ typeDescriptorOffset;
+		dword_ classDescriptorOffset;
 #else
 		RTTICompleteObjectLocator(const std::type_info &info) :
 			signature(0), offset(0), cdOffset(0),
@@ -5367,9 +5370,9 @@ namespace fakeit {
 			delete pClassDescriptor;
 		}
 
-		DWORD signature;
-		DWORD offset;
-		DWORD cdOffset;
+		dword_ signature;
+		dword_ offset;
+		dword_ cdOffset;
 		const std::type_info *pTypeDescriptor;
 		struct RTTIClassHierarchyDescriptor<C, baseclasses...> *pClassDescriptor;
 #endif

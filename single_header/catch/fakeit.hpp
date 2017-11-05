@@ -1073,6 +1073,20 @@ namespace fakeit {
 
     };
 }
+#include <string>
+#include <sstream>
+#include <iomanip>
+
+namespace fakeit {
+
+    template<typename T>
+    static std::string to_string(const T &n) {
+        std::ostringstream stm;
+        stm << n;
+        return stm.str();
+    }
+
+}
 
 namespace fakeit {
 
@@ -1136,9 +1150,9 @@ namespace fakeit {
 
         std::string formatLineNumber(std::string file, int num) {
 #ifndef __GNUG__
-            return file + std::string("(") + std::to_string(num) + std::string(")");
+            return file + std::string("(") + fakeit::to_string(num) + std::string(")");
 #else
-            return file + std::string(":") + std::to_string(num);
+            return file + std::string(":") + fakeit::to_string(num);
 #endif
         }
 
@@ -8777,20 +8791,6 @@ namespace fakeit {
             throw false;
         }
     };
-}
-#include <string>
-#include <sstream>
-#include <iomanip>
-
-namespace fakeit {
-
-    template<typename T>
-    static std::string to_string(const T &n) {
-        std::ostringstream stm;
-        stm << n;
-        return stm.str();
-    }
-
 }
 
 
