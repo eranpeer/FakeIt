@@ -78,7 +78,7 @@ Depending on the unit testing framework you use, simply add one of the pre-packa
 * <fakeit_folder>/single_header/[gtest](https://github.com/google/googletest)
 * <fakeit_folder>/single_header/mstest
 * <fakeit_folder>/single_header/boost
-* <fakeit_folder>/single_header/[catch](https://github.com/philsquared/Catch)
+* <fakeit_folder>/single_header/[catch](https://github.com/philsquared/Catch) (Tested with Catch 2.0.1)
 * <fakeit_folder>/single_header/[tpunit](https://github.com/tpounds/tpunitpp)
 * <fakeit_folder>/single_header/[mettle](https://github.com/jimporter/mettle)
 * <fakeit_folder>/single_header/qtest
