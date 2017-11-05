@@ -117,7 +117,7 @@ For example:
 ```
 * To use fakeit with **QTest** add the *include* folder and the *config/qtest* folder to the include path of your test project:
 ```
--I"<fakeit_folder>/include" -I"<fakeit_folder>/config/qtest
+-I"<fakeit_folder>/include" -I"<fakeit_folder>/config/qtest"
 ```
 * To use fakeit without any testing framework integration (**standalone**) add the *include* folder and the *config/standalone* folder to the include path of your test project:
 ```
