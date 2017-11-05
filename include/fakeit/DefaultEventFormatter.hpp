@@ -68,6 +68,17 @@ namespace fakeit {
             return out.str();
         }
 
+        static std::string formatExpectedPattern(const std::vector<fakeit::Sequence *> &expectedPattern) {
+            std::string expectedPatternStr;
+            for (unsigned int i = 0; i < expectedPattern.size(); i++) {
+                Sequence *s = expectedPattern[i];
+                expectedPatternStr += formatSequence(*s);
+                if (i < expectedPattern.size() - 1)
+                    expectedPatternStr += " ... ";
+            }
+            return expectedPatternStr;
+        }
+
     private:
 
         static std::string formatSequence(const Sequence &val) {
@@ -132,17 +143,6 @@ namespace fakeit {
 
             out << " * " << val.getTimes();
             return out.str();
-        }
-
-        static std::string formatExpectedPattern(const std::vector<fakeit::Sequence *> &expectedPattern) {
-            std::string expectedPatternStr;
-            for (unsigned int i = 0; i < expectedPattern.size(); i++) {
-                Sequence *s = expectedPattern[i];
-                expectedPatternStr += formatSequence(*s);
-                if (i < expectedPattern.size() - 1)
-                    expectedPatternStr += " ... ";
-            }
-            return expectedPatternStr;
         }
     };
 }

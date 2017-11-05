@@ -79,36 +79,36 @@ namespace fakeit {
         CatchAdapter(EventFormatter &formatter)
                 : _formatter(formatter) {}
 
+        void fail(
+                std::string vetificationType,
+                Catch::SourceLineInfo sourceLineInfo,
+                std::string failingExpression,
+                std::string fomattedMessage,
+                Catch::ResultWas::OfType resultWas = Catch::ResultWas::OfType::ExpressionFailed ){
+            Catch::AssertionHandler catchAssertionHandler( vetificationType, sourceLineInfo, failingExpression, Catch::ResultDisposition::Normal );
+            INTERNAL_CATCH_TRY( catchAssertionHandler ) { \
+                CATCH_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS \
+                catchAssertionHandler.handle( resultWas , fomattedMessage); \
+                CATCH_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS \
+            } INTERNAL_CATCH_CATCH( catchAssertionHandler ) \
+            INTERNAL_CATCH_REACT( catchAssertionHandler )
+        }
+
         virtual void handle(const UnexpectedMethodCallEvent &evt) override {
             std::string format = _formatter.format(evt);
-            Catch::ResultBuilder __catchResult("FAIL", ::Catch::SourceLineInfo(),
-                                               "", Catch::ResultDisposition::Normal);
-            __catchResult << format + ::Catch::StreamEndStop();
-            __catchResult.captureResult(Catch::ResultWas::ExplicitFailure);
-            INTERNAL_CATCH_REACT(__catchResult)
-            throw Catch::TestFailureException();
+            fail("UnexpectedMethodCall",::Catch::SourceLineInfo("Unknown file",0),"",format, Catch::ResultWas::OfType::ExplicitFailure);
         }
 
         virtual void handle(const SequenceVerificationEvent &evt) override {
             std::string format(formatLineNumber(evt.file(), evt.line()) + ": " + _formatter.format(evt));
-            Catch::ResultBuilder __catchResult("FAIL", ::Catch::SourceLineInfo(evt.file(),
-                                                                               static_cast<std::size_t>( evt.line())),
-                                               "", Catch::ResultDisposition::Normal);
-            __catchResult << format + ::Catch::StreamEndStop();
-            __catchResult.captureResult(Catch::ResultWas::ExplicitFailure);
-            INTERNAL_CATCH_REACT(__catchResult)
-            throw Catch::TestFailureException();
+            std::string expectedPattern {DefaultEventFormatter::formatExpectedPattern(evt.expectedPattern())};
+            fail("Verify",::Catch::SourceLineInfo(evt.file(),evt.line()),expectedPattern,format);
         }
+
 
         virtual void handle(const NoMoreInvocationsVerificationEvent &evt) override {
             std::string format(formatLineNumber(evt.file(), evt.line()) + ": " + _formatter.format(evt));
-            Catch::ResultBuilder __catchResult("FAIL", ::Catch::SourceLineInfo(evt.file(),
-                                                                               static_cast<std::size_t>( evt.line())),
-                                               "", Catch::ResultDisposition::Normal);
-            __catchResult << format + ::Catch::StreamEndStop();
-            __catchResult.captureResult(Catch::ResultWas::ExplicitFailure);
-            INTERNAL_CATCH_REACT(__catchResult)
-            throw Catch::TestFailureException();
+            fail("VerifyNoMoreInvocations",::Catch::SourceLineInfo(evt.file(),evt.line()),"",format);
         }
 
     };
