@@ -64,7 +64,7 @@ namespace fakeit {
 
         ~SequenceVerificationProgress() THROWS { };
 
-        operator bool() {
+        operator bool() const {
             return Terminator(_expectationPtr);
         }
 

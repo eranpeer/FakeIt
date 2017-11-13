@@ -117,8 +117,8 @@ namespace fakeit {
             return *this;
         }
 
-        operator bool() {
-            return toBool();
+        operator bool() const {
+            return const_cast<VerifyNoOtherInvocationsVerificationProgress *>(this)->toBool();
         }
 
         bool operator!() const { return !const_cast<VerifyNoOtherInvocationsVerificationProgress *>(this)->toBool(); }
