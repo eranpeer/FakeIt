@@ -37,6 +37,35 @@ namespace fakeit {
 		}
 	};
 
+	template <>
+	struct Formatter<char const*>
+	{
+		static std::string format(char const* const &val)
+		{
+			std::string s;
+			if(val != nullptr)
+			{
+				s += '"';
+				s += val;
+				s += '"';
+			}
+			else
+			{
+				s = "[nullptr]";
+			}
+			return s;
+		}
+	};
+
+	template <>
+	struct Formatter<char*>
+	{
+		static std::string format(char* const &val)
+		{
+			return Formatter<char const*>::format( val );
+		}
+	};
+
 	template<class C>
 	struct Formatter<C, typename std::enable_if<!is_ostreamable<C>::value>::type> {
 		static std::string format(C const &)
