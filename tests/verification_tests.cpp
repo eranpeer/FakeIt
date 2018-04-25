@@ -583,10 +583,13 @@ struct BasicVerification: tpunit::TestFixture {
 
 		RefEater& obj = mock.get();
 		obj.eatConstChar( nullptr );
+		obj.eatConstChar( "string" );
 		obj.eatChar( nullptr );
+		char str[] = { 'a', '\0' };
+		obj.eatChar( str );
 
-		Verify(Method(mock,eatChar)).Exactly(1);
-		Verify(Method(mock,eatConstChar)).Exactly(1);
+		Verify(Method(mock,eatChar)).Exactly(2);
+		Verify(Method(mock,eatConstChar)).Exactly(2);
 		ASSERT_THROW(Verify(Method(mock, eatChar)).Exactly(3), fakeit::VerificationException);
 		ASSERT_THROW(Verify(Method(mock, eatConstChar)).Exactly(3), fakeit::VerificationException);
 	}
