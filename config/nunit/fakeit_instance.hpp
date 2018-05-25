@@ -17,3 +17,5 @@ static fakeit::DefaultFakeit& Fakeit = fakeit::NUnitFakeit::getInstance();
  */
 static fakeit::MethodInfo& scopeFixer = fakeit::UnknownMethod::instance();
 
+// NOTE: You may find it highly useful to use a section with #pragma unmanaged when writing mocks because it 
+// will allow you to use lamba expressions.
