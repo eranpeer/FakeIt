@@ -1170,9 +1170,9 @@ namespace fakeit {
                 std::string fomattedMessage,
                 Catch::ResultWas::OfType resultWas = Catch::ResultWas::OfType::ExpressionFailed ){
             Catch::AssertionHandler catchAssertionHandler( vetificationType, sourceLineInfo, failingExpression, Catch::ResultDisposition::Normal );
-            INTERNAL_CATCH_TRY( catchAssertionHandler ) { \
+            INTERNAL_CATCH_TRY { \
                 CATCH_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS \
-                catchAssertionHandler.handle( resultWas , fomattedMessage); \
+                catchAssertionHandler.handleMessage( resultWas , fomattedMessage); \
                 CATCH_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS \
             } INTERNAL_CATCH_CATCH( catchAssertionHandler ) \
             INTERNAL_CATCH_REACT( catchAssertionHandler )
