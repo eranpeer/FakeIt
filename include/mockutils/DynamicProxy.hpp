@@ -7,6 +7,7 @@
  */
 #pragma once
 
+#undef max
 #include <functional>
 #include <type_traits>
 #include <vector>
@@ -46,7 +47,7 @@ namespace fakeit {
                 _methodMocks(methodMocks), _offsets(offsets) {
 			for (std::vector<unsigned int>::iterator it = _offsets.begin(); it != _offsets.end(); ++it)
 			{
-				*it = INT_MAX;
+				*it = std::numeric_limits<int>::max();
 			}
         }
 
