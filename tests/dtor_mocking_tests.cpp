@@ -22,7 +22,8 @@ struct DtorMocking : tpunit::TestFixture
             TEST(DtorMocking::mock_virtual_dtor_by_assignment),
             TEST(DtorMocking::call_dtor_without_delete),
             TEST(DtorMocking::spy_dtor),
-			TEST(DtorMocking::production_takes_ownwership_with_uniqe_ptr)//
+			TEST(DtorMocking::production_takes_ownwership_with_uniqe_ptr),
+			TEST(DtorMocking::production_takes_ownership_interface_with_more_methods)
 		)
 	{
 	}
@@ -93,5 +94,21 @@ struct DtorMocking : tpunit::TestFixture
         Verify(Dtor(mock)).Twice();
 		ASSERT_THROW(Verify(Dtor(mock)).Once(), fakeit::VerificationException);
     }
+
+	class SomeInterface2 {
+	public:
+		virtual void DoSomething() = 0;
+		virtual ~SomeInterface2() = default;
+	};
+
+	void production_takes_ownership_interface_with_more_methods() {
+		Mock<SomeInterface2> m;
+
+		Fake(Method(m, DoSomething));
+		Fake(Dtor(m));
+
+		std::unique_ptr<SomeInterface2> ptr = std::unique_ptr<SomeInterface2>(&m.get());		
+		ptr = nullptr;
+	}
 
 } __DtorMocking;

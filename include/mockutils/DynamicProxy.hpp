@@ -43,6 +43,10 @@ namespace fakeit {
                 std::vector<std::shared_ptr<Destructible>> &methodMocks,
                 std::vector<unsigned int> &offsets) :
                 _methodMocks(methodMocks), _offsets(offsets) {
+			for (std::vector<unsigned int>::iterator it = _offsets.begin(); it != _offsets.end(); ++it)
+			{
+				*it = INT_MAX;
+			}
         }
 
         Destructible *getInvocatoinHandlerPtrById(unsigned int id) override {
