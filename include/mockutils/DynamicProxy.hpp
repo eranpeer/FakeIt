@@ -12,6 +12,7 @@
 #include <vector>
 #include <array>
 #include <new>
+#include <limits>
 
 #include "mockutils/VirtualTable.hpp"
 #include "mockutils/union_cast.hpp"
