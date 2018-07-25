@@ -63,7 +63,8 @@ struct BasicVerification: tpunit::TestFixture {
 					TEST(BasicVerification::verify_after_paramter_was_changed__with_Matching), //
 					TEST(BasicVerification::verify_after_paramter_was_changed_with_argument_matcher), //
 					TEST(BasicVerification::verify_no_invocations),
-					TEST(BasicVerification::verify_after_paramter_was_changed_with_Using)) //
+					TEST(BasicVerification::verify_after_paramter_was_changed_with_Using), //
+					TEST(BasicVerification::verificationShouldTolerateNullString))
 	{
 	}
 
@@ -569,5 +570,28 @@ struct BasicVerification: tpunit::TestFixture {
 		ASSERT_TRUE(!Verify(Method(mock, func).Using(1)).Never());
 		ASSERT_FALSE(!VerifyNoOtherInvocations(Method(mock, func)));
     }
+
+	void verificationShouldTolerateNullString(){
+		struct RefEater {
+			virtual int eatChar(char*) = 0;
+			virtual int eatConstChar(const char*) = 0;
+		};
+
+		Mock<RefEater> mock;
+		When( Method( mock, eatChar ) ).AlwaysReturn( 0 );
+		When( Method( mock, eatConstChar ) ).AlwaysReturn( 0 );
+
+		RefEater& obj = mock.get();
+		obj.eatConstChar( nullptr );
+		obj.eatConstChar( "string" );
+		obj.eatChar( nullptr );
+		char str[] = { 'a', '\0' };
+		obj.eatChar( str );
+
+		Verify(Method(mock,eatChar)).Exactly(2);
+		Verify(Method(mock,eatConstChar)).Exactly(2);
+		ASSERT_THROW(Verify(Method(mock, eatChar)).Exactly(3), fakeit::VerificationException);
+		ASSERT_THROW(Verify(Method(mock, eatConstChar)).Exactly(3), fakeit::VerificationException);
+	}
 
 } __BasicVerification;
