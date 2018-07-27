@@ -96,7 +96,7 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 		}
 		catch (UnexpectedMethodCallException& e)
 		{
-			std::string expectedMsg{"Unexpected method invocation: mock.func(1)\n  Could not find Any recorded behavior to support this method call."};
+			std::string expectedMsg{"Unexpected method invocation: mock.func(1)\n  Could not find any recorded behavior to support this method call."};
 			std::string actual{to_string(e)};
 			ASSERT_EQUAL(expectedMsg, actual);
 		}
@@ -168,7 +168,7 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 		catch (NoMoreInvocationsVerificationException& e) {
             std::string expectedMsg{ formatLineNumner("test file", 1) };
             expectedMsg += ": Verification error\n";
-			expectedMsg += "Expected no more invocations!! But the following unverified invocations were found:\n";
+			expectedMsg += "Expected no more invocations!! but the following unverified invocations were found:\n";
 			expectedMsg += "  mock.func(2)";//
 
 			std::string actualMsg{to_string(e)};//

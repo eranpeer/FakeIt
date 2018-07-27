@@ -20,7 +20,7 @@ namespace fakeit {
             out << "Unexpected method invocation: ";
             out << e.getInvocation().format() << std::endl;
             if (UnexpectedType::Unmatched == e.getUnexpectedType()) {
-                out << "  Could not find Any recorded behavior to support this method call.";
+                out << "  Could not find any recorded behavior to support this method call.";
             } else {
                 out << "  An unmocked method was invoked. All used virtual methods must be stubbed!";
             }
@@ -63,7 +63,7 @@ namespace fakeit {
         virtual std::string format(const NoMoreInvocationsVerificationEvent &e) override {
             std::ostringstream out;
             out << "Verification error" << std::endl;
-            out << "Expected no more invocations!! But the following unverified invocations were found:" << std::endl;
+            out << "Expected no more invocations!! but the following unverified invocations were found:" << std::endl;
             formatInvocationList(out, e.unverifedIvocations());
             return out.str();
         }
@@ -110,8 +110,8 @@ namespace fakeit {
 
         static void formatInvocationList(std::ostream &out, const std::vector<fakeit::Invocation *> &actualSequence) {
             size_t max_size = actualSequence.size();
-            if (max_size > 5)
-                max_size = 5;
+            if (max_size > 50)
+                max_size = 50;
 
             for (unsigned int i = 0; i < max_size; i++) {
                 out << "  ";

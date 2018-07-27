@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2017-10-28 14:16:25.882948
+ *  Generated: 2018-07-27 08:19:50.521325
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -249,6 +249,35 @@ namespace fakeit {
 			s += val;
 			s += "'";
 			return s;
+		}
+	};
+
+	template <>
+	struct Formatter<char const*>
+	{
+		static std::string format(char const* const &val)
+		{
+			std::string s;
+			if(val != nullptr)
+			{
+				s += '"';
+				s += val;
+				s += '"';
+			}
+			else
+			{
+				s = "[nullptr]";
+			}
+			return s;
+		}
+	};
+
+	template <>
+	struct Formatter<char*>
+	{
+		static std::string format(char* const &val)
+		{
+			return Formatter<char const*>::format( val );
 		}
 	};
 
@@ -872,6 +901,17 @@ namespace fakeit {
             return out.str();
         }
 
+        static std::string formatExpectedPattern(const std::vector<fakeit::Sequence *> &expectedPattern) {
+            std::string expectedPatternStr;
+            for (unsigned int i = 0; i < expectedPattern.size(); i++) {
+                Sequence *s = expectedPattern[i];
+                expectedPatternStr += formatSequence(*s);
+                if (i < expectedPattern.size() - 1)
+                    expectedPatternStr += " ... ";
+            }
+            return expectedPatternStr;
+        }
+
     private:
 
         static std::string formatSequence(const Sequence &val) {
@@ -903,8 +943,8 @@ namespace fakeit {
 
         static void formatInvocationList(std::ostream &out, const std::vector<fakeit::Invocation *> &actualSequence) {
             size_t max_size = actualSequence.size();
-            if (max_size > 5)
-                max_size = 5;
+            if (max_size > 50)
+                max_size = 50;
 
             for (unsigned int i = 0; i < max_size; i++) {
                 out << "  ";
@@ -936,17 +976,6 @@ namespace fakeit {
 
             out << " * " << val.getTimes();
             return out.str();
-        }
-
-        static std::string formatExpectedPattern(const std::vector<fakeit::Sequence *> &expectedPattern) {
-            std::string expectedPatternStr;
-            for (unsigned int i = 0; i < expectedPattern.size(); i++) {
-                Sequence *s = expectedPattern[i];
-                expectedPatternStr += formatSequence(*s);
-                if (i < expectedPattern.size() - 1)
-                    expectedPatternStr += " ... ";
-            }
-            return expectedPatternStr;
         }
     };
 }
@@ -1211,11 +1240,13 @@ static fakeit::DefaultFakeit& Fakeit = fakeit::StandaloneFakeit::getInstance();
 #include <unordered_set>
 
 #include <memory>
+#undef max
 #include <functional>
 #include <type_traits>
 #include <vector>
 #include <array>
 #include <new>
+#include <limits>
 
 #include <functional>
 #include <type_traits>
@@ -5909,6 +5940,10 @@ namespace fakeit {
                 std::vector<std::shared_ptr<Destructible>> &methodMocks,
                 std::vector<unsigned int> &offsets) :
                 _methodMocks(methodMocks), _offsets(offsets) {
+			for (std::vector<unsigned int>::iterator it = _offsets.begin(); it != _offsets.end(); ++it)
+			{
+				*it = std::numeric_limits<int>::max();
+			}
         }
 
         Destructible *getInvocatoinHandlerPtrById(unsigned int id) override {
@@ -8824,7 +8859,7 @@ namespace fakeit {
 
         ~SequenceVerificationProgress() THROWS { };
 
-        operator bool() {
+        operator bool() const {
             return Terminator(_expectationPtr);
         }
 
@@ -9079,8 +9114,8 @@ namespace fakeit {
             return *this;
         }
 
-        operator bool() {
-            return toBool();
+        operator bool() const {
+            return const_cast<VerifyNoOtherInvocationsVerificationProgress *>(this)->toBool();
         }
 
         bool operator!() const { return !const_cast<VerifyNoOtherInvocationsVerificationProgress *>(this)->toBool(); }
