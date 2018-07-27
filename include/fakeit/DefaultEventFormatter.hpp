@@ -110,8 +110,8 @@ namespace fakeit {
 
         static void formatInvocationList(std::ostream &out, const std::vector<fakeit::Invocation *> &actualSequence) {
             size_t max_size = actualSequence.size();
-            if (max_size > 5)
-                max_size = 5;
+            if (max_size > 50)
+                max_size = 50;
 
             for (unsigned int i = 0; i < max_size; i++) {
                 out << "  ";
