@@ -53,7 +53,7 @@ Verify(Method(mock,foo).Using(1));
 
 Checkout the [Quickstart](https://github.com/eranpeer/FakeIt/wiki/Quickstart) for many more examples!
 
-Download the [Latest Release](https://github.com/eranpeer/FakeIt/releases/latest) and start using FakeIt now!
+The master branch has the stable version of FakeIt. Include the most suitable single header in your test project and you are good to go.
 
 ## Features
 * Packaged as a **single header file**.
@@ -156,6 +156,7 @@ Open the tests/all_tests.vcxproj project file with Visual Studio 2013. Build and
 
 ## Limitations
 * Currently only GCC, Clang and MSC++ are supported.
+* In MSC++, your project must have Edit And Continue debug mode on (https://msdn.microsoft.com/en-us/library/esaeyddf.aspx) which is same of /ZI compiler switch. If you don't use this, you will have exceptions mocking destructors (which includes unique_ptr and other smart pointers). 
 * Can't mock classes with multiple inheritance.
 * Can't mock classes with virtual inheritance.
 * Currently mocks are not thread safe. 
