@@ -11,6 +11,9 @@
 #include <vector>
 #include "fakeit/EventHandler.hpp"
 #include "fakeit/EventFormatter.hpp"
+#ifdef FAKEIT_ASSERT_ON_UNEXPECTED_METHOD_INVOCATION
+#include <cassert>
+#endif
 
 namespace fakeit {
 
