@@ -12,10 +12,15 @@ namespace fakeit {
         std::vector<Invocation *> actualSequence;
         std::vector<Invocation *> matchedInvocations;
         int count;
+		// After this index in actualSequence, there are no more matches of the expected pattern
+		// We may use this for better formatting of the verification error.
+		int noMatchZoneStart;
 
         void run(InvocationsSourceProxy &involvedInvocationSources, std::vector<Sequence *> &expectedPattern) {
             getActualInvocationSequence(involvedInvocationSources, actualSequence);
-            count = countMatches(expectedPattern, actualSequence, matchedInvocations);
+			noMatchZoneStart = 0;
+			count = 0;
+			countMatches(expectedPattern, actualSequence, matchedInvocations);
         }
 
     private:
@@ -26,16 +31,13 @@ namespace fakeit {
             InvocationUtils::sortByInvocationOrder(actualInvocations, actualSequence);
         }
 
-        static int countMatches(std::vector<Sequence *> &pattern, std::vector<Invocation *> &actualSequence,
+        void countMatches(std::vector<Sequence *> &pattern, std::vector<Invocation *> &actualSequence,
                                 std::vector<Invocation *> &matchedInvocations) {
             int end = -1;
-            int count = 0;
-            int startSearchIndex = 0;
-            while (findNextMatch(pattern, actualSequence, startSearchIndex, end, matchedInvocations)) {
+            while (findNextMatch(pattern, actualSequence, noMatchZoneStart, end, matchedInvocations)) {
                 count++;
-                startSearchIndex = end;
+				noMatchZoneStart = end;
             }
-            return count;
         }
 
         static void collectActualInvocations(InvocationsSourceProxy &involvedMocks,
