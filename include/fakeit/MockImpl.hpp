@@ -235,7 +235,7 @@ namespace fakeit {
         }
 
         static C *createFakeInstance() {
-            FakeObject<C, baseclasses...> *fake = new FakeObject<C, baseclasses...>(1);
+            FakeObject<C, baseclasses...> *fake = new FakeObject<C, baseclasses...>();
             void *unmockedMethodStubPtr = union_cast<void *>(&MockImpl<C, baseclasses...>::unmocked);
 			void *unmockedDtorStubPtr = union_cast<void *>(&MockImpl<C, baseclasses...>::unmockedDtor);
 			fake->getVirtualTable().initAll(unmockedMethodStubPtr);
@@ -283,7 +283,7 @@ namespace fakeit {
         }
 
         MockImpl(FakeitContext &fakeit, C &obj, bool isSpy)
-                : _proxy{obj}, _instance(&obj), _fakeit(fakeit), _isOwner(!isSpy) {
+                : _isOwner(!isSpy), _instance(&obj), _fakeit(fakeit), pInstance(nullptr), _proxy{ obj }  {
         }
 
         template<typename R, typename ... arglist>

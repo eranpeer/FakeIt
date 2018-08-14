@@ -39,7 +39,7 @@ namespace fakeit {
 
     public:
 
-        FakeObject(int a) : vtable() {
+        FakeObject() : vtable() {
             initializeDataMembersArea();
         }
 
