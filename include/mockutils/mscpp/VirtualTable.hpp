@@ -226,10 +226,10 @@ namespace fakeit {
             // store the user method in a cookie and put the
             // correct format method in the virtual table.
             // the method stored in the vt will call the method in the cookie when invoked.
-            void *dtorPtr = union_cast<void *>(&VirtualTable<C, baseclasses...>::dtor);
-            unsigned int index = VTUtils::getDestructorOffset<C>();
-            _firstMethod[index] = dtorPtr;
-            setCookie(numOfCookies - 1, method); // use the last cookie
+			void *dtorPtr = union_cast<void *>(&VirtualTable<C, baseclasses...>::dtor);
+			unsigned int index = VTUtils::getDestructorOffset<C>();
+			_firstMethod[index] = dtorPtr;
+			setCookie(numOfCookies - 1, method); // use the last cookie
         }
 
         unsigned int getSize() {

@@ -76,12 +76,17 @@ namespace fakeit {
         }
 
         void detach() {
-            getFake().setVirtualTable(originalVtHandle.restore());
-        }
+			//_methodMocks = {};
+			//_methodMocks.resize(VTUtils::getVTSize<C>());
+			//_members = {};
+			//_offsets = {};
+			//_offsets.resize(VTUtils::getVTSize<C>());
+		}
 
         ~DynamicProxy() {
-            _cloneVt.dispose();
-        }
+			getFake().setVirtualTable(originalVtHandle.restore());
+			_cloneVt.dispose();
+		}
 
         C &get() {
             return instance;

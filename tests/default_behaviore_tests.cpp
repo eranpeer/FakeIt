@@ -14,19 +14,20 @@
 
 using namespace fakeit;
 
-struct DefaultBehavioreTests: tpunit::TestFixture {
+struct DefaultBehavioreTests : tpunit::TestFixture {
 	DefaultBehavioreTests()
-			: tpunit::TestFixture(
-					//
-					TEST(DefaultBehavioreTests::scalar_types_should_return_zero), //
-					TEST(DefaultBehavioreTests::DefaultBeaviorOfVoidFunctionsIsToDoNothing), //
-					TEST(DefaultBehavioreTests::ReturnByValue_ReturnDefaultConstructedObject), //
-					TEST(DefaultBehavioreTests::ReturnByValue_ThrowExceptionIfNotDefaultConstructible), //
-					TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToNullIfAbstract), //
-					TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToDefaultConstructedObject), //
-					TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToNullIfNotDefaultConstructible), //
-					TEST(DefaultBehavioreTests::ReturnPtr_NullPtrIfPtrToAbstract)
-							) {
+		: tpunit::TestFixture(
+			//
+			TEST(DefaultBehavioreTests::scalar_types_should_return_zero), //
+			TEST(DefaultBehavioreTests::DefaultBeaviorOfVoidFunctionsIsToDoNothing), //
+			TEST(DefaultBehavioreTests::ReturnByValue_ReturnDefaultConstructedObject), //
+			TEST(DefaultBehavioreTests::ReturnByValue_ThrowExceptionIfNotDefaultConstructible), //
+			TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToNullIfAbstract), //
+			TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToDefaultConstructedObject), //
+			TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToNullIfNotDefaultConstructible), //
+			TEST(DefaultBehavioreTests::ReturnPtr_NullPtrIfPtrToAbstract),
+			TEST(DefaultBehavioreTests::production_shared_ptr_mock_used_in_invocation)
+		) {
 	}
 
 	enum Color {
@@ -63,7 +64,7 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 
 	struct NotDefaultConstructible {
 		NotDefaultConstructible(int a)
-				: _a(a) {
+			: _a(a) {
 		}
 		bool operator==(const NotDefaultConstructible &other) const {
 			return _a == other._a;
@@ -91,41 +92,41 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 	void scalar_types_should_return_zero() {
 		Mock<ScalarFunctions> mock;
 
-		Fake(Method(mock,boolFunc));
-		Fake(Method(mock,charFunc));
-		Fake(Method(mock,char16Func));
-		Fake(Method(mock,char32Func));
-		Fake(Method(mock,wcharFunc));
-		Fake(Method(mock,shortFunc));
-		Fake(Method(mock,intFunc));
-		Fake(Method(mock,longFunc));
-		Fake(Method(mock,longLongFunc));
-		Fake(Method(mock,floatFunc));
-		Fake(Method(mock,doubleFunc));
-		Fake(Method(mock,longDoubleFunc));
-		Fake(Method(mock,enumFunc));
-		Fake(Method(mock,pIntFunc));
-		Fake(Method(mock,pScalarFuctionsfunc));
-		Fake(Method(mock,nullptrFunc));
-		Fake(Method(mock,pMemberFunc));
+		Fake(Method(mock, boolFunc));
+		Fake(Method(mock, charFunc));
+		Fake(Method(mock, char16Func));
+		Fake(Method(mock, char32Func));
+		Fake(Method(mock, wcharFunc));
+		Fake(Method(mock, shortFunc));
+		Fake(Method(mock, intFunc));
+		Fake(Method(mock, longFunc));
+		Fake(Method(mock, longLongFunc));
+		Fake(Method(mock, floatFunc));
+		Fake(Method(mock, doubleFunc));
+		Fake(Method(mock, longDoubleFunc));
+		Fake(Method(mock, enumFunc));
+		Fake(Method(mock, pIntFunc));
+		Fake(Method(mock, pScalarFuctionsfunc));
+		Fake(Method(mock, nullptrFunc));
+		Fake(Method(mock, pMemberFunc));
 
 		ScalarFunctions &i = mock.get();
 
 		//Default behavior of a scalar function is to return 0/false/null
 
 		ASSERT_EQUAL(false, i.boolFunc());
-		ASSERT_EQUAL((char ) 0, i.charFunc());
-		ASSERT_EQUAL((int )(char16_t ) 0, (int )i.char16Func());
-		ASSERT_EQUAL((char32_t ) 0, i.char32Func());
-		ASSERT_EQUAL((wchar_t ) 0, i.wcharFunc());
-		ASSERT_EQUAL((short ) 0, i.shortFunc());
-		ASSERT_EQUAL((int ) 0, i.intFunc());
-		ASSERT_EQUAL((long ) 0, i.longFunc());
-		ASSERT_EQUAL((long )0, (long )i.longLongFunc());
-		ASSERT_EQUAL((float ) 0, i.floatFunc());
-		ASSERT_EQUAL((double ) 0, i.doubleFunc());
-		ASSERT_EQUAL((double ) 0, (double ) i.longDoubleFunc());
-		ASSERT_EQUAL(0, (int ) i.enumFunc());
+		ASSERT_EQUAL((char)0, i.charFunc());
+		ASSERT_EQUAL((int)(char16_t)0, (int)i.char16Func());
+		ASSERT_EQUAL((char32_t)0, i.char32Func());
+		ASSERT_EQUAL((wchar_t)0, i.wcharFunc());
+		ASSERT_EQUAL((short)0, i.shortFunc());
+		ASSERT_EQUAL((int)0, i.intFunc());
+		ASSERT_EQUAL((long)0, i.longFunc());
+		ASSERT_EQUAL((long)0, (long)i.longLongFunc());
+		ASSERT_EQUAL((float)0, i.floatFunc());
+		ASSERT_EQUAL((double)0, i.doubleFunc());
+		ASSERT_EQUAL((double)0, (double)i.longDoubleFunc());
+		ASSERT_EQUAL(0, (int)i.enumFunc());
 		ASSERT_EQUAL(nullptr, i.pIntFunc());
 		ASSERT_EQUAL(nullptr, i.pScalarFuctionsfunc());
 		ASSERT_EQUAL(nullptr, i.nullptrFunc());
@@ -139,8 +140,8 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 
 	void DefaultBeaviorOfVoidFunctionsIsToDoNothing() {
 		Mock<VoidFunctions> mock;
-		Fake(Method(mock,proc1));
-		Fake(Method(mock,proc2));
+		Fake(Method(mock, proc1));
+		Fake(Method(mock, proc2));
 		VoidFunctions& i = mock.get();
 		i.proc1();
 		i.proc2(1);
@@ -148,15 +149,15 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 
 	void ReturnByValue_ReturnDefaultConstructedObject() {
 		Mock<DefaultConstructibleFunctions> mock;
-		Fake(Method(mock,stringfunc));
+		Fake(Method(mock, stringfunc));
 		DefaultConstructibleFunctions& i = mock.get();
 		ASSERT_EQUAL(std::string(), i.stringfunc());
 	}
 
 	void ReturnByReference_ReturnReferenceToDefaultConstructedObject() {
 		Mock<ReferenceFunctions> mock;
-		Fake(Method(mock,scalarFunc));
-		Fake(Method(mock,stringFunc));
+		Fake(Method(mock, scalarFunc));
+		Fake(Method(mock, stringFunc));
 		ReferenceFunctions& i = mock.get();
 		ASSERT_EQUAL(0, i.scalarFunc());
 		ASSERT_EQUAL(std::string(), i.stringFunc());
@@ -164,15 +165,16 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 
 	void ReturnByValue_ThrowExceptionIfNotDefaultConstructible() {
 		Mock<NonDefaultConstructibleFunctions> mock;
-		Fake(Method(mock,notDefaultConstructibleFunc));
+		Fake(Method(mock, notDefaultConstructibleFunc));
 		NonDefaultConstructibleFunctions& i = mock.get();
 		try {
 			i.notDefaultConstructibleFunc();
 			FAIL()
-			;
-		} catch (fakeit::DefaultValueInstatiationException& e) {
+				;
+		}
+		catch (fakeit::DefaultValueInstatiationException& e) {
 			auto expected = std::string("Type ") + std::string(typeid(NotDefaultConstructible).name())
-					+ std::string(" is not default constructible. Could not instantiate a default return value");
+				+ std::string(" is not default constructible. Could not instantiate a default return value");
 			std::string actual(e.what());
 			ASSERT_EQUAL(expected, actual);
 		}
@@ -180,23 +182,51 @@ struct DefaultBehavioreTests: tpunit::TestFixture {
 
 	void ReturnByReference_ReturnReferenceToNullIfNotDefaultConstructible() {
 		Mock<ReferenceFunctions> mock;
-		Fake(Method(mock,notDefaultConstructibleFunc));
+		Fake(Method(mock, notDefaultConstructibleFunc));
 		ReferenceFunctions& i = mock.get();
 		ASSERT_EQUAL(nullptr, &i.notDefaultConstructibleFunc());
 	}
 
 	void ReturnByReference_ReturnReferenceToNullIfAbstract() {
 		Mock<ReferenceFunctions> mock;
-		Fake(Method(mock,abstractTypeFunc));
+		Fake(Method(mock, abstractTypeFunc));
 		ReferenceFunctions& i = mock.get();
 		ASSERT_EQUAL(nullptr, &i.abstractTypeFunc());
 	}
 
 	void ReturnPtr_NullPtrIfPtrToAbstract() {
 		Mock<ReferenceFunctions> mock;
-		Fake(Method(mock,abstractTypeFunc2));
+		Fake(Method(mock, abstractTypeFunc2));
 		ReferenceFunctions& i = mock.get();
 		ASSERT_EQUAL(nullptr, i.abstractTypeFunc2());
 	}
 
+	class ISomeInterface3 {
+	public:
+		virtual ~ISomeInterface3() {
+			int a = 0;
+			a++;
+		}
+
+		virtual void methodWithSomeSharedPointer(std::shared_ptr<ISomeInterface3> listener) = 0;
+	};
+
+	struct A {
+		//~A() {
+		//	int a = 0;
+		//	a++;
+		//}
+	};
+
+	void production_shared_ptr_mock_used_in_invocation() {
+		std::shared_ptr<ISomeInterface3> pMockInstance;
+		Mock<ISomeInterface3> mock;
+		fakeit::Fake(Dtor(mock));
+		fakeit::Fake(Method(mock, methodWithSomeSharedPointer));
+
+		pMockInstance = std::shared_ptr<ISomeInterface3>(&mock.get());
+		pMockInstance->methodWithSomeSharedPointer(pMockInstance);
+
+		pMockInstance = nullptr;
+	}
 } __DefaultBehaviore;
