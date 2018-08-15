@@ -45,11 +45,6 @@ namespace fakeit {
             }
         }
 
-        void detach() {
-            _isOwner = false;
-            _proxy.detach();
-        }
-
         /**
          * Return all actual invocations of this mock.
          */
@@ -113,6 +108,10 @@ namespace fakeit {
         C *_instance; //
         bool _isOwner;
         FakeitContext &_fakeit;
+
+        MockImpl(FakeitContext &fakeit, C &obj, bool isSpy)
+                : _proxy{obj}, _instance(&obj), _isOwner(!isSpy), _fakeit(fakeit) {
+        }
 
         template<typename R, typename ... arglist>
         class MethodMockingContextBase : public MethodMockingContext<R, arglist...>::Context {
@@ -226,6 +225,8 @@ namespace fakeit {
             return mock;
         }
 
+		void unmockedDtor() {}
+
         void unmocked() {
             ActualInvocation<> invocation(Invocation::nextInvocationOrdinal(), UnknownMethod::instance());
             UnexpectedMethodCallEvent event(UnexpectedType::Unmocked, invocation);
@@ -240,8 +241,14 @@ namespace fakeit {
         static C *createFakeInstance() {
             FakeObject<C, baseclasses...> *fake = new FakeObject<C, baseclasses...>();
             void *unmockedMethodStubPtr = union_cast<void *>(&MockImpl<C, baseclasses...>::unmocked);
-            fake->getVirtualTable().initAll(unmockedMethodStubPtr);
-            return reinterpret_cast<C *>(fake);
+			void *unmockedDtorStubPtr = union_cast<void *>(&MockImpl<C, baseclasses...>::unmockedDtor);
+			fake->getVirtualTable().initAll(unmockedMethodStubPtr);
+			try {
+				fake->setDtor(unmockedDtorStubPtr);
+			}
+			catch (NoVirtualDtor&) {
+			}
+			return reinterpret_cast<C *>(fake);
         }
 
         template<typename R, typename ... arglist>
@@ -277,10 +284,6 @@ namespace fakeit {
             Destructible *d = proxy.getDtorMock();
             RecordedMethodBody<void> *dtorMock = dynamic_cast<RecordedMethodBody<void> *>(d);
             return *dtorMock;
-        }
-
-        MockImpl(FakeitContext &fakeit, C &obj, bool isSpy)
-                : _proxy{obj}, _instance(&obj), _isOwner(!isSpy), _fakeit(fakeit) {
         }
 
         template<typename R, typename ... arglist>
