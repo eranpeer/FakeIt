@@ -32,6 +32,7 @@ Debug/
 ipch/
 TestResults/
 tests/cmake-build-debug/
+*/.vs/
 
 # Eclipse
 .settings/
