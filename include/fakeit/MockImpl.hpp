@@ -33,12 +33,20 @@ namespace fakeit {
 
         MockImpl(FakeitContext &fakeit)
                 : MockImpl<C, baseclasses...>(fakeit, *(createFakeInstance()), false) {
-			pInstance.reset(_instance);
-			FakeObject<C, baseclasses...> *fake = reinterpret_cast<FakeObject<C, baseclasses...> *>(_instance);
+            FakeObject<C, baseclasses...> *fake = reinterpret_cast<FakeObject<C, baseclasses...> *>(_instance);
             fake->getVirtualTable().setCookie(1, this);
         }
 
         virtual ~MockImpl() NO_THROWS {
+            _proxy.detach();
+            if (_isOwner) {
+                FakeObject<C, baseclasses...> *fake = reinterpret_cast<FakeObject<C, baseclasses...> *>(_instance);
+                delete fake;
+            }
+        }
+
+        void detach() {
+            _isOwner = false;
             _proxy.detach();
         }
 
@@ -53,13 +61,13 @@ namespace fakeit {
             }
         }
 
-		void initDataMembersIfOwner()
-		{
-			if (_isOwner) {
-				FakeObject<C, baseclasses...> *fake = reinterpret_cast<FakeObject<C, baseclasses...> *>(pInstance.get());
-				fake->initializeDataMembersArea();
-			}
-		}
+	    void initDataMembersIfOwner()
+	    {
+		    if (_isOwner) {
+			    FakeObject<C, baseclasses...> *fake = reinterpret_cast<FakeObject<C, baseclasses...> *>(_instance);
+			    fake->initializeDataMembersArea();
+		    }
+	    }
 
 	    void reset() {
             _proxy.Reset();
@@ -101,13 +109,10 @@ namespace fakeit {
         }
 
     private:
-		bool _isOwner;
-		C * _instance; //
-		FakeitContext & _fakeit;
-
-		std::shared_ptr<C> pInstance; 
-		DynamicProxy<C, baseclasses...> _proxy;
-		
+        DynamicProxy<C, baseclasses...> _proxy;
+        C *_instance; //
+        bool _isOwner;
+        FakeitContext &_fakeit;
 
         template<typename R, typename ... arglist>
         class MethodMockingContextBase : public MethodMockingContext<R, arglist...>::Context {
@@ -221,8 +226,6 @@ namespace fakeit {
             return mock;
         }
 
-		void unmockedDtor() {}
-
         void unmocked() {
             ActualInvocation<> invocation(Invocation::nextInvocationOrdinal(), UnknownMethod::instance());
             UnexpectedMethodCallEvent event(UnexpectedType::Unmocked, invocation);
@@ -237,14 +240,8 @@ namespace fakeit {
         static C *createFakeInstance() {
             FakeObject<C, baseclasses...> *fake = new FakeObject<C, baseclasses...>();
             void *unmockedMethodStubPtr = union_cast<void *>(&MockImpl<C, baseclasses...>::unmocked);
-			void *unmockedDtorStubPtr = union_cast<void *>(&MockImpl<C, baseclasses...>::unmockedDtor);
-			fake->getVirtualTable().initAll(unmockedMethodStubPtr);
-			try {
-				fake->setDtor(unmockedDtorStubPtr);
-			}
-			catch (NoVirtualDtor&) {
-			}
-			return reinterpret_cast<C *>(fake);
+            fake->getVirtualTable().initAll(unmockedMethodStubPtr);
+            return reinterpret_cast<C *>(fake);
         }
 
         template<typename R, typename ... arglist>
@@ -283,7 +280,7 @@ namespace fakeit {
         }
 
         MockImpl(FakeitContext &fakeit, C &obj, bool isSpy)
-                : _isOwner(!isSpy), _instance(&obj), _fakeit(fakeit), pInstance(nullptr), _proxy{ obj }  {
+                : _proxy{obj}, _instance(&obj), _isOwner(!isSpy), _fakeit(fakeit) {
         }
 
         template<typename R, typename ... arglist>
