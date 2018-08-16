@@ -33,7 +33,7 @@ namespace fakeit {
 
         MockImpl(FakeitContext &fakeit)
                 : MockImpl<C, baseclasses...>(fakeit, *(createFakeInstance()), false){
-            FakeObject<C, baseclasses...> *fake = fakeObject(_instance);
+            FakeObject<C, baseclasses...> *fake = asFakeObject(_instance);
             fake->getVirtualTable().setCookie(1, this);
         }
 
@@ -55,7 +55,7 @@ namespace fakeit {
 	    void initDataMembersIfOwner()
 	    {
 		    if (isOwner()) {
-			    FakeObject<C, baseclasses...> *fake = fakeObject(_instance);
+			    FakeObject<C, baseclasses...> *fake = asFakeObject(_instance);
 			    fake->initializeDataMembersArea();
 		    }
 	    }
@@ -106,17 +106,18 @@ namespace fakeit {
 		}
 
     private:
-        DynamicProxy<C, baseclasses...> _proxy;
+		std::shared_ptr<FakeObject<C, baseclasses...>> _instanceOwner;
+		DynamicProxy<C, baseclasses...> _proxy;
         C *_instance; //
         FakeitContext &_fakeit;
-        std::shared_ptr<FakeObject<C, baseclasses...>> _instanceOwner;
 
         MockImpl(FakeitContext &fakeit, C &obj, bool isSpy)
-                : _proxy{obj}, _instance(&obj), _fakeit(fakeit),
-                _instanceOwner(isSpy?nullptr: fakeObject(&obj)) {
-        }
+                : _instanceOwner(isSpy ? nullptr : asFakeObject(&obj))
+				, _proxy{obj}
+				, _instance(&obj)
+				, _fakeit(fakeit) {}
 
-        static FakeObject<C, baseclasses...>* fakeObject(C* instance){
+        static FakeObject<C, baseclasses...>* asFakeObject(void* instance){
             return reinterpret_cast<FakeObject<C, baseclasses...> *>(instance);
         }
 
@@ -226,7 +227,7 @@ namespace fakeit {
         };
 
         static MockImpl<C, baseclasses...> *getMockImpl(void *instance) {
-            FakeObject<C, baseclasses...> *fake = reinterpret_cast<FakeObject<C, baseclasses...> *>(instance);
+            FakeObject<C, baseclasses...> *fake = asFakeObject(instance);
             MockImpl<C, baseclasses...> *mock = reinterpret_cast<MockImpl<C, baseclasses...> *>(fake->getVirtualTable().getCookie(
                     1));
             return mock;
@@ -306,3 +307,10 @@ namespace fakeit {
         }
     };
 }
+/*
+ * Here is some idea:
+ * When mocking the dtor, dont replace the default implementation. Instead, have the default implementation invoke
+ * the stubbed method (if exists).
+ * This way we can also do extra work in the default implementation like mark the instance as deleted so the mock
+ * will know not to delete it if already deleted!!!
+ */
