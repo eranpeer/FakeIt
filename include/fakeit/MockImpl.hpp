@@ -99,6 +99,12 @@ namespace fakeit {
             return DtorMockingContext(new DtorMockingContextImpl(*this));
         }
 
+		std::shared_ptr<C> getShared() {
+			auto * a = &_instanceOwner;
+			auto * b = fakeit::union_cast<typename std::shared_ptr<C>*>(a);
+			return *b;
+		}
+
     private:
         DynamicProxy<C, baseclasses...> _proxy;
         C *_instance; //
@@ -298,6 +304,5 @@ namespace fakeit {
         static RecordedMethodBody<void> *createRecordedDtorBody(MockObject<C> &mock) {
             return new RecordedMethodBody<void>(mock.getFakeIt(), "dtor");
         }
-
     };
 }

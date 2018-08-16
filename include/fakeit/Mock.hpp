@@ -35,7 +35,11 @@ namespace fakeit {
             return impl.get();
         }
 
-        C &operator()() {
+		std::shared_ptr<C> getShared() {
+			return impl.getShared();
+		}
+        
+		C &operator()() {
             return get();
         }
 

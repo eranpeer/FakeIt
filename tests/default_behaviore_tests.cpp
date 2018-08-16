@@ -203,19 +203,9 @@ struct DefaultBehavioreTests : tpunit::TestFixture {
 
 	class ISomeInterface3 {
 	public:
-		virtual ~ISomeInterface3() {
-			int a = 0;
-			a++;
-		}
+		virtual ~ISomeInterface3() {}
 
 		virtual void methodWithSomeSharedPointer(std::shared_ptr<ISomeInterface3> listener) = 0;
-	};
-
-	struct A {
-		//~A() {
-		//	int a = 0;
-		//	a++;
-		//}
 	};
 
 	void production_shared_ptr_mock_used_in_invocation() {
@@ -224,9 +214,10 @@ struct DefaultBehavioreTests : tpunit::TestFixture {
 		fakeit::Fake(Dtor(mock));
 		fakeit::Fake(Method(mock, methodWithSomeSharedPointer));
 
-		pMockInstance = std::shared_ptr<ISomeInterface3>(&mock.get());
+		pMockInstance = mock.getShared();
 		pMockInstance->methodWithSomeSharedPointer(pMockInstance);
 
 		pMockInstance = nullptr;
 	}
+
 } __DefaultBehaviore;
