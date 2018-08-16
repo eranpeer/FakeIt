@@ -32,17 +32,13 @@ namespace fakeit {
         }
 
         MockImpl(FakeitContext &fakeit)
-                : MockImpl<C, baseclasses...>(fakeit, *(createFakeInstance()), false) {
-            FakeObject<C, baseclasses...> *fake = reinterpret_cast<FakeObject<C, baseclasses...> *>(_instance);
+                : MockImpl<C, baseclasses...>(fakeit, *(createFakeInstance()), false){
+            FakeObject<C, baseclasses...> *fake = fakeObject(_instance);
             fake->getVirtualTable().setCookie(1, this);
         }
 
         virtual ~MockImpl() NO_THROWS {
             _proxy.detach();
-            if (_isOwner) {
-                FakeObject<C, baseclasses...> *fake = reinterpret_cast<FakeObject<C, baseclasses...> *>(_instance);
-                delete fake;
-            }
         }
 
         /**
@@ -58,8 +54,8 @@ namespace fakeit {
 
 	    void initDataMembersIfOwner()
 	    {
-		    if (_isOwner) {
-			    FakeObject<C, baseclasses...> *fake = reinterpret_cast<FakeObject<C, baseclasses...> *>(_instance);
+		    if (isOwner()) {
+			    FakeObject<C, baseclasses...> *fake = fakeObject(_instance);
 			    fake->initializeDataMembersArea();
 		    }
 	    }
@@ -106,11 +102,16 @@ namespace fakeit {
     private:
         DynamicProxy<C, baseclasses...> _proxy;
         C *_instance; //
-        bool _isOwner;
         FakeitContext &_fakeit;
+        std::shared_ptr<FakeObject<C, baseclasses...>> _instanceOwner;
 
         MockImpl(FakeitContext &fakeit, C &obj, bool isSpy)
-                : _proxy{obj}, _instance(&obj), _isOwner(!isSpy), _fakeit(fakeit) {
+                : _proxy{obj}, _instance(&obj), _fakeit(fakeit),
+                _instanceOwner(isSpy?nullptr: fakeObject(&obj)) {
+        }
+
+        static FakeObject<C, baseclasses...>* fakeObject(C* instance){
+            return reinterpret_cast<FakeObject<C, baseclasses...> *>(instance);
         }
 
         template<typename R, typename ... arglist>
@@ -224,6 +225,8 @@ namespace fakeit {
                     1));
             return mock;
         }
+
+        bool isOwner(){ return _instanceOwner != nullptr;}
 
 		void unmockedDtor() {}
 
