@@ -14,7 +14,8 @@
 #include "mockutils/union_cast.hpp"
 
 namespace fakeit {
-    struct NoVirtualDtor : public std::runtime_error {
+    class NoVirtualDtor : public std::runtime_error {
+    public:
 		NoVirtualDtor() :std::runtime_error("Can't mock the destructor. No virtual destructor was found") {}
     };
 

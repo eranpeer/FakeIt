@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2018-08-17 00:14:50.866238
+ *  Generated: 2018-08-17 00:22:25.788130
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -5235,7 +5235,8 @@ namespace fakeit {
 }
 
 namespace fakeit {
-    struct NoVirtualDtor : public std::runtime_error {
+    class NoVirtualDtor : public std::runtime_error {
+    public:
 		NoVirtualDtor() :std::runtime_error("Can't mock the destructor. No virtual destructor was found") {}
     };
 
@@ -7936,11 +7937,11 @@ namespace fakeit {
             return DtorMockingContext(new DtorMockingContextImpl(*this));
         }
 
-		std::shared_ptr<C> getShared() {
-			auto * a = &_instanceOwner;
-			auto * b = fakeit::union_cast<typename std::shared_ptr<C>*>(a);
-			return *b;
-		}
+
+
+
+
+
 
     private:
 
@@ -8219,9 +8220,9 @@ namespace fakeit {
             return impl.get();
         }
 
-		std::shared_ptr<C> getShared() {
-			return impl.getShared();
-		}
+
+
+
 
 		C &operator()() {
             return get();

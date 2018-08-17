@@ -99,11 +99,11 @@ namespace fakeit {
             return DtorMockingContext(new DtorMockingContextImpl(*this));
         }
 
-		std::shared_ptr<C> getShared() {
-			auto * a = &_instanceOwner;
-			auto * b = fakeit::union_cast<typename std::shared_ptr<C>*>(a);
-			return *b;
-		}
+//		std::shared_ptr<C> getShared() {
+//			auto * a = &_instanceOwner;
+//			auto * b = fakeit::union_cast<typename std::shared_ptr<C>*>(a);
+//			return *b;
+//		}
 
     private:
 		// Keep members in this order! _proxy should be deleted before _inatanceOwner.
