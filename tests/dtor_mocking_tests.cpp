@@ -23,7 +23,8 @@ struct DtorMocking : tpunit::TestFixture
             TEST(DtorMocking::call_dtor_without_delete),
             TEST(DtorMocking::spy_dtor),
 			TEST(DtorMocking::production_takes_ownwership_with_uniqe_ptr),
-			TEST(DtorMocking::production_takes_ownership_interface_with_more_methods)
+			TEST(DtorMocking::production_takes_ownership_interface_with_more_methods),
+			TEST(DtorMocking::should_fail_faking_when_no_virtual_dtor_exists)
 		)
 	{
 	}
@@ -81,7 +82,7 @@ struct DtorMocking : tpunit::TestFixture
 	}
 
     struct A {
-        virtual ~A(){}
+		virtual ~A(){}
     };
 
 	void spy_dtor() {
@@ -109,6 +110,16 @@ struct DtorMocking : tpunit::TestFixture
 
 		std::unique_ptr<SomeInterface2> ptr = std::unique_ptr<SomeInterface2>(&m.get());		
 		ptr = nullptr;
+	}
+
+	struct NoVirtualDestructor {
+		~NoVirtualDestructor() {}
+		virtual void foo() = 0;
+	};
+
+	void should_fail_faking_when_no_virtual_dtor_exists() {
+		Mock<NoVirtualDestructor> m;
+		ASSERT_THROW(Fake(Dtor(m)), std::runtime_error);
 	}
 
 } __DtorMocking;
