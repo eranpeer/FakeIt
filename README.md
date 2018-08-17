@@ -152,7 +152,7 @@ run the tests by typing
 ```
 
 #### Building and Running the Unit Tests with Visual Studio 
-Open the tests/all_tests.vcxproj project file with Visual Studio 2013. Build and run the project and check the test results. 
+Open the tests/all_tests.vcxproj project file with Visual Studio. Build and run the project and check the test results. 
 
 ## Limitations
 * Currently only GCC, Clang and MSC++ are supported.
