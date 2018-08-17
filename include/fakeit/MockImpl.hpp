@@ -33,7 +33,7 @@ namespace fakeit {
 
         MockImpl(FakeitContext &fakeit)
                 : MockImpl<C, baseclasses...>(fakeit, *(createFakeInstance()), false){
-            FakeObject<C, baseclasses...> *fake = asFakeObject(_instance);
+            FakeObject<C, baseclasses...> *fake = asFakeObject(_instanceOwner.get());
             fake->getVirtualTable().setCookie(1, this);
         }
 
@@ -55,7 +55,7 @@ namespace fakeit {
 	    void initDataMembersIfOwner()
 	    {
 		    if (isOwner()) {
-			    FakeObject<C, baseclasses...> *fake = asFakeObject(_instance);
+			    FakeObject<C, baseclasses...> *fake = asFakeObject(_instanceOwner.get());
 			    fake->initializeDataMembersArea();
 		    }
 	    }
@@ -106,15 +106,22 @@ namespace fakeit {
 		}
 
     private:
+		// Keep members in this order! _proxy should be deleted before _inatanceOwner.
+		// Not that the dtor of MockImpl calls _proxy.detach(), hence the detach happens 
+		// before the destructor of the _proxy is invoked. As a result the dtor method in the virtual
+		// table of the fakedObject is reverted to unmockedDtor() before the proxy is deleted.
+		// This way, any recorded arguments in the proxy that capture the fakeObject itself will
+		// invoke the unmockedDtor as part of their dtor and the deletion will be completly ignored.
+		// This solves issue #153.
+		// The actual deletion of fakedObject will be then triggered by the mock itself when deleting
+		// the instanceOwner.
 		std::shared_ptr<FakeObject<C, baseclasses...>> _instanceOwner;
 		DynamicProxy<C, baseclasses...> _proxy;
-        C *_instance; //
         FakeitContext &_fakeit;
 
         MockImpl(FakeitContext &fakeit, C &obj, bool isSpy)
                 : _instanceOwner(isSpy ? nullptr : asFakeObject(&obj))
 				, _proxy{obj}
-				, _instance(&obj)
 				, _fakeit(fakeit) {}
 
         static FakeObject<C, baseclasses...>* asFakeObject(void* instance){
@@ -253,11 +260,8 @@ namespace fakeit {
             void *unmockedMethodStubPtr = union_cast<void *>(&MockImpl<C, baseclasses...>::unmocked);
 			void *unmockedDtorStubPtr = union_cast<void *>(&MockImpl<C, baseclasses...>::unmockedDtor);
 			fake->getVirtualTable().initAll(unmockedMethodStubPtr);
-			try {
+			if (VTUtils::hasVirtualDestructor<C>())
 				fake->setDtor(unmockedDtorStubPtr);
-			}
-			catch (NoVirtualDtor&) {
-			}
 			return reinterpret_cast<C *>(fake);
         }
 

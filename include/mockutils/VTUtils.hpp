@@ -14,7 +14,8 @@
 #include "mockutils/union_cast.hpp"
 
 namespace fakeit {
-    class NoVirtualDtor {
+    struct NoVirtualDtor : public std::runtime_error {
+		NoVirtualDtor() :std::runtime_error("Can't mock the destructor. No virtual destructor was found") {}
     };
 
     class VTUtils {
@@ -40,6 +41,18 @@ namespace fakeit {
         getDestructorOffset() {
             throw NoVirtualDtor();
         }
+
+		template<typename C>
+		static typename std::enable_if<std::has_virtual_destructor<C>::value, bool>::type
+			hasVirtualDestructor() {
+			return true;
+		}
+
+		template<typename C>
+		static typename std::enable_if<!std::has_virtual_destructor<C>::value, bool>::type
+			hasVirtualDestructor() {
+			return false;
+		}
 
         template<typename C>
         static unsigned int getVTSize() {
