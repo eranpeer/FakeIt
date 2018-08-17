@@ -26,8 +26,8 @@ struct DefaultBehavioreTests : tpunit::TestFixture {
 			TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToDefaultConstructedObject), //
 			TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToNullIfNotDefaultConstructible), //
 			TEST(DefaultBehavioreTests::ReturnPtr_NullPtrIfPtrToAbstract),
-			//TEST(DefaultBehavioreTests::production_shared_ptr_mock_used_in_invocation),
-			TEST(DefaultBehavioreTests::should_survive_delete_of_mock_instance_by_user)
+			TEST(DefaultBehavioreTests::production_shared_ptr_mock_used_in_invocation)
+			//TEST(DefaultBehavioreTests::should_survive_delete_of_mock_instance_by_user)
 		) {
 	}
 
@@ -224,14 +224,12 @@ struct DefaultBehavioreTests : tpunit::TestFixture {
 //		pMockInstance = nullptr;
 //	}
 
-	void should_survive_delete_of_mock_instance_by_user() {
+	void production_shared_ptr_mock_used_in_invocation() {
 		Mock<ISomeInterface3> mock;
 		std::shared_ptr<ISomeInterface3> pMockInstance(&mock.get());
 		fakeit::Fake(Dtor(mock));
 		fakeit::Fake(Method(mock, methodWithSomeSharedPointer));
-
 		pMockInstance->methodWithSomeSharedPointer(pMockInstance);
-
 		pMockInstance = nullptr;
 	}
 
