@@ -156,6 +156,7 @@ Open the tests/all_tests.vcxproj project file with Visual Studio. Build and run 
 
 ## Limitations
 * Currently only GCC, Clang and MSC++ are supported.
+* On GCC, optimization flag O2 and O3 are not supported. You bust compile the test project with -O1 or -O0.
 * In MSC++, your project must have Edit And Continue debug mode on (https://msdn.microsoft.com/en-us/library/esaeyddf.aspx) which is same of /ZI compiler switch. If you don't use this, you will have exceptions mocking destructors (which includes unique_ptr and other smart pointers). 
 * Can't mock classes with multiple inheritance.
 * Can't mock classes with virtual inheritance.
