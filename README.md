@@ -130,6 +130,7 @@ in `#pragma unmanaged` sections so that you can use lambda expressions.
 -I"<fakeit_folder>/include" -I"<fakeit_folder>/config/standalone"
 ```
 It is recommended to build and run the unit tests to make sure FakeIt fits your environment.
+For GCC, it is recommended to build the test project with -O1 or -O0 flags. Some features of Fakeit may not work with stonger optimizations!!
 
 #### Building and Running the Unit Tests with GCC
 ```
