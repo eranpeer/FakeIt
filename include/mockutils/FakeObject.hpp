@@ -15,6 +15,7 @@ namespace fakeit {
 // silent GCC compiler warning: iso c++ forbids zero-size array [-Wpedantic]
 #ifdef __GNUG__
 #ifndef __clang__
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 #endif
 #endif
