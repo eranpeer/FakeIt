@@ -3,7 +3,11 @@
 #include "fakeit/DefaultFakeit.hpp"
 #include "fakeit/EventHandler.hpp"
 #include "mockutils/to_string.hpp"
-#include "catch.hpp"
+#if __has_include("catch2/catch.hpp")
+#   include "catch2/catch.hpp"
+#else
+#   include "catch.hpp"
+#endif
 
 namespace fakeit {
 
