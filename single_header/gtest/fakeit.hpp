@@ -5364,6 +5364,7 @@ namespace fakeit {
 			signature(0), offset(0), cdOffset(0),
 			typeDescriptorOffset(0), classDescriptorOffset(0)
 		{
+                    (void)unused;
 		}
 
 		dword_ signature;
