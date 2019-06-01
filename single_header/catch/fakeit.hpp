@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2018-08-17 00:22:40.428924
+ *  Generated: 2019-06-01 12:14:44.281637
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -983,7 +983,19 @@ namespace fakeit {
         }
     };
 }
+#include <exception>
+
+
 namespace fakeit {
+#if __cplusplus >= 201703L
+    inline bool UncaughtException () {
+        return std::uncaught_exceptions() >= 1;
+    }
+#else
+    inline bool UncaughtException () {
+      return std::uncaught_exception();
+    }
+#endif
 
     struct FakeitException {
         std::exception err;
@@ -1119,6 +1131,11 @@ namespace fakeit {
     }
 
 }
+#if __has_include("catch2/catch.hpp")
+#   include "catch2/catch.hpp"
+#else
+#   include "catch.hpp"
+#endif
 
 namespace fakeit {
 
@@ -5822,6 +5839,7 @@ namespace fakeit {
 
 #ifdef __GNUG__
 #ifndef __clang__
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
 #endif
 #endif
@@ -8476,7 +8494,7 @@ namespace fakeit {
 
             virtual ~StubbingChange() THROWS {
 
-                if (std::uncaught_exception()) {
+                if (UncaughtException()) {
                     return;
                 }
 
@@ -8736,7 +8754,7 @@ namespace fakeit {
         friend class SequenceVerificationProgress;
 
         ~SequenceVerificationExpectation() THROWS {
-            if (std::uncaught_exception()) {
+            if (UncaughtException()) {
                 return;
             }
             VerifyExpectation(_fakeit);
@@ -9084,7 +9102,7 @@ namespace fakeit {
             friend class VerifyNoOtherInvocationsVerificationProgress;
 
             ~VerifyNoOtherInvocationsExpectation() THROWS {
-                if (std::uncaught_exception()) {
+                if (UncaughtException()) {
                     return;
                 }
 

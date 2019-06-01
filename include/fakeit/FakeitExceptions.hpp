@@ -8,9 +8,20 @@
 #pragma once
 
 #include "fakeit/FakeitEvents.hpp"
+#include <exception>
+
 
 namespace fakeit {
-    
+#if __cplusplus >= 201703L
+    inline bool UncaughtException () {
+        return std::uncaught_exceptions() >= 1;
+    }
+#else
+    inline bool UncaughtException () {
+      return std::uncaught_exception();
+    }
+#endif
+
     struct FakeitException {
         std::exception err;
 

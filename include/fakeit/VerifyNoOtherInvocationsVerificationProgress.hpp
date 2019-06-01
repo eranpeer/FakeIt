@@ -8,6 +8,7 @@
  */
 #pragma once
 
+#include "fakeit/FakeitExceptions.hpp"
 #include "fakeit/FakeitContext.hpp"
 #include "fakeit/ThrowFalseEventHandler.hpp"
 
@@ -22,7 +23,7 @@ namespace fakeit {
             friend class VerifyNoOtherInvocationsVerificationProgress;
 
             ~VerifyNoOtherInvocationsExpectation() THROWS {
-                if (std::uncaught_exception()) {
+                if (UncaughtException()) {
                     return;
                 }
 

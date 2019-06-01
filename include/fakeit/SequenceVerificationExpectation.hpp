@@ -13,7 +13,7 @@ namespace fakeit {
         friend class SequenceVerificationProgress;
 
         ~SequenceVerificationExpectation() THROWS {
-            if (std::uncaught_exception()) {
+            if (UncaughtException()) {
                 return;
             }
             VerifyExpectation(_fakeit);
