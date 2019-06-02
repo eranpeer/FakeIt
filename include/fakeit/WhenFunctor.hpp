@@ -10,6 +10,7 @@
 #include "fakeit/StubbingImpl.hpp"
 #include "fakeit/StubbingProgress.hpp"
 #include "fakeit/FakeitContext.hpp"
+#include "fakeit/FakeitExceptions.hpp"
 
 #include "mockutils/smart_ptr.hpp"
 #include "mockutils/Destructible.hpp"
@@ -25,7 +26,7 @@ namespace fakeit {
 
             virtual ~StubbingChange() THROWS {
 
-                if (std::uncaught_exception()) {
+                if (UncaughtException()) {
                     return;
                 }
 
