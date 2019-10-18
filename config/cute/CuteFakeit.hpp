@@ -20,7 +20,6 @@ namespace fakeit {
 		virtual void handle(const SequenceVerificationEvent &evt) override {
 			std::string format(_formatter.format(evt));
 			throw cute::test_failure(format, evt.file(), evt.line());
-
         }
 
 		virtual void handle(const NoMoreInvocationsVerificationEvent &evt) override {
