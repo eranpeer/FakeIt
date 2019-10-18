@@ -126,7 +126,7 @@ For example:
 ```
 * To use fakeit with **NUnit** in a managed Visual Studio C++/CLI project, add the standalone/nunit folder to your project include path. Note, it is useful to define your mocks 
 in `#pragma unmanaged` sections so that you can use lambda expressions.
-```
+
 * To use fakeit with **CUTE** add the *include* folder and the *config/cute* folder to the include path of your test project:
 ```
 -I"<fakeit_folder>/include" -I"<fakeit_folder>/config/cute"
