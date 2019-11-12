@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.0)
 
 project(FakeIt VERSION 2.0.5 LANGUAGES CXX)
 
+#Add GNU Coding Standards support.
+include(GNUInstallDirs)
+
 #Create library with INTERFACE parameter because we want to use headers from outside.
 add_library(FakeIt INTERFACE)
 
@@ -11,7 +14,7 @@ add_library(FakeIt INTERFACE)
 #If we use FakeIt from install-tree then we use INSTALL_INTERFACE wrapper.
 target_include_directories(FakeIt INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/single_header/standalone>
-    $<INSTALL_INTERFACE:include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 #Add alias for the library with namespace.
@@ -21,7 +24,7 @@ add_library(FakeIt::FakeIt ALIAS FakeIt)
 #Trailing slash at "single_header/standalone/" string means that
 #the header will be installed like ${CMAKE_INSTALL_PREFIX}/include/fakeit.hpp
 #instead of ${CMAKE_INSTALL_PREFIX}/include/standalone/fakeit.hpp.
-install(DIRECTORY single_header/standalone/ DESTINATION include)
+install(DIRECTORY single_header/standalone/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 #Add FakeIt target to the FakeItConfig.cmake file
 #which will be used to find FakeIt from outside.
