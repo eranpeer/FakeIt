@@ -32,9 +32,11 @@ install(DIRECTORY single_header/standalone/ DESTINATION ${CMAKE_INSTALL_INCLUDED
 #which will be used to find FakeIt from outside.
 install(TARGETS FakeIt EXPORT FakeItConfig)
 
-#Install FakeItConfig.cmake file to the ${CMAKE_INSTALL_PREFIX}/share/FakeIt/cmake directory
+set(FakeIt_CONFIG_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/FakeIt)
+
+#Install FakeItConfig.cmake file to the ${CMAKE_INSTALL_PREFIX}/${FakeIt_CONFIG_DIR} directory
 #and all correlated targets should be called from outside by the namespace.
-install(EXPORT FakeItConfig NAMESPACE FakeIt:: DESTINATION share/FakeIt/cmake)
+install(EXPORT FakeItConfig NAMESPACE FakeIt:: DESTINATION ${FakeIt_CONFIG_DIR})
 
 #Add version control.
 include(CMakePackageConfigHelpers)
@@ -45,5 +47,5 @@ write_basic_package_version_file("${PROJECT_BINARY_DIR}/FakeItConfigVersion.cmak
         AnyNewerVersion
     ARCH_INDEPENDENT
 )
-install(FILES "${PROJECT_BINARY_DIR}/FakeItConfigVersion.cmake" DESTINATION share/FakeIt/cmake)
+install(FILES "${PROJECT_BINARY_DIR}/FakeItConfigVersion.cmake" DESTINATION ${FakeIt_CONFIG_DIR})
 
