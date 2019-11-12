@@ -84,6 +84,7 @@ Depending on the unit testing framework you use, simply add one of the pre-packa
 * <fakeit_folder>/single\_header/[mettle](https://github.com/jimporter/mettle)
 * <fakeit_folder>/single\_header/qtest
 * <fakeit_folder>/single\_header/nunit - (See caveats in config/nunit/fakeit\_instance.hpp)
+* <fakeit_folder>/single\_header/[cute](https://github.com/PeterSommerlad/CUTE)  
 * <fakeit_folder>/single\_header/standalone
 
 For example, to use fakeit with **Google Test** simply add the *single_header/gtest* folder to the include path of your test project:
@@ -125,6 +126,11 @@ For example:
 ```
 * To use fakeit with **NUnit** in a managed Visual Studio C++/CLI project, add the standalone/nunit folder to your project include path. Note, it is useful to define your mocks 
 in `#pragma unmanaged` sections so that you can use lambda expressions.
+
+* To use fakeit with **CUTE** add the *include* folder and the *config/cute* folder to the include path of your test project:
+```
+-I"<fakeit_folder>/include" -I"<fakeit_folder>/config/cute"
+```
 * To use fakeit without any testing framework integration (**standalone**) add the *include* folder and the *config/standalone* folder to the include path of your test project:
 ```
 -I"<fakeit_folder>/include" -I"<fakeit_folder>/config/standalone"
