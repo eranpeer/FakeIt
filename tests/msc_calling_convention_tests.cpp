@@ -4,7 +4,94 @@
 #include "tpunit++.hpp"
 #include "fakeit.hpp"
 
+#include <type_traits>
+
 using namespace fakeit;
+
+struct Host {
+public:
+	void foo() const volatile {}
+	void bar() {}
+};
+
+using fooType = decltype( &Host::foo );
+using barType = decltype( &Host::bar );
+
+
+void ( Host::* ptr )( );
+
+int gg()
+{
+	return 1;
+}
+
+struct func_traits{
+
+	static int (*f())()
+	{
+		return &gg;
+	}
+	
+	template<typename T, typename R, typename... arglist>
+	static R( T::* remove_cv( R( T::*vMethod )( arglist... ) const volatile ))( arglist... ) {
+		return reinterpret_cast<void (T::*)(arglist...)>(vMethod)
+	};
+	
+	template<typename T, typename R, typename... arglist>
+	static R( T::* remove_cv( R( T::*vMethod )( arglist... ) volatile ))( arglist... ) {
+		return reinterpret_cast<void (T::*)(arglist...)>(vMethod)
+	};
+
+	template<typename T, typename R, typename... arglist>
+	static R( T::* remove_cv( R( T::*vMethod )( arglist... ) const ))( arglist... ) {
+		return reinterpret_cast<void (T::*)(arglist...)>(vMethod)
+	};
+
+	template<typename T, typename R, typename... arglist>
+	static R( T::* remove_cv( R( T::*vMethod )( arglist... ) ))( arglist... ) {
+		return vMethod;
+	};
+
+	template<typename Func>
+	using remove_cv_t = decltype( remove_cv( std::declval<Func>() ) );
+};
+
+using cleanedFooType = func_traits::remove_cv_t< fooType >;
+
+template<typename A, typename B>
+struct assert_same {
+	static_assert( std::is_same< A, B>::value, "They were not the same" );
+};
+
+void acceptsCorrect( barType param ) {}
+
+void callsWithWhatWeHave()
+{
+	cleanedFooType cft = nullptr;
+	acceptsCorrect( cft );
+}
+
+template<typename R>
+R foo( R (*func)() )
+{
+	return (*func)();
+}
+
+template<typename Func>
+auto bar( Func func ) -> decltype( foo( func ) )
+{
+	return foo( func );
+}
+
+int f()
+{
+	return 4;
+}
+
+void inst()
+{
+	int x = bar( &f );
+}
 
 // Tests for the MSVC calling conventions.
 struct MscCallingConventionTests : tpunit::TestFixture {
