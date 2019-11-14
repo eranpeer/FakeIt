@@ -9,6 +9,9 @@
 
 namespace fakeit {
 
+    /// This class contains virtual methods that return their position in the virtual method table.
+    /// Casting a pointer to the n:th virtual method of a class to a pointer to a method of this class
+    /// will return a pointer to the n:th virtual method of this class, which when called will return n.
     struct VirtualOffsetSelector {
 
         unsigned int offset;
