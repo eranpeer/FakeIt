@@ -280,11 +280,11 @@ namespace fakeit {
             return origMethodPtr;
         }
 
-        template<unsigned int id, typename R, typename ... arglist>
+        template<unsigned int id, typename R, typename CONVENTION, typename ... arglist>
         RecordedMethodBody<R, arglist...> &stubMethodIfNotStubbed(DynamicProxy<C, baseclasses...> &proxy,
-                                                                  R (C::*vMethod)(arglist...)) {
+                                                                  FuncWithConvention<C, R, CONVENTION, arglist... > vMethod ) {
             if (!proxy.isMethodStubbed(vMethod)) {
-                proxy.template stubMethod<id>(vMethod, createRecordedMethodBody < R, arglist... > (*this, vMethod));
+                proxy.template stubMethod<id>(vMethod, createRecordedMethodBody <R, CONVENTION, arglist... > (*this, vMethod ));
             }
             Destructible *d = proxy.getMethodMock(vMethod);
             RecordedMethodBody<R, arglist...> *methodMock = dynamic_cast<RecordedMethodBody<R, arglist...> *>(d);
@@ -300,10 +300,10 @@ namespace fakeit {
             return *dtorMock;
         }
 
-        template<typename R, typename ... arglist>
+        template<typename R, typename CONVENTION, typename ... arglist>
         static RecordedMethodBody<R, arglist...> *createRecordedMethodBody(MockObject<C> &mock,
-                                                                           R(C::*vMethod)(arglist...)) {
-            return new RecordedMethodBody<R, arglist...>(mock.getFakeIt(), typeid(vMethod).name());
+                                                                           FuncWithConvention<C, R, CONVENTION, arglist... > vMethod) {
+            return new RecordedMethodBody<R, arglist...>(mock.getFakeIt(), typeid(vMethod._vMethod).name());
         }
 
         static RecordedMethodBody<void> *createRecordedDtorBody(MockObject<C> &mock) {
