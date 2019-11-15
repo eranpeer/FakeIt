@@ -90,7 +90,7 @@ namespace fakeit {
             // Helper function to use type-deduction for constructing the appropriate wrapper type.
             // This case is for __cdecl.
             template<typename C, typename R, typename ... arglist>
-            static FuncWithConvention<C, R, Cdecl, arglist...> Make(R (__cdecl C::*vMethod)(arglist...))
+            static FuncWithConvention<C, R, Cdecl, arglist...> Wrap(R (__cdecl C::*vMethod)(arglist...))
             {
                     return FuncWithConvention<C, R, Cdecl, arglist...>( vMethod );
             };
@@ -99,7 +99,7 @@ namespace fakeit {
 #ifndef _WIN64
 
             template<typename C, typename R, typename ... arglist>
-            static FuncWithConvention<C, R, Thiscall, arglist...> Make(R (__thiscall C::*vMethod)(arglist...))
+            static FuncWithConvention<C, R, Thiscall, arglist...> Wrap(R (__thiscall C::*vMethod)(arglist...))
             {
                     return FuncWithConvention<C, R, Thiscall, arglist...>( vMethod );
             };
@@ -107,7 +107,7 @@ namespace fakeit {
             // Helper function to use type-deduction for constructing the appropriate wrapper type.
             // This case is for the __stdcall convention.
             template<typename C, typename R, typename ... arglist>
-            static FuncWithConvention<C, R, Stdcall, arglist...> Make(R (__stdcall C::*vMethod)(arglist...))
+            static FuncWithConvention<C, R, Stdcall, arglist...> Wrap(R (__stdcall C::*vMethod)(arglist...))
             {
                     return FuncWithConvention<C, R, Stdcall, arglist...>( vMethod );
             };
