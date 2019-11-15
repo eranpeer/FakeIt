@@ -78,22 +78,22 @@ namespace fakeit {
 		// __thiscall, used in member functions.
 	
 		template<typename T, typename R, typename... arglist>
-		static R(__stdcall T::* remove_cv( R(__stdcall T::*vMethod )( arglist... ) const volatile ))( arglist... ) {
+		static R(__thiscall T::* remove_cv( R(__thiscall T::*vMethod )( arglist... ) const volatile ))( arglist... ) {
 			return reinterpret_cast< R ( T::* )( arglist... ) >( vMethod );
 		};
 	
 		template<typename T, typename R, typename... arglist>
-		static R(__stdcall T::* remove_cv( R(__stdcall T::*vMethod )( arglist... ) volatile ))( arglist... ) {
-			return reinterpret_cast< R( __stdcall T::* )( arglist... ) >( vMethod );
+		static R(__thiscall T::* remove_cv( R(__thiscall T::*vMethod )( arglist... ) volatile ))( arglist... ) {
+			return reinterpret_cast< R( __thiscall T::* )( arglist... ) >( vMethod );
 		};
 
 		template<typename T, typename R, typename... arglist>
-		static R(__stdcall T::* remove_cv( R(__stdcall T::*vMethod )( arglist... ) const ))( arglist... ) {
-			return reinterpret_cast< R( __stdcall T::* )( arglist... ) >( vMethod );
+		static R(__thiscall T::* remove_cv( R(__thiscall T::*vMethod )( arglist... ) const ))( arglist... ) {
+			return reinterpret_cast< R( __thiscall T::* )( arglist... ) >( vMethod );
 		};
 
 		template<typename T, typename R, typename... arglist>
-		static R(__stdcall T::* remove_cv( R(__stdcall T::*vMethod )( arglist... ) ))( arglist... ) {
+		static R(__thiscall T::* remove_cv( R(__thiscall T::*vMethod )( arglist... ) ))( arglist... ) {
 			return vMethod;
 		};
 	#endif
