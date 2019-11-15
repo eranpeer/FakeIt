@@ -25,7 +25,7 @@ struct VirtualOffsetSelectorTest : tpunit::TestFixture {
 
 
     void verifyAllIndexes() {
-        VirtualOffsetSelector os;
+        VirtualOffsetSelector<ConventionHelper::DefaultConvention> os;
         ASSERT_EQUAL(0, os.offset0(0));
         ASSERT_EQUAL(1, os.offset1(0));
         ASSERT_EQUAL(2, os.offset2(0));

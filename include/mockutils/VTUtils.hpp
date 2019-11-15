@@ -46,7 +46,8 @@ namespace fakeit {
         template<typename C>
         static typename std::enable_if<std::has_virtual_destructor<C>::value, unsigned int>::type
         getDestructorOffset() {
-            VirtualOffsetSelector offsetSelctor;
+			// Destructors always use the default convention (at least when dealing with COM, which is all we care about).
+            VirtualOffsetSelector<ConventionHelper::DefaultConvention> offsetSelctor;
             union_cast<C *>(&offsetSelctor)->~C();
             return offsetSelctor.offset;
         }

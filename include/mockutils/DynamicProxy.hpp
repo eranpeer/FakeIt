@@ -109,8 +109,9 @@ namespace fakeit {
 
         void stubDtor(MethodInvocationHandler<void> *methodInvocationHandler) {
             auto offset = VTUtils::getDestructorOffset<C>();
-            MethodProxyCreator<void> creator;
-            bindDtor(creator.createMethodProxy<0>(offset), methodInvocationHandler);
+			// For the cases we care about (COM), the destructor uses the default calling convention.
+            MethodProxyCreator<void, ConventionHelper::DefaultConvention> creator;
+            bindDtor(creator.createMethodProxy<0,ConventionHelper::DefaultConvention>(offset), methodInvocationHandler);
         }
 
         template<typename R, typename CONVENTION, typename ... arglist>
