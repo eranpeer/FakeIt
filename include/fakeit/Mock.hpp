@@ -32,17 +32,17 @@ namespace fakeit {
 
 		template<typename T, typename R, typename... arglist>
 		static R(CC_CDECL T::* remove_cv( R(CC_CDECL T::*vMethod )( arglist... ) const volatile ))( arglist... ) {
-			return reinterpret_cast<void (T::*)(arglist...)>(vMethod)
+			return reinterpret_cast< R ( T::* )( arglist... ) >( vMethod );
 		};
 	
 		template<typename T, typename R, typename... arglist>
 		static R(CC_CDECL T::* remove_cv( R(CC_CDECL T::*vMethod )( arglist... ) volatile ))( arglist... ) {
-			return reinterpret_cast<void (T::*)(arglist...)>(vMethod)
+			return reinterpret_cast< R ( T::* )( arglist... ) >( vMethod );
 		};
 
 		template<typename T, typename R, typename... arglist>
 		static R(CC_CDECL T::* remove_cv( R(CC_CDECL T::*vMethod )( arglist... ) const ))( arglist... ) {
-			return reinterpret_cast<void (T::*)(arglist...)>(vMethod)
+			return reinterpret_cast< R ( T::* )( arglist... ) >( vMethod );
 		};
 
 		template<typename T, typename R, typename... arglist>
@@ -57,17 +57,17 @@ namespace fakeit {
 
 		template<typename T, typename R, typename... arglist>
 		static R(__stdcall T::* remove_cv( R(__stdcall T::*vMethod )( arglist... ) const volatile ))( arglist... ) {
-			return reinterpret_cast<void (T::*)(arglist...)>(vMethod)
+			return reinterpret_cast< R ( T::* )( arglist... ) >( vMethod );
 		};
 	
 		template<typename T, typename R, typename... arglist>
 		static R(__stdcall T::* remove_cv( R(__stdcall T::*vMethod )( arglist... ) volatile ))( arglist... ) {
-			return reinterpret_cast<void (__stdcall T::*)(arglist...)>(vMethod)
+			return reinterpret_cast< R( __stdcall T::* )( arglist... ) >( vMethod );
 		};
 
 		template<typename T, typename R, typename... arglist>
 		static R(__stdcall T::* remove_cv( R(__stdcall T::*vMethod )( arglist... ) const ))( arglist... ) {
-			return reinterpret_cast<void (__stdcall T::*)(arglist...)>(vMethod)
+			return reinterpret_cast< R( __stdcall T::* )( arglist... ) >( vMethod );
 		};
 
 		template<typename T, typename R, typename... arglist>
@@ -79,17 +79,17 @@ namespace fakeit {
 	
 		template<typename T, typename R, typename... arglist>
 		static R(__stdcall T::* remove_cv( R(__stdcall T::*vMethod )( arglist... ) const volatile ))( arglist... ) {
-			return reinterpret_cast<void (T::*)(arglist...)>(vMethod)
+			return reinterpret_cast< R ( T::* )( arglist... ) >( vMethod );
 		};
 	
 		template<typename T, typename R, typename... arglist>
 		static R(__stdcall T::* remove_cv( R(__stdcall T::*vMethod )( arglist... ) volatile ))( arglist... ) {
-			return reinterpret_cast<void (__stdcall T::*)(arglist...)>(vMethod)
+			return reinterpret_cast< R( __stdcall T::* )( arglist... ) >( vMethod );
 		};
 
 		template<typename T, typename R, typename... arglist>
 		static R(__stdcall T::* remove_cv( R(__stdcall T::*vMethod )( arglist... ) const ))( arglist... ) {
-			return reinterpret_cast<void (__stdcall T::*)(arglist...)>(vMethod)
+			return reinterpret_cast< R( __stdcall T::* )( arglist... ) >( vMethod );
 		};
 
 		template<typename T, typename R, typename... arglist>
@@ -136,66 +136,30 @@ namespace fakeit {
 			impl.clear();
 		}
 
-        template<class DATA_TYPE, typename ... arglist,
+		template<class DATA_TYPE, typename ... arglist,
                 class = typename std::enable_if<std::is_member_object_pointer<DATA_TYPE C::*>::value>::type>
         DataMemberStubbingRoot<C, DATA_TYPE> Stub(DATA_TYPE C::* member, const arglist &... ctorargs) {
             return impl.stubDataMember(member, ctorargs...);
         }
 
-        template<int id, typename R, typename T, typename ... arglist, class = typename std::enable_if<
-                !std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
-        MockingContext<R, arglist...> stub(R (T::*vMethod)(arglist...) const) {
-            auto methodWithoutConstVolatile = reinterpret_cast<R (T::*)(arglist...)>(vMethod);
-            return impl.template stubMethod<id>(methodWithoutConstVolatile);
-        }
-
         template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
                 !std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
-        MockingContext<R, arglist...> stub(R(T::*vMethod)(arglist...) volatile) {
-            auto methodWithoutConstVolatile = reinterpret_cast<R(T::*)(arglist...)>(vMethod);
-            return impl.template stubMethod<id>(methodWithoutConstVolatile);
-        }
-
-        template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
-                !std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
-        MockingContext<R, arglist...> stub(R(T::*vMethod)(arglist...) const volatile) {
-            auto methodWithoutConstVolatile = reinterpret_cast<R(T::*)(arglist...)>(vMethod);
-            return impl.template stubMethod<id>(methodWithoutConstVolatile);
-        }
-
-        template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
-                !std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
-        MockingContext<R, arglist...> stub(R(T::*vMethod)(arglist...)) {
+        MockingContext<R, arglist...> stubImpl(R(T::*vMethod)(arglist...)) {
             return impl.template stubMethod<id>(vMethod);
         }
 
         template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
                 std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
-        MockingContext<void, arglist...> stub(R(T::*vMethod)(arglist...) const) {
+        MockingContext<void, arglist...> stubImpl(R(T::*vMethod)(arglist...)) {
             auto methodWithoutConstVolatile = reinterpret_cast<void (T::*)(arglist...)>(vMethod);
             return impl.template stubMethod<id>(methodWithoutConstVolatile);
         }
 
-        template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
-                std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
-        MockingContext<void, arglist...> stub(R(T::*vMethod)(arglist...) volatile) {
-            auto methodWithoutConstVolatile = reinterpret_cast<void (T::*)(arglist...)>(vMethod);
-            return impl.template stubMethod<id>(methodWithoutConstVolatile);
-        }
-
-        template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
-                std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
-        MockingContext<void, arglist...> stub(R(T::*vMethod)(arglist...) const volatile) {
-            auto methodWithoutConstVolatile = reinterpret_cast<void (T::*)(arglist...)>(vMethod);
-            return impl.template stubMethod<id>(methodWithoutConstVolatile);
-        }
-
-        template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
-                std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
-        MockingContext<void, arglist...> stub(R(T::*vMethod)(arglist...)) {
-            auto methodWithoutConstVolatile = reinterpret_cast<void (T::*)(arglist...)>(vMethod);
-            return impl.template stubMethod<id>(methodWithoutConstVolatile);
-        }
+		template<int id, typename Func>
+		auto stub( Func func ) -> decltype( stubImpl<id>( func_traits::remove_cv( func ) ) )
+		{
+			return stubImpl<id>( func_traits::remove_cv( func ) );
+		}
 
 		//template<int it, typename Method >
 //		auto stub( Method func ) -> decltype(  )
@@ -209,5 +173,4 @@ namespace fakeit {
         }
 
     };
-
 }
