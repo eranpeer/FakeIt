@@ -25,37 +25,6 @@ int gg()
 	return 1;
 }
 
-struct func_traits{
-
-	static int (*f())()
-	{
-		return &gg;
-	}
-	
-	template<typename T, typename R, typename... arglist>
-	static R( T::* remove_cv( R( T::*vMethod )( arglist... ) const volatile ))( arglist... ) {
-		return reinterpret_cast<void (T::*)(arglist...)>(vMethod)
-	};
-	
-	template<typename T, typename R, typename... arglist>
-	static R( T::* remove_cv( R( T::*vMethod )( arglist... ) volatile ))( arglist... ) {
-		return reinterpret_cast<void (T::*)(arglist...)>(vMethod)
-	};
-
-	template<typename T, typename R, typename... arglist>
-	static R( T::* remove_cv( R( T::*vMethod )( arglist... ) const ))( arglist... ) {
-		return reinterpret_cast<void (T::*)(arglist...)>(vMethod)
-	};
-
-	template<typename T, typename R, typename... arglist>
-	static R( T::* remove_cv( R( T::*vMethod )( arglist... ) ))( arglist... ) {
-		return vMethod;
-	};
-
-	template<typename Func>
-	using remove_cv_t = decltype( remove_cv( std::declval<Func>() ) );
-};
-
 using cleanedFooType = func_traits::remove_cv_t< fooType >;
 
 template<typename A, typename B>

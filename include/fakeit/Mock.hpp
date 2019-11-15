@@ -17,6 +17,91 @@ namespace fakeit {
     }
     using namespace fakeit::internal;
 
+	// Function type manipulation utilities.
+	struct func_traits{
+
+	#ifdef _MSC_VER
+		// On MSC, always define the __cdecl variants. Only they are needed in x64.
+		#define CC_CDECL __cdecl
+	#else
+		// On non-MSC, don't worry about it.
+		#define CC_CDECL
+	#endif
+	
+		// These are the default implementations whose presence always makes sense.
+
+		template<typename T, typename R, typename... arglist>
+		static R(CC_CDECL T::* remove_cv( R(CC_CDECL T::*vMethod )( arglist... ) const volatile ))( arglist... ) {
+			return reinterpret_cast<void (T::*)(arglist...)>(vMethod)
+		};
+	
+		template<typename T, typename R, typename... arglist>
+		static R(CC_CDECL T::* remove_cv( R(CC_CDECL T::*vMethod )( arglist... ) volatile ))( arglist... ) {
+			return reinterpret_cast<void (T::*)(arglist...)>(vMethod)
+		};
+
+		template<typename T, typename R, typename... arglist>
+		static R(CC_CDECL T::* remove_cv( R(CC_CDECL T::*vMethod )( arglist... ) const ))( arglist... ) {
+			return reinterpret_cast<void (T::*)(arglist...)>(vMethod)
+		};
+
+		template<typename T, typename R, typename... arglist>
+		static R(CC_CDECL T::* remove_cv( R(CC_CDECL T::*vMethod )( arglist... ) ))( arglist... ) {
+			return vMethod;
+		};
+
+	// On 32-bit msc, define also the other calling conventions.
+	#if defined( _MSC_VER ) && ! defined( _WIN64 )
+
+		// __stdcall, used in normal functions and COM interfaces.
+
+		template<typename T, typename R, typename... arglist>
+		static R(__stdcall T::* remove_cv( R(__stdcall T::*vMethod )( arglist... ) const volatile ))( arglist... ) {
+			return reinterpret_cast<void (T::*)(arglist...)>(vMethod)
+		};
+	
+		template<typename T, typename R, typename... arglist>
+		static R(__stdcall T::* remove_cv( R(__stdcall T::*vMethod )( arglist... ) volatile ))( arglist... ) {
+			return reinterpret_cast<void (__stdcall T::*)(arglist...)>(vMethod)
+		};
+
+		template<typename T, typename R, typename... arglist>
+		static R(__stdcall T::* remove_cv( R(__stdcall T::*vMethod )( arglist... ) const ))( arglist... ) {
+			return reinterpret_cast<void (__stdcall T::*)(arglist...)>(vMethod)
+		};
+
+		template<typename T, typename R, typename... arglist>
+		static R(__stdcall T::* remove_cv( R(__stdcall T::*vMethod )( arglist... ) ))( arglist... ) {
+			return vMethod;
+		};
+
+		// __thiscall, used in member functions.
+	
+		template<typename T, typename R, typename... arglist>
+		static R(__stdcall T::* remove_cv( R(__stdcall T::*vMethod )( arglist... ) const volatile ))( arglist... ) {
+			return reinterpret_cast<void (T::*)(arglist...)>(vMethod)
+		};
+	
+		template<typename T, typename R, typename... arglist>
+		static R(__stdcall T::* remove_cv( R(__stdcall T::*vMethod )( arglist... ) volatile ))( arglist... ) {
+			return reinterpret_cast<void (__stdcall T::*)(arglist...)>(vMethod)
+		};
+
+		template<typename T, typename R, typename... arglist>
+		static R(__stdcall T::* remove_cv( R(__stdcall T::*vMethod )( arglist... ) const ))( arglist... ) {
+			return reinterpret_cast<void (__stdcall T::*)(arglist...)>(vMethod)
+		};
+
+		template<typename T, typename R, typename... arglist>
+		static R(__stdcall T::* remove_cv( R(__stdcall T::*vMethod )( arglist... ) ))( arglist... ) {
+			return vMethod;
+		};
+	#endif
+
+		template<typename Func>
+		using remove_cv_t = decltype( remove_cv( std::declval<Func>() ) );
+	};
+
     template<typename C, typename ... baseclasses>
     class Mock : public ActualInvocationsSource {
         MockImpl<C, baseclasses...> impl;
@@ -111,6 +196,9 @@ namespace fakeit {
             auto methodWithoutConstVolatile = reinterpret_cast<void (T::*)(arglist...)>(vMethod);
             return impl.template stubMethod<id>(methodWithoutConstVolatile);
         }
+
+		//template<int it, typename Method >
+//		auto stub( Method func ) -> decltype(  )
 
         DtorMockingContext dtor() {
             return impl.stubDtor();
