@@ -66,7 +66,9 @@ void inst()
 struct MscCallingConventionTests : tpunit::TestFixture {
 	MscCallingConventionTests() :
 		tpunit::TestFixture(
-			TEST( MscCallingConventionTests::cdecl_convention )//
+			TEST( MscCallingConventionTests::cdecl_convention ), //
+			TEST( MscCallingConventionTests::stdcall_convention ), //
+			TEST( MscCallingConventionTests::thiscall_convention )//
 		)  //
 	{
 	}
@@ -93,6 +95,58 @@ struct MscCallingConventionTests : tpunit::TestFixture {
 
 		// Invoke the mocked methods.
 		CdeclClass& instance = mockCdecl.get();
+		instance.DoThing();
+		ASSERT_EQUAL( 5, instance.GetValue() );
+	};
+
+	// A class where all the members use the __stdcall convention.
+	// This is how COM objects are.
+	class StdcallClass{
+	public:
+		virtual void __stdcall DoThing() {}
+
+		virtual int __stdcall GetValue()
+		{
+			return 4;
+		}
+	};
+
+	// Mock a class with stdcall members.
+	void stdcall_convention()
+	{
+		// Mock the class.
+		Mock< StdcallClass > mock;
+		Fake( Method( mock, DoThing ) );
+		When( Method( mock, GetValue ) ).AlwaysReturn( 5 );
+
+		// Invoke the mocked methods.
+		StdcallClass& instance = mock.get();
+		instance.DoThing();
+		ASSERT_EQUAL( 5, instance.GetValue() );
+	};
+
+	// A class where all the members use the __stdcall convention.
+	// This is the the default for member functions on 32-bit MSVC.
+	class ThiscallClass{
+	public:
+		virtual void __thiscall DoThing() {}
+
+		virtual int __thiscall GetValue()
+		{
+			return 4;
+		}
+	};
+
+	// Mock a class with thiscall members.
+	void thiscall_convention()
+	{
+		// Mock the class.
+		Mock< ThiscallClass > mock;
+		Fake( Method( mock, DoThing ) );
+		When( Method( mock, GetValue ) ).AlwaysReturn( 5 );
+
+		// Invoke the mocked methods.
+		ThiscallClass& instance = mock.get();
 		instance.DoThing();
 		ASSERT_EQUAL( 5, instance.GetValue() );
 	};
