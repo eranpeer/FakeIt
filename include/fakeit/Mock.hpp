@@ -146,14 +146,17 @@ namespace fakeit {
         template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
                 !std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
         MockingContext<R, arglist...> stubImpl(R(CC_CDECL T::*vMethod)(arglist...)) {
-            return impl.template stubMethod<id>( ConventionHelper::Wrap( vMethod ) );
+			R( CC_CDECL C:: * cMethod )( arglist... ) = vMethod;
+            return impl.template stubMethod<id>( ConventionHelper::Wrap( cMethod ) );
         }
 
         template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
                 std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
         MockingContext<void, arglist...> stubImpl(R(CC_CDECL T::*vMethod)(arglist...)) {
 			auto vMethodWithoutConstVolatile = reinterpret_cast< void( CC_CDECL T::* )( arglist... ) >( vMethod );
-            return impl.template stubMethod<id>( ConventionHelper::Wrap( vMethodWithoutConstVolatile ) );
+			// Convert to a pointer to a method of C so that Wrap generates a correctly typed FuncWithConvention.
+			void( CC_CDECL C:: * cMethod )( arglist... ) = vMethodWithoutConstVolatile;
+			return impl.template stubMethod<id>( ConventionHelper::Wrap( cMethod ) );
         }
 
 		// On 32-bit msc, define also the other calling conventions.
@@ -162,7 +165,8 @@ namespace fakeit {
         template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
                 !std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
         MockingContext<R, arglist...> stubImpl(R(__stdcall T::*vMethod)(arglist...)) {
-            return impl.template stubMethod<id>( ConventionHelper::Wrap( vMethod ) );
+			R( __stdcall C:: * cMethod )( arglist... ) = vMethod;
+            return impl.template stubMethod<id>( ConventionHelper::Wrap( cMethod ) );
         }
 
         template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
@@ -170,13 +174,17 @@ namespace fakeit {
 			MockingContext<void, arglist...> stubImpl( R( __stdcall T::* vMethod )( arglist... ) )
 		{
 			auto vMethodWithoutConstVolatile = reinterpret_cast< void( __stdcall T::* )( arglist... ) >( vMethod );
-			return impl.template stubMethod<id>( ConventionHelper::Wrap( vMethodWithoutConstVolatile ) );
+			// Convert to a pointer to a method of C so that Wrap generates a correctly typed FuncWithConvention.
+			void( __stdcall C:: * cMethod )( arglist... ) = vMethodWithoutConstVolatile;
+			return impl.template stubMethod<id>( ConventionHelper::Wrap( cMethod ) );
 		}
 
         template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
                 !std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
         MockingContext<R, arglist...> stubImpl(R(__thiscall T::*vMethod)(arglist...)) {
-            return impl.template stubMethod<id>( ConventionHelper::Wrap( vMethod ) );
+			// Convert to a pointer to a method of C so that Wrap generates a correctly typed FuncWithConvention.
+			R( __thiscall C:: * cMethod )( arglist... ) = vMethod;
+            return impl.template stubMethod<id>( ConventionHelper::Wrap( cMethod ) );
         }
 
         template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
@@ -184,7 +192,9 @@ namespace fakeit {
 			MockingContext<void, arglist...> stubImpl( R( __thiscall T::* vMethod )( arglist... ) )
 		{
 			auto vMethodWithoutConstVolatile = reinterpret_cast< void( __thiscall T::* )( arglist... ) >( vMethod );
-			return impl.template stubMethod<id>( ConventionHelper::Wrap( vMethodWithoutConstVolatile ) );
+			// Convert to a pointer to a method of C so that Wrap generates a correctly typed FuncWithConvention.
+			void( __thiscall C:: * cMethod )( arglist... ) = vMethodWithoutConstVolatile;
+			return impl.template stubMethod<id>( ConventionHelper::Wrap( cMethod ) );
 		}
 
 	#endif

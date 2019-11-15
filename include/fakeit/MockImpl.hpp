@@ -90,8 +90,8 @@ namespace fakeit {
             return DataMemberStubbingRoot<T, DATA_TYPE>();
         }
 
-        template<int id, typename R, typename CONVENTION, typename T, typename ... arglist, class = typename std::enable_if<std::is_base_of<T, C>::value>::type>
-        MockingContext<R, arglist...> stubMethod( FuncWithConvention< T, R, CONVENTION, arglist... > vMethod ) {
+        template<int id, typename R, typename CONVENTION, typename ... arglist>
+        MockingContext<R, arglist...> stubMethod( FuncWithConvention< C, R, CONVENTION, arglist... > vMethod ) {
             return MockingContext<R, arglist...>(new UniqueMethodMockingContextImpl < id, R, CONVENTION, arglist... >
                    (*this, vMethod));
         }
