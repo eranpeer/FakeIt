@@ -21,17 +21,16 @@ namespace fakeit {
         }
     };
 
-
+	// Shared code for all specializations of MethodProxyCreator.
     template<typename R, typename ... arglist>
-    class MethodProxyCreator {
+	class MethodProxyCreatorBase{
 
-        //using MethodProxyPtrType = R(MethodProxyCreator::*)(arglist...);
+	public:
 
-    public:
-
-        template<unsigned int id>
+        template<unsigned int id, typename CONVENTION>
         MethodProxy createMethodProxy(unsigned int offset) {
-            return MethodProxy(id, offset, union_cast<void *>(&MethodProxyCreator::methodProxyX < id > ));
+            return MethodProxy(id, offset, union_cast<void *>
+				(&MethodProxyCreator<R, CONVENTION, arglist...>::methodProxyX < id > ));
         }
 
     protected:
@@ -44,9 +43,44 @@ namespace fakeit {
                             id);
             return invocationHandler->handleMethodInvocation(std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
         }
+	};
+
+	// Base case for method proxy creator specialization.
+    template<typename R, typename CONVENTION, typename ... arglist>
+	class MethodProxyCreator {};
+
+	// Method proxies for __thiscall:s.
+	template<typename R, typename ... arglist>
+    class MethodProxyCreator< R, Thiscall, arglist...>: public MethodProxyCreatorBase< R, arglist...> {
+
+    public:
 
         template<int id>
-        R methodProxyX(arglist ... args) {
+        R __thiscall methodProxyX(arglist ... args) {
+            return methodProxy(id, std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
+        }
+    };
+
+	// Method proxies for __stdcall:s.
+	template<typename R, typename ... arglist>
+    class MethodProxyCreator< R, Stdcall, arglist...>: public MethodProxyCreatorBase< R, arglist...> {
+
+    public:
+
+        template<int id>
+        R __stdcall methodProxyX(arglist ... args) {
+            return methodProxy(id, std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
+        }
+    };
+
+	// Method proxies for __cdecl:s.
+	template<typename R, typename ... arglist>
+    class MethodProxyCreator< R, Cdecl, arglist...>: public MethodProxyCreatorBase< R, arglist...> {
+
+    public:
+
+        template<int id>
+        R __cdecl methodProxyX(arglist ... args) {
             return methodProxy(id, std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
         }
     };
