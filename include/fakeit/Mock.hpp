@@ -11,6 +11,7 @@
 #include "fakeit/MockImpl.hpp"
 #include "fakeit/ActualInvocation.hpp"
 #include "fakeit/Prototype.hpp"
+#include "mockutils/mscpp/FunctionWithConvention.hpp"
 
 namespace fakeit {
     namespace internal {
@@ -144,25 +145,52 @@ namespace fakeit {
 
         template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
                 !std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
-        MockingContext<R, arglist...> stubImpl(R(T::*vMethod)(arglist...)) {
-            return impl.template stubMethod<id>(vMethod);
+        MockingContext<R, arglist...> stubImpl(R(CC_CDECL T::*vMethod)(arglist...)) {
+            return impl.template stubMethod<id>( ConventionHelper::Wrap( vMethod ) );
         }
 
         template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
                 std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
-        MockingContext<void, arglist...> stubImpl(R(T::*vMethod)(arglist...)) {
-            auto methodWithoutConstVolatile = reinterpret_cast<void (T::*)(arglist...)>(vMethod);
-            return impl.template stubMethod<id>(methodWithoutConstVolatile);
+        MockingContext<void, arglist...> stubImpl(R(CC_CDECL T::*vMethod)(arglist...)) {
+            return impl.template stubMethod<id>( ConventionHelper::Wrap( vMethod ) );
         }
+
+		// On 32-bit msc, define also the other calling conventions.
+	#if defined( _MSC_VER ) && ! defined( _WIN64 )
+
+        template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
+                !std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
+        MockingContext<R, arglist...> stubImpl(R(__stdcall T::*vMethod)(arglist...)) {
+            return impl.template stubMethod<id>( ConventionHelper::Wrap( vMethod ) );
+        }
+
+        template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
+                std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
+			MockingContext<void, arglist...> stubImpl( R( __stdcall T::* vMethod )( arglist... ) )
+		{
+			return impl.template stubMethod<id>( ConventionHelper::Wrap( vMethod ) );
+		}
+
+        template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
+                !std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
+        MockingContext<R, arglist...> stubImpl(R(__thiscall T::*vMethod)(arglist...)) {
+            return impl.template stubMethod<id>( ConventionHelper::Wrap( vMethod ) );
+        }
+
+        template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
+                std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
+			MockingContext<void, arglist...> stubImpl( R( __thiscall T::* vMethod )( arglist... ) )
+		{
+			return impl.template stubMethod<id>( ConventionHelper::Wrap( vMethod ) );
+		}
+
+	#endif
 
 		template<int id, typename Func>
 		auto stub( Func func ) -> decltype( stubImpl<id>( func_traits::remove_cv( func ) ) )
 		{
 			return stubImpl<id>( func_traits::remove_cv( func ) );
 		}
-
-		//template<int it, typename Method >
-//		auto stub( Method func ) -> decltype(  )
 
         DtorMockingContext dtor() {
             return impl.stubDtor();
