@@ -7,6 +7,8 @@
  */
 #pragma once
 
+#include "mockutils/mscpp/FunctionWithConvention.hpp"
+
 namespace fakeit {
 
     /// This class contains virtual methods that return their position in the virtual method table.

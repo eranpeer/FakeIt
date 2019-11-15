@@ -76,7 +76,7 @@ namespace fakeit {
                 }
             };
 
-            unsigned int vtSize = getOffset(&Derrived::endOfVt);
+            unsigned int vtSize = getOffset( ConventionHelper::Wrap( &Derrived::endOfVt ) );
             return vtSize;
         }
     };
