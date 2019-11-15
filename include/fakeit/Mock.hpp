@@ -152,7 +152,8 @@ namespace fakeit {
         template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
                 std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
         MockingContext<void, arglist...> stubImpl(R(CC_CDECL T::*vMethod)(arglist...)) {
-            return impl.template stubMethod<id>( ConventionHelper::Wrap( vMethod ) );
+			auto vMethodWithoutConstVolatile = reinterpret_cast< void( CC_CDECL T::* )( arglist... ) >( vMethod );
+            return impl.template stubMethod<id>( ConventionHelper::Wrap( vMethodWithoutConstVolatile ) );
         }
 
 		// On 32-bit msc, define also the other calling conventions.
@@ -168,7 +169,8 @@ namespace fakeit {
                 std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
 			MockingContext<void, arglist...> stubImpl( R( __stdcall T::* vMethod )( arglist... ) )
 		{
-			return impl.template stubMethod<id>( ConventionHelper::Wrap( vMethod ) );
+			auto vMethodWithoutConstVolatile = reinterpret_cast< void( __stdcall T::* )( arglist... ) >( vMethod );
+			return impl.template stubMethod<id>( ConventionHelper::Wrap( vMethodWithoutConstVolatile ) );
 		}
 
         template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
@@ -181,7 +183,8 @@ namespace fakeit {
                 std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
 			MockingContext<void, arglist...> stubImpl( R( __thiscall T::* vMethod )( arglist... ) )
 		{
-			return impl.template stubMethod<id>( ConventionHelper::Wrap( vMethod ) );
+			auto vMethodWithoutConstVolatile = reinterpret_cast< void( __thiscall T::* )( arglist... ) >( vMethod );
+			return impl.template stubMethod<id>( ConventionHelper::Wrap( vMethodWithoutConstVolatile ) );
 		}
 
 	#endif
