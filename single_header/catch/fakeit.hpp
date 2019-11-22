@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2019-11-15 14:29:24.405893
+ *  Generated: 2019-11-22 13:22:41.828859
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -5472,14 +5472,14 @@ namespace fakeit {
 
         template<typename C, typename R,  typename ... arglist>
         static unsigned int getOffset(FuncWithConvention<C, R, Thiscall, arglist...> vMethod) {
-            auto sMethod = reinterpret_cast<unsigned int (VirtualOffsetSelector<Thiscall>::*)(int)>(vMethod._vMethod);
+            auto sMethod = reinterpret_cast<unsigned int (__thiscall VirtualOffsetSelector<Thiscall>::*)(int)>(vMethod._vMethod);
             VirtualOffsetSelector<Thiscall> offsetSelctor;
             return (offsetSelctor.*sMethod)(0);
         }
 
         template<typename C, typename R,  typename ... arglist>
         static unsigned int getOffset(FuncWithConvention<C, R, Cdecl, arglist...> vMethod) {
-            auto sMethod = reinterpret_cast<unsigned int (VirtualOffsetSelector<Cdecl>::*)(int)>(vMethod._vMethod);
+            auto sMethod = reinterpret_cast<unsigned int (__cdecl VirtualOffsetSelector<Cdecl>::*)(int)>(vMethod._vMethod);
             VirtualOffsetSelector<Cdecl> offsetSelctor;
             return (offsetSelctor.*sMethod)(0);
         }
