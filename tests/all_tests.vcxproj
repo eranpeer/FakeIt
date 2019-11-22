@@ -131,6 +131,7 @@
     <ClCompile Include="gcc_stubbing_multiple_values_tests.cpp" />
     <ClCompile Include="gcc_type_info_tests.cpp" />
     <ClCompile Include="miscellaneous_tests.cpp" />
+    <ClCompile Include="msc_calling_convention_tests.cpp" />
     <ClCompile Include="msc_stubbing_multiple_values_tests.cpp" />
     <ClCompile Include="msc_type_info_tests.cpp" />
     <ClCompile Include="overloadded_methods_tests.cpp" />

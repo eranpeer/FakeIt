@@ -100,17 +100,24 @@ namespace fakeit {
         {
         }
 
-        template<int id, typename R, typename ... arglist>
-        void stubMethod(R(C::*vMethod)(arglist...), MethodInvocationHandler<R, arglist...> *methodInvocationHandler) {
+        template<int id, typename R, typename CONVENTION, typename ... arglist>
+        void stubMethod(FuncWithConvention<C, R, CONVENTION, arglist... > vMethod, MethodInvocationHandler<R, arglist...> *methodInvocationHandler) {
             auto offset = VTUtils::getOffset(vMethod);
-            MethodProxyCreator<R, arglist...> creator;
-            bind(creator.template createMethodProxy<id + 1>(offset), methodInvocationHandler);
+            MethodProxyCreator<R, CONVENTION, arglist...> creator;
+            bind(creator.createMethodProxy<id + 1, CONVENTION>(offset), methodInvocationHandler);
         }
 
         void stubDtor(MethodInvocationHandler<void> *methodInvocationHandler) {
             auto offset = VTUtils::getDestructorOffset<C>();
-            MethodProxyCreator<void> creator;
-            bindDtor(creator.createMethodProxy<0>(offset), methodInvocationHandler);
+			// For the cases we care about (COM), the destructor uses the default calling convention.
+            MethodProxyCreator<void, ConventionHelper::DefaultConvention> creator;
+            bindDtor(creator.createMethodProxy<0,ConventionHelper::DefaultConvention>(offset), methodInvocationHandler);
+        }
+
+        template<typename R, typename CONVENTION, typename ... arglist>
+        bool isMethodStubbed(FuncWithConvention<C, R, CONVENTION, arglist... > vMethod) {
+            unsigned int offset = VTUtils::getOffset(vMethod);
+            return isBinded(offset);
         }
 
         template<typename R, typename ... arglist>
@@ -124,8 +131,8 @@ namespace fakeit {
             return isBinded(offset);
         }
 
-        template<typename R, typename ... arglist>
-        Destructible *getMethodMock(R(C::*vMethod)(arglist...)) {
+        template<typename R, typename CONVENTION, typename ... arglist>
+        Destructible *getMethodMock(FuncWithConvention<C, R, CONVENTION, arglist... > vMethod) {
             auto offset = VTUtils::getOffset(vMethod);
             std::shared_ptr<Destructible> ptr = _methodMocks[offset];
             return ptr.get();

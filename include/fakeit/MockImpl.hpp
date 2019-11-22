@@ -19,6 +19,7 @@
 #include "fakeit/DomainObjects.hpp"
 #include "fakeit/FakeitContext.hpp"
 #include "fakeit/ActualInvocationHandler.hpp"
+#include "mockutils/mscpp/FunctionWithConvention.hpp"
 
 namespace fakeit {
 
@@ -89,9 +90,9 @@ namespace fakeit {
             return DataMemberStubbingRoot<T, DATA_TYPE>();
         }
 
-        template<int id, typename R, typename T, typename ... arglist, class = typename std::enable_if<std::is_base_of<T, C>::value>::type>
-        MockingContext<R, arglist...> stubMethod(R(T::*vMethod)(arglist...)) {
-            return MockingContext<R, arglist...>(new UniqueMethodMockingContextImpl < id, R, arglist... >
+        template<int id, typename R, typename CONVENTION, typename ... arglist>
+        MockingContext<R, arglist...> stubMethod( FuncWithConvention< C, R, CONVENTION, arglist... > vMethod ) {
+            return MockingContext<R, arglist...>(new UniqueMethodMockingContextImpl < id, R, CONVENTION, arglist... >
                    (*this, vMethod));
         }
 
@@ -167,20 +168,20 @@ namespace fakeit {
 
         };
 
-        template<typename R, typename ... arglist>
+        
+        template<typename R, typename CONVENTION, typename ... arglist>
         class MethodMockingContextImpl : public MethodMockingContextBase<R, arglist...> {
         protected:
 
-            R (C::*_vMethod)(arglist...);
-            
+           FuncWithConvention<C, R, CONVENTION, arglist...> _vMethod;
+
         public:
             virtual ~MethodMockingContextImpl() = default;
 
-            MethodMockingContextImpl(MockImpl<C, baseclasses...> &mock, R (C::*vMethod)(arglist...))
+            MethodMockingContextImpl(MockImpl<C, baseclasses...> &mock, FuncWithConvention<C, R, CONVENTION, arglist...> vMethod)
                     : MethodMockingContextBase<R, arglist...>(mock), _vMethod(vMethod) {
             }
 
-            
             virtual std::function<R(arglist&...)> getOriginalMethod() override {
                 void *mPtr = MethodMockingContextBase<R, arglist...>::_mock.getOriginalMethod(_vMethod);
                 C * instance = &(MethodMockingContextBase<R, arglist...>::_mock.get());
@@ -191,21 +192,20 @@ namespace fakeit {
             }
         };
 
-
-        template<int id, typename R, typename ... arglist>
-        class UniqueMethodMockingContextImpl : public MethodMockingContextImpl<R, arglist...> {
+        template<int id, typename R, typename CONVENTION, typename ... arglist>
+        class UniqueMethodMockingContextImpl : public MethodMockingContextImpl<R, CONVENTION, arglist...> {
         protected:
 
             virtual RecordedMethodBody<R, arglist...> &getRecordedMethodBody() override {
                 return MethodMockingContextBase<R, arglist...>::_mock.template stubMethodIfNotStubbed<id>(
                         MethodMockingContextBase<R, arglist...>::_mock._proxy,
-                        MethodMockingContextImpl<R, arglist...>::_vMethod);
+                        MethodMockingContextImpl<R, CONVENTION, arglist...>::_vMethod);
             }
 
         public:
 
-            UniqueMethodMockingContextImpl(MockImpl<C, baseclasses...> &mock, R (C::*vMethod)(arglist...))
-                    : MethodMockingContextImpl<R, arglist...>(mock, vMethod) {
+            UniqueMethodMockingContextImpl(MockImpl<C, baseclasses...> &mock, FuncWithConvention<C, R, CONVENTION, arglist...> vMethod)
+                    : MethodMockingContextImpl<R, CONVENTION, arglist...>(mock, vMethod) {
             }
         };
 
@@ -265,8 +265,8 @@ namespace fakeit {
 			return reinterpret_cast<C *>(fake);
         }
 
-        template<typename R, typename ... arglist>
-        void *getOriginalMethod(R (C::*vMethod)(arglist...)) {
+        template<typename R, typename CONVENTION, typename ... arglist>
+        void *getOriginalMethod(FuncWithConvention<C, R, CONVENTION, arglist...> vMethod) {
             auto vt = _proxy.getOriginalVT();
             auto offset = VTUtils::getOffset(vMethod);
             void *origMethodPtr = vt.getMethod(offset);
@@ -280,11 +280,11 @@ namespace fakeit {
             return origMethodPtr;
         }
 
-        template<unsigned int id, typename R, typename ... arglist>
+        template<unsigned int id, typename R, typename CONVENTION, typename ... arglist>
         RecordedMethodBody<R, arglist...> &stubMethodIfNotStubbed(DynamicProxy<C, baseclasses...> &proxy,
-                                                                  R (C::*vMethod)(arglist...)) {
+                                                                  FuncWithConvention<C, R, CONVENTION, arglist... > vMethod ) {
             if (!proxy.isMethodStubbed(vMethod)) {
-                proxy.template stubMethod<id>(vMethod, createRecordedMethodBody < R, arglist... > (*this, vMethod));
+                proxy.template stubMethod<id>(vMethod, createRecordedMethodBody <R, CONVENTION, arglist... > (*this, vMethod ));
             }
             Destructible *d = proxy.getMethodMock(vMethod);
             RecordedMethodBody<R, arglist...> *methodMock = dynamic_cast<RecordedMethodBody<R, arglist...> *>(d);
@@ -300,10 +300,10 @@ namespace fakeit {
             return *dtorMock;
         }
 
-        template<typename R, typename ... arglist>
+        template<typename R, typename CONVENTION, typename ... arglist>
         static RecordedMethodBody<R, arglist...> *createRecordedMethodBody(MockObject<C> &mock,
-                                                                           R(C::*vMethod)(arglist...)) {
-            return new RecordedMethodBody<R, arglist...>(mock.getFakeIt(), typeid(vMethod).name());
+                                                                           FuncWithConvention<C, R, CONVENTION, arglist... > vMethod) {
+            return new RecordedMethodBody<R, arglist...>(mock.getFakeIt(), typeid(vMethod._vMethod).name());
         }
 
         static RecordedMethodBody<void> *createRecordedDtorBody(MockObject<C> &mock) {

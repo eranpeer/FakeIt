@@ -22,17 +22,32 @@ namespace fakeit {
     class VTUtils {
     public:
 
+        template<typename C, typename R,  typename ... arglist>
+        static unsigned int getOffset(FuncWithConvention<C, R, Thiscall, arglist...> vMethod) {
+            auto sMethod = reinterpret_cast<unsigned int (__thiscall VirtualOffsetSelector<Thiscall>::*)(int)>(vMethod._vMethod);
+            VirtualOffsetSelector<Thiscall> offsetSelctor;
+            return (offsetSelctor.*sMethod)(0);
+        }
+
+        template<typename C, typename R,  typename ... arglist>
+        static unsigned int getOffset(FuncWithConvention<C, R, Cdecl, arglist...> vMethod) {
+            auto sMethod = reinterpret_cast<unsigned int (__cdecl VirtualOffsetSelector<Cdecl>::*)(int)>(vMethod._vMethod);
+            VirtualOffsetSelector<Cdecl> offsetSelctor;
+            return (offsetSelctor.*sMethod)(0);
+        }
+
         template<typename C, typename R, typename ... arglist>
-        static unsigned int getOffset(R (C::*vMethod)(arglist...)) {
-            auto sMethod = reinterpret_cast<unsigned int (VirtualOffsetSelector::*)(int)>(vMethod);
-            VirtualOffsetSelector offsetSelctor;
+        static unsigned int getOffset(FuncWithConvention<C, R, Stdcall, arglist...> vMethod) {
+            auto sMethod = reinterpret_cast<unsigned int (__stdcall VirtualOffsetSelector<Stdcall>::*)(int)>(vMethod._vMethod);
+            VirtualOffsetSelector<Stdcall> offsetSelctor;
             return (offsetSelctor.*sMethod)(0);
         }
 
         template<typename C>
         static typename std::enable_if<std::has_virtual_destructor<C>::value, unsigned int>::type
         getDestructorOffset() {
-            VirtualOffsetSelector offsetSelctor;
+			// Destructors always use the default convention (at least when dealing with COM, which is all we care about).
+            VirtualOffsetSelector<ConventionHelper::DefaultConvention> offsetSelctor;
             union_cast<C *>(&offsetSelctor)->~C();
             return offsetSelctor.offset;
         }
@@ -62,7 +77,7 @@ namespace fakeit {
                 }
             };
 
-            unsigned int vtSize = getOffset(&Derrived::endOfVt);
+            unsigned int vtSize = getOffset( ConventionHelper::Wrap( &Derrived::endOfVt ) );
             return vtSize;
         }
     };
