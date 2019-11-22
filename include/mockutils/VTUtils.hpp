@@ -24,14 +24,14 @@ namespace fakeit {
 
         template<typename C, typename R,  typename ... arglist>
         static unsigned int getOffset(FuncWithConvention<C, R, Thiscall, arglist...> vMethod) {
-            auto sMethod = reinterpret_cast<unsigned int (VirtualOffsetSelector<Thiscall>::*)(int)>(vMethod._vMethod);
+            auto sMethod = reinterpret_cast<unsigned int (__thiscall VirtualOffsetSelector<Thiscall>::*)(int)>(vMethod._vMethod);
             VirtualOffsetSelector<Thiscall> offsetSelctor;
             return (offsetSelctor.*sMethod)(0);
         }
 
         template<typename C, typename R,  typename ... arglist>
         static unsigned int getOffset(FuncWithConvention<C, R, Cdecl, arglist...> vMethod) {
-            auto sMethod = reinterpret_cast<unsigned int (VirtualOffsetSelector<Cdecl>::*)(int)>(vMethod._vMethod);
+            auto sMethod = reinterpret_cast<unsigned int (__cdecl VirtualOffsetSelector<Cdecl>::*)(int)>(vMethod._vMethod);
             VirtualOffsetSelector<Cdecl> offsetSelctor;
             return (offsetSelctor.*sMethod)(0);
         }
