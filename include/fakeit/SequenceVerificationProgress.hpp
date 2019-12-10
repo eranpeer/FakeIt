@@ -75,6 +75,11 @@ namespace fakeit {
             return Terminator(_expectationPtr);
         }
 
+        Terminator Any() {
+            _expectationPtr->expectAnything();
+            return Terminator(_expectationPtr);
+        }
+
         Terminator Once() {
             Exactly(1);
             return Terminator(_expectationPtr);
