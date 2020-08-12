@@ -3,7 +3,7 @@
  * Copyright (c) 2014 Eran Pe'er.
  *
  * This program is made available under the terms of the MIT License.
- * 
+ *
  * Created on Jun 3, 2014
  */
 #pragma once
@@ -22,12 +22,15 @@ namespace fakeit {
     class VTUtils {
     public:
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-function-type"
         template<typename C, typename R, typename ... arglist>
         static unsigned int getOffset(R (C::*vMethod)(arglist...)) {
             auto sMethod = reinterpret_cast<unsigned int (VirtualOffsetSelector::*)(int)>(vMethod);
             VirtualOffsetSelector offsetSelctor;
             return (offsetSelctor.*sMethod)(0);
         }
+#pragma GCC diagnostic pop
 
         template<typename C>
         static typename std::enable_if<std::has_virtual_destructor<C>::value, unsigned int>::type
