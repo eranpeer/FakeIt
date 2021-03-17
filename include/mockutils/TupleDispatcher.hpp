@@ -13,31 +13,31 @@ namespace fakeit {
 
     template<int N>
     struct apply_func {
-        template<typename R, typename ... ArgsF, typename ... ArgsT, typename ... Args>
-        static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> &t, Args &... args) {
-            return apply_func<N - 1>::template applyTuple(f, t, std::get<N - 1>(t), args...);
+        template<typename R, typename ... ArgsF, typename ... ArgsT, typename ... Args, typename FunctionType>
+        static R applyTuple(FunctionType&& f, std::tuple<ArgsT...> &t, Args &... args) {
+            return apply_func<N - 1>::template applyTuple<R>(std::forward<FunctionType>(f), t, std::get<N - 1>(t), args...);
         }
     };
 
     template<>
     struct apply_func < 0 > {
-        template<typename R, typename ... ArgsF, typename ... ArgsT, typename ... Args>
-        static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> & /* t */, Args &... args) {
-            return f(args...);
+        template<typename R, typename ... ArgsF, typename ... ArgsT, typename ... Args, typename FunctionType>
+        static R applyTuple(FunctionType&& f, std::tuple<ArgsT...> & /* t */, Args &... args) {
+            return std::forward<FunctionType>(f)(args...);
         }
     };
 
     struct TupleDispatcher {
 
-        template<typename R, typename ... ArgsF, typename ... ArgsT>
-        static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> &t) {
-            return apply_func<sizeof...(ArgsT)>::template applyTuple(f, t);
+        template<typename R, typename ... ArgsF, typename ... ArgsT, typename FunctionType>
+        static R applyTuple(FunctionType&& f, std::tuple<ArgsT...> &t) {
+            return apply_func<sizeof...(ArgsT)>::template applyTuple<R>(std::forward<FunctionType>(f), t);
         }
 
-        template<typename R, typename ...arglist>
-        static R invoke(std::function<R(arglist &...)> func, const std::tuple<arglist...> &arguments) {
+        template<typename R, typename ...arglist, typename FunctionType>
+        static R invoke(FunctionType&& func, const std::tuple<arglist...> &arguments) {
             std::tuple<arglist...> &args = const_cast<std::tuple<arglist...> &>(arguments);
-            return applyTuple(func, args);
+            return applyTuple<R>(std::forward<FunctionType>(func), args);
         }
 
         template<typename TupleType, typename FunctionType>

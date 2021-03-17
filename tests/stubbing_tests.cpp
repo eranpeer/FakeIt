@@ -26,6 +26,7 @@ struct BasicStubbing : tpunit::TestFixture {
                     TEST(BasicStubbing::stub_a_method_to_throw_a_specified_exception_once),//
                     TEST(BasicStubbing::stub_a_method_with_lambda_delegate_once),//
                     TEST(BasicStubbing::stub_a_method_with_lambda_delegate_always),//
+                    TEST(BasicStubbing::stub_a_method_with_mutable_lambda_delegate_always),//
                     TEST(BasicStubbing::stub_a_method_with_static_method_delegate),//
                     TEST(BasicStubbing::stub_by_assignment_with_lambda_delegate),//
                     TEST(BasicStubbing::stub_by_assignment_with_static_method_delegate),//
@@ -52,6 +53,7 @@ struct BasicStubbing : tpunit::TestFixture {
 
     struct SomeInterface {
         virtual int func(int) = 0;
+        virtual int funcNoArgs() = 0;
 
         virtual void proc(int) = 0;
     };
@@ -223,6 +225,19 @@ struct BasicStubbing : tpunit::TestFixture {
 		i.proc(3);
 		ASSERT_EQUAL(3 + 1, a);
 	}
+
+    void stub_a_method_with_mutable_lambda_delegate_always() {
+        Mock<SomeInterface> mock;
+
+        When(Method(mock, funcNoArgs)).AlwaysDo([mutableVar = 0]() mutable {
+            return ++mutableVar;
+        });
+
+        SomeInterface& i = mock.get();
+
+        ASSERT_EQUAL(1, i.funcNoArgs());
+        ASSERT_EQUAL(2, i.funcNoArgs());
+    }
 
     static int func_delegate(int val) {
         return val;
