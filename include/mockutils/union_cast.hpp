@@ -9,6 +9,7 @@
 namespace fakeit {
 
     template<typename TARGET, typename SOURCE>
+    [[gnu::optimize("no-devirtualize")]]
     TARGET union_cast(SOURCE source) {
         //static_assert(sizeof(TARGET) == sizeof(SOURCE), "can't convert");
         union {
