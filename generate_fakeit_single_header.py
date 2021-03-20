@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import argparse
 import datetime
 import io
 import os
 import re
-import sys
 
 fakeit_path = "."
 
@@ -106,10 +106,35 @@ def create_fakeit_file(config, text):
     out.close()
 
 
-def main():
-    config = sys.argv[1]
+def create_fakeit_file_for_config(config):
+    processed_headers.clear()
     text = create_fakeit_file_text(config)
     create_fakeit_file(config, text)
+
+
+def get_all_configs():
+    return os.listdir(os.path.join(fakeit_path, 'config'))
+
+
+def get_parser():
+    parser = argparse.ArgumentParser()
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-c', '--configs', nargs='+', metavar='config', choices=get_all_configs())
+    group.add_argument('-a', '--all', action='store_true')
+    return parser
+
+
+def main():
+    args = get_parser().parse_args()
+
+    if args.all:
+        configs = get_all_configs()
+    else:
+        configs = args.configs
+
+    for config in configs:
+        print(f"writing single header file for {config}")
+        create_fakeit_file_for_config(config)
 
 
 if __name__ == '__main__':
