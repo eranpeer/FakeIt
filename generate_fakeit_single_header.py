@@ -7,7 +7,7 @@ import io
 import os
 import re
 
-fakeit_path = "."
+fakeit_path = os.path.dirname(__file__)
 
 includes_matcher = re.compile(r'\s*#include\s*"(.*)"')
 pragma_once_matcher = re.compile(r'\s*#pragma\s*once\s*')
