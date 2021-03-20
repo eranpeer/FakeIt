@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2019-06-01 12:14:50.763017
+ *  Generated: 2021-03-20 16:12:26.106246
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -5234,6 +5234,7 @@ namespace fakeit {
 namespace fakeit {
 
     template<typename TARGET, typename SOURCE>
+    [[gnu::optimize("no-devirtualize")]]
     TARGET union_cast(SOURCE source) {
 
         union {
@@ -5255,12 +5256,15 @@ namespace fakeit {
     class VTUtils {
     public:
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-function-type"
         template<typename C, typename R, typename ... arglist>
         static unsigned int getOffset(R (C::*vMethod)(arglist...)) {
             auto sMethod = reinterpret_cast<unsigned int (VirtualOffsetSelector::*)(int)>(vMethod);
             VirtualOffsetSelector offsetSelctor;
             return (offsetSelctor.*sMethod)(0);
         }
+#pragma GCC diagnostic pop
 
         template<typename C>
         static typename std::enable_if<std::has_virtual_destructor<C>::value, unsigned int>::type
@@ -6118,31 +6122,31 @@ namespace fakeit {
 
     template<int N>
     struct apply_func {
-        template<typename R, typename ... ArgsF, typename ... ArgsT, typename ... Args>
-        static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> &t, Args &... args) {
-            return apply_func<N - 1>::template applyTuple(f, t, std::get<N - 1>(t), args...);
+        template<typename R, typename ... ArgsF, typename ... ArgsT, typename ... Args, typename FunctionType>
+        static R applyTuple(FunctionType&& f, std::tuple<ArgsT...> &t, Args &... args) {
+            return apply_func<N - 1>::template applyTuple<R>(std::forward<FunctionType>(f), t, std::get<N - 1>(t), args...);
         }
     };
 
     template<>
     struct apply_func < 0 > {
-        template<typename R, typename ... ArgsF, typename ... ArgsT, typename ... Args>
-        static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> & , Args &... args) {
-            return f(args...);
+        template<typename R, typename ... ArgsF, typename ... ArgsT, typename ... Args, typename FunctionType>
+        static R applyTuple(FunctionType&& f, std::tuple<ArgsT...> & , Args &... args) {
+            return std::forward<FunctionType>(f)(args...);
         }
     };
 
     struct TupleDispatcher {
 
-        template<typename R, typename ... ArgsF, typename ... ArgsT>
-        static R applyTuple(std::function<R(ArgsF &...)> f, std::tuple<ArgsT...> &t) {
-            return apply_func<sizeof...(ArgsT)>::template applyTuple(f, t);
+        template<typename R, typename ... ArgsF, typename ... ArgsT, typename FunctionType>
+        static R applyTuple(FunctionType&& f, std::tuple<ArgsT...> &t) {
+            return apply_func<sizeof...(ArgsT)>::template applyTuple<R>(std::forward<FunctionType>(f), t);
         }
 
-        template<typename R, typename ...arglist>
-        static R invoke(std::function<R(arglist &...)> func, const std::tuple<arglist...> &arguments) {
+        template<typename R, typename ...arglist, typename FunctionType>
+        static R invoke(FunctionType&& func, const std::tuple<arglist...> &arguments) {
             std::tuple<arglist...> &args = const_cast<std::tuple<arglist...> &>(arguments);
-            return applyTuple(func, args);
+            return applyTuple<R>(std::forward<FunctionType>(func), args);
         }
 
         template<typename TupleType, typename FunctionType>
@@ -9269,7 +9273,7 @@ namespace fakeit {
 #endif
 
 #define MOCK_TYPE(mock) \
-    std::remove_reference<decltype(mock.get())>::type
+    std::remove_reference<decltype((mock).get())>::type
 
 #define OVERLOADED_METHOD_PTR(mock, method, prototype) \
     fakeit::Prototype<prototype>::MemberType<MOCK_TYPE(mock)>::get(&MOCK_TYPE(mock)::method)
@@ -9278,16 +9282,16 @@ namespace fakeit {
     fakeit::Prototype<prototype>::MemberType<MOCK_TYPE(mock)>::getconst(&MOCK_TYPE(mock)::method)
 
 #define Dtor(mock) \
-    mock.dtor().setMethodDetails(#mock,"destructor")
+    (mock).dtor().setMethodDetails(#mock,"destructor")
 
 #define Method(mock, method) \
-    mock.template stub<__COUNTER__>(&MOCK_TYPE(mock)::method).setMethodDetails(#mock,#method)
+    (mock).template stub<__COUNTER__>(&MOCK_TYPE(mock)::method).setMethodDetails(#mock,#method)
 
 #define OverloadedMethod(mock, method, prototype) \
-    mock.template stub<__COUNTER__>(OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
+    (mock).template stub<__COUNTER__>(OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
 
 #define ConstOverloadedMethod(mock, method, prototype) \
-    mock.template stub<__COUNTER__>(CONST_OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
+    (mock).template stub<__COUNTER__>(CONST_OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
 
 #define Verify(...) \
         Verify( __VA_ARGS__ ).setFileInfo(__FILE__, __LINE__, __func__)
