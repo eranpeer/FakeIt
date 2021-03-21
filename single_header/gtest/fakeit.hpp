@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2021-03-20 16:12:26.024747
+ *  Generated: 2021-03-21 11:36:30.039657
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -987,7 +987,7 @@ namespace fakeit {
 
 
 namespace fakeit {
-#if __cplusplus >= 201703L
+#if __cplusplus >= 201703L || defined(__cpp_lib_uncaught_exceptions)
     inline bool UncaughtException () {
         return std::uncaught_exceptions() >= 1;
     }
