@@ -12,7 +12,7 @@
 
 
 namespace fakeit {
-#if __cplusplus >= 201703L
+#if __cplusplus >= 201703L || defined(__cpp_lib_uncaught_exceptions)
     inline bool UncaughtException () {
         return std::uncaught_exceptions() >= 1;
     }
