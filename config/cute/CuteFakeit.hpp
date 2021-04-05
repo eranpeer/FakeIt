@@ -1,7 +1,7 @@
 #pragma once
 
 #include "fakeit/DefaultFakeit.hpp"
-#include "cute.h"
+#include <cute.h>
 
 namespace fakeit {
 
