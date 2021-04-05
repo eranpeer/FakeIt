@@ -4,9 +4,9 @@
 #include "fakeit/EventHandler.hpp"
 #include "mockutils/to_string.hpp"
 #if __has_include("catch2/catch.hpp")
-#   include "catch2/catch.hpp"
+#   include <catch2/catch.hpp>
 #else
-#   include "catch.hpp"
+#   include <catch.hpp>
 #endif
 
 namespace fakeit {
