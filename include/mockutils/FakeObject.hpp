@@ -3,80 +3,84 @@
  * Copyright (c) 2014 Eran Pe'er.
  *
  * This program is made available under the terms of the MIT License.
- * 
+ *
  * Created on Jun 8, 2014
  */
 #pragma once
 
 #include <new>
+
 #include "mockutils/VirtualTable.hpp"
 
-namespace fakeit {
-// silent GCC compiler warning: iso c++ forbids zero-size array [-Wpedantic]
-#ifdef __GNUG__
-#ifndef __clang__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpedantic"
-#endif
-#endif
+namespace fakeit
+{
+    namespace details
+    {
+        template <int instanceAreaSize, typename C, typename... BaseClasses>
+        class FakeObjectImpl
+        {
+        public:
+            void initializeDataMembersArea()
+            {
+                for (size_t i = 0; i < instanceAreaSize; ++i)
+                {
+                    instanceArea[i] = (char) 0;
+                }
+            }
 
-// silent MSC++ compiler warning: C4200: nonstandard extension used : zero-sized array in struct/union.
-#ifdef _MSC_VER
-#pragma warning( push )
-#pragma warning( disable : 4200 )
-#endif
+        protected:
+            VirtualTable<C, BaseClasses...> vtable;
+            char instanceArea[instanceAreaSize];
+        };
 
+        template <typename C, typename... BaseClasses>
+        class FakeObjectImpl<0, C, BaseClasses...>
+        {
+        public:
+            void initializeDataMembersArea()
+            {}
 
-    template<typename C, typename ... baseclasses>
-    class FakeObject {
+        protected:
+            VirtualTable<C, BaseClasses...> vtable;
+        };
+    } // namespace details
 
-        VirtualTable<C, baseclasses...> vtable;
-
-        static const size_t SIZE = sizeof(C) - sizeof(VirtualTable<C, baseclasses...>);
-        char instanceArea[SIZE ? SIZE : 0];
-
-        FakeObject(FakeObject const &) = delete;            // undefined
-        FakeObject &operator=(FakeObject const &) = delete; // undefined
+    template <typename C, typename... BaseClasses>
+    class FakeObject
+        : public details::FakeObjectImpl<sizeof(C) - sizeof(VirtualTable<C, BaseClasses...>), C, BaseClasses...>
+    {
+        FakeObject(FakeObject const&) = delete;            // undefined
+        FakeObject& operator=(FakeObject const&) = delete; // undefined
 
     public:
-
-        FakeObject() : vtable() {
-            initializeDataMembersArea();
+        FakeObject()
+        {
+            this->initializeDataMembersArea();
         }
 
-        ~FakeObject() {
-            vtable.dispose();
+        ~FakeObject()
+        {
+            this->vtable.dispose();
         }
 
-        void initializeDataMembersArea() {
-            for (size_t i = 0; i < SIZE; ++i) instanceArea[i] = (char) 0;
+        void setMethod(unsigned int index, void* method)
+        {
+            this->vtable.setMethod(index, method);
         }
 
-        void setMethod(unsigned int index, void *method) {
-            vtable.setMethod(index, method);
+        VirtualTable<C, BaseClasses...>& getVirtualTable()
+        {
+            return this->vtable;
         }
 
-        VirtualTable<C, baseclasses...> &getVirtualTable() {
-            return vtable;
+        void setVirtualTable(VirtualTable<C, BaseClasses...>& t)
+        {
+            this->vtable = t;
         }
 
-        void setVirtualTable(VirtualTable<C, baseclasses...> &t) {
-            vtable = t;
-        }
-
-        void setDtor(void *dtor) {
-            vtable.setDtor(dtor);
+        void setDtor(void* dtor)
+        {
+            this->vtable.setDtor(dtor);
         }
     };
-
-#ifdef _MSC_VER
-#pragma warning( pop )
-#endif
-
-#ifdef __GNUG__
-#ifndef __clang__
-#pragma GCC diagnostic pop
-#endif
-#endif
-
-}
+} // namespace fakeit
