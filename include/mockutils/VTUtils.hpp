@@ -22,11 +22,9 @@ namespace fakeit {
     class VTUtils {
     public:
 
-#ifdef __GNUG__
-#ifndef __clang__
+#if defined(__GNUG__) && !defined(__clang__) && __GNUC__ >= 8
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-function-type"
-#endif
 #endif
         template<typename C, typename R, typename ... arglist>
         static unsigned int getOffset(R (C::*vMethod)(arglist...)) {
@@ -34,10 +32,8 @@ namespace fakeit {
             VirtualOffsetSelector offsetSelctor;
             return (offsetSelctor.*sMethod)(0);
         }
-#ifdef __GNUG__
-#ifndef __clang__
+#if defined(__GNUG__) && !defined(__clang__) && __GNUC__ >= 8
 #pragma GCC diagnostic pop
-#endif
 #endif
 
         template<typename C>
