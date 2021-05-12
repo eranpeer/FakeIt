@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2021-04-11 20:16:43.349491
+ *  Generated: 2021-05-12 13:47:05.433663
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -5264,11 +5264,9 @@ namespace fakeit {
     class VTUtils {
     public:
 
-#ifdef __GNUG__
-#ifndef __clang__
+#if defined(__GNUG__) && !defined(__clang__) && __GNUC__ >= 8
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-function-type"
-#endif
 #endif
         template<typename C, typename R, typename ... arglist>
         static unsigned int getOffset(R (C::*vMethod)(arglist...)) {
@@ -5276,10 +5274,8 @@ namespace fakeit {
             VirtualOffsetSelector offsetSelctor;
             return (offsetSelctor.*sMethod)(0);
         }
-#ifdef __GNUG__
-#ifndef __clang__
+#if defined(__GNUG__) && !defined(__clang__) && __GNUC__ >= 8
 #pragma GCC diagnostic pop
-#endif
 #endif
 
         template<typename C>
@@ -6986,7 +6982,7 @@ namespace fakeit {
     template<int q>
     struct Times : public Quantity {
 
-        Times<q>() : Quantity(q) { }
+        Times() : Quantity(q) { }
 
         template<typename R>
         static Quantifier<R> of(const R &value) {
