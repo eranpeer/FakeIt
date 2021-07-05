@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install LCOV
+        run: sudo apt install -y lcov
+      - uses: actions/checkout@v2
+      - name: Build project
+        run: |
+          cd build
+          make coverage
+      - name: Run tests
+        run: |
+          cd build
+          ./fakeit_tests.exe
+      - name: Generate report
+        run: |
+          cd build
+          gcov *.o
+          lcov --directory . -c -o report.info
+          lcov --remove report.info '/usr/*' '*/tests/*' -o report_filtered.info
+      - name: Upload report
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./build/report_filtered.info
+  gcc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build project
+        run: |
+          cd build
+          make all
+      - name: Run tests
+        run: |
+          cd build
+          ./fakeit_tests.exe
+  clang:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build project
+        run: |
+          cd build
+          make -f clang_makefile all
+      - name: Run tests
+        run: |
+          cd build
+          ./fakeit_tests.exe
