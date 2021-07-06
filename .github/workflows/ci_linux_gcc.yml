@@ -1,4 +1,4 @@
-name: CI
+name: CI Linux/GCC
 
 on:
   push:
@@ -10,7 +10,7 @@ defaults:
 
 jobs:
   coverage:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Install LCOV
         run: sudo apt install -y lcov
@@ -34,8 +34,8 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: ./build/report_filtered.info
-  gcc:
-    runs-on: ubuntu-latest
+  gcc-ubuntu-20-04:
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - name: Build project
@@ -46,14 +46,14 @@ jobs:
         run: |
           cd build
           ./fakeit_tests.exe
-  clang:
-    runs-on: ubuntu-latest
+  gcc-ubuntu-18-04:
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
       - name: Build project
         run: |
           cd build
-          make -f clang_makefile all
+          make all
       - name: Run tests
         run: |
           cd build

@@ -1,0 +1,35 @@
+name: CI Linux/Clang
+
+on:
+  push:
+  pull_request:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  clang-ubuntu-20-04:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build project
+        run: |
+          cd build
+          make -f clang_makefile all
+      - name: Run tests
+        run: |
+          cd build
+          ./fakeit_tests.exe
+  clang-ubuntu-18-04:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build project
+        run: |
+          cd build
+          make -f clang_makefile all
+      - name: Run tests
+        run: |
+          cd build
+          ./fakeit_tests.exe
