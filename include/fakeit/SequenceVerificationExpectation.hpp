@@ -27,6 +27,10 @@ namespace fakeit {
             _expectedCount = count;
         }
 
+        void expectAnything() {
+            _expectAnything = true;
+        }
+
         void setFileInfo(const char * file, int line, const char * callingMethod) {
             _file = file;
             _line = line;
@@ -39,6 +43,7 @@ namespace fakeit {
         InvocationsSourceProxy _involvedInvocationSources;
         std::vector<Sequence *> _expectedPattern;
         int _expectedCount;
+        bool _expectAnything;
 
         const char * _file;
         int _line;
@@ -53,6 +58,7 @@ namespace fakeit {
                 _involvedInvocationSources(mocks),
                 _expectedPattern(expectedPattern), //
                 _expectedCount(-1), // AT_LEAST_ONCE
+                _expectAnything(false),
                 _line(0),
                 _isVerified(false) {
         }
@@ -66,12 +72,14 @@ namespace fakeit {
             MatchAnalysis ma;
             ma.run(_involvedInvocationSources, _expectedPattern);
 
-            if (isAtLeastVerification() && atLeastLimitNotReached(ma.count)) {
-                return handleAtLeastVerificationEvent(verificationErrorHandler, ma.actualSequence, ma.count);
-            }
+            if (isNotAnythingVerification()) {
+                if (isAtLeastVerification() && atLeastLimitNotReached(ma.count)) {
+                    return handleAtLeastVerificationEvent(verificationErrorHandler, ma.actualSequence, ma.count);
+                }
 
-            if (isExactVerification() && exactLimitNotMatched(ma.count)) {
-                return handleExactVerificationEvent(verificationErrorHandler, ma.actualSequence, ma.count);
+                if (isExactVerification() && exactLimitNotMatched(ma.count)) {
+                    return handleExactVerificationEvent(verificationErrorHandler, ma.actualSequence, ma.count);
+                }
             }
 
             markAsVerified(ma.matchedInvocations);
@@ -93,6 +101,10 @@ namespace fakeit {
             for (auto i : matchedInvocations) {
                 i->markAsVerified();
             }
+        }
+
+        bool isNotAnythingVerification() {
+            return !_expectAnything;
         }
 
         bool isAtLeastVerification() {

@@ -70,6 +70,11 @@ namespace fakeit {
 
         bool operator!() const { return !Terminator(_expectationPtr); }
 
+        Terminator Any() {
+            _expectationPtr->expectAnything();
+            return Terminator(_expectationPtr);
+        }
+
         Terminator Never() {
             Exactly(0);
             return Terminator(_expectationPtr);

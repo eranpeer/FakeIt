@@ -64,7 +64,10 @@ struct BasicVerification: tpunit::TestFixture {
 					TEST(BasicVerification::verify_after_paramter_was_changed_with_argument_matcher), //
 					TEST(BasicVerification::verify_no_invocations),
 					TEST(BasicVerification::verify_after_paramter_was_changed_with_Using), //
-					TEST(BasicVerification::verificationShouldTolerateNullString))
+					TEST(BasicVerification::verificationShouldTolerateNullString),
+					TEST(BasicVerification::verify_any_for_no_invocations),
+					TEST(BasicVerification::verify_any_for_all_invocations),
+					TEST(BasicVerification::verify_any_for_only_some_invocations))
 	{
 	}
 
@@ -592,6 +595,36 @@ struct BasicVerification: tpunit::TestFixture {
 		Verify(Method(mock,eatConstChar)).Exactly(2);
 		ASSERT_THROW(Verify(Method(mock, eatChar)).Exactly(3), fakeit::VerificationException);
 		ASSERT_THROW(Verify(Method(mock, eatConstChar)).Exactly(3), fakeit::VerificationException);
+	}
+
+	void verify_any_for_no_invocations()
+	{
+		Mock<SomeInterface> mock;
+		Verify(Method(mock, func)).Any();
+		VerifyNoOtherInvocations(mock);
+	}
+
+	void verify_any_for_all_invocations()
+	{
+		Mock<SomeInterface> mock;
+		Fake(Method(mock,func), Method(mock,proc));
+		SomeInterface &i = mock.get();
+		i.func(5);
+		i.proc(10);
+		Verify(Method(mock, func)).Any();
+		Verify(Method(mock, proc)).Any();
+		VerifyNoOtherInvocations(mock);
+	}
+
+	void verify_any_for_only_some_invocations()
+	{
+		Mock<SomeInterface> mock;
+		Fake(Method(mock,func), Method(mock,proc));
+		SomeInterface &i = mock.get();
+		i.func(5);
+		i.proc(10);
+		Verify(Method(mock, func)).Any();
+		ASSERT_THROW(VerifyNoOtherInvocations(mock), fakeit::VerificationException);
 	}
 
 } __BasicVerification;
