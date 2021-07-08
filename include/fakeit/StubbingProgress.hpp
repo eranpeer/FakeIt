@@ -23,6 +23,9 @@
 
 namespace fakeit {
 
+    template<int N>
+    struct Assigner;
+
     template<typename R, typename ... arglist>
     struct MethodStubbingProgress {
 
@@ -102,6 +105,19 @@ namespace fakeit {
             return AlwaysDo([e](const typename fakeit::test_arg<arglist>::type...) -> R { throw e; });
         }
 
+        template<typename ... valuelist>
+        MethodStubbingProgress<R, arglist...> &
+        Set(R &&r, valuelist... arg_vals) {
+            return Do(GetAssigner(std::forward<R>(r),
+                    std::forward<valuelist>(arg_vals)...));
+        }
+
+        template<typename ... valuelist>
+        void AlwaysSet(R &&r, valuelist &&... arg_vals) {
+            AlwaysDo(GetAssigner(std::forward<R>(r),
+                std::forward<valuelist>(arg_vals)...));
+        }
+
         virtual MethodStubbingProgress<R, arglist...> &
             Do(std::function<R(const typename fakeit::test_arg<arglist>::type...)> method) {
             return DoImpl(new Repeat<R, arglist...>(method));
@@ -130,6 +146,19 @@ namespace fakeit {
 
     private:
         MethodStubbingProgress &operator=(const MethodStubbingProgress &other) = delete;
+
+        template<typename ... valuelist>
+        auto GetAssigner(R &&r, valuelist &&... arg_vals) {
+            return
+                [vals_tuple = ArgumentsTuple<R, valuelist...>{
+                    std::forward<R>(r), std::forward<valuelist>(arg_vals)...}
+                ] (const typename fakeit::test_arg<arglist>::type...args)
+                {
+                    Assigner<sizeof...(valuelist)>::Assign(vals_tuple,
+                        std::forward<const typename fakeit::test_arg<arglist>::type>(args)...);
+                    return std::get<0>(vals_tuple);
+                };
+        }
     };
 
 
@@ -187,7 +216,18 @@ namespace fakeit {
             return AlwaysDo([e](const typename fakeit::test_arg<arglist>::type...) -> void { throw e; });
         }
 
-           template<typename F>
+        template<typename ... valuelist>
+        MethodStubbingProgress<void, arglist...> &
+        Set(valuelist... arg_vals) {
+            return Do(GetAssigner(std::forward<valuelist>(arg_vals)...));
+        }
+
+        template<typename ... valuelist>
+        void AlwaysSet(valuelist &&... arg_vals) {
+            AlwaysDo(GetAssigner(std::forward<valuelist>(arg_vals)...));
+        }
+
+        template<typename F>
         MethodStubbingProgress<void, arglist...> &
         Do(const Quantifier<F> &q) {
             return DoImpl(new Repeat<void, arglist...>(q.value, q.quantity));
@@ -210,7 +250,42 @@ namespace fakeit {
 
     private:
         MethodStubbingProgress &operator=(const MethodStubbingProgress &other) = delete;
+
+        template<typename ... valuelist>
+        auto GetAssigner(valuelist &&... arg_vals) {
+            return
+                [vals_tuple = ArgumentsTuple<valuelist...>{
+                    std::forward<valuelist>(arg_vals)...}
+                ] (const typename fakeit::test_arg<arglist>::type...args)
+                {
+                    Assigner<sizeof...(valuelist)>::Assign(vals_tuple,
+                        std::forward<const typename fakeit::test_arg<arglist>::type>(args)...);
+                };
+        }
     };
 
+
+    template<int N>
+    struct Assigner {
+        template<typename current_arg, typename ... valuelist, typename ... arglist>
+        static typename std::enable_if<!std::is_pointer_v<current_arg>, void>::type
+        Assign(ArgumentsTuple<valuelist...> arg_vals, current_arg t, arglist... args) {
+            Assigner<N - 1>::template Assign(arg_vals, std::forward<arglist>(args)...);
+            t = std::get<std::tuple_size_v<ArgumentsTuple<valuelist...>> - N>(arg_vals);
+        }
+
+        template<typename current_arg, typename ... valuelist, typename ... arglist>
+        static typename std::enable_if<std::is_pointer_v<current_arg>, void>::type
+        Assign(ArgumentsTuple<valuelist...> arg_vals, current_arg t, arglist... args) {
+            Assigner<N - 1>::template Assign(arg_vals, std::forward<arglist>(args)...);
+            *t = std::get<std::tuple_size_v<ArgumentsTuple<valuelist...>> - N>(arg_vals);
+        }
+    };
+
+    template<>
+    struct Assigner<0> {
+        template<typename ... valuelist, typename ... arglist>
+        static void Assign(ArgumentsTuple<valuelist...>, arglist... ) {}
+    };
 
 }
