@@ -148,7 +148,12 @@ namespace fakeit {
         MethodStubbingProgress &operator=(const MethodStubbingProgress &other) = delete;
 
         template<typename ... valuelist>
-        auto GetAssigner(R &&r, valuelist &&... arg_vals) {
+#if __cplusplus >= 201402L
+        auto
+#else
+        std::function<R (const typename fakeit::test_arg<arglist>::type...)>
+#endif
+        GetAssigner(R &&r, valuelist &&... arg_vals) {
             return
                 [vals_tuple = ArgumentsTuple<R, valuelist...>{
                     std::forward<R>(r), std::forward<valuelist>(arg_vals)...}
@@ -252,7 +257,12 @@ namespace fakeit {
         MethodStubbingProgress &operator=(const MethodStubbingProgress &other) = delete;
 
         template<typename ... valuelist>
-        auto GetAssigner(valuelist &&... arg_vals) {
+#if __cplusplus >= 201402L
+        auto
+#else
+        std::function<void (typename fakeit::test_arg<arglist>::type...)>
+#endif
+        GetAssigner(valuelist &&... arg_vals) {
             return
                 [vals_tuple = ArgumentsTuple<valuelist...>{
                     std::forward<valuelist>(arg_vals)...}
@@ -268,17 +278,17 @@ namespace fakeit {
     template<int N>
     struct Assigner {
         template<typename current_arg, typename ... valuelist, typename ... arglist>
-        static typename std::enable_if<!std::is_pointer_v<current_arg>, void>::type
+        static typename std::enable_if<!std::is_pointer<current_arg>::value, void>::type
         Assign(ArgumentsTuple<valuelist...> arg_vals, current_arg &&t, arglist&&... args) {
             Assigner<N - 1>::template Assign(arg_vals, std::forward<arglist>(args)...);
-            t = std::get<std::tuple_size_v<ArgumentsTuple<valuelist...>> - N>(arg_vals);
+            t = std::get<std::tuple_size<ArgumentsTuple<valuelist...>>::value - N>(arg_vals);
         }
 
         template<typename current_arg, typename ... valuelist, typename ... arglist>
-        static typename std::enable_if<std::is_pointer_v<current_arg>, void>::type
+        static typename std::enable_if<std::is_pointer<current_arg>::value, void>::type
         Assign(ArgumentsTuple<valuelist...> arg_vals, current_arg &&t, arglist&&... args) {
             Assigner<N - 1>::template Assign(arg_vals, std::forward<arglist>(args)...);
-            *t = std::get<std::tuple_size_v<ArgumentsTuple<valuelist...>> - N>(arg_vals);
+            *t = std::get<std::tuple_size<ArgumentsTuple<valuelist...>>::value - N>(arg_vals);
         }
     };
 
