@@ -23,6 +23,8 @@ struct BasicStubbing : tpunit::TestFixture {
                     TEST(BasicStubbing::stub_multiple_methods_to_default_behaviore),
                     TEST(BasicStubbing::stub_a_function_to_return_a_specified_value_once),
                     TEST(BasicStubbing::stub_a_function_to_return_a_specified_value_always),
+                    TEST(BasicStubbing::stub_a_function_to_set_specified_values_once),
+                    TEST(BasicStubbing::stub_a_function_to_set_specified_values_always),
                     TEST(BasicStubbing::stub_a_method_to_throw_a_specified_exception_once),//
                     TEST(BasicStubbing::stub_a_method_with_lambda_delegate_once),//
                     TEST(BasicStubbing::stub_a_method_with_lambda_delegate_always),//
@@ -54,8 +56,10 @@ struct BasicStubbing : tpunit::TestFixture {
     struct SomeInterface {
         virtual int func(int) = 0;
         virtual int funcNoArgs() = 0;
+        virtual int funcRefArgs(int*, int&) = 0;
 
         virtual void proc(int) = 0;
+        virtual void procRefArgs(int*, int&) = 0;
     };
 
     void calling_an_unstubbed_method_should_raise_UnmockedMethodCallException() {
@@ -120,6 +124,63 @@ struct BasicStubbing : tpunit::TestFixture {
 
         ASSERT_EQUAL(1, i.func(1));
         ASSERT_EQUAL(1, i.func(1));
+    }
+
+    void stub_a_function_to_set_specified_values_once() {
+        Mock<SomeInterface> mock;
+        When(Method(mock, funcRefArgs)).Set(1, 2, 3);
+        When(Method(mock, procRefArgs)).Set(4, 5).Set(6, 7);
+
+        SomeInterface &i = mock.get();
+
+        int a = 0, b = 0;
+        ASSERT_EQUAL(1, i.funcRefArgs(&a, b));
+        ASSERT_EQUAL(2, a);
+        ASSERT_EQUAL(3, b);
+        try {
+            i.funcRefArgs(&a, b);
+            FAIL();
+        } catch (fakeit::UnexpectedMethodCallException &) {
+        }
+
+        i.procRefArgs(&a, b);
+        ASSERT_EQUAL(4, a);
+        ASSERT_EQUAL(5, b);
+        i.procRefArgs(&a, b);
+        ASSERT_EQUAL(6, a);
+        ASSERT_EQUAL(7, b);
+        try {
+            i.procRefArgs(&a, b);
+            FAIL();
+        } catch (fakeit::UnexpectedMethodCallException &) {
+        }
+    }
+
+    void stub_a_function_to_set_specified_values_always() {
+        Mock<SomeInterface> mock;
+
+        When(Method(mock, funcRefArgs)).AlwaysSet(1, 2, 3);
+        When(Method(mock, procRefArgs)).AlwaysSet(4, 5);
+
+        SomeInterface &i = mock.get();
+
+        int a = 0, b = 0;
+        ASSERT_EQUAL(1, i.funcRefArgs(&a, b));
+        ASSERT_EQUAL(2, a);
+        ASSERT_EQUAL(3, b);
+
+        i.procRefArgs(&a, b);
+        ASSERT_EQUAL(4, a);
+        ASSERT_EQUAL(5, b);
+
+        ASSERT_EQUAL(1, i.funcRefArgs(&a, b));
+        ASSERT_EQUAL(2, a);
+        ASSERT_EQUAL(3, b);
+
+        i.procRefArgs(&a, b);
+        ASSERT_EQUAL(4, a);
+        ASSERT_EQUAL(5, b);
+
     }
 
     void stub_a_method_to_throw_a_specified_exception_once() {
