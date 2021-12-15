@@ -241,7 +241,8 @@ public:
 			method* m8 = 0, method* m9 = 0, method* m10 = 0, method* m11 = 0, method* m12 = 0, method* m13 = 0, method* m14 = 0,
 			method* m15 = 0, method* m16 = 0, method* m17 = 0, method* m18 = 0, method* m19 = 0, method* m20 = 0, method* m21 = 0,
 			method* m22 = 0, method* m23 = 0, method* m24 = 0, method* m25 = 0, method* m26 = 0, method* m27 = 0, method* m28 = 0,
-			method* m29 = 0) {
+			method* m29 = 0, method* m30 = 0, method* m31 = 0, method* m32 = 0, method* m33 = 0, method* m34 = 0, method* m35 = 0,
+			method* m36 = 0, method* m37 = 0, method* m38 = 0, method* m39 = 0) {
 		fixture* f = &__fixtures();
 		while (f->_next) {
 			f = f->_next;
@@ -293,6 +294,16 @@ public:
 		SET_FIXTURE_METHOD(m27)
 		SET_FIXTURE_METHOD(m28)
 		SET_FIXTURE_METHOD(m29)
+		SET_FIXTURE_METHOD(m30)
+		SET_FIXTURE_METHOD(m31)
+		SET_FIXTURE_METHOD(m32)
+		SET_FIXTURE_METHOD(m33)
+		SET_FIXTURE_METHOD(m34)
+		SET_FIXTURE_METHOD(m35)
+		SET_FIXTURE_METHOD(m36)
+		SET_FIXTURE_METHOD(m37)
+		SET_FIXTURE_METHOD(m38)
+		SET_FIXTURE_METHOD(m39)
 #undef SET_FIXTURE_METHOD
 	}
 
