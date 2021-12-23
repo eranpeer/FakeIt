@@ -23,8 +23,23 @@
 
 namespace fakeit {
 
-    template<int N>
-    struct Assigner;
+    namespace helper
+    {
+        template <typename T, int N>
+        struct ArgValue;
+
+        template <int max_index, int tuple_index>
+        struct ArgValidator;
+
+        template<int arg_index, typename current_arg, typename ...T, int ...N, typename ... arglist>
+        static void
+        Assign(std::tuple<ArgValue<T, N>...> arg_vals, current_arg &&p, arglist &&... args);
+
+        template<int N>
+        struct ParamWalker;
+
+    }  // namespace helper
+
 
     template<typename R, typename ... arglist>
     struct MethodStubbingProgress {
@@ -151,19 +166,39 @@ namespace fakeit {
 #if __cplusplus >= 201402L
         auto
 #else
-        std::function<R (const typename fakeit::test_arg<arglist>::type...)>
+        std::function<R (typename fakeit::test_arg<arglist>::type...)>
 #endif
         GetAssigner(R &&r, valuelist &&... arg_vals) {
             return
                 [vals_tuple = ArgumentsTuple<R, valuelist...>{
                     std::forward<R>(r), std::forward<valuelist>(arg_vals)...}
-                ] (const typename fakeit::test_arg<arglist>::type...args)
+                ] (typename fakeit::test_arg<arglist>::type...args)
                 {
-                    Assigner<sizeof...(valuelist)>::Assign(vals_tuple,
+                    helper::ParamWalker<sizeof...(valuelist)>::Assign(vals_tuple,
                         std::forward<arglist>(args)...);
                     return std::get<0>(vals_tuple);
                 };
         }
+
+        template<typename ...T, int ...N>
+#if __cplusplus >= 201402L
+        auto
+#else
+        std::function<R (typename fakeit::test_arg<arglist>::type...)>
+#endif
+        GetAssigner(R &&r, helper::ArgValue<T, N>... arg_vals) {
+            return
+                [ret = std::tuple<R>{ std::forward<R>(r) },
+                 vals_tuple = ArgumentsTuple<helper::ArgValue<T, N>...>{
+                    std::forward<helper::ArgValue<T, N>>(arg_vals)...}
+                ] (typename fakeit::test_arg<arglist>::type...args) -> R
+                {
+                    helper::ArgValidator<sizeof...(arglist), sizeof...(T) - 1>::CheckPositions(vals_tuple);
+                    helper::Assign<1>(vals_tuple, std::forward<arglist>(args)...);
+                    return std::get<0>(ret);
+                };
+        }
+
     };
 
 
@@ -266,36 +301,143 @@ namespace fakeit {
             return
                 [vals_tuple = ArgumentsTuple<valuelist...>{
                     std::forward<valuelist>(arg_vals)...}
-                ] (const typename fakeit::test_arg<arglist>::type...args)
+                ] (typename fakeit::test_arg<arglist>::type...args)
                 {
-                    Assigner<sizeof...(valuelist)>::Assign(vals_tuple,
+                    helper::ParamWalker<sizeof...(valuelist)>::Assign(vals_tuple,
                         std::forward<arglist>(args)...);
                 };
         }
-    };
 
-
-    template<int N>
-    struct Assigner {
-        template<typename current_arg, typename ... valuelist, typename ... arglist>
-        static typename std::enable_if<!std::is_pointer<current_arg>::value, void>::type
-        Assign(ArgumentsTuple<valuelist...> arg_vals, current_arg &&t, arglist&&... args) {
-            Assigner<N - 1>::template Assign(arg_vals, std::forward<arglist>(args)...);
-            t = std::get<std::tuple_size<ArgumentsTuple<valuelist...>>::value - N>(arg_vals);
+        template<typename ...T, int ...N>
+#if __cplusplus >= 201402L
+        auto
+#else
+        std::function<void (typename fakeit::test_arg<arglist>::type...)>
+#endif
+        GetAssigner(helper::ArgValue<T, N>... arg_vals) {
+            return
+                [vals_tuple = ArgumentsTuple<helper::ArgValue<T, N>...>{
+                    std::forward<helper::ArgValue<T, N>>(arg_vals)...}
+                ] (typename fakeit::test_arg<arglist>::type...args)
+                {
+                    helper::ArgValidator<sizeof...(arglist), sizeof...(T) - 1>::CheckPositions(vals_tuple);
+                    helper::Assign<1>(vals_tuple, std::forward<arglist>(args)...);
+                };
         }
 
-        template<typename current_arg, typename ... valuelist, typename ... arglist>
-        static typename std::enable_if<std::is_pointer<current_arg>::value, void>::type
-        Assign(ArgumentsTuple<valuelist...> arg_vals, current_arg &&t, arglist&&... args) {
-            Assigner<N - 1>::template Assign(arg_vals, std::forward<arglist>(args)...);
-            *t = std::get<std::tuple_size<ArgumentsTuple<valuelist...>>::value - N>(arg_vals);
+    };
+
+
+    namespace helper
+    {
+        template <typename T, int N>
+        struct ArgValue
+        {
+            ArgValue(T &&v): value { std::forward<T>(v) } {}
+            constexpr static int pos = N;
+            T value;
+        };
+
+        template <int max_index, int tuple_index>
+        struct ArgValidator
+        {
+            template <typename ...T, int ...N>
+            static void CheckPositions(const std::tuple<ArgValue<T, N>...> arg_vals)
+            {
+#if __cplusplus >= 201402L
+                static_assert(std::get<tuple_index>(arg_vals).pos <= max_index,
+                    "Argument index out of range");
+                ArgValidator<max_index, tuple_index - 1>::CheckPositions(arg_vals);
+#endif
+            }
+        };
+
+        template <int max_index>
+        struct ArgValidator<max_index, -1>
+        {
+            template <typename T>
+            static void CheckPositions(T) {}
+        };
+
+        template <typename current_arg>
+        typename std::enable_if<std::is_pointer<current_arg>::value,
+            typename std::remove_pointer<current_arg>::type &>::type
+        GetArg(current_arg &&t)
+        {
+            return *t;
         }
-    };
 
-    template<>
-    struct Assigner<0> {
-        template<typename ... valuelist, typename ... arglist>
-        static void Assign(ArgumentsTuple<valuelist...>, arglist... ) {}
-    };
+        template <typename current_arg>
+        typename std::enable_if<!std::is_pointer<current_arg>::value, current_arg>::type
+        GetArg(current_arg &&t)
+        {
+            return std::forward<current_arg>(t);
+        }
 
+        template<int N>
+        struct ParamWalker {
+            template<typename current_arg, typename ... valuelist, typename ... arglist>
+            static void
+            Assign(ArgumentsTuple<valuelist...> arg_vals, current_arg &&p, arglist&&... args) {
+                ParamWalker<N - 1>::template Assign(arg_vals, std::forward<arglist>(args)...);
+                GetArg(std::forward<current_arg>(p)) = std::get<sizeof...(valuelist) - N>(arg_vals);
+            }
+        };
+
+        template<>
+        struct ParamWalker<0> {
+            template<typename ... valuelist, typename ... arglist>
+            static void Assign(ArgumentsTuple<valuelist...>, arglist... ) {}
+        };
+
+        template<int arg_index, int check_index>
+        struct ArgLocator {
+            template<typename current_arg, typename ...T, int ...N>
+            static void AssignArg(current_arg &&p, std::tuple<ArgValue<T, N>...> arg_vals) {
+                if (std::get<check_index>(arg_vals).pos == arg_index)
+                    GetArg(std::forward<current_arg>(p)) = std::get<check_index>(arg_vals).value;
+                else if (check_index > 0)
+                    ArgLocator<arg_index, check_index - 1>::AssignArg(std::forward<current_arg>(p), arg_vals);
+            }
+        };
+
+        template<int arg_index>
+        struct ArgLocator<arg_index, -1> {
+            template<typename current_arg, typename T>
+            static void AssignArg(current_arg, T) {
+            }
+        };
+
+        template<int arg_index, typename current_arg, typename ...T, int ...N, typename ... arglist>
+        static void
+        Assign(std::tuple<ArgValue<T, N>...> arg_vals, current_arg &&p, arglist &&... args) {
+            ArgLocator<arg_index, sizeof...(N) - 1>::AssignArg(std::forward<current_arg>(p), arg_vals);
+            Assign<arg_index + 1>(arg_vals, std::forward<arglist>(args)...);
+        }
+
+        template<int arg_index,  typename ... valuelist>
+        static void Assign(std::tuple<valuelist...>) {}
+
+    }  // namespace helper
+
+    /*
+     * Users might use our placeholders so that our operator<= is automatically
+     * picked up using ADL. They might use std placeholders instead, but they
+     * should make our operator<= from fakeit namespace visible to their code.
+     */
+    namespace placeholders
+    {
+        using namespace std::placeholders;
+
+        template <typename PlaceHolder, typename ArgType,
+            typename std::enable_if<static_cast<bool>(std::is_placeholder<PlaceHolder>::value), bool>::type = true>
+        helper::ArgValue<ArgType, std::is_placeholder<PlaceHolder>::value>
+        operator<=(PlaceHolder, ArgType &&arg)
+        {
+            return { std::forward<ArgType>(arg) };
+        }
+
+    }  // namespace placeholders
+
+    using placeholders::operator <=;
 }
