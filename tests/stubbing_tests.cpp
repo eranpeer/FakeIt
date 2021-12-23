@@ -48,7 +48,7 @@ struct BasicStubbing : tpunit::TestFixture {
                     TEST(BasicStubbing::stub_multiple_do_with_list),
                     TEST(BasicStubbing::exception_while_stubbing_should_cancel_stubbing),
                     TEST(BasicStubbing::reset_mock_to_initial_state),
-                    TEST(BasicStubbing::use_lambda_to_change_ptr_value), 
+                    TEST(BasicStubbing::use_lambda_to_change_ptr_value),
                     TEST(BasicStubbing::assingOutParamsWithLambda)
             ) {
     }
@@ -128,8 +128,8 @@ struct BasicStubbing : tpunit::TestFixture {
 
     void stub_a_function_to_set_specified_values_once() {
         Mock<SomeInterface> mock;
-        When(Method(mock, funcRefArgs)).Set(1, 2, 3);
-        When(Method(mock, procRefArgs)).Set(4, 5).Set(6, 7);
+        When(Method(mock, funcRefArgs)).ReturnAndSet(1, 2, 3);
+        When(Method(mock, procRefArgs)).ReturnAndSet(4, 5).ReturnAndSet(6, 7);
 
         SomeInterface &i = mock.get();
 
@@ -159,8 +159,8 @@ struct BasicStubbing : tpunit::TestFixture {
     void stub_a_function_to_set_specified_values_always() {
         Mock<SomeInterface> mock;
 
-        When(Method(mock, funcRefArgs)).AlwaysSet(1, 2, 3);
-        When(Method(mock, procRefArgs)).AlwaysSet(4, 5);
+        When(Method(mock, funcRefArgs)).AlwaysReturnAndSet(1, 2, 3);
+        When(Method(mock, procRefArgs)).AlwaysReturnAndSet(4, 5);
 
         SomeInterface &i = mock.get();
 
@@ -228,7 +228,7 @@ struct BasicStubbing : tpunit::TestFixture {
 
         ASSERT_THROW(i.func(3), fakeit::UnexpectedMethodCallException);
         ASSERT_THROW(i.proc(3), fakeit::UnexpectedMethodCallException);
-	
+
 		When(Method(mock, func)).Do([](int& val) {
 			return val + 1;
 		});
@@ -347,7 +347,7 @@ struct BasicStubbing : tpunit::TestFixture {
         i.proc(3);
         i.proc(3);
         ASSERT_EQUAL(3, a);
-    
+
 		Method(mock, func) = [](int& val) {
 			return val + 1;
 		};

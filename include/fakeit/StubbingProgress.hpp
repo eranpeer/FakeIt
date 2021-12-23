@@ -107,13 +107,13 @@ namespace fakeit {
 
         template<typename ... valuelist>
         MethodStubbingProgress<R, arglist...> &
-        Set(R &&r, valuelist &&... arg_vals) {
+        ReturnAndSet(R &&r, valuelist &&... arg_vals) {
             return Do(GetAssigner(std::forward<R>(r),
                     std::forward<valuelist>(arg_vals)...));
         }
 
         template<typename ... valuelist>
-        void AlwaysSet(R &&r, valuelist &&... arg_vals) {
+        void AlwaysReturnAndSet(R &&r, valuelist &&... arg_vals) {
             AlwaysDo(GetAssigner(std::forward<R>(r),
                 std::forward<valuelist>(arg_vals)...));
         }
@@ -175,7 +175,7 @@ namespace fakeit {
 
         MethodStubbingProgress<void, arglist...> &Return() {
             auto lambda = [](const typename fakeit::test_arg<arglist>::type...) -> void {
-                return DefaultValue<void>::value(); 
+                return DefaultValue<void>::value();
             };
             return Do(lambda);
         }
@@ -223,12 +223,12 @@ namespace fakeit {
 
         template<typename ... valuelist>
         MethodStubbingProgress<void, arglist...> &
-        Set(valuelist &&... arg_vals) {
+        ReturnAndSet(valuelist &&... arg_vals) {
             return Do(GetAssigner(std::forward<valuelist>(arg_vals)...));
         }
 
         template<typename ... valuelist>
-        void AlwaysSet(valuelist &&... arg_vals) {
+        void AlwaysReturnAndSet(valuelist &&... arg_vals) {
             AlwaysDo(GetAssigner(std::forward<valuelist>(arg_vals)...));
         }
 
