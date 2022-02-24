@@ -8,6 +8,8 @@
 #elif __has_include("catch2/catch_all.hpp")
 #   include <catch2/catch_assertion_result.hpp>
 #   include <catch2/catch_test_macros.hpp>
+#elif __has_include("catch_amalgamated.hpp")
+#   include <catch_amalgamated.hpp>
 #else
 #   include <catch.hpp>
 #endif

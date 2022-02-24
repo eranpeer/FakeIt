@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2022-02-25 00:22:22.032093
+ *  Generated: 2022-02-25 00:37:04.377858
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -1136,6 +1136,8 @@ namespace fakeit {
 #elif __has_include("catch2/catch_all.hpp")
 #   include <catch2/catch_assertion_result.hpp>
 #   include <catch2/catch_test_macros.hpp>
+#elif __has_include("catch_amalgamated.hpp")
+#   include <catch_amalgamated.hpp>
 #else
 #   include <catch.hpp>
 #endif
