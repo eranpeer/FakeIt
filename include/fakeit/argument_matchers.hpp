@@ -8,6 +8,8 @@
  */
 #pragma once
 
+#include <cstring>
+
 namespace fakeit {
 
     struct IMatcher : Destructible {
@@ -245,6 +247,174 @@ namespace fakeit {
             }
 
         };
+
+        struct StrEqMatcherCreator : public ComparisonMatcherCreator<const char*> {
+
+            virtual ~StrEqMatcherCreator() = default;
+
+            StrEqMatcherCreator(const char* const &expected)
+                    : ComparisonMatcherCreator<const char*>(expected) {
+            }
+
+            struct Matcher : public ComparisonMatcherCreator<const char*>::Matcher {
+                Matcher(const char* const &expected)
+                        : ComparisonMatcherCreator<const char*>::Matcher(expected) {
+                }
+
+                virtual std::string format() const override {
+                    return TypeFormatter<const char*>::format(this->_expected);
+                }
+
+                virtual bool matches(const char* const &actual) const override {
+                    return std::strcmp(actual, this->_expected) == 0;
+                }
+            };
+
+            virtual TypedMatcher<const char*> *createMatcher() const {
+                return new Matcher(this->_expected);
+            }
+
+        };
+
+        struct StrGtMatcherCreator : public ComparisonMatcherCreator<const char*> {
+
+            virtual ~StrGtMatcherCreator() = default;
+
+            StrGtMatcherCreator(const char* const &expected)
+                    : ComparisonMatcherCreator<const char*>(expected) {
+            }
+
+            struct Matcher : public ComparisonMatcherCreator<const char*>::Matcher {
+                Matcher(const char* const &expected)
+                        : ComparisonMatcherCreator<const char*>::Matcher(expected) {
+                }
+
+                virtual std::string format() const override {
+                    return std::string(">") + TypeFormatter<const char*>::format(this->_expected);
+                }
+
+                virtual bool matches(const char* const &actual) const override {
+                    return std::strcmp(actual, this->_expected) > 0;
+                }
+            };
+
+            virtual TypedMatcher<const char*> *createMatcher() const {
+                return new Matcher(this->_expected);
+            }
+
+        };
+
+        struct StrGeMatcherCreator : public ComparisonMatcherCreator<const char*> {
+
+            virtual ~StrGeMatcherCreator() = default;
+
+            StrGeMatcherCreator(const char* const &expected)
+                    : ComparisonMatcherCreator<const char*>(expected) {
+            }
+
+            struct Matcher : public ComparisonMatcherCreator<const char*>::Matcher {
+                Matcher(const char* const &expected)
+                        : ComparisonMatcherCreator<const char*>::Matcher(expected) {
+                }
+
+                virtual std::string format() const override {
+                    return std::string(">=") + TypeFormatter<const char*>::format(this->_expected);
+                }
+
+                virtual bool matches(const char* const &actual) const override {
+                    return std::strcmp(actual, this->_expected) >= 0;
+                }
+            };
+
+            virtual TypedMatcher<const char*> *createMatcher() const {
+                return new Matcher(this->_expected);
+            }
+
+        };
+
+        struct StrLtMatcherCreator : public ComparisonMatcherCreator<const char*> {
+
+            virtual ~StrLtMatcherCreator() = default;
+
+            StrLtMatcherCreator(const char* const &expected)
+                    : ComparisonMatcherCreator<const char*>(expected) {
+            }
+
+            struct Matcher : public ComparisonMatcherCreator<const char*>::Matcher {
+                Matcher(const char* const &expected)
+                        : ComparisonMatcherCreator<const char*>::Matcher(expected) {
+                }
+
+                virtual std::string format() const override {
+                    return std::string("<") + TypeFormatter<const char*>::format(this->_expected);
+                }
+
+                virtual bool matches(const char* const &actual) const override {
+                    return std::strcmp(actual, this->_expected) < 0;
+                }
+            };
+
+            virtual TypedMatcher<const char*> *createMatcher() const {
+                return new Matcher(this->_expected);
+            }
+
+        };
+
+        struct StrLeMatcherCreator : public ComparisonMatcherCreator<const char*> {
+
+            virtual ~StrLeMatcherCreator() = default;
+
+            StrLeMatcherCreator(const char* const &expected)
+                    : ComparisonMatcherCreator<const char*>(expected) {
+            }
+
+            struct Matcher : public ComparisonMatcherCreator<const char*>::Matcher {
+                Matcher(const char* const &expected)
+                        : ComparisonMatcherCreator<const char*>::Matcher(expected) {
+                }
+
+                virtual std::string format() const override {
+                    return std::string("<=") + TypeFormatter<const char*>::format(this->_expected);
+                }
+
+                virtual bool matches(const char* const &actual) const override {
+                    return std::strcmp(actual, this->_expected) <= 0;
+                }
+            };
+
+            virtual TypedMatcher<const char*> *createMatcher() const {
+                return new Matcher(this->_expected);
+            }
+
+        };
+
+        struct StrNeMatcherCreator : public ComparisonMatcherCreator<const char*> {
+
+            virtual ~StrNeMatcherCreator() = default;
+
+            StrNeMatcherCreator(const char* const &expected)
+                    : ComparisonMatcherCreator<const char*>(expected) {
+            }
+
+            struct Matcher : public ComparisonMatcherCreator<const char*>::Matcher {
+                Matcher(const char* const &expected)
+                        : ComparisonMatcherCreator<const char*>::Matcher(expected) {
+                }
+
+                virtual std::string format() const override {
+                    return std::string("!=") + TypeFormatter<const char*>::format(this->_expected);
+                }
+
+                virtual bool matches(const char* const &actual) const override {
+                    return std::strcmp(actual, this->_expected) != 0;
+                }
+            };
+
+            virtual TypedMatcher<const char*> *createMatcher() const {
+                return new Matcher(this->_expected);
+            }
+
+        };
     }
 
     struct AnyMatcher {
@@ -289,6 +459,36 @@ namespace fakeit {
     template<typename T>
     internal::NeMatcherCreator<T> Ne(const T &arg) {
         internal::NeMatcherCreator<T> rv(arg);
+        return rv;
+    }
+
+    inline internal::StrEqMatcherCreator StrEq(const char* const &arg) {
+        internal::StrEqMatcherCreator rv(arg);
+        return rv;
+    }
+
+    inline internal::StrGtMatcherCreator StrGt(const char* const &arg) {
+        internal::StrGtMatcherCreator rv(arg);
+        return rv;
+    }
+
+    inline internal::StrGeMatcherCreator StrGe(const char* const &arg) {
+        internal::StrGeMatcherCreator rv(arg);
+        return rv;
+    }
+
+    inline internal::StrLtMatcherCreator StrLt(const char* const &arg) {
+        internal::StrLtMatcherCreator rv(arg);
+        return rv;
+    }
+
+    inline internal::StrLeMatcherCreator StrLe(const char* const &arg) {
+        internal::StrLeMatcherCreator rv(arg);
+        return rv;
+    }
+
+    inline internal::StrNeMatcherCreator StrNe(const char* const &arg) {
+        internal::StrNeMatcherCreator rv(arg);
         return rv;
     }
 
