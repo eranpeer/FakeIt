@@ -12,6 +12,7 @@
 #include "tpunit++.hpp"
 #include "fakeit.hpp"
 
+using namespace std::placeholders;
 using namespace fakeit;
 
 struct BasicStubbing : tpunit::TestFixture {
@@ -23,6 +24,10 @@ struct BasicStubbing : tpunit::TestFixture {
                     TEST(BasicStubbing::stub_multiple_methods_to_default_behaviore),
                     TEST(BasicStubbing::stub_a_function_to_return_a_specified_value_once),
                     TEST(BasicStubbing::stub_a_function_to_return_a_specified_value_always),
+                    TEST(BasicStubbing::stub_a_function_to_set_specified_values_once),
+                    TEST(BasicStubbing::stub_a_function_to_set_specified_values_once_form2),
+                    TEST(BasicStubbing::stub_a_function_to_set_specified_values_always),
+                    TEST(BasicStubbing::stub_a_function_to_set_specified_values_always_form2),
                     TEST(BasicStubbing::stub_a_method_to_throw_a_specified_exception_once),//
                     TEST(BasicStubbing::stub_a_method_with_lambda_delegate_once),//
                     TEST(BasicStubbing::stub_a_method_with_lambda_delegate_always),//
@@ -46,7 +51,7 @@ struct BasicStubbing : tpunit::TestFixture {
                     TEST(BasicStubbing::stub_multiple_do_with_list),
                     TEST(BasicStubbing::exception_while_stubbing_should_cancel_stubbing),
                     TEST(BasicStubbing::reset_mock_to_initial_state),
-                    TEST(BasicStubbing::use_lambda_to_change_ptr_value), 
+                    TEST(BasicStubbing::use_lambda_to_change_ptr_value),
                     TEST(BasicStubbing::assingOutParamsWithLambda)
             ) {
     }
@@ -54,8 +59,10 @@ struct BasicStubbing : tpunit::TestFixture {
     struct SomeInterface {
         virtual int func(int) = 0;
         virtual int funcNoArgs() = 0;
+        virtual int funcRefArgs(int*, int&) = 0;
 
         virtual void proc(int) = 0;
+        virtual void procRefArgs(int*, int&) = 0;
     };
 
     void calling_an_unstubbed_method_should_raise_UnmockedMethodCallException() {
@@ -122,6 +129,131 @@ struct BasicStubbing : tpunit::TestFixture {
         ASSERT_EQUAL(1, i.func(1));
     }
 
+    void stub_a_function_to_set_specified_values_once() {
+        Mock<SomeInterface> mock;
+        When(Method(mock, funcRefArgs)).ReturnAndSet(1, 2, 3);
+        When(Method(mock, procRefArgs)).ReturnAndSet(4, 5).ReturnAndSet(6, 7).ReturnAndSet(8);
+
+        SomeInterface &i = mock.get();
+
+        int a = 0, b = 0;
+        ASSERT_EQUAL(1, i.funcRefArgs(&a, b));
+        ASSERT_EQUAL(2, a);
+        ASSERT_EQUAL(3, b);
+        try {
+            i.funcRefArgs(&a, b);
+            FAIL();
+        } catch (fakeit::UnexpectedMethodCallException &) {
+        }
+
+        i.procRefArgs(&a, b);
+        ASSERT_EQUAL(4, a);
+        ASSERT_EQUAL(5, b);
+        i.procRefArgs(&a, b);
+        ASSERT_EQUAL(6, a);
+        ASSERT_EQUAL(7, b);
+        i.procRefArgs(&a, b);
+        ASSERT_EQUAL(8, a);
+        ASSERT_EQUAL(7, b);
+        try {
+            i.procRefArgs(&a, b);
+            FAIL();
+        } catch (fakeit::UnexpectedMethodCallException &) {
+        }
+    }
+
+    void stub_a_function_to_set_specified_values_once_form2() {
+        Mock<SomeInterface> mock;
+        When(Method(mock, funcRefArgs)).ReturnAndSet(1, _2 <= 3, _1 <= 2);
+        When(Method(mock, procRefArgs)).ReturnAndSet(_1 <= 4, _2 <= 5).ReturnAndSet( _2 <= 6, _1 <= 7).ReturnAndSet(_2 <= 8);
+
+        SomeInterface &i = mock.get();
+
+        int a = 0, b = 0;
+        ASSERT_EQUAL(1, i.funcRefArgs(&a, b));
+        ASSERT_EQUAL(2, a);
+        ASSERT_EQUAL(3, b);
+        try {
+            i.funcRefArgs(&a, b);
+            FAIL();
+        } catch (fakeit::UnexpectedMethodCallException &) {
+        }
+
+        i.procRefArgs(&a, b);
+        ASSERT_EQUAL(4, a);
+        ASSERT_EQUAL(5, b);
+        i.procRefArgs(&a, b);
+        ASSERT_EQUAL(7, a);
+        ASSERT_EQUAL(6, b);
+        i.procRefArgs(&a, b);
+        ASSERT_EQUAL(7, a);
+        ASSERT_EQUAL(8, b);
+        try {
+            i.procRefArgs(&a, b);
+            FAIL();
+        } catch (fakeit::UnexpectedMethodCallException &) {
+        }
+    }
+
+    void stub_a_function_to_set_specified_values_always() {
+        Mock<SomeInterface> mock;
+
+        When(Method(mock, funcRefArgs)).AlwaysReturnAndSet(1, 2, 3);
+        When(Method(mock, procRefArgs)).AlwaysReturnAndSet(4, 5);
+
+        SomeInterface &i = mock.get();
+
+        int a = 0, b = 0;
+        ASSERT_EQUAL(1, i.funcRefArgs(&a, b));
+        ASSERT_EQUAL(2, a);
+        ASSERT_EQUAL(3, b);
+
+        i.procRefArgs(&a, b);
+        ASSERT_EQUAL(4, a);
+        ASSERT_EQUAL(5, b);
+
+        ASSERT_EQUAL(1, i.funcRefArgs(&a, b));
+        ASSERT_EQUAL(2, a);
+        ASSERT_EQUAL(3, b);
+
+        i.procRefArgs(&a, b);
+        ASSERT_EQUAL(4, a);
+        ASSERT_EQUAL(5, b);
+
+    }
+
+    void stub_a_function_to_set_specified_values_always_form2() {
+        Mock<SomeInterface> mock;
+
+        When(Method(mock, funcRefArgs)).AlwaysReturnAndSet(1, _1 <= 2, _2 <= 3);
+        When(Method(mock, procRefArgs)).AlwaysReturnAndSet(_1 <= 40, _2 <= 50, _1 <= 4, _2 <= 5);
+
+        SomeInterface &i = mock.get();
+
+        int a = 0, b = 0;
+        ASSERT_EQUAL(1, i.funcRefArgs(&a, b));
+        ASSERT_EQUAL(2, a);
+        ASSERT_EQUAL(3, b);
+
+        i.procRefArgs(&a, b);
+        ASSERT_EQUAL(4, a);
+        ASSERT_EQUAL(5, b);
+
+        When(Method(mock, funcRefArgs)).AlwaysReturnAndSet(1, _2 <= 3);
+        ASSERT_EQUAL(1, i.funcRefArgs(&a, b));
+        ASSERT_EQUAL(4, a);
+        ASSERT_EQUAL(3, b);
+
+        i.procRefArgs(&a, b);
+        ASSERT_EQUAL(4, a);
+        ASSERT_EQUAL(5, b);
+
+        When(Method(mock, funcRefArgs)).AlwaysReturnAndSet(1, _1 <= 2);
+        ASSERT_EQUAL(1, i.funcRefArgs(&a, b));
+        ASSERT_EQUAL(2, a);
+        ASSERT_EQUAL(5, b);
+    }
+
     void stub_a_method_to_throw_a_specified_exception_once() {
         Mock<SomeInterface> mock;
 
@@ -167,7 +299,7 @@ struct BasicStubbing : tpunit::TestFixture {
 
         ASSERT_THROW(i.func(3), fakeit::UnexpectedMethodCallException);
         ASSERT_THROW(i.proc(3), fakeit::UnexpectedMethodCallException);
-	
+
 		When(Method(mock, func)).Do([](int& val) {
 			return val + 1;
 		});
@@ -286,7 +418,7 @@ struct BasicStubbing : tpunit::TestFixture {
         i.proc(3);
         i.proc(3);
         ASSERT_EQUAL(3, a);
-    
+
 		Method(mock, func) = [](int& val) {
 			return val + 1;
 		};

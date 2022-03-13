@@ -226,8 +226,7 @@ namespace fakeit {
             }
 
             virtual std::function<void()> getOriginalMethod() override {
-                C &instance = MethodMockingContextBase<void>::_mock.get();
-                return [=, &instance]() -> void {
+                return [=]() -> void {
                 };
             }
 
