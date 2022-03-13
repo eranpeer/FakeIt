@@ -169,15 +169,22 @@ namespace fakeit {
         std::function<R (typename fakeit::test_arg<arglist>::type...)>
 #endif
         GetAssigner(R &&r, valuelist &&... arg_vals) {
-            return
-                [vals_tuple = ArgumentsTuple<R, valuelist...>{
-                    std::forward<R>(r), std::forward<valuelist>(arg_vals)...}
-                ] (typename fakeit::test_arg<arglist>::type...args)
-                {
+            class Lambda {
+            public:
+                Lambda(R &&r, valuelist &&... arg_vals)
+                    : vals_tuple{std::forward<R>(r), std::forward<valuelist>(arg_vals)...} {}
+
+                R operator()(typename fakeit::test_arg<arglist>::type... args) {
                     helper::ParamWalker<sizeof...(valuelist)>::Assign(vals_tuple,
                         std::forward<arglist>(args)...);
                     return std::get<0>(vals_tuple);
-                };
+                }
+
+            private:
+                ArgumentsTuple<R, valuelist...> vals_tuple;
+            };
+
+            return Lambda(std::forward<R>(r), std::forward<valuelist>(arg_vals)...);
         }
 
         template<typename ...T, int ...N>
@@ -187,16 +194,24 @@ namespace fakeit {
         std::function<R (typename fakeit::test_arg<arglist>::type...)>
 #endif
         GetAssigner(R &&r, helper::ArgValue<T, N>... arg_vals) {
-            return
-                [ret = std::tuple<R>{ std::forward<R>(r) },
-                 vals_tuple = ArgumentsTuple<helper::ArgValue<T, N>...>{
-                    std::forward<helper::ArgValue<T, N>>(arg_vals)...}
-                ] (typename fakeit::test_arg<arglist>::type...args) -> R
-                {
+            class Lambda {
+            public:
+                Lambda(R &&r, helper::ArgValue<T, N>... arg_vals)
+                    : ret{std::forward<R>(r)}
+                    , vals_tuple{std::forward<helper::ArgValue<T, N>>(arg_vals)...} {}
+
+                R operator()(typename fakeit::test_arg<arglist>::type... args) {
                     helper::ArgValidator<sizeof...(arglist), sizeof...(T) - 1>::CheckPositions(vals_tuple);
                     helper::Assign<1>(vals_tuple, std::forward<arglist>(args)...);
                     return std::get<0>(ret);
-                };
+                }
+
+            private:
+                std::tuple<R> ret;
+                ArgumentsTuple<helper::ArgValue<T, N>...> vals_tuple;
+            };
+
+            return Lambda(std::forward<R>(r), std::forward<helper::ArgValue<T, N>>(arg_vals)...);
         }
 
     };
@@ -298,14 +313,21 @@ namespace fakeit {
         std::function<void (typename fakeit::test_arg<arglist>::type...)>
 #endif
         GetAssigner(valuelist &&... arg_vals) {
-            return
-                [vals_tuple = ArgumentsTuple<valuelist...>{
-                    std::forward<valuelist>(arg_vals)...}
-                ] (typename fakeit::test_arg<arglist>::type...args)
-                {
+            class Lambda {
+            public:
+                Lambda(valuelist &&... arg_vals)
+                    : vals_tuple{std::forward<valuelist>(arg_vals)...} {}
+
+                void operator()(typename fakeit::test_arg<arglist>::type... args) {
                     helper::ParamWalker<sizeof...(valuelist)>::Assign(vals_tuple,
                         std::forward<arglist>(args)...);
-                };
+                }
+
+            private:
+                ArgumentsTuple<valuelist...> vals_tuple;
+            };
+
+            return Lambda(std::forward<valuelist>(arg_vals)...);
         }
 
         template<typename ...T, int ...N>
@@ -315,14 +337,21 @@ namespace fakeit {
         std::function<void (typename fakeit::test_arg<arglist>::type...)>
 #endif
         GetAssigner(helper::ArgValue<T, N>... arg_vals) {
-            return
-                [vals_tuple = ArgumentsTuple<helper::ArgValue<T, N>...>{
-                    std::forward<helper::ArgValue<T, N>>(arg_vals)...}
-                ] (typename fakeit::test_arg<arglist>::type...args)
-                {
+            class Lambda {
+            public:
+                Lambda(helper::ArgValue<T, N>... arg_vals)
+                    : vals_tuple{std::forward<helper::ArgValue<T, N>>(arg_vals)...} {}
+
+                void operator()(typename fakeit::test_arg<arglist>::type... args) {
                     helper::ArgValidator<sizeof...(arglist), sizeof...(T) - 1>::CheckPositions(vals_tuple);
                     helper::Assign<1>(vals_tuple, std::forward<arglist>(args)...);
-                };
+                }
+
+            private:
+                ArgumentsTuple<helper::ArgValue<T, N>...> vals_tuple;
+            };
+
+            return Lambda(std::forward<helper::ArgValue<T, N>>(arg_vals)...);
         }
 
     };
@@ -348,6 +377,8 @@ namespace fakeit {
                 static_assert(std::get<tuple_index>(arg_vals).pos <= max_index,
                     "Argument index out of range");
                 ArgValidator<max_index, tuple_index - 1>::CheckPositions(arg_vals);
+#else
+                (void)arg_vals; // to suppress unused variable warning in C++11
 #endif
             }
         };
