@@ -26,6 +26,7 @@ struct BasicStubbing : tpunit::TestFixture {
                     TEST(BasicStubbing::stub_a_function_to_return_a_specified_value_always),
                     TEST(BasicStubbing::stub_a_function_to_set_specified_values_once),
                     TEST(BasicStubbing::stub_a_function_to_set_specified_values_once_form2),
+                    TEST(BasicStubbing::stub_a_function_to_set_specified_value_with_incompatible_params),
                     TEST(BasicStubbing::stub_a_function_to_set_specified_values_always),
                     TEST(BasicStubbing::stub_a_function_to_set_specified_values_always_form2),
                     TEST(BasicStubbing::stub_a_method_to_throw_a_specified_exception_once),//
@@ -167,8 +168,6 @@ struct BasicStubbing : tpunit::TestFixture {
         Mock<SomeInterface> mock;
         When(Method(mock, funcRefArgs)).ReturnAndSet(1, _2 <= 3, _1 <= 2);
         When(Method(mock, procRefArgs)).ReturnAndSet(_1 <= 4, _2 <= 5).ReturnAndSet( _2 <= 6, _1 <= 7).ReturnAndSet(_2 <= 8);
-        std::vector<std::string> v{"str"};
-        When(Method(mock, procIncompatArgs)).ReturnAndSet(_2 <= v);
 
         SomeInterface &i = mock.get();
 
@@ -196,11 +195,28 @@ struct BasicStubbing : tpunit::TestFixture {
             FAIL();
         } catch (fakeit::UnexpectedMethodCallException &) {
         }
+    }
+
+    void stub_a_function_to_set_specified_value_with_incompatible_params() {
+        Mock<SomeInterface> mock;
+        std::vector<std::string> v{"str"};
+        When(Method(mock, procIncompatArgs)).ReturnAndSet(_2 <= v);
+
+        SomeInterface &i = mock.get();
 
         std::string s;
         std::vector<std::string> chk_v;
         i.procIncompatArgs(s, chk_v);
         ASSERT_EQUAL(chk_v, v);
+
+#if __cplusplus < 201703L
+        When(Method(mock, procIncompatArgs)).ReturnAndSet(_1 <= v);
+        try {
+            i.procIncompatArgs(s, chk_v);
+            FAIL();
+        } catch (std::logic_error&) {
+        }
+#endif
     }
 
     void stub_a_function_to_set_specified_values_always() {

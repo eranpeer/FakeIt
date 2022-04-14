@@ -436,6 +436,7 @@ namespace fakeit {
                     ArgLocator<arg_index, check_index - 1>::AssignArg(std::forward<current_arg>(p), arg_vals);
             }
 
+#if __cplusplus < 201703L
         private:
             template<typename T, typename U>
             static
@@ -452,6 +453,7 @@ namespace fakeit {
             {
                 throw std::logic_error("ReturnAndSet(): Invalid value type");
             }
+#endif
 
         };
 
