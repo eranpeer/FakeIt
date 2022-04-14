@@ -63,6 +63,7 @@ struct BasicStubbing : tpunit::TestFixture {
 
         virtual void proc(int) = 0;
         virtual void procRefArgs(int*, int&) = 0;
+        virtual void procIncompatArgs(std::string&, std::vector<std::string>&) = 0;
     };
 
     void calling_an_unstubbed_method_should_raise_UnmockedMethodCallException() {
@@ -166,6 +167,8 @@ struct BasicStubbing : tpunit::TestFixture {
         Mock<SomeInterface> mock;
         When(Method(mock, funcRefArgs)).ReturnAndSet(1, _2 <= 3, _1 <= 2);
         When(Method(mock, procRefArgs)).ReturnAndSet(_1 <= 4, _2 <= 5).ReturnAndSet( _2 <= 6, _1 <= 7).ReturnAndSet(_2 <= 8);
+        std::vector<std::string> v{"str"};
+        When(Method(mock, procIncompatArgs)).ReturnAndSet(_2 <= v);
 
         SomeInterface &i = mock.get();
 
@@ -193,6 +196,11 @@ struct BasicStubbing : tpunit::TestFixture {
             FAIL();
         } catch (fakeit::UnexpectedMethodCallException &) {
         }
+
+        std::string s;
+        std::vector<std::string> chk_v;
+        i.procIncompatArgs(s, chk_v);
+        ASSERT_EQUAL(chk_v, v);
     }
 
     void stub_a_function_to_set_specified_values_always() {
