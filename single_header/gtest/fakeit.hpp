@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2022-03-13 10:13:48.769737
+ *  Generated: 2022-05-01 15:11:37.188981
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -7691,11 +7691,36 @@ namespace fakeit {
         struct ArgLocator {
             template<typename current_arg, typename ...T, int ...N>
             static void AssignArg(current_arg &&p, std::tuple<ArgValue<T, N>...> arg_vals) {
-                if (std::get<check_index>(arg_vals).pos == arg_index)
+#if __cplusplus >= 201703L
+                if constexpr (std::get<check_index>(arg_vals).pos == arg_index)
                     GetArg(std::forward<current_arg>(p)) = std::get<check_index>(arg_vals).value;
+#else
+                if (std::get<check_index>(arg_vals).pos == arg_index)
+                    Set(std::forward<current_arg>(p), std::get<check_index>(arg_vals).value);
+#endif
                 else if (check_index > 0)
                     ArgLocator<arg_index, check_index - 1>::AssignArg(std::forward<current_arg>(p), arg_vals);
             }
+
+#if __cplusplus < 201703L
+        private:
+            template<typename T, typename U>
+            static
+            typename std::enable_if<std::is_convertible<U, decltype(GetArg(std::declval<T>()))>::value, void>::type
+            Set(T &&p, U &&v)
+            {
+                GetArg(std::forward<T>(p)) = v;
+            }
+
+            template<typename T, typename U>
+            static
+            typename std::enable_if<!std::is_convertible<U, decltype(GetArg(std::declval<T>()))>::value, void>::type
+            Set(T &&, U &&)
+            {
+                throw std::logic_error("ReturnAndSet(): Invalid value type");
+            }
+#endif
+
         };
 
         template<int arg_index>
