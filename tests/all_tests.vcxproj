@@ -123,11 +123,13 @@
   <ItemGroup>
     <ClCompile Include="argument_matching_tests.cpp" />
     <ClCompile Include="cpp14_tests.cpp" />
+    <ClCompile Include="custom_event_formatting_tests.cpp" />
     <ClCompile Include="custom_testing_framework_tests.cpp" />
     <ClCompile Include="default_behaviore_tests.cpp" />
     <ClCompile Include="default_event_formatting_tests.cpp" />
     <ClCompile Include="dtor_mocking_tests.cpp" />
     <ClCompile Include="event_notification_tests.cpp" />
+    <ClCompile Include="functional.cpp" />
     <ClCompile Include="gcc_stubbing_multiple_values_tests.cpp" />
     <ClCompile Include="gcc_type_info_tests.cpp" />
     <ClCompile Include="miscellaneous_tests.cpp" />
@@ -139,12 +141,10 @@
     <ClCompile Include="rvalue_arguments_tests.cpp" />
     <ClCompile Include="sequence_verification_tests.cpp" />
     <ClCompile Include="spying_tests.cpp" />
-    <ClCompile Include="functional.cpp" />
     <ClCompile Include="streaming_tests.cpp" />
     <ClCompile Include="stubbing_tests.cpp" />
     <ClCompile Include="tpunit++main.cpp" />
     <ClCompile Include="type_info_tests.cpp" />
-    <ClCompile Include="custom_event_formatting_tests.cpp" />
     <ClCompile Include="verification_errors_tests.cpp" />
     <ClCompile Include="verification_tests.cpp" />
     <ClCompile Include="VirtualOffsetSelectorTest.cpp" />
