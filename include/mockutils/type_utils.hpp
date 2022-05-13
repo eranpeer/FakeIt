@@ -13,6 +13,9 @@
 
 namespace fakeit {
 
+    template<class...>
+    using fk_void_t = void;
+
     template<class C>
     struct naked_type {
         typedef typename std::remove_cv<typename std::remove_reference<C>::type>::type type;

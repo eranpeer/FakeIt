@@ -230,7 +230,7 @@ struct DefaultEventFormatting: tpunit::TestFixture {
 		When(Method(mock, all_types)).Return(0);
 		//SomeInterface &i = mock.get();
 		try {
-			fakeit::Verify(Method(mock, all_types).Using('a', true, 1, 1, 1, 1, 0, 0))//
+			fakeit::Verify(Method(mock, all_types).Using('a', true, 1, 1u, 1l, 1ul, 0., 0.l))//
 				.setFileInfo("test file", 1, "test method").Exactly(2);
 			FAIL();
 		}

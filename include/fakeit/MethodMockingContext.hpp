@@ -222,13 +222,13 @@ namespace fakeit {
             _impl->setMethodDetails(mockName, methodName);
         }
 
-        void setMatchingCriteria(std::function<bool(arglist &...)> predicate) {
+        void setMatchingCriteria(const std::function<bool(arglist &...)>& predicate) {
             typename ActualInvocation<arglist...>::Matcher *matcher{
                     new UserDefinedInvocationMatcher<arglist...>(predicate)};
             _impl->setInvocationMatcher(matcher);
         }
 
-        void setMatchingCriteria(const std::vector<Destructible *> &matchers) {
+        void setMatchingCriteria(std::vector<Destructible *> &matchers) {
             typename ActualInvocation<arglist...>::Matcher *matcher{
                     new ArgumentsMatcherInvocationMatcher<arglist...>(matchers)};
             _impl->setInvocationMatcher(matcher);
@@ -245,13 +245,14 @@ namespace fakeit {
             _impl->setMethodBodyByAssignment(method);
         }
 
-        template<class ...matcherCreators, class = typename std::enable_if<
-                sizeof...(matcherCreators) == sizeof...(arglist)>::type>
-        void setMatchingCriteria(const matcherCreators &... matcherCreator) {
+        template<class ...matcherCreators>
+        typename std::enable_if< //
+                sizeof...(matcherCreators) == sizeof...(arglist), void> //
+        ::type setMatchingCriteria(matcherCreators &&... matcherCreator) {
             std::vector<Destructible *> matchers;
 
             MatchersCollector<0, arglist...> c(matchers);
-            c.CollectMatchers(matcherCreator...);
+            c.CollectMatchers(std::forward<matcherCreators>(matcherCreator)...);
 
             MethodMockingContext<R, arglist...>::setMatchingCriteria(matchers);
         }
@@ -287,18 +288,13 @@ namespace fakeit {
             return *this;
         }
 
-        MockingContext<R, arglist...> &Using(const arglist &... args) {
-            MethodMockingContext<R, arglist...>::setMatchingCriteria(args...);
-            return *this;
-        }
-
         template<class ...arg_matcher>
-        MockingContext<R, arglist...> &Using(const arg_matcher &... arg_matchers) {
-            MethodMockingContext<R, arglist...>::setMatchingCriteria(arg_matchers...);
+        MockingContext<R, arglist...> &Using(arg_matcher &&... arg_matchers) {
+            MethodMockingContext<R, arglist...>::setMatchingCriteria(std::forward<arg_matcher>(arg_matchers)...);
             return *this;
         }
 
-        MockingContext<R, arglist...> &Matching(std::function<bool(arglist &...)> matcher) {
+        MockingContext<R, arglist...> &Matching(const std::function<bool(arglist &...)>& matcher) {
             MethodMockingContext<R, arglist...>::setMatchingCriteria(matcher);
             return *this;
         }
@@ -308,7 +304,7 @@ namespace fakeit {
             return *this;
         }
 
-        MockingContext<R, arglist...> &operator()(std::function<bool(arglist &...)> matcher) {
+        MockingContext<R, arglist...> &operator()(const std::function<bool(arglist &...)>& matcher) {
             MethodMockingContext<R, arglist...>::setMatchingCriteria(matcher);
             return *this;
         }
@@ -352,18 +348,13 @@ namespace fakeit {
             return *this;
         }
 
-        MockingContext<void, arglist...> &Using(const arglist &... args) {
-            MethodMockingContext<void, arglist...>::setMatchingCriteria(args...);
-            return *this;
-        }
-
         template<class ...arg_matcher>
-        MockingContext<void, arglist...> &Using(const arg_matcher &... arg_matchers) {
-            MethodMockingContext<void, arglist...>::setMatchingCriteria(arg_matchers...);
+        MockingContext<void, arglist...> &Using(arg_matcher &&... arg_matchers) {
+            MethodMockingContext<void, arglist...>::setMatchingCriteria(std::forward<arg_matcher>(arg_matchers)...);
             return *this;
         }
 
-        MockingContext<void, arglist...> &Matching(std::function<bool(arglist &...)> matcher) {
+        MockingContext<void, arglist...> &Matching(const std::function<bool(arglist &...)>& matcher) {
             MethodMockingContext<void, arglist...>::setMatchingCriteria(matcher);
             return *this;
         }
@@ -373,7 +364,7 @@ namespace fakeit {
             return *this;
         }
 
-        MockingContext<void, arglist...> &operator()(std::function<bool(arglist &...)> matcher) {
+        MockingContext<void, arglist...> &operator()(const std::function<bool(arglist &...)>& matcher) {
             MethodMockingContext<void, arglist...>::setMatchingCriteria(matcher);
             return *this;
         }
