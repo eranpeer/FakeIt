@@ -180,8 +180,28 @@ namespace fakeit {
                     : MethodMockingContextBase<R, arglist...>(mock), _vMethod(vMethod) {
             }
 
-            
-            virtual std::function<R(arglist&...)> getOriginalMethod() override {
+            template<typename ... T, typename std::enable_if<all_true<std::is_copy_constructible<T>::value...>::value, int>::type = 0>
+            std::function<R(arglist&...)> getOriginalMethodCopyArgsInternal(int) {
+                void *mPtr = MethodMockingContextBase<R, arglist...>::_mock.getOriginalMethod(_vMethod);
+                C * instance = &(MethodMockingContextBase<R, arglist...>::_mock.get());
+                return [=](arglist&... args) -> R {
+                    auto m = union_cast<typename VTableMethodType<R,arglist...>::type>(mPtr);
+                    return m(instance, args...);
+                };
+            }
+
+            /* LCOV_EXCL_START */
+            template<typename ... T>
+            [[noreturn]] std::function<R(arglist&...)> getOriginalMethodCopyArgsInternal(long) {
+                std::abort(); // Shouldn't ever be called, Spy() should static_assert an error before.
+            }
+            /* LCOV_EXCL_STOP */
+
+            std::function<R(arglist&...)> getOriginalMethodCopyArgs() override {
+                return getOriginalMethodCopyArgsInternal<arglist...>(0);
+            }
+
+            std::function<R(arglist&...)> getOriginalMethodForwardArgs() override {
                 void *mPtr = MethodMockingContextBase<R, arglist...>::_mock.getOriginalMethod(_vMethod);
                 C * instance = &(MethodMockingContextBase<R, arglist...>::_mock.get());
                 return [=](arglist&... args) -> R {
@@ -225,7 +245,12 @@ namespace fakeit {
                     : MethodMockingContextBase<void>(mock) {
             }
 
-            virtual std::function<void()> getOriginalMethod() override {
+            std::function<void()> getOriginalMethodCopyArgs() override {
+                return [=]() -> void {
+                };
+            }
+
+            std::function<void()> getOriginalMethodForwardArgs() override {
                 return [=]() -> void {
                 };
             }
