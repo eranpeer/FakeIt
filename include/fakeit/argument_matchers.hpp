@@ -434,6 +434,50 @@ namespace fakeit {
                 return new Matcher(std::forward<ExpectedTRef>(this->_expectedRef));
             }
         };
+
+        template<typename ExpectedTRef, typename ExpectedMarginTRef>
+        struct ApproxEqCreator {
+            using ExpectedT = typename naked_type<ExpectedTRef>::type;
+            using ExpectedMarginT = typename naked_type<ExpectedMarginTRef>::type;
+
+            template <typename ActualT, typename = void>
+            struct IsTypeCompatible : std::false_type {};
+
+            template <typename ActualT>
+            struct IsTypeCompatible<ActualT, fk_void_t<decltype(std::abs(std::declval<ActualT>() - std::declval<ExpectedT>()) <= std::declval<ExpectedMarginT>())>> : std::true_type {};
+
+            ExpectedTRef _expectedRef;
+            ExpectedMarginTRef _expectedMarginRef;
+
+            template <typename T, typename U>
+            ApproxEqCreator(T &&expectedRef, U &&expectedMarginRef)
+                    : _expectedRef(std::forward<T>(expectedRef))
+                    , _expectedMarginRef(std::forward<U>(expectedMarginRef)) {
+            }
+
+            template<typename ActualT>
+            TypedMatcher<ActualT> *createMatcher() const {
+                struct Matcher : public TypedMatcher<ActualT> {
+                    const ExpectedT _expected;
+                    const ExpectedMarginT _expectedMargin;
+
+                    Matcher(ExpectedTRef expected, ExpectedMarginTRef expectedMargin)
+                            : _expected{std::forward<ExpectedTRef>(expected)}
+                            , _expectedMargin{std::forward<ExpectedMarginTRef>(expectedMargin)} {
+                    }
+
+                    virtual std::string format() const override {
+                        return TypeFormatter<ExpectedT>::format(this->_expected) + std::string("+/-") + TypeFormatter<ExpectedMarginT>::format(this->_expectedMargin);
+                    }
+
+                    virtual bool matches(const ActualT &actual) const override {
+                        return std::abs(actual - this->_expected) <= this->_expectedMargin;
+                    }
+                };
+
+                return new Matcher(std::forward<ExpectedTRef>(this->_expectedRef), std::forward<ExpectedMarginTRef>(this->_expectedMarginRef));
+            }
+        };
     }
 
     struct AnyMatcher {
@@ -544,6 +588,14 @@ namespace fakeit {
 
     inline internal::StrNeMatcherCreator<const std::string&> StrNe(const std::string& arg) {
         internal::StrNeMatcherCreator<const std::string&> mc(arg);
+        return mc;
+    }
+
+    template<typename T, typename U,
+        typename std::enable_if<std::is_arithmetic<typename naked_type<T>::type>::value, int>::type = 0,
+        typename std::enable_if<std::is_arithmetic<typename naked_type<U>::type>::value, int>::type = 0>
+    internal::ApproxEqCreator<T&&, U&&> ApproxEq(T &&expected, U &&margin) {
+        internal::ApproxEqCreator<T&&, U&&> mc(std::forward<T>(expected), std::forward<U>(margin));
         return mc;
     }
 
