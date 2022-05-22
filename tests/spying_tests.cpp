@@ -25,11 +25,22 @@ struct SpyingTests: tpunit::TestFixture {
 					TEST(SpyingTests::canVerifyProcedureAfterSpying),
                     TEST(SpyingTests::restoreObjectOnMockDelete),
 					TEST(SpyingTests::spyMultipleMethods),
-					TEST(SpyingTests::callMemberMethodFromSpiedMethod)
+					TEST(SpyingTests::callMemberMethodFromSpiedMethod),
+					TEST(SpyingTests::spyThenVerifyValueArg),
+					TEST(SpyingTests::spyMoveOnlyPassedByRef),
+					TEST(SpyingTests::spyMoveOnlyWithoutVerify)
 					//
 	) //
 	{
 	}
+
+	struct MoveOnlyType {
+		const int i_;
+		MoveOnlyType(int i) : i_{i} {}
+		MoveOnlyType(const MoveOnlyType&) = delete;
+		MoveOnlyType(MoveOnlyType&& o) : i_{o.i_} {};
+		bool operator==(const MoveOnlyType& o) const { return i_ == o.i_; }
+	};
 
 	class SomeClass {
 	public:
@@ -42,7 +53,15 @@ struct SpyingTests: tpunit::TestFixture {
 		}
 		virtual void proc(){
 		}
-
+		virtual std::string funcTakeByValue(std::string arg) {
+			return arg;
+		}
+		virtual int funcMoveOnlyByRef(const MoveOnlyType& arg) {
+			return arg.i_;
+		}
+		virtual int funcMoveOnlyByValue(MoveOnlyType arg) {
+			return arg.i_;
+		}
 	};
 
 	void useOriginalClassMethodIfNotFaked() {
@@ -188,5 +207,40 @@ struct SpyingTests: tpunit::TestFixture {
 		instance.callMethod();
 		Verify(Method(spy, method));
     }
+
+	void spyThenVerifyValueArg()
+	{
+		SomeClass obj;
+		Mock<SomeClass> mock(obj);
+		Spy(Method(mock,funcTakeByValue));
+
+		SomeClass &i = mock.get();
+		ASSERT_EQUAL("str_arg", i.funcTakeByValue("str_arg"));
+
+		Verify(Method(mock,funcTakeByValue).Using("str_arg")).Once();
+	}
+
+	void spyMoveOnlyPassedByRef()
+	{
+		SomeClass obj;
+		Mock<SomeClass> mock(obj);
+		Spy(Method(mock,funcMoveOnlyByRef));
+
+		SomeClass &i = mock.get();
+		MoveOnlyType mot{5};
+		ASSERT_EQUAL(5, i.funcMoveOnlyByRef(mot));
+
+		Verify(Method(mock,funcMoveOnlyByRef).Using(MoveOnlyType{5})).Once();
+	}
+
+	void spyMoveOnlyWithoutVerify()
+	{
+		SomeClass obj;
+		Mock<SomeClass> mock(obj);
+		SpyWithoutVerify(Method(mock,funcMoveOnlyByValue));
+
+		SomeClass &i = mock.get();
+		ASSERT_EQUAL(10, i.funcMoveOnlyByValue(MoveOnlyType{10}));
+	}
 
 } __SpyingTests;

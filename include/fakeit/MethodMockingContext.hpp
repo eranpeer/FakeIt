@@ -52,7 +52,8 @@ namespace fakeit {
             /**
              * Return the original method. not the mock.
              */
-            virtual typename std::function<R(arglist&...)> getOriginalMethod() = 0;
+            virtual typename std::function<R(arglist&...)> getOriginalMethodCopyArgs() = 0;
+            virtual typename std::function<R(arglist&...)> getOriginalMethodForwardArgs() = 0;
 
             virtual std::string getMethodName() = 0;
 
@@ -153,8 +154,12 @@ namespace fakeit {
                 into.push_back(&getStubbingContext().getInvolvedMock());
             }
 
-            typename std::function<R(arglist &...)> getOriginalMethod() {
-                return getStubbingContext().getOriginalMethod();
+            typename std::function<R(arglist &...)> getOriginalMethodCopyArgs() {
+                return getStubbingContext().getOriginalMethodCopyArgs();
+            }
+
+            typename std::function<R(arglist &...)> getOriginalMethodForwardArgs() {
+                return getStubbingContext().getOriginalMethodForwardArgs();
             }
 
             void setInvocationMatcher(typename ActualInvocation<arglist...>::Matcher *matcher) {
@@ -259,8 +264,12 @@ namespace fakeit {
 
     private:
 
-        typename std::function<R(arglist&...)> getOriginalMethod() override {
-            return _impl->getOriginalMethod();
+        typename std::function<R(arglist&...)> getOriginalMethodCopyArgs() override {
+            return _impl->getOriginalMethodCopyArgs();
+        }
+
+        typename std::function<R(arglist&...)> getOriginalMethodForwardArgs() override {
+            return _impl->getOriginalMethodForwardArgs();
         }
 
         std::shared_ptr<Implementation> _impl;
