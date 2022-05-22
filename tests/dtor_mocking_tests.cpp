@@ -22,6 +22,7 @@ struct DtorMocking : tpunit::TestFixture
             TEST(DtorMocking::mock_virtual_dtor_by_assignment),
             TEST(DtorMocking::call_dtor_without_delete),
             TEST(DtorMocking::spy_dtor),
+            TEST(DtorMocking::spy_without_verify_dtor),
 			TEST(DtorMocking::production_takes_ownwership_with_uniqe_ptr),
 			TEST(DtorMocking::production_takes_ownership_interface_with_more_methods),
 			TEST(DtorMocking::should_fail_faking_when_no_virtual_dtor_exists)
@@ -95,6 +96,17 @@ struct DtorMocking : tpunit::TestFixture
         Verify(Dtor(mock)).Twice();
 		ASSERT_THROW(Verify(Dtor(mock)).Once(), fakeit::VerificationException);
     }
+
+	void spy_without_verify_dtor() {
+		A a;
+		Mock<A> mock(a);
+		SpyWithoutVerify(Dtor(mock));
+		A * i = &mock.get();
+		delete i;
+		delete i;
+		Verify(Dtor(mock)).Twice();
+		ASSERT_THROW(Verify(Dtor(mock)).Once(), fakeit::VerificationException);
+	}
 
 	class SomeInterface2 {
 	public:

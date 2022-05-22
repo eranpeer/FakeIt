@@ -15,13 +15,6 @@ using namespace fakeit;
 
 struct OverloadedMethods : tpunit::TestFixture {
 
-    OverloadedMethods() :
-            tpunit::TestFixture(
-                    TEST(OverloadedMethods::stub_overloaded_methods),
-                    TEST(OverloadedMethods::stub_const_overloaded_methods)) {
-    }
-
-
     struct SomeInterface {
         virtual int func() = 0;
 
@@ -43,6 +36,12 @@ struct OverloadedMethods : tpunit::TestFixture {
 
     };
 
+    OverloadedMethods() :
+            tpunit::TestFixture(
+                    TEST(OverloadedMethods::stub_overloaded_methods),
+                    TEST(OverloadedMethods::stub_const_overloaded_methods),
+                    TEST(OverloadedMethods::stub_overloaded_methods_with_templates<SomeInterface>)) {
+    }
 
     void stub_overloaded_methods() {
         int x = 5;
@@ -83,6 +82,16 @@ struct OverloadedMethods : tpunit::TestFixture {
         const SomeInterface& constObj = mock.get();
         ASSERT_EQUAL(1, obj.func());
         ASSERT_EQUAL(2, constObj.func());
+    }
+
+    template <typename T>
+    void stub_overloaded_methods_with_templates() {
+        Mock<T> mock;
+        T &i = mock.get();
+
+        When(OverloadedMethod(mock, func, int(int))).AlwaysReturn(45);
+
+        ASSERT_EQUAL(45, i.func(1));
     }
 
 } __OverloadedMethods;

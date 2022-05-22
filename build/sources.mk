@@ -13,6 +13,7 @@ CPP_SRCS += \
 	miscellaneous_tests.cpp \
 	msc_stubbing_multiple_values_tests.cpp \
 	msc_type_info_tests.cpp \
+	overloadded_methods_tests.cpp \
 	referece_types_tests.cpp \
 	remove_const_volatile_tests.cpp \
 	rvalue_arguments_tests.cpp \

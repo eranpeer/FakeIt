@@ -13,6 +13,14 @@
 
 namespace fakeit {
 
+    template<class...>
+    using fk_void_t = void;
+
+    template <bool...> struct bool_pack;
+
+    template <bool... v>
+    using all_true = std::is_same<bool_pack<true, v...>, bool_pack<v..., true>>;
+
     template<class C>
     struct naked_type {
         typedef typename std::remove_cv<typename std::remove_reference<C>::type>::type type;

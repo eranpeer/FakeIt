@@ -12,18 +12,36 @@
 
 using namespace fakeit;
 
+namespace {
+	struct Base {
+		virtual ~Base() = default;
+		virtual int value() const { return 1; }
+	};
+
+	struct Derivated : public Base {
+		int value() const override { return 2; }
+	};
+
+	bool operator==(const Base& lhs, const Base& rhs) {
+		return lhs.value() == rhs.value();
+	}
+}
+
 struct ArgumentMatchingTests: tpunit::TestFixture {
 	ArgumentMatchingTests()
 			: tpunit::TestFixture(
 					//
-                    TEST(ArgumentMatchingTests::pass_reference_by_value),
+					TEST(ArgumentMatchingTests::mixed_matchers),
 					TEST(ArgumentMatchingTests::test_eq_matcher), TEST(ArgumentMatchingTests::test_ge_matcher),
 					TEST(ArgumentMatchingTests::test_lt_matcher), TEST(ArgumentMatchingTests::test_le_matcher),
 					TEST(ArgumentMatchingTests::test_ne_matcher), TEST(ArgumentMatchingTests::test_gt_matcher),
 					TEST(ArgumentMatchingTests::test_str_eq_matcher), TEST(ArgumentMatchingTests::test_str_gt_matcher),
 					TEST(ArgumentMatchingTests::test_str_ge_matcher), TEST(ArgumentMatchingTests::test_str_lt_matcher),
 					TEST(ArgumentMatchingTests::test_str_le_matcher), TEST(ArgumentMatchingTests::test_str_ne_matcher),
+					TEST(ArgumentMatchingTests::test_approx_eq_matcher),
 					TEST(ArgumentMatchingTests::test_any_matcher), TEST(ArgumentMatchingTests::test_any_matcher2),
+					TEST(ArgumentMatchingTests::test_any_matcher3),
+					TEST(ArgumentMatchingTests::pass_reference_by_value),
 					TEST(ArgumentMatchingTests::format_Any), TEST(ArgumentMatchingTests::format_Eq),
 					TEST(ArgumentMatchingTests::format_Gt), TEST(ArgumentMatchingTests::format_Ge),
 					TEST(ArgumentMatchingTests::format_Lt), TEST(ArgumentMatchingTests::format_Le),
@@ -31,7 +49,8 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 					TEST(ArgumentMatchingTests::format_StrEq), TEST(ArgumentMatchingTests::format_StrGt),
 					TEST(ArgumentMatchingTests::format_StrGe), TEST(ArgumentMatchingTests::format_StrLt),
 					TEST(ArgumentMatchingTests::format_StrLe), TEST(ArgumentMatchingTests::format_StrNe),
-                    TEST(ArgumentMatchingTests::mixed_matchers)
+					TEST(ArgumentMatchingTests::format_ApproxEq),
+					TEST(ArgumentMatchingTests::test_move_only_type), TEST(ArgumentMatchingTests::test_no_slicing)
 			) //
 	{
 	}
@@ -44,11 +63,22 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 #endif
     }
 
+	struct MoveOnlyType {
+		const int i_;
+		MoveOnlyType(int i) : i_{i} {}
+		MoveOnlyType(const MoveOnlyType&) = delete;
+		MoveOnlyType(MoveOnlyType&& o) : i_{o.i_} {};
+		bool operator==(const MoveOnlyType& o) const { return i_ == o.i_; }
+	};
+
 	struct SomeInterface {
 		virtual int func(int) = 0;
 		virtual int func2(int, std::string) = 0;
         virtual int func3(const int&) = 0;
         virtual int strfunc(const char*) = 0;
+		virtual int funcMoveOnly(MoveOnlyType) = 0;
+		virtual int funcSlicing(const Base&) = 0;
+		virtual int funcDouble(double) = 0;
     };
 
 	void mixed_matchers() {
@@ -170,11 +200,12 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 	}
 
 	void test_str_eq_matcher() {
+		std::string second = "second";
 
 		Mock<SomeInterface> mock;
 
 		When(Method(mock, strfunc).Using(StrEq("first"))).Return(1);
-		When(Method(mock, strfunc).Using(StrEq("second"))).Return(2);
+		When(Method(mock, strfunc).Using(StrEq(second))).Return(2);
 
 		SomeInterface &i = mock.get();
 		ASSERT_EQUAL(1, i.strfunc("first"));
@@ -185,11 +216,12 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 	}
 
 	void test_str_gt_matcher() {
+		std::string bb = "bb";
 
 		Mock<SomeInterface> mock;
 
 		When(Method(mock, strfunc).Using(StrGt("aa"))).Return(1);
-		When(Method(mock, strfunc).Using(StrGt("bb"))).Return(2);
+		When(Method(mock, strfunc).Using(StrGt(bb))).Return(2);
 
 		SomeInterface &i = mock.get();
 		ASSERT_EQUAL(1, i.strfunc("ab"));
@@ -200,11 +232,12 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 	}
 
 	void test_str_ge_matcher() {
+		std::string bb = "bb";
 
 		Mock<SomeInterface> mock;
 
 		When(Method(mock, strfunc).Using(StrGe("aa"))).Return(1);
-		When(Method(mock, strfunc).Using(StrGe("bb"))).Return(2);
+		When(Method(mock, strfunc).Using(StrGe(bb))).Return(2);
 
 		SomeInterface &i = mock.get();
 		ASSERT_EQUAL(1, i.strfunc("ab"));
@@ -215,11 +248,12 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 	}
 
 	void test_str_lt_matcher() {
+		std::string bb = "bb";
 
 		Mock<SomeInterface> mock;
 
 		When(Method(mock, strfunc).Using(StrLt("cc"))).Return(1);
-		When(Method(mock, strfunc).Using(StrLt("bb"))).Return(2);
+		When(Method(mock, strfunc).Using(StrLt(bb))).Return(2);
 
 		SomeInterface &i = mock.get();
 		ASSERT_EQUAL(1, i.strfunc("cb"));
@@ -230,11 +264,12 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 	}
 
 	void test_str_le_matcher() {
+		std::string bb = "bb";
 
 		Mock<SomeInterface> mock;
 
 		When(Method(mock, strfunc).Using(StrLe("cc"))).Return(1);
-		When(Method(mock, strfunc).Using(StrLe("bb"))).Return(2);
+		When(Method(mock, strfunc).Using(StrLe(bb))).Return(2);
 
 		SomeInterface &i = mock.get();
 		ASSERT_EQUAL(1, i.strfunc("cc"));
@@ -245,11 +280,12 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 	}
 
 	void test_str_ne_matcher() {
+		std::string second = "second";
 
 		Mock<SomeInterface> mock;
 
 		When(Method(mock, strfunc).Using(StrNe("first"))).Return(1);
-		When(Method(mock, strfunc).Using(StrNe("second"))).Return(2);
+		When(Method(mock, strfunc).Using(StrNe(second))).Return(2);
 
 		SomeInterface &i = mock.get();
 		ASSERT_EQUAL(1, i.strfunc("second"));
@@ -257,6 +293,20 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 
 		Verify(Method(mock, strfunc).Using(StrNe("first"))).Once();
 		Verify(Method(mock, strfunc).Using(StrNe("second"))).Once();
+	}
+
+	void test_approx_eq_matcher() {
+		Mock<SomeInterface> mock;
+
+		When(Method(mock, funcDouble).Using(ApproxEq(5, 0.2))).Return(1);
+		When(Method(mock, funcDouble).Using(ApproxEq(7., 1))).Return(2);
+
+		SomeInterface& i = mock.get();
+		ASSERT_EQUAL(1, i.funcDouble(5.1));
+		ASSERT_EQUAL(2, i.funcDouble(6.5));
+
+		Verify(Method(mock, funcDouble).Using(ApproxEq(5, 0.2))).Once();
+		Verify(Method(mock, funcDouble).Using(ApproxEq(7., 1))).Once();
 	}
 
 	void test_any_matcher() {
@@ -283,6 +333,19 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		ASSERT_EQUAL(1, i.func(1));
 
 		Verify(Method(mock, func).Using(_)).Twice();
+	}
+
+	void test_any_matcher3() {
+
+		Mock<SomeInterface> mock;
+
+		When(Method(mock, func).Using(Any())).AlwaysReturn(1);
+
+		SomeInterface &i = mock.get();
+		ASSERT_EQUAL(1, i.func(2));
+		ASSERT_EQUAL(1, i.func(1));
+
+		Verify(Method(mock, func).Using(Any())).Twice();
 	}
 
     void pass_reference_by_value() {
@@ -416,7 +479,7 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		} catch (SequenceVerificationException& e) {
 			std::string expectedMsg{ formatLineNumner("test file", 1) };
 			expectedMsg += ": Verification error\n";
-			expectedMsg += "Expected pattern: mock.strfunc(\"first\")\n";
+			expectedMsg += "Expected pattern: mock.strfunc(first)\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
 			expectedMsg += "Actual sequence : total of 0 actual invocations.";
@@ -432,7 +495,7 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		} catch (SequenceVerificationException& e) {
 			std::string expectedMsg{ formatLineNumner("test file", 1) };
 			expectedMsg += ": Verification error\n";
-			expectedMsg += "Expected pattern: mock.strfunc(>\"first\")\n";
+			expectedMsg += "Expected pattern: mock.strfunc(>first)\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
 			expectedMsg += "Actual sequence : total of 0 actual invocations.";
@@ -448,7 +511,7 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		} catch (SequenceVerificationException& e) {
 			std::string expectedMsg{ formatLineNumner("test file", 1) };
 			expectedMsg += ": Verification error\n";
-			expectedMsg += "Expected pattern: mock.strfunc(>=\"first\")\n";
+			expectedMsg += "Expected pattern: mock.strfunc(>=first)\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
 			expectedMsg += "Actual sequence : total of 0 actual invocations.";
@@ -464,7 +527,7 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		} catch (SequenceVerificationException& e) {
 			std::string expectedMsg{ formatLineNumner("test file", 1) };
 			expectedMsg += ": Verification error\n";
-			expectedMsg += "Expected pattern: mock.strfunc(<\"first\")\n";
+			expectedMsg += "Expected pattern: mock.strfunc(<first)\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
 			expectedMsg += "Actual sequence : total of 0 actual invocations.";
@@ -480,7 +543,7 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		} catch (SequenceVerificationException& e) {
 			std::string expectedMsg{ formatLineNumner("test file", 1) };
 			expectedMsg += ": Verification error\n";
-			expectedMsg += "Expected pattern: mock.strfunc(<=\"first\")\n";
+			expectedMsg += "Expected pattern: mock.strfunc(<=first)\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
 			expectedMsg += "Actual sequence : total of 0 actual invocations.";
@@ -496,13 +559,58 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		} catch (SequenceVerificationException& e) {
 			std::string expectedMsg{ formatLineNumner("test file", 1) };
 			expectedMsg += ": Verification error\n";
-			expectedMsg += "Expected pattern: mock.strfunc(!=\"first\")\n";
+			expectedMsg += "Expected pattern: mock.strfunc(!=first)\n";
 			expectedMsg += "Expected matches: exactly 1\n";
 			expectedMsg += "Actual matches  : 0\n";
 			expectedMsg += "Actual sequence : total of 0 actual invocations.";
 			std::string actualMsg { to_string(e) };
 			ASSERT_EQUAL(expectedMsg, actualMsg);
 		}
+	}
+
+	void format_ApproxEq() {
+		Mock<SomeInterface> mock;
+		try {
+			fakeit::Verify(Method(mock, funcDouble).Using(ApproxEq(5, 0.1))).setFileInfo("test file", 1, "test method").Exactly(Once);
+		} catch (SequenceVerificationException& e) {
+			std::string expectedMsg{ formatLineNumner("test file", 1) };
+			expectedMsg += ": Verification error\n";
+			expectedMsg += "Expected pattern: mock.funcDouble(5+/-0.1)\n";
+			expectedMsg += "Expected matches: exactly 1\n";
+			expectedMsg += "Actual matches  : 0\n";
+			expectedMsg += "Actual sequence : total of 0 actual invocations.";
+			std::string actualMsg { to_string(e) };
+			ASSERT_EQUAL(expectedMsg, actualMsg);
+		}
+	}
+
+	void test_move_only_type() {
+		Mock<SomeInterface> mock;
+
+		When(Method(mock, funcMoveOnly).Using(MoveOnlyType{10})).Return(1);
+		When(Method(mock, funcMoveOnly).Using(Eq(MoveOnlyType{20}))).Return(2);
+
+		SomeInterface& i = mock.get();
+		ASSERT_EQUAL(1, i.funcMoveOnly(MoveOnlyType{10}));
+		ASSERT_EQUAL(2, i.funcMoveOnly(MoveOnlyType{20}));
+
+		Verify(Method(mock, funcMoveOnly).Using(MoveOnlyType{10})).Once();
+		Verify(Method(mock, funcMoveOnly).Using(Eq(MoveOnlyType{20}))).Once();
+	}
+
+	void test_no_slicing() {
+		Mock<SomeInterface> mock;
+
+		When(Method(mock, funcSlicing).Using(Base{})).Return(1);
+		When(Method(mock, funcSlicing).Using(Derivated{})).Return(2);
+
+		SomeInterface& i = mock.get();
+		ASSERT_EQUAL(1, i.funcSlicing(Base{}));
+		ASSERT_EQUAL(2, i.funcSlicing(Derivated{}));
+
+		//Not possible to verify because only references are stored in mock objects and they are dangling.
+		//Verify(Method(mock, funcSlicing).Using(Base{})).Once();
+		//Verify(Method(mock, funcSlicing).Using(Derivated{})).Once();
 	}
 } __ArgumentMatching;
 

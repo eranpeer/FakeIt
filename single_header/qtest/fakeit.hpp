@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2022-05-01 15:11:38.291023
+ *  Generated: 2022-05-22 19:04:10.717863
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -34,6 +34,14 @@
 
 
 namespace fakeit {
+
+    template<class...>
+    using fk_void_t = void;
+
+    template <bool...> struct bool_pack;
+
+    template <bool... v>
+    using all_true = std::is_same<bool_pack<true, v...>, bool_pack<v..., true>>;
 
     template<class C>
     struct naked_type {
@@ -6339,6 +6347,7 @@ namespace fakeit {
 }
 #include <cstring>
 
+
 namespace fakeit {
 
     struct IMatcher : Destructible {
@@ -6346,479 +6355,584 @@ namespace fakeit {
         virtual std::string format() const = 0;
     };
 
-    template<typename T>
+    template<typename ActualT>
     struct TypedMatcher : IMatcher {
-        virtual bool matches(const T &actual) const = 0;
+        virtual bool matches(const ActualT &actual) const = 0;
     };
 
-    template<typename T>
-    struct TypedMatcherCreator {
+    template<typename ExpectedTRef>
+    struct ComparisonMatcherCreatorBase {
+        using ExpectedT = typename naked_type<ExpectedTRef>::type;
 
-        virtual ~TypedMatcherCreator() = default;
+        ExpectedTRef _expectedRef;
 
-        virtual TypedMatcher<T> *createMatcher() const = 0;
-    };
-
-    template<typename T>
-    struct ComparisonMatcherCreator : public TypedMatcherCreator<T> {
-
-        virtual ~ComparisonMatcherCreator() = default;
-
-        ComparisonMatcherCreator(const T &arg)
-                : _expected(arg) {
+        template <typename T>
+        ComparisonMatcherCreatorBase(T &&expectedRef)
+                : _expectedRef(std::forward<T>(expectedRef)) {
         }
 
-        struct Matcher : public TypedMatcher<T> {
-            Matcher(const T &expected)
-                    : _expected(expected) {
-            }
+        template <typename ActualT, typename = ExpectedT, typename = void>
+        struct MatcherBase : public TypedMatcher<ActualT> {
+            const ExpectedT _expected;
 
-            const T _expected;
+            MatcherBase(ExpectedTRef expected)
+                    : _expected{std::forward<ExpectedTRef>(expected)} {
+            }
         };
 
-        const T &_expected;
+        template <typename ActualT, typename U>
+        struct MatcherBase<ActualT, U, typename std::enable_if<std::is_same<U, ExpectedT>::value && std::is_array<U>::value>::type> : public TypedMatcher<ActualT> {
+            ExpectedT _expected;
+
+            MatcherBase(ExpectedTRef expected) {
+                std::memcpy(_expected, expected, sizeof(_expected));
+            }
+        };
     };
 
     namespace internal {
-        template<typename T>
-        struct TypedAnyMatcher : public TypedMatcherCreator<T> {
+        struct AnyMatcherCreator{
+            template <typename ActualT>
+            struct IsTypeCompatible : std::true_type {};
 
-            virtual ~TypedAnyMatcher() = default;
+            template<typename ActualT>
+            TypedMatcher<ActualT> *createMatcher() const {
+                struct Matcher : public TypedMatcher<ActualT> {
+                    bool matches(const ActualT &) const override {
+                        return true;
+                    }
 
-            TypedAnyMatcher() {
-            }
+                    std::string format() const override {
+                        return "Any";
+                    }
+                };
 
-            struct Matcher : public TypedMatcher<T> {
-                virtual bool matches(const T &) const override {
-                    return true;
-                }
-
-                virtual std::string format() const override {
-                    return "Any";
-                }
-            };
-
-            virtual TypedMatcher<T> *createMatcher() const override {
                 return new Matcher();
             }
-
         };
 
-        template<typename T>
-        struct EqMatcherCreator : public ComparisonMatcherCreator<T> {
+        template<typename ExpectedTRef>
+        struct EqMatcherCreator : public ComparisonMatcherCreatorBase<ExpectedTRef> {
+            using ExpectedT = typename ComparisonMatcherCreatorBase<ExpectedTRef>::ExpectedT;
 
-            virtual ~EqMatcherCreator() = default;
+            template <typename ActualT, typename = void>
+            struct IsTypeCompatible : std::false_type {};
 
-            EqMatcherCreator(const T &expected)
-                    : ComparisonMatcherCreator<T>(expected) {
-            }
+            template <typename ActualT>
+            struct IsTypeCompatible<ActualT, fk_void_t<decltype(std::declval<ActualT>() == std::declval<ExpectedT>())>> : std::true_type {};
 
-            struct Matcher : public ComparisonMatcherCreator<T>::Matcher {
-                Matcher(const T &expected)
-                        : ComparisonMatcherCreator<T>::Matcher(expected) {
-                }
+            using ComparisonMatcherCreatorBase<ExpectedTRef>::ComparisonMatcherCreatorBase;
 
-                virtual std::string format() const override {
-                    return TypeFormatter<T>::format(this->_expected);
-                }
+            template<typename ActualT>
+            TypedMatcher<ActualT> *createMatcher() const {
+                struct Matcher : public ComparisonMatcherCreatorBase<ExpectedTRef>::template MatcherBase<ActualT> {
+                    using ComparisonMatcherCreatorBase<ExpectedTRef>::template MatcherBase<ActualT>::MatcherBase;
 
-                virtual bool matches(const T &actual) const override {
-                    return actual == this->_expected;
-                }
-            };
+                    virtual std::string format() const override {
+                        return TypeFormatter<ExpectedT>::format(this->_expected);
+                    }
 
-            virtual TypedMatcher<T> *createMatcher() const {
-                return new Matcher(this->_expected);
-            }
+                    virtual bool matches(const ActualT &actual) const override {
+                        return actual == this->_expected;
+                    }
+                };
 
-        };
-
-        template<typename T>
-        struct GtMatcherCreator : public ComparisonMatcherCreator<T> {
-
-            virtual ~GtMatcherCreator() = default;
-
-            GtMatcherCreator(const T &expected)
-                    : ComparisonMatcherCreator<T>(expected) {
-            }
-
-            struct Matcher : public ComparisonMatcherCreator<T>::Matcher {
-                Matcher(const T &expected)
-                        : ComparisonMatcherCreator<T>::Matcher(expected) {
-                }
-
-                virtual bool matches(const T &actual) const override {
-                    return actual > this->_expected;
-                }
-
-                virtual std::string format() const override {
-                    return std::string(">") + TypeFormatter<T>::format(this->_expected);
-                }
-            };
-
-            virtual TypedMatcher<T> *createMatcher() const override {
-                return new Matcher(this->_expected);
+                return new Matcher(std::forward<ExpectedTRef>(this->_expectedRef));
             }
         };
 
-        template<typename T>
-        struct GeMatcherCreator : public ComparisonMatcherCreator<T> {
+        template<typename ExpectedTRef>
+        struct GtMatcherCreator : public ComparisonMatcherCreatorBase<ExpectedTRef> {
+            using ExpectedT = typename ComparisonMatcherCreatorBase<ExpectedTRef>::ExpectedT;
 
-            virtual ~GeMatcherCreator() = default;
+            template <typename ActualT, typename = void>
+            struct IsTypeCompatible : std::false_type {};
 
-            GeMatcherCreator(const T &expected)
-                    : ComparisonMatcherCreator<T>(expected) {
-            }
+            template <typename ActualT>
+            struct IsTypeCompatible<ActualT, fk_void_t<decltype(std::declval<ActualT>() > std::declval<ExpectedT>())>> : std::true_type {};
 
-            struct Matcher : public ComparisonMatcherCreator<T>::Matcher {
-                Matcher(const T &expected)
-                        : ComparisonMatcherCreator<T>::Matcher(expected) {
-                }
+            using ComparisonMatcherCreatorBase<ExpectedTRef>::ComparisonMatcherCreatorBase;
 
-                virtual bool matches(const T &actual) const override {
-                    return actual >= this->_expected;
-                }
+            template<typename ActualT>
+            TypedMatcher<ActualT> *createMatcher() const {
+                struct Matcher : public ComparisonMatcherCreatorBase<ExpectedTRef>::template MatcherBase<ActualT> {
+                    using ComparisonMatcherCreatorBase<ExpectedTRef>::template MatcherBase<ActualT>::MatcherBase;
 
-                virtual std::string format() const override {
-                    return std::string(">=") + TypeFormatter<T>::format(this->_expected);
-                }
-            };
+                    virtual std::string format() const override {
+                        return std::string(">") + TypeFormatter<ExpectedT>::format(this->_expected);
+                    }
 
-            virtual TypedMatcher<T> *createMatcher() const override {
-                return new Matcher(this->_expected);
+                    virtual bool matches(const ActualT &actual) const override {
+                        return actual > this->_expected;
+                    }
+                };
+
+                return new Matcher(std::forward<ExpectedTRef>(this->_expectedRef));
             }
         };
 
-        template<typename T>
-        struct LtMatcherCreator : public ComparisonMatcherCreator<T> {
+        template<typename ExpectedTRef>
+        struct GeMatcherCreator : public ComparisonMatcherCreatorBase<ExpectedTRef> {
+            using ExpectedT = typename ComparisonMatcherCreatorBase<ExpectedTRef>::ExpectedT;
 
-            virtual ~LtMatcherCreator() = default;
+            template <typename ActualT, typename = void>
+            struct IsTypeCompatible : std::false_type {};
 
-            LtMatcherCreator(const T &expected)
-                    : ComparisonMatcherCreator<T>(expected) {
+            template <typename ActualT>
+            struct IsTypeCompatible<ActualT, fk_void_t<decltype(std::declval<ActualT>() >= std::declval<ExpectedT>())>> : std::true_type {};
+
+            using ComparisonMatcherCreatorBase<ExpectedTRef>::ComparisonMatcherCreatorBase;
+
+            template<typename ActualT>
+            TypedMatcher<ActualT> *createMatcher() const {
+                struct Matcher : public ComparisonMatcherCreatorBase<ExpectedTRef>::template MatcherBase<ActualT> {
+                    using ComparisonMatcherCreatorBase<ExpectedTRef>::template MatcherBase<ActualT>::MatcherBase;
+
+                    virtual std::string format() const override {
+                        return std::string(">=") + TypeFormatter<ExpectedT>::format(this->_expected);
+                    }
+
+                    virtual bool matches(const ActualT &actual) const override {
+                        return actual >= this->_expected;
+                    }
+                };
+
+                return new Matcher(std::forward<ExpectedTRef>(this->_expectedRef));
             }
-
-            struct Matcher : public ComparisonMatcherCreator<T>::Matcher {
-                Matcher(const T &expected)
-                        : ComparisonMatcherCreator<T>::Matcher(expected) {
-                }
-
-                virtual bool matches(const T &actual) const override {
-                    return actual < this->_expected;
-                }
-
-                virtual std::string format() const override {
-                    return std::string("<") + TypeFormatter<T>::format(this->_expected);
-                }
-            };
-
-            virtual TypedMatcher<T> *createMatcher() const override {
-                return new Matcher(this->_expected);
-            }
-
         };
 
-        template<typename T>
-        struct LeMatcherCreator : public ComparisonMatcherCreator<T> {
+        template<typename ExpectedTRef>
+        struct LtMatcherCreator : public ComparisonMatcherCreatorBase<ExpectedTRef> {
+            using ExpectedT = typename ComparisonMatcherCreatorBase<ExpectedTRef>::ExpectedT;
 
-            virtual ~LeMatcherCreator() = default;
+            template <typename ActualT, typename = void>
+            struct IsTypeCompatible : std::false_type {};
 
-            LeMatcherCreator(const T &expected)
-                    : ComparisonMatcherCreator<T>(expected) {
+            template <typename ActualT>
+            struct IsTypeCompatible<ActualT, fk_void_t<decltype(std::declval<ActualT>() < std::declval<ExpectedT>())>> : std::true_type {};
+
+            using ComparisonMatcherCreatorBase<ExpectedTRef>::ComparisonMatcherCreatorBase;
+
+            template<typename ActualT>
+            TypedMatcher<ActualT> *createMatcher() const {
+                struct Matcher : public ComparisonMatcherCreatorBase<ExpectedTRef>::template MatcherBase<ActualT> {
+                    using ComparisonMatcherCreatorBase<ExpectedTRef>::template MatcherBase<ActualT>::MatcherBase;
+
+                    virtual std::string format() const override {
+                        return std::string("<") + TypeFormatter<ExpectedT>::format(this->_expected);
+                    }
+
+                    virtual bool matches(const ActualT &actual) const override {
+                        return actual < this->_expected;
+                    }
+                };
+
+                return new Matcher(std::forward<ExpectedTRef>(this->_expectedRef));
             }
-
-            struct Matcher : public ComparisonMatcherCreator<T>::Matcher {
-                Matcher(const T &expected)
-                        : ComparisonMatcherCreator<T>::Matcher(expected) {
-                }
-
-                virtual bool matches(const T &actual) const override {
-                    return actual <= this->_expected;
-                }
-
-                virtual std::string format() const override {
-                    return std::string("<=") + TypeFormatter<T>::format(this->_expected);
-                }
-            };
-
-            virtual TypedMatcher<T> *createMatcher() const override {
-                return new Matcher(this->_expected);
-            }
-
         };
 
-        template<typename T>
-        struct NeMatcherCreator : public ComparisonMatcherCreator<T> {
+        template<typename ExpectedTRef>
+        struct LeMatcherCreator : public ComparisonMatcherCreatorBase<ExpectedTRef> {
+            using ExpectedT = typename ComparisonMatcherCreatorBase<ExpectedTRef>::ExpectedT;
 
-            virtual ~NeMatcherCreator() = default;
+            template <typename ActualT, typename = void>
+            struct IsTypeCompatible : std::false_type {};
 
-            NeMatcherCreator(const T &expected)
-                    : ComparisonMatcherCreator<T>(expected) {
+            template <typename ActualT>
+            struct IsTypeCompatible<ActualT, fk_void_t<decltype(std::declval<ActualT>() <= std::declval<ExpectedT>())>> : std::true_type {};
+
+            using ComparisonMatcherCreatorBase<ExpectedTRef>::ComparisonMatcherCreatorBase;
+
+            template<typename ActualT>
+            TypedMatcher<ActualT> *createMatcher() const {
+                struct Matcher : public ComparisonMatcherCreatorBase<ExpectedTRef>::template MatcherBase<ActualT> {
+                    using ComparisonMatcherCreatorBase<ExpectedTRef>::template MatcherBase<ActualT>::MatcherBase;
+
+                    virtual std::string format() const override {
+                        return std::string("<=") + TypeFormatter<ExpectedT>::format(this->_expected);
+                    }
+
+                    virtual bool matches(const ActualT &actual) const override {
+                        return actual <= this->_expected;
+                    }
+                };
+
+                return new Matcher(std::forward<ExpectedTRef>(this->_expectedRef));
             }
-
-            struct Matcher : public ComparisonMatcherCreator<T>::Matcher {
-                Matcher(const T &expected)
-                        : ComparisonMatcherCreator<T>::Matcher(expected) {
-                }
-
-                virtual bool matches(const T &actual) const override {
-                    return actual != this->_expected;
-                }
-
-                virtual std::string format() const override {
-                    return std::string("!=") + TypeFormatter<T>::format(this->_expected);
-                }
-
-            };
-
-            virtual TypedMatcher<T> *createMatcher() const override {
-                return new Matcher(this->_expected);
-            }
-
         };
 
-        struct StrEqMatcherCreator : public ComparisonMatcherCreator<const char*> {
+        template<typename ExpectedTRef>
+        struct NeMatcherCreator : public ComparisonMatcherCreatorBase<ExpectedTRef> {
+            using ExpectedT = typename ComparisonMatcherCreatorBase<ExpectedTRef>::ExpectedT;
 
-            virtual ~StrEqMatcherCreator() = default;
+            template <typename ActualT, typename = void>
+            struct IsTypeCompatible : std::false_type {};
 
-            StrEqMatcherCreator(const char* const &expected)
-                    : ComparisonMatcherCreator<const char*>(expected) {
+            template <typename ActualT>
+            struct IsTypeCompatible<ActualT, fk_void_t<decltype(std::declval<ActualT>() != std::declval<ExpectedT>())>> : std::true_type {};
+
+            using ComparisonMatcherCreatorBase<ExpectedTRef>::ComparisonMatcherCreatorBase;
+
+            template<typename ActualT>
+            TypedMatcher<ActualT> *createMatcher() const {
+                struct Matcher : public ComparisonMatcherCreatorBase<ExpectedTRef>::template MatcherBase<ActualT> {
+                    using ComparisonMatcherCreatorBase<ExpectedTRef>::template MatcherBase<ActualT>::MatcherBase;
+
+                    virtual std::string format() const override {
+                        return std::string("!=") + TypeFormatter<ExpectedT>::format(this->_expected);
+                    }
+
+                    virtual bool matches(const ActualT &actual) const override {
+                        return actual != this->_expected;
+                    }
+                };
+
+                return new Matcher(std::forward<ExpectedTRef>(this->_expectedRef));
             }
-
-            struct Matcher : public ComparisonMatcherCreator<const char*>::Matcher {
-                Matcher(const char* const &expected)
-                        : ComparisonMatcherCreator<const char*>::Matcher(expected) {
-                }
-
-                virtual std::string format() const override {
-                    return TypeFormatter<const char*>::format(this->_expected);
-                }
-
-                virtual bool matches(const char* const &actual) const override {
-                    return std::strcmp(actual, this->_expected) == 0;
-                }
-            };
-
-            virtual TypedMatcher<const char*> *createMatcher() const {
-                return new Matcher(this->_expected);
-            }
-
         };
 
-        struct StrGtMatcherCreator : public ComparisonMatcherCreator<const char*> {
+        template <typename ExpectedTRef>
+        struct StrEqMatcherCreator : public ComparisonMatcherCreatorBase<ExpectedTRef> {
+            using ExpectedT = typename ComparisonMatcherCreatorBase<ExpectedTRef>::ExpectedT;
 
-            virtual ~StrGtMatcherCreator() = default;
+            template <typename ActualT, typename = void>
+            struct IsTypeCompatible : std::false_type {};
 
-            StrGtMatcherCreator(const char* const &expected)
-                    : ComparisonMatcherCreator<const char*>(expected) {
+            template <typename ActualT>
+            struct IsTypeCompatible<ActualT, fk_void_t<decltype(strcmp(std::declval<ActualT>(), std::declval<const char*>()))>> : std::true_type {};
+
+            using ComparisonMatcherCreatorBase<ExpectedTRef>::ComparisonMatcherCreatorBase;
+
+            template<typename ActualT>
+            TypedMatcher<ActualT> *createMatcher() const {
+                struct Matcher : public ComparisonMatcherCreatorBase<ExpectedTRef>::template MatcherBase<ActualT> {
+                    using ComparisonMatcherCreatorBase<ExpectedTRef>::template MatcherBase<ActualT>::MatcherBase;
+
+                    virtual std::string format() const override {
+                        return TypeFormatter<ExpectedT>::format(this->_expected);
+                    }
+
+                    virtual bool matches(const ActualT &actual) const override {
+                        return std::strcmp(actual, this->_expected.c_str()) == 0;
+                    }
+                };
+
+                return new Matcher(std::forward<ExpectedTRef>(this->_expectedRef));
             }
-
-            struct Matcher : public ComparisonMatcherCreator<const char*>::Matcher {
-                Matcher(const char* const &expected)
-                        : ComparisonMatcherCreator<const char*>::Matcher(expected) {
-                }
-
-                virtual std::string format() const override {
-                    return std::string(">") + TypeFormatter<const char*>::format(this->_expected);
-                }
-
-                virtual bool matches(const char* const &actual) const override {
-                    return std::strcmp(actual, this->_expected) > 0;
-                }
-            };
-
-            virtual TypedMatcher<const char*> *createMatcher() const {
-                return new Matcher(this->_expected);
-            }
-
         };
 
-        struct StrGeMatcherCreator : public ComparisonMatcherCreator<const char*> {
+        template <typename ExpectedTRef>
+        struct StrGtMatcherCreator : public ComparisonMatcherCreatorBase<ExpectedTRef> {
+            using ExpectedT = typename ComparisonMatcherCreatorBase<ExpectedTRef>::ExpectedT;
 
-            virtual ~StrGeMatcherCreator() = default;
+            template <typename ActualT, typename = void>
+            struct IsTypeCompatible : std::false_type {};
 
-            StrGeMatcherCreator(const char* const &expected)
-                    : ComparisonMatcherCreator<const char*>(expected) {
+            template <typename ActualT>
+            struct IsTypeCompatible<ActualT, fk_void_t<decltype(strcmp(std::declval<ActualT>(), std::declval<const char*>()))>> : std::true_type {};
+
+            using ComparisonMatcherCreatorBase<ExpectedTRef>::ComparisonMatcherCreatorBase;
+
+            template<typename ActualT>
+            TypedMatcher<ActualT> *createMatcher() const {
+                struct Matcher : public ComparisonMatcherCreatorBase<ExpectedTRef>::template MatcherBase<ActualT> {
+                    using ComparisonMatcherCreatorBase<ExpectedTRef>::template MatcherBase<ActualT>::MatcherBase;
+
+                    virtual std::string format() const override {
+                        return std::string(">") + TypeFormatter<ExpectedT>::format(this->_expected);
+                    }
+
+                    virtual bool matches(const ActualT &actual) const override {
+                        return std::strcmp(actual, this->_expected.c_str()) > 0;
+                    }
+                };
+
+                return new Matcher(std::forward<ExpectedTRef>(this->_expectedRef));
             }
-
-            struct Matcher : public ComparisonMatcherCreator<const char*>::Matcher {
-                Matcher(const char* const &expected)
-                        : ComparisonMatcherCreator<const char*>::Matcher(expected) {
-                }
-
-                virtual std::string format() const override {
-                    return std::string(">=") + TypeFormatter<const char*>::format(this->_expected);
-                }
-
-                virtual bool matches(const char* const &actual) const override {
-                    return std::strcmp(actual, this->_expected) >= 0;
-                }
-            };
-
-            virtual TypedMatcher<const char*> *createMatcher() const {
-                return new Matcher(this->_expected);
-            }
-
         };
 
-        struct StrLtMatcherCreator : public ComparisonMatcherCreator<const char*> {
+        template <typename ExpectedTRef>
+        struct StrGeMatcherCreator : public ComparisonMatcherCreatorBase<ExpectedTRef> {
+            using ExpectedT = typename ComparisonMatcherCreatorBase<ExpectedTRef>::ExpectedT;
 
-            virtual ~StrLtMatcherCreator() = default;
+            template <typename ActualT, typename = void>
+            struct IsTypeCompatible : std::false_type {};
 
-            StrLtMatcherCreator(const char* const &expected)
-                    : ComparisonMatcherCreator<const char*>(expected) {
+            template <typename ActualT>
+            struct IsTypeCompatible<ActualT, fk_void_t<decltype(strcmp(std::declval<ActualT>(), std::declval<const char*>()))>> : std::true_type {};
+
+            using ComparisonMatcherCreatorBase<ExpectedTRef>::ComparisonMatcherCreatorBase;
+
+            template<typename ActualT>
+            TypedMatcher<ActualT> *createMatcher() const {
+                struct Matcher : public ComparisonMatcherCreatorBase<ExpectedTRef>::template MatcherBase<ActualT> {
+                    using ComparisonMatcherCreatorBase<ExpectedTRef>::template MatcherBase<ActualT>::MatcherBase;
+
+                    virtual std::string format() const override {
+                        return std::string(">=") + TypeFormatter<ExpectedT>::format(this->_expected);
+                    }
+
+                    virtual bool matches(const ActualT &actual) const override {
+                        return std::strcmp(actual, this->_expected.c_str()) >= 0;
+                    }
+                };
+
+                return new Matcher(std::forward<ExpectedTRef>(this->_expectedRef));
             }
-
-            struct Matcher : public ComparisonMatcherCreator<const char*>::Matcher {
-                Matcher(const char* const &expected)
-                        : ComparisonMatcherCreator<const char*>::Matcher(expected) {
-                }
-
-                virtual std::string format() const override {
-                    return std::string("<") + TypeFormatter<const char*>::format(this->_expected);
-                }
-
-                virtual bool matches(const char* const &actual) const override {
-                    return std::strcmp(actual, this->_expected) < 0;
-                }
-            };
-
-            virtual TypedMatcher<const char*> *createMatcher() const {
-                return new Matcher(this->_expected);
-            }
-
         };
 
-        struct StrLeMatcherCreator : public ComparisonMatcherCreator<const char*> {
+        template <typename ExpectedTRef>
+        struct StrLtMatcherCreator : public ComparisonMatcherCreatorBase<ExpectedTRef> {
+            using ExpectedT = typename ComparisonMatcherCreatorBase<ExpectedTRef>::ExpectedT;
 
-            virtual ~StrLeMatcherCreator() = default;
+            template <typename ActualT, typename = void>
+            struct IsTypeCompatible : std::false_type {};
 
-            StrLeMatcherCreator(const char* const &expected)
-                    : ComparisonMatcherCreator<const char*>(expected) {
+            template <typename ActualT>
+            struct IsTypeCompatible<ActualT, fk_void_t<decltype(strcmp(std::declval<ActualT>(), std::declval<const char*>()))>> : std::true_type {};
+
+            using ComparisonMatcherCreatorBase<ExpectedTRef>::ComparisonMatcherCreatorBase;
+
+            template<typename ActualT>
+            TypedMatcher<ActualT> *createMatcher() const {
+                struct Matcher : public ComparisonMatcherCreatorBase<ExpectedTRef>::template MatcherBase<ActualT> {
+                    using ComparisonMatcherCreatorBase<ExpectedTRef>::template MatcherBase<ActualT>::MatcherBase;
+
+                    virtual std::string format() const override {
+                        return std::string("<") + TypeFormatter<ExpectedT>::format(this->_expected);
+                    }
+
+                    virtual bool matches(const ActualT &actual) const override {
+                        return std::strcmp(actual, this->_expected.c_str()) < 0;
+                    }
+                };
+
+                return new Matcher(std::forward<ExpectedTRef>(this->_expectedRef));
             }
-
-            struct Matcher : public ComparisonMatcherCreator<const char*>::Matcher {
-                Matcher(const char* const &expected)
-                        : ComparisonMatcherCreator<const char*>::Matcher(expected) {
-                }
-
-                virtual std::string format() const override {
-                    return std::string("<=") + TypeFormatter<const char*>::format(this->_expected);
-                }
-
-                virtual bool matches(const char* const &actual) const override {
-                    return std::strcmp(actual, this->_expected) <= 0;
-                }
-            };
-
-            virtual TypedMatcher<const char*> *createMatcher() const {
-                return new Matcher(this->_expected);
-            }
-
         };
 
-        struct StrNeMatcherCreator : public ComparisonMatcherCreator<const char*> {
+        template <typename ExpectedTRef>
+        struct StrLeMatcherCreator : public ComparisonMatcherCreatorBase<ExpectedTRef> {
+            using ExpectedT = typename ComparisonMatcherCreatorBase<ExpectedTRef>::ExpectedT;
 
-            virtual ~StrNeMatcherCreator() = default;
+            template <typename ActualT, typename = void>
+            struct IsTypeCompatible : std::false_type {};
 
-            StrNeMatcherCreator(const char* const &expected)
-                    : ComparisonMatcherCreator<const char*>(expected) {
+            template <typename ActualT>
+            struct IsTypeCompatible<ActualT, fk_void_t<decltype(strcmp(std::declval<ActualT>(), std::declval<const char*>()))>> : std::true_type {};
+
+            using ComparisonMatcherCreatorBase<ExpectedTRef>::ComparisonMatcherCreatorBase;
+
+            template<typename ActualT>
+            TypedMatcher<ActualT> *createMatcher() const {
+                struct Matcher : public ComparisonMatcherCreatorBase<ExpectedTRef>::template MatcherBase<ActualT> {
+                    using ComparisonMatcherCreatorBase<ExpectedTRef>::template MatcherBase<ActualT>::MatcherBase;
+
+                    virtual std::string format() const override {
+                        return std::string("<=") + TypeFormatter<ExpectedT>::format(this->_expected);
+                    }
+
+                    virtual bool matches(const ActualT &actual) const override {
+                        return std::strcmp(actual, this->_expected.c_str()) <= 0;
+                    }
+                };
+
+                return new Matcher(std::forward<ExpectedTRef>(this->_expectedRef));
+            }
+        };
+
+        template <typename ExpectedTRef>
+        struct StrNeMatcherCreator : public ComparisonMatcherCreatorBase<ExpectedTRef> {
+            using ExpectedT = typename ComparisonMatcherCreatorBase<ExpectedTRef>::ExpectedT;
+
+            template <typename ActualT, typename = void>
+            struct IsTypeCompatible : std::false_type {};
+
+            template <typename ActualT>
+            struct IsTypeCompatible<ActualT, fk_void_t<decltype(strcmp(std::declval<ActualT>(), std::declval<const char*>()))>> : std::true_type {};
+
+            using ComparisonMatcherCreatorBase<ExpectedTRef>::ComparisonMatcherCreatorBase;
+
+            template<typename ActualT>
+            TypedMatcher<ActualT> *createMatcher() const {
+                struct Matcher : public ComparisonMatcherCreatorBase<ExpectedTRef>::template MatcherBase<ActualT> {
+                    using ComparisonMatcherCreatorBase<ExpectedTRef>::template MatcherBase<ActualT>::MatcherBase;
+
+                    virtual std::string format() const override {
+                        return std::string("!=") + TypeFormatter<ExpectedT>::format(this->_expected);
+                    }
+
+                    virtual bool matches(const ActualT &actual) const override {
+                        return std::strcmp(actual, this->_expected.c_str()) != 0;
+                    }
+                };
+
+                return new Matcher(std::forward<ExpectedTRef>(this->_expectedRef));
+            }
+        };
+
+        template<typename ExpectedTRef, typename ExpectedMarginTRef>
+        struct ApproxEqCreator {
+            using ExpectedT = typename naked_type<ExpectedTRef>::type;
+            using ExpectedMarginT = typename naked_type<ExpectedMarginTRef>::type;
+
+            template <typename ActualT, typename = void>
+            struct IsTypeCompatible : std::false_type {};
+
+            template <typename ActualT>
+            struct IsTypeCompatible<ActualT, fk_void_t<decltype(std::abs(std::declval<ActualT>() - std::declval<ExpectedT>()) <= std::declval<ExpectedMarginT>())>> : std::true_type {};
+
+            ExpectedTRef _expectedRef;
+            ExpectedMarginTRef _expectedMarginRef;
+
+            template <typename T, typename U>
+            ApproxEqCreator(T &&expectedRef, U &&expectedMarginRef)
+                    : _expectedRef(std::forward<T>(expectedRef))
+                    , _expectedMarginRef(std::forward<U>(expectedMarginRef)) {
             }
 
-            struct Matcher : public ComparisonMatcherCreator<const char*>::Matcher {
-                Matcher(const char* const &expected)
-                        : ComparisonMatcherCreator<const char*>::Matcher(expected) {
-                }
+            template<typename ActualT>
+            TypedMatcher<ActualT> *createMatcher() const {
+                struct Matcher : public TypedMatcher<ActualT> {
+                    const ExpectedT _expected;
+                    const ExpectedMarginT _expectedMargin;
 
-                virtual std::string format() const override {
-                    return std::string("!=") + TypeFormatter<const char*>::format(this->_expected);
-                }
+                    Matcher(ExpectedTRef expected, ExpectedMarginTRef expectedMargin)
+                            : _expected{std::forward<ExpectedTRef>(expected)}
+                            , _expectedMargin{std::forward<ExpectedMarginTRef>(expectedMargin)} {
+                    }
 
-                virtual bool matches(const char* const &actual) const override {
-                    return std::strcmp(actual, this->_expected) != 0;
-                }
-            };
+                    virtual std::string format() const override {
+                        return TypeFormatter<ExpectedT>::format(this->_expected) + std::string("+/-") + TypeFormatter<ExpectedMarginT>::format(this->_expectedMargin);
+                    }
 
-            virtual TypedMatcher<const char*> *createMatcher() const {
-                return new Matcher(this->_expected);
+                    virtual bool matches(const ActualT &actual) const override {
+                        return std::abs(actual - this->_expected) <= this->_expectedMargin;
+                    }
+                };
+
+                return new Matcher(std::forward<ExpectedTRef>(this->_expectedRef), std::forward<ExpectedMarginTRef>(this->_expectedMarginRef));
             }
-
         };
     }
 
     struct AnyMatcher {
     } static _;
 
-    template<typename T>
-    internal::TypedAnyMatcher<T> Any() {
-        internal::TypedAnyMatcher<T> rv;
-        return rv;
+    template <typename T>
+    internal::AnyMatcherCreator Any() {
+        static_assert(sizeof(T) >= 0, "To maintain backward compatibility, this function takes an useless template argument.");
+        internal::AnyMatcherCreator mc;
+        return mc;
+    }
+
+    inline internal::AnyMatcherCreator Any() {
+        internal::AnyMatcherCreator mc;
+        return mc;
     }
 
     template<typename T>
-    internal::EqMatcherCreator<T> Eq(const T &arg) {
-        internal::EqMatcherCreator<T> rv(arg);
-        return rv;
+    internal::EqMatcherCreator<T&&> Eq(T &&arg) {
+        internal::EqMatcherCreator<T&&> mc(std::forward<T>(arg));
+        return mc;
     }
 
     template<typename T>
-    internal::GtMatcherCreator<T> Gt(const T &arg) {
-        internal::GtMatcherCreator<T> rv(arg);
-        return rv;
+    internal::GtMatcherCreator<T&&> Gt(T &&arg) {
+        internal::GtMatcherCreator<T&&> mc(std::forward<T>(arg));
+        return mc;
     }
 
     template<typename T>
-    internal::GeMatcherCreator<T> Ge(const T &arg) {
-        internal::GeMatcherCreator<T> rv(arg);
-        return rv;
+    internal::GeMatcherCreator<T&&> Ge(T &&arg) {
+        internal::GeMatcherCreator<T&&> mc(std::forward<T>(arg));
+        return mc;
     }
 
     template<typename T>
-    internal::LtMatcherCreator<T> Lt(const T &arg) {
-        internal::LtMatcherCreator<T> rv(arg);
-        return rv;
+    internal::LtMatcherCreator<T&&> Lt(T &&arg) {
+        internal::LtMatcherCreator<T&&> mc(std::forward<T>(arg));
+        return mc;
     }
 
     template<typename T>
-    internal::LeMatcherCreator<T> Le(const T &arg) {
-        internal::LeMatcherCreator<T> rv(arg);
-        return rv;
+    internal::LeMatcherCreator<T&&> Le(T &&arg) {
+        internal::LeMatcherCreator<T&&> mc(std::forward<T>(arg));
+        return mc;
     }
 
     template<typename T>
-    internal::NeMatcherCreator<T> Ne(const T &arg) {
-        internal::NeMatcherCreator<T> rv(arg);
-        return rv;
+    internal::NeMatcherCreator<T&&> Ne(T &&arg) {
+        internal::NeMatcherCreator<T&&> mc(std::forward<T>(arg));
+        return mc;
     }
 
-    inline internal::StrEqMatcherCreator StrEq(const char* const &arg) {
-        internal::StrEqMatcherCreator rv(arg);
-        return rv;
+    inline internal::StrEqMatcherCreator<std::string&&> StrEq(std::string&& arg) {
+        internal::StrEqMatcherCreator<std::string&&> mc(std::move(arg));
+        return mc;
     }
 
-    inline internal::StrGtMatcherCreator StrGt(const char* const &arg) {
-        internal::StrGtMatcherCreator rv(arg);
-        return rv;
+    inline internal::StrEqMatcherCreator<const std::string&> StrEq(const std::string& arg) {
+        internal::StrEqMatcherCreator<const std::string&> mc(arg);
+        return mc;
     }
 
-    inline internal::StrGeMatcherCreator StrGe(const char* const &arg) {
-        internal::StrGeMatcherCreator rv(arg);
-        return rv;
+    inline internal::StrGtMatcherCreator<std::string&&> StrGt(std::string&& arg) {
+        internal::StrGtMatcherCreator<std::string&&> mc(std::move(arg));
+        return mc;
     }
 
-    inline internal::StrLtMatcherCreator StrLt(const char* const &arg) {
-        internal::StrLtMatcherCreator rv(arg);
-        return rv;
+    inline internal::StrGtMatcherCreator<const std::string&> StrGt(const std::string& arg) {
+        internal::StrGtMatcherCreator<const std::string&> mc(arg);
+        return mc;
     }
 
-    inline internal::StrLeMatcherCreator StrLe(const char* const &arg) {
-        internal::StrLeMatcherCreator rv(arg);
-        return rv;
+    inline internal::StrGeMatcherCreator<std::string&&> StrGe(std::string&& arg) {
+        internal::StrGeMatcherCreator<std::string&&> mc(std::move(arg));
+        return mc;
     }
 
-    inline internal::StrNeMatcherCreator StrNe(const char* const &arg) {
-        internal::StrNeMatcherCreator rv(arg);
-        return rv;
+    inline internal::StrGeMatcherCreator<const std::string&> StrGe(const std::string& arg) {
+        internal::StrGeMatcherCreator<const std::string&> mc(arg);
+        return mc;
+    }
+
+    inline internal::StrLtMatcherCreator<std::string&&> StrLt(std::string&& arg) {
+        internal::StrLtMatcherCreator<std::string&&> mc(std::move(arg));
+        return mc;
+    }
+
+    inline internal::StrLtMatcherCreator<const std::string&> StrLt(const std::string& arg) {
+        internal::StrLtMatcherCreator<const std::string&> mc(arg);
+        return mc;
+    }
+
+    inline internal::StrLeMatcherCreator<std::string&&> StrLe(std::string&& arg) {
+        internal::StrLeMatcherCreator<std::string&&> mc(std::move(arg));
+        return mc;
+    }
+
+    inline internal::StrLeMatcherCreator<const std::string&> StrLe(const std::string& arg) {
+        internal::StrLeMatcherCreator<const std::string&> mc(arg);
+        return mc;
+    }
+
+    inline internal::StrNeMatcherCreator<std::string&&> StrNe(std::string&& arg) {
+        internal::StrNeMatcherCreator<std::string&&> mc(std::move(arg));
+        return mc;
+    }
+
+    inline internal::StrNeMatcherCreator<const std::string&> StrNe(const std::string& arg) {
+        internal::StrNeMatcherCreator<const std::string&> mc(arg);
+        return mc;
+    }
+
+    template<typename T, typename U,
+        typename std::enable_if<std::is_arithmetic<typename naked_type<T>::type>::value, int>::type = 0,
+        typename std::enable_if<std::is_arithmetic<typename naked_type<U>::type>::value, int>::type = 0>
+    internal::ApproxEqCreator<T&&, U&&> ApproxEq(T &&expected, U &&margin) {
+        internal::ApproxEqCreator<T&&, U&&> mc(std::forward<T>(expected), std::forward<U>(margin));
+        return mc;
     }
 
 }
@@ -6923,7 +7037,7 @@ namespace fakeit {
     struct UserDefinedInvocationMatcher : ActualInvocation<arglist...>::Matcher {
         virtual ~UserDefinedInvocationMatcher() = default;
 
-        UserDefinedInvocationMatcher(std::function<bool(arglist &...)> match)
+        UserDefinedInvocationMatcher(const std::function<bool(arglist &...)>& match)
                 : matcher{match} {
         }
 
@@ -7893,7 +8007,8 @@ namespace fakeit {
     struct SpyingContext : Xaction {
         virtual void appendAction(Action<R, arglist...> *action) = 0;
 
-        virtual std::function<R(arglist&...)> getOriginalMethod() = 0;
+        virtual std::function<R(arglist&...)> getOriginalMethodCopyArgs() = 0;
+        virtual std::function<R(arglist&...)> getOriginalMethodForwardArgs() = 0;
     };
 }
 namespace fakeit {
@@ -7928,9 +8043,6 @@ namespace fakeit {
         template<std::size_t N>
         using NakedArgType = typename naked_type<ArgType<index>>::type;
 
-        template<std::size_t N>
-        using ArgMatcherCreatorType = decltype(std::declval<TypedMatcherCreator<NakedArgType<N>>>());
-
         MatchersCollector(std::vector<Destructible *> &matchers)
                 : _matchers(matchers) {
         }
@@ -7940,56 +8052,34 @@ namespace fakeit {
 
         template<typename Head>
         typename std::enable_if<
-                std::is_constructible<NakedArgType<index>, Head>::value, void>
-        ::type CollectMatchers(const Head &value) {
+                std::is_constructible<NakedArgType<index>, Head&&>::value, void>
+        ::type CollectMatchers(Head &&value) {
 
-            TypedMatcher<NakedArgType<index>> *d = Eq<NakedArgType<index>>(value).createMatcher();
+            TypedMatcher<NakedArgType<index>> *d = Eq(std::forward<Head>(value)).template createMatcher<NakedArgType<index>>();
             _matchers.push_back(d);
-        }
-
-        template<typename Head, typename ...Tail>
-        typename std::enable_if<
-                std::is_constructible<NakedArgType<index>, Head>::value
-                , void>
-        ::type CollectMatchers(const Head &head, const Tail &... tail) {
-            CollectMatchers(head);
-            MatchersCollector<index + 1, arglist...> c(_matchers);
-            c.CollectMatchers(tail...);
         }
 
         template<typename Head>
         typename std::enable_if<
-                std::is_base_of<TypedMatcherCreator<NakedArgType<index>>, Head>::value, void>
-        ::type CollectMatchers(const Head &creator) {
-            TypedMatcher<NakedArgType<index>> *d = creator.createMatcher();
+                naked_type<Head>::type::template IsTypeCompatible<NakedArgType<index>>::value, void>
+        ::type CollectMatchers(Head &&creator) {
+            TypedMatcher<NakedArgType<index>> *d = creator.template createMatcher<NakedArgType<index>>();
             _matchers.push_back(d);
-        }
-
-        template<typename Head, typename ...Tail>
-
-        typename std::enable_if<
-                std::is_base_of<TypedMatcherCreator<NakedArgType<index>>, Head>::value, void>
-        ::type CollectMatchers(const Head &head, const Tail &... tail) {
-            CollectMatchers(head);
-            MatchersCollector<index + 1, arglist...> c(_matchers);
-            c.CollectMatchers(tail...);
         }
 
         template<typename Head>
         typename std::enable_if<
-                std::is_same<AnyMatcher, Head>::value, void>
-        ::type CollectMatchers(const Head &) {
-            TypedMatcher<NakedArgType<index>> *d = Any<NakedArgType<index>>().createMatcher();
+                std::is_same<AnyMatcher, typename naked_type<Head>::type>::value, void>
+        ::type CollectMatchers(Head &&) {
+            TypedMatcher<NakedArgType<index>> *d = Any().template createMatcher<NakedArgType<index>>();
             _matchers.push_back(d);
         }
 
         template<typename Head, typename ...Tail>
-        typename std::enable_if<
-                std::is_same<AnyMatcher, Head>::value, void>
-        ::type CollectMatchers(const Head &head, const Tail &... tail) {
-            CollectMatchers(head);
+        void CollectMatchers(Head &&head, Tail &&... tail) {
+            CollectMatchers(std::forward<Head>(head));
             MatchersCollector<index + 1, arglist...> c(_matchers);
-            c.CollectMatchers(tail...);
+            c.CollectMatchers(std::forward<Tail>(tail)...);
         }
 
     };
@@ -8010,7 +8100,8 @@ namespace fakeit {
         struct Context : Destructible {
 
 
-            virtual typename std::function<R(arglist&...)> getOriginalMethod() = 0;
+            virtual typename std::function<R(arglist&...)> getOriginalMethodCopyArgs() = 0;
+            virtual typename std::function<R(arglist&...)> getOriginalMethodForwardArgs() = 0;
 
             virtual std::string getMethodName() = 0;
 
@@ -8109,8 +8200,12 @@ namespace fakeit {
                 into.push_back(&getStubbingContext().getInvolvedMock());
             }
 
-            typename std::function<R(arglist &...)> getOriginalMethod() {
-                return getStubbingContext().getOriginalMethod();
+            typename std::function<R(arglist &...)> getOriginalMethodCopyArgs() {
+                return getStubbingContext().getOriginalMethodCopyArgs();
+            }
+
+            typename std::function<R(arglist &...)> getOriginalMethodForwardArgs() {
+                return getStubbingContext().getOriginalMethodForwardArgs();
             }
 
             void setInvocationMatcher(typename ActualInvocation<arglist...>::Matcher *matcher) {
@@ -8172,13 +8267,13 @@ namespace fakeit {
             _impl->setMethodDetails(mockName, methodName);
         }
 
-        void setMatchingCriteria(std::function<bool(arglist &...)> predicate) {
+        void setMatchingCriteria(const std::function<bool(arglist &...)>& predicate) {
             typename ActualInvocation<arglist...>::Matcher *matcher{
                     new UserDefinedInvocationMatcher<arglist...>(predicate)};
             _impl->setInvocationMatcher(matcher);
         }
 
-        void setMatchingCriteria(const std::vector<Destructible *> &matchers) {
+        void setMatchingCriteria(std::vector<Destructible *> &matchers) {
             typename ActualInvocation<arglist...>::Matcher *matcher{
                     new ArgumentsMatcherInvocationMatcher<arglist...>(matchers)};
             _impl->setInvocationMatcher(matcher);
@@ -8193,21 +8288,26 @@ namespace fakeit {
             _impl->setMethodBodyByAssignment(method);
         }
 
-        template<class ...matcherCreators, class = typename std::enable_if<
-                sizeof...(matcherCreators) == sizeof...(arglist)>::type>
-        void setMatchingCriteria(const matcherCreators &... matcherCreator) {
+        template<class ...matcherCreators>
+        typename std::enable_if<
+                sizeof...(matcherCreators) == sizeof...(arglist), void>
+        ::type setMatchingCriteria(matcherCreators &&... matcherCreator) {
             std::vector<Destructible *> matchers;
 
             MatchersCollector<0, arglist...> c(matchers);
-            c.CollectMatchers(matcherCreator...);
+            c.CollectMatchers(std::forward<matcherCreators>(matcherCreator)...);
 
             MethodMockingContext<R, arglist...>::setMatchingCriteria(matchers);
         }
 
     private:
 
-        typename std::function<R(arglist&...)> getOriginalMethod() override {
-            return _impl->getOriginalMethod();
+        typename std::function<R(arglist&...)> getOriginalMethodCopyArgs() override {
+            return _impl->getOriginalMethodCopyArgs();
+        }
+
+        typename std::function<R(arglist&...)> getOriginalMethodForwardArgs() override {
+            return _impl->getOriginalMethodForwardArgs();
         }
 
         std::shared_ptr<Implementation> _impl;
@@ -8235,18 +8335,13 @@ namespace fakeit {
             return *this;
         }
 
-        MockingContext<R, arglist...> &Using(const arglist &... args) {
-            MethodMockingContext<R, arglist...>::setMatchingCriteria(args...);
-            return *this;
-        }
-
         template<class ...arg_matcher>
-        MockingContext<R, arglist...> &Using(const arg_matcher &... arg_matchers) {
-            MethodMockingContext<R, arglist...>::setMatchingCriteria(arg_matchers...);
+        MockingContext<R, arglist...> &Using(arg_matcher &&... arg_matchers) {
+            MethodMockingContext<R, arglist...>::setMatchingCriteria(std::forward<arg_matcher>(arg_matchers)...);
             return *this;
         }
 
-        MockingContext<R, arglist...> &Matching(std::function<bool(arglist &...)> matcher) {
+        MockingContext<R, arglist...> &Matching(const std::function<bool(arglist &...)>& matcher) {
             MethodMockingContext<R, arglist...>::setMatchingCriteria(matcher);
             return *this;
         }
@@ -8256,7 +8351,7 @@ namespace fakeit {
             return *this;
         }
 
-        MockingContext<R, arglist...> &operator()(std::function<bool(arglist &...)> matcher) {
+        MockingContext<R, arglist...> &operator()(const std::function<bool(arglist &...)>& matcher) {
             MethodMockingContext<R, arglist...>::setMatchingCriteria(matcher);
             return *this;
         }
@@ -8300,18 +8395,13 @@ namespace fakeit {
             return *this;
         }
 
-        MockingContext<void, arglist...> &Using(const arglist &... args) {
-            MethodMockingContext<void, arglist...>::setMatchingCriteria(args...);
-            return *this;
-        }
-
         template<class ...arg_matcher>
-        MockingContext<void, arglist...> &Using(const arg_matcher &... arg_matchers) {
-            MethodMockingContext<void, arglist...>::setMatchingCriteria(arg_matchers...);
+        MockingContext<void, arglist...> &Using(arg_matcher &&... arg_matchers) {
+            MethodMockingContext<void, arglist...>::setMatchingCriteria(std::forward<arg_matcher>(arg_matchers)...);
             return *this;
         }
 
-        MockingContext<void, arglist...> &Matching(std::function<bool(arglist &...)> matcher) {
+        MockingContext<void, arglist...> &Matching(const std::function<bool(arglist &...)>& matcher) {
             MethodMockingContext<void, arglist...>::setMatchingCriteria(matcher);
             return *this;
         }
@@ -8321,7 +8411,7 @@ namespace fakeit {
             return *this;
         }
 
-        MockingContext<void, arglist...> &operator()(std::function<bool(arglist &...)> matcher) {
+        MockingContext<void, arglist...> &operator()(const std::function<bool(arglist &...)>& matcher) {
             MethodMockingContext<void, arglist...>::setMatchingCriteria(matcher);
             return *this;
         }
@@ -8515,8 +8605,28 @@ namespace fakeit {
                     : MethodMockingContextBase<R, arglist...>(mock), _vMethod(vMethod) {
             }
 
+            template<typename ... T, typename std::enable_if<all_true<std::is_copy_constructible<T>::value...>::value, int>::type = 0>
+            std::function<R(arglist&...)> getOriginalMethodCopyArgsInternal(int) {
+                void *mPtr = MethodMockingContextBase<R, arglist...>::_mock.getOriginalMethod(_vMethod);
+                C * instance = &(MethodMockingContextBase<R, arglist...>::_mock.get());
+                return [=](arglist&... args) -> R {
+                    auto m = union_cast<typename VTableMethodType<R,arglist...>::type>(mPtr);
+                    return m(instance, args...);
+                };
+            }
 
-            virtual std::function<R(arglist&...)> getOriginalMethod() override {
+
+            template<typename ... T>
+            [[noreturn]] std::function<R(arglist&...)> getOriginalMethodCopyArgsInternal(long) {
+                std::abort();
+            }
+
+
+            std::function<R(arglist&...)> getOriginalMethodCopyArgs() override {
+                return getOriginalMethodCopyArgsInternal<arglist...>(0);
+            }
+
+            std::function<R(arglist&...)> getOriginalMethodForwardArgs() override {
                 void *mPtr = MethodMockingContextBase<R, arglist...>::_mock.getOriginalMethod(_vMethod);
                 C * instance = &(MethodMockingContextBase<R, arglist...>::_mock.get());
                 return [=](arglist&... args) -> R {
@@ -8560,7 +8670,12 @@ namespace fakeit {
                     : MethodMockingContextBase<void>(mock) {
             }
 
-            virtual std::function<void()> getOriginalMethod() override {
+            std::function<void()> getOriginalMethodCopyArgs() override {
+                return [=]() -> void {
+                };
+            }
+
+            std::function<void()> getOriginalMethodForwardArgs() override {
                 return [=]() -> void {
                 };
             }
@@ -9659,15 +9774,51 @@ namespace fakeit {
     };
 
 }
+#include <type_traits>
+
+
 namespace fakeit {
 
     class SpyFunctor {
     private:
 
+        template<typename R, typename ... arglist, typename std::enable_if<all_true<std::is_copy_constructible<arglist>::value...>::value, int>::type = 0>
+        void spy(const SpyingContext<R, arglist...> &root, int) {
+            SpyingContext<R, arglist...> &rootWithoutConst = const_cast<SpyingContext<R, arglist...> &>(root);
+            auto methodFromOriginalVT = rootWithoutConst.getOriginalMethodCopyArgs();
+            rootWithoutConst.appendAction(new ReturnDelegateValue<R, arglist...>(methodFromOriginalVT));
+            rootWithoutConst.commit();
+        }
+
+        template<typename R, typename ... arglist>
+        void spy(const SpyingContext<R, arglist...> &, long) {
+            static_assert(!std::is_same<R, R>::value, "Spy() cannot accept move-only args, use SpyWithoutVerify() instead which is able to forward these args but then they won't be available for Verify().");
+        }
+
+        void operator()() {
+        }
+
+    public:
+
+        template<typename H, typename ... M>
+        void operator()(const H &head, const M &... tail) {
+            spy(head, 0);
+            this->operator()(tail...);
+        }
+
+    };
+
+}
+
+namespace fakeit {
+
+    class SpyWithoutVerifyFunctor {
+    private:
+
         template<typename R, typename ... arglist>
         void spy(const SpyingContext<R, arglist...> &root) {
             SpyingContext<R, arglist...> &rootWithoutConst = const_cast<SpyingContext<R, arglist...> &>(root);
-            auto methodFromOriginalVT = rootWithoutConst.getOriginalMethod();
+            auto methodFromOriginalVT = rootWithoutConst.getOriginalMethodForwardArgs();
             rootWithoutConst.appendAction(new ReturnDelegateValue<R, arglist...>(methodFromOriginalVT));
             rootWithoutConst.commit();
         }
@@ -9686,7 +9837,6 @@ namespace fakeit {
     };
 
 }
-
 #include <vector>
 #include <set>
 
@@ -9756,6 +9906,7 @@ namespace fakeit {
     static VerifyNoOtherInvocationsFunctor VerifyNoOtherInvocations(Fakeit);
     static UnverifiedFunctor Unverified(Fakeit);
     static SpyFunctor Spy;
+    static SpyWithoutVerifyFunctor SpyWithoutVerify;
     static FakeFunctor Fake;
     static WhenFunctor When;
 
@@ -9769,6 +9920,7 @@ namespace fakeit {
             use(&Fake);
             use(&When);
             use(&Spy);
+            use(&SpyWithoutVerify);
             use(&Using);
             use(&Verify);
             use(&VerifyNoOtherInvocations);
@@ -9785,10 +9937,10 @@ namespace fakeit {
     std::remove_reference<decltype((mock).get())>::type
 
 #define OVERLOADED_METHOD_PTR(mock, method, prototype) \
-    fakeit::Prototype<prototype>::MemberType<MOCK_TYPE(mock)>::get(&MOCK_TYPE(mock)::method)
+    fakeit::Prototype<prototype>::MemberType<typename MOCK_TYPE(mock)>::get(&MOCK_TYPE(mock)::method)
 
 #define CONST_OVERLOADED_METHOD_PTR(mock, method, prototype) \
-    fakeit::Prototype<prototype>::MemberType<MOCK_TYPE(mock)>::getconst(&MOCK_TYPE(mock)::method)
+    fakeit::Prototype<prototype>::MemberType<typename MOCK_TYPE(mock)>::getconst(&MOCK_TYPE(mock)::method)
 
 #define Dtor(mock) \
     (mock).dtor().setMethodDetails(#mock,"destructor")
