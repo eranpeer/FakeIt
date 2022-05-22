@@ -1,7 +1,7 @@
 /**
- * Copyright (c) 2013 Trevor Pounds <trevor.pounds@gmail.com>
+ * Copyright (c) 2011-2020 Trevor Pounds <trevor.pounds@gmail.com>
  *
- * Permission is hereby granted, free of charge, to Any person obtaining a copy
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
@@ -22,10 +22,10 @@
 #include "tpunit++.hpp"
 
 int main() {
-	/**
-	 * Run all of the registered tpunit++ tests. Returns 0 if
-	 * all tests are successful, otherwise returns the number
-	 * of failing assertions.
-	 */
-	return tpunit::Tests::Run();
+   /**
+    * Run all of the registered tpunit++ tests. Returns 0 if
+    * all tests are successful, otherwise returns the number
+    * of failing assertions.
+    */
+   return tpunit::Tests::run();
 }
