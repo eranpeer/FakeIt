@@ -20,61 +20,6 @@
 
 namespace fakeit {
 
-    struct VerificationException : public FakeitException {
-        virtual ~VerificationException() = default;
-
-        void setFileInfo(const char *file, int line, const char *callingMethod) {
-            _file = file;
-            _callingMethod = callingMethod;
-            _line = line;
-        }
-
-        const char *file() const {
-            return _file;
-        }
-
-        int line() const {
-            return _line;
-        }
-
-        const char *callingMethod() const {
-            return _callingMethod;
-        }
-
-    private:
-        const char *_file;
-        int _line;
-        const char *_callingMethod;
-    };
-
-    struct NoMoreInvocationsVerificationException : public VerificationException {
-
-        NoMoreInvocationsVerificationException(std::string format) : //
-                _format(format) { //
-        }
-
-        virtual std::string what() const override {
-            return _format;
-        }
-
-    private:
-        std::string _format;
-    };
-
-    struct SequenceVerificationException : public VerificationException {
-        SequenceVerificationException(const std::string &format) : //
-                _format(format) //
-        {
-        }
-
-        virtual std::string what() const override {
-            return _format;
-        }
-
-    private:
-        std::string _format;
-    };
-
     class CatchAdapter : public EventHandler {
         EventFormatter &_formatter;
 
