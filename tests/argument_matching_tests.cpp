@@ -25,6 +25,12 @@ namespace {
 	bool operator==(const Base& lhs, const Base& rhs) {
 		return lhs.value() == rhs.value();
 	}
+
+	struct WeirdType
+	{
+		template <typename T>
+		WeirdType(T&&){}
+	};
 }
 
 struct ArgumentMatchingTests: tpunit::TestFixture {
@@ -40,7 +46,7 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 					TEST(ArgumentMatchingTests::test_str_le_matcher), TEST(ArgumentMatchingTests::test_str_ne_matcher),
 					TEST(ArgumentMatchingTests::test_approx_eq_matcher),
 					TEST(ArgumentMatchingTests::test_any_matcher), TEST(ArgumentMatchingTests::test_any_matcher2),
-					TEST(ArgumentMatchingTests::test_any_matcher3),
+					TEST(ArgumentMatchingTests::test_any_matcher3), TEST(ArgumentMatchingTests::test_any_matcher_weird_constructor),
 					TEST(ArgumentMatchingTests::pass_reference_by_value),
 					TEST(ArgumentMatchingTests::format_Any), TEST(ArgumentMatchingTests::format_Eq),
 					TEST(ArgumentMatchingTests::format_Gt), TEST(ArgumentMatchingTests::format_Ge),
@@ -79,6 +85,7 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		virtual int funcMoveOnly(MoveOnlyType) = 0;
 		virtual int funcSlicing(const Base&) = 0;
 		virtual int funcDouble(double) = 0;
+		virtual int funcWeirdType(int, WeirdType) = 0;
     };
 
 	void mixed_matchers() {
@@ -346,6 +353,20 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 		ASSERT_EQUAL(1, i.func(1));
 
 		Verify(Method(mock, func).Using(Any())).Twice();
+	}
+
+	void test_any_matcher_weird_constructor() {
+		Mock<SomeInterface> mock;
+
+		When(Method(mock, funcWeirdType).Using(1, _)).AlwaysReturn(1);
+		When(Method(mock, funcWeirdType).Using(5, Any())).AlwaysReturn(5);
+
+		SomeInterface &i = mock.get();
+		ASSERT_EQUAL(1, i.funcWeirdType(1, WeirdType{10}));
+		ASSERT_EQUAL(5, i.funcWeirdType(5, WeirdType{50}));
+
+		Verify(Method(mock, funcWeirdType).Using(1, Any())).Once();
+		Verify(Method(mock, funcWeirdType).Using(5, _)).Once();
 	}
 
     void pass_reference_by_value() {
