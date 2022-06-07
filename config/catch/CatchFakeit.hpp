@@ -3,15 +3,19 @@
 #include "fakeit/DefaultFakeit.hpp"
 #include "fakeit/EventHandler.hpp"
 #include "mockutils/to_string.hpp"
-#if __has_include("catch2/catch.hpp")
-#   include <catch2/catch.hpp>
-#elif __has_include("catch2/catch_all.hpp")
-#   include <catch2/catch_assertion_result.hpp>
-#   include <catch2/catch_test_macros.hpp>
-#elif __has_include("catch_amalgamated.hpp")
-#   include <catch_amalgamated.hpp>
+#if defined __has_include
+#   if __has_include("catch2/catch.hpp")
+#      include <catch2/catch.hpp>
+#   elif __has_include("catch2/catch_all.hpp")
+#      include <catch2/catch_assertion_result.hpp>
+#      include <catch2/catch_test_macros.hpp>
+#   elif __has_include("catch_amalgamated.hpp")
+#      include <catch_amalgamated.hpp>
+#   else
+#      include <catch.hpp>
+#   endif
 #else
-#   include <catch.hpp>
+#   include <catch2/catch.hpp>
 #endif
 
 namespace fakeit {

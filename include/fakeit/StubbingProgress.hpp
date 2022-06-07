@@ -362,7 +362,7 @@ namespace fakeit {
         template <typename T, int N>
         struct ArgValue
         {
-            ArgValue(T &&v): value { std::forward<T>(v) } {}
+            ArgValue(T &&v): value ( std::forward<T>(v) ) {}
             constexpr static int pos = N;
             T value;
         };
