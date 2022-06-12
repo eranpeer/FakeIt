@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2022-05-22 19:04:11.011463
+ *  Generated: 2022-06-12 10:26:07.531095
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -6413,6 +6413,7 @@ namespace fakeit {
     };
 
 }
+#include <cmath>
 #include <cstring>
 
 
@@ -7818,7 +7819,7 @@ namespace fakeit {
         template <typename T, int N>
         struct ArgValue
         {
-            ArgValue(T &&v): value { std::forward<T>(v) } {}
+            ArgValue(T &&v): value ( std::forward<T>(v) ) {}
             constexpr static int pos = N;
             T value;
         };
@@ -8111,6 +8112,12 @@ namespace fakeit {
         template<std::size_t N>
         using NakedArgType = typename naked_type<ArgType<index>>::type;
 
+        template <typename MatcherCreatorT, typename = void>
+        struct IsMatcherCreatorTypeCompatible : std::false_type {};
+
+        template <typename MatcherCreatorT>
+        struct IsMatcherCreatorTypeCompatible<MatcherCreatorT, typename std::enable_if<MatcherCreatorT::template IsTypeCompatible<NakedArgType<index>>::value, void>::type> : std::true_type {};
+
         MatchersCollector(std::vector<Destructible *> &matchers)
                 : _matchers(matchers) {
         }
@@ -8120,6 +8127,8 @@ namespace fakeit {
 
         template<typename Head>
         typename std::enable_if<
+                !std::is_same<AnyMatcher, typename naked_type<Head>::type>::value &&
+                !IsMatcherCreatorTypeCompatible<typename naked_type<Head>::type>::value &&
                 std::is_constructible<NakedArgType<index>, Head&&>::value, void>
         ::type CollectMatchers(Head &&value) {
 
@@ -8129,7 +8138,7 @@ namespace fakeit {
 
         template<typename Head>
         typename std::enable_if<
-                naked_type<Head>::type::template IsTypeCompatible<NakedArgType<index>>::value, void>
+                IsMatcherCreatorTypeCompatible<typename naked_type<Head>::type>::value, void>
         ::type CollectMatchers(Head &&creator) {
             TypedMatcher<NakedArgType<index>> *d = creator.template createMatcher<NakedArgType<index>>();
             _matchers.push_back(d);
