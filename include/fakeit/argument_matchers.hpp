@@ -8,6 +8,7 @@
  */
 #pragma once
 
+#include <cmath>
 #include <cstring>
 
 #include "mockutils/type_utils.hpp"

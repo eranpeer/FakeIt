@@ -34,6 +34,12 @@ namespace fakeit {
         template<std::size_t N>
         using NakedArgType = typename naked_type<ArgType<index>>::type;
 
+        template <typename MatcherCreatorT, typename = void>
+        struct IsMatcherCreatorTypeCompatible : std::false_type {};
+
+        template <typename MatcherCreatorT>
+        struct IsMatcherCreatorTypeCompatible<MatcherCreatorT, typename std::enable_if<MatcherCreatorT::template IsTypeCompatible<NakedArgType<index>>::value, void>::type> : std::true_type {};
+
         MatchersCollector(std::vector<Destructible *> &matchers)
                 : _matchers(matchers) {
         }
@@ -43,6 +49,8 @@ namespace fakeit {
 
         template<typename Head>
         typename std::enable_if< //
+                !std::is_same<AnyMatcher, typename naked_type<Head>::type>::value &&
+                !IsMatcherCreatorTypeCompatible<typename naked_type<Head>::type>::value &&
                 std::is_constructible<NakedArgType<index>, Head&&>::value, void> //
         ::type CollectMatchers(Head &&value) {
 
@@ -52,7 +60,7 @@ namespace fakeit {
 
         template<typename Head>
         typename std::enable_if< //
-                naked_type<Head>::type::template IsTypeCompatible<NakedArgType<index>>::value, void> //
+                IsMatcherCreatorTypeCompatible<typename naked_type<Head>::type>::value, void> //
         ::type CollectMatchers(Head &&creator) {
             TypedMatcher<NakedArgType<index>> *d = creator.template createMatcher<NakedArgType<index>>();
             _matchers.push_back(d);

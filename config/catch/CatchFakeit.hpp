@@ -3,73 +3,22 @@
 #include "fakeit/DefaultFakeit.hpp"
 #include "fakeit/EventHandler.hpp"
 #include "mockutils/to_string.hpp"
-#if __has_include("catch2/catch.hpp")
-#   include <catch2/catch.hpp>
-#elif __has_include("catch2/catch_all.hpp")
-#   include <catch2/catch_assertion_result.hpp>
-#   include <catch2/catch_test_macros.hpp>
-#elif __has_include("catch_amalgamated.hpp")
-#   include <catch_amalgamated.hpp>
+#if defined __has_include
+#   if __has_include("catch2/catch.hpp")
+#      include <catch2/catch.hpp>
+#   elif __has_include("catch2/catch_all.hpp")
+#      include <catch2/catch_assertion_result.hpp>
+#      include <catch2/catch_test_macros.hpp>
+#   elif __has_include("catch_amalgamated.hpp")
+#      include <catch_amalgamated.hpp>
+#   else
+#      include <catch.hpp>
+#   endif
 #else
-#   include <catch.hpp>
+#   include <catch2/catch.hpp>
 #endif
 
 namespace fakeit {
-
-    struct VerificationException : public FakeitException {
-        virtual ~VerificationException() = default;
-
-        void setFileInfo(const char *file, int line, const char *callingMethod) {
-            _file = file;
-            _callingMethod = callingMethod;
-            _line = line;
-        }
-
-        const char *file() const {
-            return _file;
-        }
-
-        int line() const {
-            return _line;
-        }
-
-        const char *callingMethod() const {
-            return _callingMethod;
-        }
-
-    private:
-        const char *_file;
-        int _line;
-        const char *_callingMethod;
-    };
-
-    struct NoMoreInvocationsVerificationException : public VerificationException {
-
-        NoMoreInvocationsVerificationException(std::string format) : //
-                _format(format) { //
-        }
-
-        virtual std::string what() const override {
-            return _format;
-        }
-
-    private:
-        std::string _format;
-    };
-
-    struct SequenceVerificationException : public VerificationException {
-        SequenceVerificationException(const std::string &format) : //
-                _format(format) //
-        {
-        }
-
-        virtual std::string what() const override {
-            return _format;
-        }
-
-    private:
-        std::string _format;
-    };
 
     class CatchAdapter : public EventHandler {
         EventFormatter &_formatter;
