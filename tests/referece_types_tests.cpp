@@ -40,6 +40,8 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 		virtual int& returnIntByRef() = 0;
 		virtual AbstractType& returnAbstractTypeByRef() = 0;
 		virtual ConcreteType& returnConcreteTypeByRef() = 0;
+		virtual const std::string& returnStringByConstRef() = 0;
+
 	};
 
 	ReferenceTypesTests() :
@@ -47,6 +49,7 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 					//
 					TEST(ReferenceTypesTests::implicitStubbingDefaultReturnValues),
 					TEST(ReferenceTypesTests::explicitStubbingDefualtReturnValues),
+					TEST(ReferenceTypesTests::explicitStubbingReturnValuesForceCopyForConstRef),
 					TEST(ReferenceTypesTests::explicitStubbingDefualtReturnValues_with_AlwaysReturn),
 					TEST(ReferenceTypesTests::explicitStubbingReturnValues_with_AlwaysReturn),
 					TEST(ReferenceTypesTests::explicitStubbingReturnValues_by_assignment),
@@ -119,6 +122,30 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 
 		// For abstract types return a reference to nullptr.
 		ASSERT_EQUAL(&c, &i.returnAbstractTypeByRef());
+	}
+
+	void explicitStubbingReturnValuesForceCopyForConstRef() {
+		Mock<ReferenceInterface> mock;
+
+		// add scope so we know we are copying
+		{
+			std::string a_string{"myString"};
+			int num{ 1 };
+
+			// explicit copy here
+			When(Method(mock, returnStringByConstRef)).Return<std::string>(a_string);
+			When(Method(mock, returnIntByRef)).Return<int>(num);
+
+			// modify now so know whether or not is was copied
+			a_string = "modified";
+			num = 2;
+		}
+
+		ReferenceInterface& i = mock.get();
+
+		// Fundamental types are initiated to 0.
+		ASSERT_EQUAL("myString", i.returnStringByConstRef());
+		ASSERT_EQUAL(1, i.returnIntByRef());
 	}
 
 	void explicitStubbingReturnValues_with_AlwaysReturn() {

@@ -50,7 +50,7 @@ namespace fakeit {
         template<typename U = R>
         typename std::enable_if<!std::is_reference<U>::value, MethodStubbingProgress<R, arglist...> &>::type
         Return(const R &r) {
-            return Do([r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
+            return Do([r](const typename fakeit::test_arg<arglist>::type...) mutable -> R { return r; });
         }
 
         template<typename U = R>
