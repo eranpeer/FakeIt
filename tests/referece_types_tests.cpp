@@ -48,9 +48,9 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 			tpunit::TestFixture(
 					//
 					TEST(ReferenceTypesTests::implicitStubbingDefaultReturnValues),
-					TEST(ReferenceTypesTests::explicitStubbingDefualtReturnValues),
+					TEST(ReferenceTypesTests::explicitStubbingDefaultReturnValues),
 					TEST(ReferenceTypesTests::explicitStubbingReturnValuesForceCopyForConstRef),
-					TEST(ReferenceTypesTests::explicitStubbingDefualtReturnValues_with_AlwaysReturn),
+					TEST(ReferenceTypesTests::explicitStubbingDefaultReturnValues_with_AlwaysReturn),
 					TEST(ReferenceTypesTests::explicitStubbingReturnValues_with_AlwaysReturn),
 					TEST(ReferenceTypesTests::explicitStubbingReturnValues_by_assignment),
 					TEST(ReferenceTypesTests::explicitStubbingReturnValues)
@@ -80,7 +80,7 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 		ASSERT_EQUAL(nullptr, &i.returnAbstractTypeByRef());
 	}
 
-	void explicitStubbingDefualtReturnValues() {
+	void explicitStubbingDefaultReturnValues() {
 		Mock<ReferenceInterface> mock;		//
 		When(Method(mock,returnIntByRef)).Return(); //
 		When(Method(mock,returnAbstractTypeByRef)).Return(); //
@@ -196,7 +196,7 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 		ASSERT_EQUAL(&c, &i.returnAbstractTypeByRef());
 	}
 
-	void explicitStubbingDefualtReturnValues_with_AlwaysReturn() {
+	void explicitStubbingDefaultReturnValues_with_AlwaysReturn() {
 		Mock<ReferenceInterface> mock;
 		When(Method(mock,returnIntByRef)).AlwaysReturn();
 		When(Method(mock,returnAbstractTypeByRef)).AlwaysReturn(); //
