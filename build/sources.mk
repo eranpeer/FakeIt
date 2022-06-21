@@ -11,6 +11,7 @@ CPP_SRCS += \
 	gcc_stubbing_multiple_values_tests.cpp \
 	gcc_type_info_tests.cpp \
 	miscellaneous_tests.cpp \
+	move_only_return_tests.cpp \
 	msc_stubbing_multiple_values_tests.cpp \
 	msc_type_info_tests.cpp \
 	overloadded_methods_tests.cpp \
