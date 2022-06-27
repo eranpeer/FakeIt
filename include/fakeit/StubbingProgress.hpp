@@ -63,7 +63,7 @@ namespace fakeit {
         typename std::enable_if<!std::is_copy_constructible<U>::value, MethodStubbingProgress<R, arglist...>&>::type
             Return(R&& r) {
             auto store = std::make_shared<R>(std::move(r)); // work around for lack of move_only_funciton( C++23) - move into a shared_ptr which we can copy.
-            return Do([store = std::move(store)](const typename fakeit::test_arg<arglist>::type...) mutable -> R {
+            return Do([store](const typename fakeit::test_arg<arglist>::type...) mutable -> R {
                 return std::move(*store);
             });
         }
