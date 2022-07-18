@@ -49,7 +49,7 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 					//
 					TEST(ReferenceTypesTests::implicitStubbingDefaultReturnValues),
 					TEST(ReferenceTypesTests::explicitStubbingDefaultReturnValues),
-					TEST(ReferenceTypesTests::explicitStubbingReturnValuesForceCopyForRef),
+					TEST(ReferenceTypesTests::explicitStubbingReturnCopyValuesForRef),
 					TEST(ReferenceTypesTests::explicitStubbingReturnValuesCopyForRRef),
 					TEST(ReferenceTypesTests::explicitStubbingDefaultReturnValues_with_AlwaysReturn),
 					TEST(ReferenceTypesTests::explicitStubbingReturnValues_with_AlwaysReturn),
@@ -125,7 +125,7 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 		ASSERT_EQUAL(&c, &i.returnAbstractTypeByRef());
 	}
 
-	void explicitStubbingReturnValuesForceCopyForRef() {
+	void explicitStubbingReturnCopyValuesForRef() {
 		Mock<ReferenceInterface> mock;
 
 		// add scope so we know we are copying
@@ -134,8 +134,8 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 			int num{ 1 };
 
 			// explicit copy here
-			When(Method(mock, returnStringByConstRef)).Return<std::string>(a_string);
-			When(Method(mock, returnIntByRef)).Return<int>(num);
+			When(Method(mock, returnStringByConstRef)).ReturnCopy(a_string);
+			When(Method(mock, returnIntByRef)).ReturnCopy(num);
 
 			// modify now so know whether or not is was copied
 			a_string = "modified";
