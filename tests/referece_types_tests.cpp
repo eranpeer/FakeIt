@@ -53,6 +53,7 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 					TEST(ReferenceTypesTests::explicitStubbingReturnValuesCopyForRRef),
 					TEST(ReferenceTypesTests::explicitStubbingDefaultReturnValues_with_AlwaysReturn),
 					TEST(ReferenceTypesTests::explicitStubbingReturnValues_with_AlwaysReturn),
+					TEST(ReferenceTypesTests::explicitStubbingReturnCopyValuesForRef_with_AlwaysReturn),
 					TEST(ReferenceTypesTests::explicitStubbingReturnCopyValues_with_AlwaysReturn),
 					TEST(ReferenceTypesTests::explicitStubbingReturnValues_by_assignment),
 					TEST(ReferenceTypesTests::explicitStubbingReturnValues)
@@ -158,6 +159,24 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 			When(Method(mock, returnStringByRef)).Return(std::string{ "myRefString" });
 			When(Method(mock, returnConcreteTypeByRef)).Return(ConcreteType(20));
 			When(Method(mock, returnIntByRef)).Return(1);
+		}
+
+		ReferenceInterface& i = mock.get();
+
+		EXPECT_EQUAL("myConstRefString", i.returnStringByConstRef());
+		EXPECT_EQUAL("myRefString", i.returnStringByRef());
+		EXPECT_EQUAL(ConcreteType(20), i.returnConcreteTypeByRef());
+		EXPECT_EQUAL(1, i.returnIntByRef());
+	}
+
+	void explicitStubbingReturnCopyValuesForRef_with_AlwaysReturn() {
+		Mock<ReferenceInterface> mock;
+
+		{
+			When(Method(mock, returnStringByConstRef)).AlwaysReturn(std::string{ "myConstRefString" });
+			When(Method(mock, returnStringByRef)).AlwaysReturn(std::string{ "myRefString" });
+			When(Method(mock, returnConcreteTypeByRef)).AlwaysReturn(ConcreteType(20));
+			When(Method(mock, returnIntByRef)).AlwaysReturn(1);
 		}
 
 		ReferenceInterface& i = mock.get();
