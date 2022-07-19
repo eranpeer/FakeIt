@@ -101,6 +101,11 @@ namespace fakeit {
             return AlwaysDo([&r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
         }
 
+        typename std::enable_if<std::is_copy_constructible<R>::value, void>::type
+            AlwaysReturnCopy(const R& r) {
+            return AlwaysDo([r](const typename fakeit::test_arg<arglist>::type...) mutable -> R { return r; });
+        }
+
         MethodStubbingProgress<R, arglist...> &
         Return() {
             return Do([](const typename fakeit::test_arg<arglist>::type...) -> R { return DefaultValue<R>::value(); });

@@ -53,6 +53,7 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 					TEST(ReferenceTypesTests::explicitStubbingReturnValuesCopyForRRef),
 					TEST(ReferenceTypesTests::explicitStubbingDefaultReturnValues_with_AlwaysReturn),
 					TEST(ReferenceTypesTests::explicitStubbingReturnValues_with_AlwaysReturn),
+					TEST(ReferenceTypesTests::explicitStubbingReturnCopyValues_with_AlwaysReturn),
 					TEST(ReferenceTypesTests::explicitStubbingReturnValues_by_assignment),
 					TEST(ReferenceTypesTests::explicitStubbingReturnValues)
 					//
@@ -189,6 +190,33 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 
 		// For abstract types return a reference to nullptr.
 		ASSERT_EQUAL(&c, &i.returnAbstractTypeByRef());
+	}
+	
+	void explicitStubbingReturnCopyValues_with_AlwaysReturn() {
+		Mock<ReferenceInterface> mock;
+
+		// add scope so we know we are copying
+		{
+			std::string a_string{ "myString" };
+			int num{ 1 };
+
+			// explicit copy here
+			When(Method(mock, returnStringByConstRef)).AlwaysReturnCopy(a_string);
+			When(Method(mock, returnIntByRef)).AlwaysReturnCopy(num);
+
+			// modify now so know whether or not is was copied
+			a_string = "modified";
+			num = 2;
+		}
+
+		ReferenceInterface& i = mock.get();
+
+		// Fundamental types are initiated to 0.
+		EXPECT_EQUAL("myString", i.returnStringByConstRef());
+		EXPECT_EQUAL("myString", i.returnStringByConstRef());
+
+		EXPECT_EQUAL(1, i.returnIntByRef());
+		EXPECT_EQUAL(1, i.returnIntByRef());
 	}
 
 	void explicitStubbingReturnValues_by_assignment() {
