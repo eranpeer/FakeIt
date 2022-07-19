@@ -106,10 +106,10 @@ namespace fakeit {
         }
 
         template<typename T>
-        typename std::enable_if<!std::is_reference<T>::value&& std::is_copy_constructible<T>::value, MethodStubbingProgress<R, arglist...>&>::type
+        typename std::enable_if<!std::is_reference<T>::value && std::is_copy_constructible<T>::value, void>::type
             AlwaysReturn(T&& t) {
             auto store = std::make_shared<T>(std::move(t));
-            return Do([store](const typename fakeit::test_arg<arglist>::type...) mutable->R
+            return AlwaysDo([store](const typename fakeit::test_arg<arglist>::type...) mutable -> R
                 {
                     return *store;
                 });
