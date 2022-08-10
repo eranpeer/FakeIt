@@ -373,7 +373,7 @@ namespace fakeit {
             template <typename ...T, int ...N>
             static void CheckPositions(const std::tuple<ArgValue<T, N>...> arg_vals)
             {
-#if __cplusplus >= 201402L
+#if __cplusplus >= 201402L && !defined(_WIN32)
                 static_assert(std::get<tuple_index>(arg_vals).pos <= max_index,
                     "Argument index out of range");
                 ArgValidator<max_index, tuple_index - 1>::CheckPositions(arg_vals);
