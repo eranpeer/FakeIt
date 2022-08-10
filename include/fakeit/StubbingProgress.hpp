@@ -425,7 +425,7 @@ namespace fakeit {
         struct ArgLocator {
             template<typename current_arg, typename ...T, int ...N>
             static void AssignArg(current_arg &&p, std::tuple<ArgValue<T, N>...> arg_vals) {
-#if __cplusplus >= 201703L
+#if __cplusplus >= 201703L && !defined (_WIN32)
                 if constexpr (std::get<check_index>(arg_vals).pos == arg_index)
                     GetArg(std::forward<current_arg>(p)) = std::get<check_index>(arg_vals).value;
 #else
@@ -436,7 +436,7 @@ namespace fakeit {
                     ArgLocator<arg_index, check_index - 1>::AssignArg(std::forward<current_arg>(p), arg_vals);
             }
 
-#if __cplusplus < 201703L
+#if __cplusplus < 201703L || defined (_WIN32)
         private:
             template<typename T, typename U>
             static
