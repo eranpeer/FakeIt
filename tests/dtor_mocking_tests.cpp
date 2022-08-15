@@ -17,7 +17,8 @@ struct DtorMocking : tpunit::TestFixture
 {
 	DtorMocking() :
 		TestFixture(
-            TEST(DtorMocking::mock_virtual_dtor_with_fake), //
+            TEST(DtorMocking::mock_virtual_dtor_no_mocks),
+            TEST(DtorMocking::mock_virtual_dtor_with_fake),
 		    TEST(DtorMocking::mock_virtual_dtor_with_when),
             TEST(DtorMocking::mock_virtual_dtor_by_assignment),
             TEST(DtorMocking::call_dtor_without_delete),
@@ -35,6 +36,12 @@ struct DtorMocking : tpunit::TestFixture
 	{
 		virtual ~SomeInterface() = default;
 	};
+
+	void mock_virtual_dtor_no_mocks() {
+		Mock<SomeInterface> mock;
+		SomeInterface* i = &(mock.get());
+		delete i;
+	}
 
 	void mock_virtual_dtor_with_fake() {
 		Mock<SomeInterface> mock;

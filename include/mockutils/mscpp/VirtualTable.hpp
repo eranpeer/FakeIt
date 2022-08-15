@@ -193,6 +193,8 @@ namespace fakeit {
             for (unsigned int i = 0; i < size; i++) {
                 _firstMethod[i] = from.getMethod(i);
             }
+            if (VTUtils::hasVirtualDestructor<C>())
+                setCookie(dtorCookieIndex, from.getCookie(dtorCookieIndex));
         }
 
         VirtualTable() : VirtualTable(buildVTArray()) {
@@ -215,7 +217,7 @@ namespace fakeit {
             C *c = (C *) this;
             C &cRef = *c;
             auto vt = VirtualTable<C, baseclasses...>::getVTable(cRef);
-            void *dtorPtr = vt.getCookie(numOfCookies - 1); // read the last cookie
+            void *dtorPtr = vt.getCookie(dtorCookieIndex);
             void(*method)(C *) = reinterpret_cast<void (*)(C *)>(dtorPtr);
             method(c);
             return 0;
@@ -230,7 +232,7 @@ namespace fakeit {
             void *dtorPtr = union_cast<void *>(&VirtualTable<C, baseclasses...>::dtor);
             unsigned int index = VTUtils::getDestructorOffset<C>();
             _firstMethod[index] = dtorPtr;
-            setCookie(numOfCookies - 1, method); // use the last cookie
+            setCookie(dtorCookieIndex, method);
         }
 
         unsigned int getSize() {
@@ -257,6 +259,7 @@ namespace fakeit {
         static_assert(sizeof(unsigned int (SimpleType::*)()) == sizeof(unsigned int (C::*)()),
             "Can't mock a type with multiple inheritance or with non-polymorphic base class");
         static const unsigned int numOfCookies = 3;
+        static const unsigned int dtorCookieIndex = numOfCookies - 1; // use the last cookie
 
         static void **buildVTArray() {
             int vtSize = VTUtils::getVTSize<C>();
