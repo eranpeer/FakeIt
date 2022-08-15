@@ -494,12 +494,11 @@ struct BasicVerification: tpunit::TestFixture {
 		Verify(2 * call_to_proc2_with_state_1);
 	}
 
+	struct AnInterface {
+		virtual int func(int) = 0;
+	};
 
 	void verifyWithUnverifiedFunctor(){
-
-        struct AnInterface {
-            virtual int func(int) = 0;
-        };
         
         Mock<AnInterface> mock;
 		When(Method(mock, func)).AlwaysReturn(0);
@@ -523,10 +522,6 @@ struct BasicVerification: tpunit::TestFixture {
 
 	void verifyWithUnverifiedFunctorWithUsing() {
 
-		struct AnInterface {
-			virtual int func(int) = 0;
-		};
-
 		Mock<AnInterface> mock;
 		When(Method(mock, func)).AlwaysReturn(0);
 
@@ -538,10 +533,6 @@ struct BasicVerification: tpunit::TestFixture {
 	}
 
 	void verificationProgressShouldBeConvertibleToBool(){
-
-		struct AnInterface {
-			virtual int func(int) = 0;
-		};
 
 		Mock<AnInterface> mock;
 		When(Method(mock, func)).AlwaysReturn(0);
@@ -574,11 +565,13 @@ struct BasicVerification: tpunit::TestFixture {
 		ASSERT_FALSE(!VerifyNoOtherInvocations(Method(mock, func)));
     }
 
+	struct RefEater {
+		virtual int eatChar(char*) = 0;
+		virtual int eatConstChar(const char*) = 0;
+	};
+
 	void verificationShouldTolerateNullString(){
-		struct RefEater {
-			virtual int eatChar(char*) = 0;
-			virtual int eatConstChar(const char*) = 0;
-		};
+
 
 		Mock<RefEater> mock;
 		When( Method( mock, eatChar ) ).AlwaysReturn( 0 );
