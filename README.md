@@ -161,6 +161,18 @@ run the tests by typing
 ./fakeit_tests.exe
 ```
 
+### Building fakeit - Using vcpkg
+
+You can download and install fakeit using the [vcpkg](https://github.com/Microsoft/vcpkg) dependency manager:
+
+    git clone https://github.com/Microsoft/vcpkg.git
+    cd vcpkg
+    ./bootstrap-vcpkg.sh
+    ./vcpkg integrate install
+    ./vcpkg install fakeit
+
+The fakeit port in vcpkg is kept up to date by Microsoft team members and community contributors. If the version is out of date, please [create an issue or pull request](https://github.com/Microsoft/vcpkg) on the vcpkg repository.
+
 #### Building and Running the Unit Tests with Visual Studio 
 Open the tests/all_tests.vcxproj project file with Visual Studio. Build and run the project and check the test results. 
 
