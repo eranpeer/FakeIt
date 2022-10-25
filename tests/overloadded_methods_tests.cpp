@@ -40,7 +40,11 @@ struct OverloadedMethods : tpunit::TestFixture {
             tpunit::TestFixture(
                     TEST(OverloadedMethods::stub_overloaded_methods),
                     TEST(OverloadedMethods::stub_const_overloaded_methods),
-                    TEST(OverloadedMethods::stub_overloaded_methods_with_templates<SomeInterface>)) {
+                    TEST(OverloadedMethods::stub_overloaded_methods_with_templates<SomeInterface>),
+                    TEST(OverloadedMethods::stub_modern_overloaded_methods),
+                    TEST(OverloadedMethods::stub_modern_rref_overloaded_method),
+                    TEST(OverloadedMethods::stub_modern_constrref_overloaded_method)
+            ) {
     }
 
     void stub_overloaded_methods() {
@@ -92,6 +96,48 @@ struct OverloadedMethods : tpunit::TestFixture {
         When(OverloadedMethod(mock, func, int(int))).AlwaysReturn(45);
 
         ASSERT_EQUAL(45, i.func(1));
+    }
+
+    struct SomeModernCppInterface {
+
+        virtual int func() & = 0;
+
+        virtual int func(int) & = 0;
+        virtual int func(int) const& = 0;
+        virtual int func(int) && = 0;
+        virtual int func(int) const&& = 0;
+    };
+
+    void stub_modern_overloaded_methods() {
+
+        Mock<SomeModernCppInterface> mock;
+        When(RefOverloadedMethod(mock, func, int(int))).Return(1);
+        When(ConstRefOverloadedMethod(mock, func, int(int))).Return(2);
+
+        SomeModernCppInterface& refObj = mock.get();
+        const SomeModernCppInterface& refConstObj = mock.get();
+
+        ASSERT_EQUAL(1, refObj.func(1));
+        ASSERT_EQUAL(2, refConstObj.func(1));
+    }
+
+    void stub_modern_rref_overloaded_method() {
+
+        Mock<SomeModernCppInterface> mock;
+        When(RRefOverloadedMethod(mock, func, int(int))).Return(3);
+
+        SomeModernCppInterface& refObj = mock.get();
+
+        ASSERT_EQUAL(3, std::move(refObj).func(1));
+    }
+
+    void stub_modern_constrref_overloaded_method() {
+
+        Mock<SomeModernCppInterface> mock;
+        When(ConstRRefOverloadedMethod(mock, func, int(int))).Return(4);
+
+        const SomeModernCppInterface& refConstObj = mock.get();
+        ASSERT_EQUAL(4, std::move(refConstObj).func(1));
     }
 
 } __OverloadedMethods;
