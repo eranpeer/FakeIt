@@ -449,7 +449,7 @@ namespace fakeit {
         private:
             template<typename T, typename U>
             static
-            typename std::enable_if<std::is_convertible<U, decltype(GetArg(std::declval<T>()))>::value, void>::type
+            typename std::enable_if<std::is_assignable<decltype(GetArg(std::declval<T>())), U>::value, void>::type
             Set(T &&p, U &&v)
             {
                 GetArg(std::forward<T>(p)) = v;
@@ -457,7 +457,7 @@ namespace fakeit {
 
             template<typename T, typename U>
             static
-            typename std::enable_if<!std::is_convertible<U, decltype(GetArg(std::declval<T>()))>::value, void>::type
+            typename std::enable_if<!std::is_assignable<decltype(GetArg(std::declval<T>())), U>::value, void>::type
             Set(T &&, U &&)
             {
                 throw std::logic_error("ReturnAndSet(): Invalid value type");
