@@ -78,6 +78,7 @@
     <ClInclude Include="..\include\mockutils\TupleDispatcher.hpp" />
     <ClInclude Include="..\include\mockutils\TuplePrinter.hpp" />
     <ClInclude Include="..\include\mockutils\type_utils.hpp" />
+    <ClInclude Include="..\include\mockutils\constexpr_hash.hpp" />
     <ClInclude Include="..\include\mockutils\union_cast.hpp" />
     <ClInclude Include="..\include\mockutils\VirtualOffestSelector.hpp" />
     <ClInclude Include="..\include\mockutils\VirtualTable.hpp" />

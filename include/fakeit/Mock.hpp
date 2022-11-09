@@ -57,55 +57,55 @@ namespace fakeit {
             return impl.stubDataMember(member, ctorargs...);
         }
 
-        template<int id, typename R, typename T, typename ... arglist, class = typename std::enable_if<
+        template<size_t id, typename R, typename T, typename ... arglist, class = typename std::enable_if<
                 !std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
         MockingContext<R, arglist...> stub(R (T::*vMethod)(arglist...) const) {
             auto methodWithoutConstVolatile = reinterpret_cast<R (T::*)(arglist...)>(vMethod);
             return impl.template stubMethod<id>(methodWithoutConstVolatile);
         }
 
-        template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
+        template<size_t id, typename R, typename T, typename... arglist, class = typename std::enable_if<
                 !std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
         MockingContext<R, arglist...> stub(R(T::*vMethod)(arglist...) volatile) {
             auto methodWithoutConstVolatile = reinterpret_cast<R(T::*)(arglist...)>(vMethod);
             return impl.template stubMethod<id>(methodWithoutConstVolatile);
         }
 
-        template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
+        template<size_t id, typename R, typename T, typename... arglist, class = typename std::enable_if<
                 !std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
         MockingContext<R, arglist...> stub(R(T::*vMethod)(arglist...) const volatile) {
             auto methodWithoutConstVolatile = reinterpret_cast<R(T::*)(arglist...)>(vMethod);
             return impl.template stubMethod<id>(methodWithoutConstVolatile);
         }
 
-        template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
+        template<size_t id, typename R, typename T, typename... arglist, class = typename std::enable_if<
                 !std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
         MockingContext<R, arglist...> stub(R(T::*vMethod)(arglist...)) {
             return impl.template stubMethod<id>(vMethod);
         }
 
-        template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
+        template<size_t id, typename R, typename T, typename... arglist, class = typename std::enable_if<
                 std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
         MockingContext<void, arglist...> stub(R(T::*vMethod)(arglist...) const) {
             auto methodWithoutConstVolatile = reinterpret_cast<void (T::*)(arglist...)>(vMethod);
             return impl.template stubMethod<id>(methodWithoutConstVolatile);
         }
 
-        template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
+        template<size_t id, typename R, typename T, typename... arglist, class = typename std::enable_if<
                 std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
         MockingContext<void, arglist...> stub(R(T::*vMethod)(arglist...) volatile) {
             auto methodWithoutConstVolatile = reinterpret_cast<void (T::*)(arglist...)>(vMethod);
             return impl.template stubMethod<id>(methodWithoutConstVolatile);
         }
 
-        template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
+        template<size_t id, typename R, typename T, typename... arglist, class = typename std::enable_if<
                 std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
         MockingContext<void, arglist...> stub(R(T::*vMethod)(arglist...) const volatile) {
             auto methodWithoutConstVolatile = reinterpret_cast<void (T::*)(arglist...)>(vMethod);
             return impl.template stubMethod<id>(methodWithoutConstVolatile);
         }
 
-        template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
+        template<size_t id, typename R, typename T, typename... arglist, class = typename std::enable_if<
                 std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
         MockingContext<void, arglist...> stub(R(T::*vMethod)(arglist...)) {
             auto methodWithoutConstVolatile = reinterpret_cast<void (T::*)(arglist...)>(vMethod);
