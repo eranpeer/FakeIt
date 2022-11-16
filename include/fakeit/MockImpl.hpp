@@ -180,7 +180,7 @@ namespace fakeit {
                     : MethodMockingContextBase<R, arglist...>(mock), _vMethod(vMethod) {
             }
 
-            template<typename ... T, typename std::enable_if<all_true<std::is_copy_constructible<T>::value...>::value, int>::type = 0>
+            template<typename ... T, typename std::enable_if<all_true<smart_is_copy_constructible<T>::value...>::value, int>::type = 0>
             std::function<R(arglist&...)> getOriginalMethodCopyArgsInternal(int) {
                 void *mPtr = MethodMockingContextBase<R, arglist...>::_mock.getOriginalMethod(_vMethod);
                 C * instance = &(MethodMockingContextBase<R, arglist...>::_mock.get());

@@ -91,4 +91,13 @@ namespace fakeit {
         typedef R(__thiscall *type)(void *, arglist...);
 #endif
     };
+
+    template<template<typename>class test, typename T>
+    struct smart_test : test<T> {};
+
+    template<template<typename>class test, typename T, typename A>
+    struct smart_test <test, std::vector<T, A>> : smart_test < test, T> {};
+
+    template<typename T>
+    using smart_is_copy_constructible = smart_test < std::is_copy_constructible, T >;
 }
