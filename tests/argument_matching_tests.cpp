@@ -56,7 +56,9 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 					TEST(ArgumentMatchingTests::format_StrGe), TEST(ArgumentMatchingTests::format_StrLt),
 					TEST(ArgumentMatchingTests::format_StrLe), TEST(ArgumentMatchingTests::format_StrNe),
 					TEST(ArgumentMatchingTests::format_ApproxEq),
-					TEST(ArgumentMatchingTests::test_move_only_type), TEST(ArgumentMatchingTests::test_no_slicing)
+					TEST(ArgumentMatchingTests::test_move_only_type),
+					TEST(ArgumentMatchingTests::test_vector_of_move_only_type),
+				    TEST(ArgumentMatchingTests::test_no_slicing)
 			) //
 	{
 	}
@@ -83,6 +85,7 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
         virtual int func3(const int&) = 0;
         virtual int strfunc(const char*) = 0;
 		virtual int funcMoveOnly(MoveOnlyType) = 0;
+		virtual int funcVectorOfMoveOnly(std::vector<MoveOnlyType>) = 0;
 		virtual int funcSlicing(const Base&) = 0;
 		virtual int funcDouble(double) = 0;
 		virtual int funcWeirdType(int, WeirdType) = 0;
@@ -617,6 +620,14 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 
 		Verify(Method(mock, funcMoveOnly).Using(MoveOnlyType{10})).Once();
 		Verify(Method(mock, funcMoveOnly).Using(Eq(MoveOnlyType{20}))).Once();
+	}
+
+	void test_vector_of_move_only_type() {
+		Mock<SomeInterface> mock;
+
+		// Won't compile if parameters of type std::vector<MoveOnly> are not handled properly
+		Fake(Method(mock, funcVectorOfMoveOnly));
+		When(Method(mock, funcVectorOfMoveOnly));
 	}
 
 	void test_no_slicing() {
