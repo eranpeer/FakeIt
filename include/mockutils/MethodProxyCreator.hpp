@@ -9,14 +9,14 @@
 namespace fakeit {
 
     struct InvocationHandlerCollection {
-        static const unsigned int VT_COOKIE_INDEX = 0;
+        static const unsigned int VtCookieIndex = 0;
 
         virtual Destructible *getInvocatoinHandlerPtrById(unsigned int index) = 0;
 
         static InvocationHandlerCollection *getInvocationHandlerCollection(void *instance) {
             VirtualTableBase &vt = VirtualTableBase::getVTable(instance);
             InvocationHandlerCollection *invocationHandlerCollection = (InvocationHandlerCollection *) vt.getCookie(
-                    InvocationHandlerCollection::VT_COOKIE_INDEX);
+                    InvocationHandlerCollection::VtCookieIndex);
             return invocationHandlerCollection;
         }
     };

@@ -48,7 +48,7 @@ namespace fakeit {
             reference->AddRef();
         }
 
-        ~smart_ptr() THROWS {
+        ~smart_ptr() FAKEIT_THROWS {
             if (reference->Release() == 0) {
                 delete reference;
                 delete pData;

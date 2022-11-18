@@ -27,7 +27,7 @@ namespace fakeit {
 
         struct Matcher {
 
-            virtual ~Matcher() THROWS {
+            virtual ~Matcher() FAKEIT_THROWS {
             }
 
             virtual bool matches(Invocation &invocation) = 0;

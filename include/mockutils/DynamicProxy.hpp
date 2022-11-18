@@ -71,7 +71,7 @@ namespace fakeit {
                 _offsets(VTUtils::getVTSize<C>()),
                 _invocationHandlers(_methodMocks, _offsets) {
             _cloneVt.copyFrom(originalVtHandle.restore());
-            _cloneVt.setCookie(InvocationHandlerCollection::VT_COOKIE_INDEX, &_invocationHandlers);
+            _cloneVt.setCookie(InvocationHandlerCollection::VtCookieIndex, &_invocationHandlers);
             getFake().setVirtualTable(_cloneVt);
         }
 
@@ -137,21 +137,21 @@ namespace fakeit {
             return ptr.get();
         }
 
-        template<typename DATA_TYPE, typename ... arglist>
-        void stubDataMember(DATA_TYPE C::*member, const arglist &... initargs) {
-            DATA_TYPE C::*theMember = (DATA_TYPE C::*) member;
+        template<typename DataType, typename ... arglist>
+        void stubDataMember(DataType C::*member, const arglist &... initargs) {
+            DataType C::*theMember = (DataType C::*) member;
             C &mock = get();
-            DATA_TYPE *memberPtr = &(mock.*theMember);
+            DataType *memberPtr = &(mock.*theMember);
             _members.push_back(
-                    std::shared_ptr<DataMemeberWrapper < DATA_TYPE, arglist...> >
-                    {new DataMemeberWrapper < DATA_TYPE, arglist...>(memberPtr,
+                    std::shared_ptr<DataMemeberWrapper < DataType, arglist...> >
+                    {new DataMemeberWrapper < DataType, arglist...>(memberPtr,
                     initargs...)});
         }
 
-        template<typename DATA_TYPE>
-        void getMethodMocks(std::vector<DATA_TYPE> &into) const {
+        template<typename DataType>
+        void getMethodMocks(std::vector<DataType> &into) const {
             for (std::shared_ptr<Destructible> ptr : _methodMocks) {
-                DATA_TYPE p = dynamic_cast<DATA_TYPE>(ptr.get());
+                DataType p = dynamic_cast<DataType>(ptr.get());
                 if (p) {
                     into.push_back(p);
                 }
@@ -165,19 +165,19 @@ namespace fakeit {
 
     private:
 
-        template<typename DATA_TYPE, typename ... arglist>
+        template<typename DataType, typename ... arglist>
         class DataMemeberWrapper : public Destructible {
         private:
-            DATA_TYPE *dataMember;
+            DataType *dataMember;
         public:
-            DataMemeberWrapper(DATA_TYPE *dataMem, const arglist &... initargs) :
+            DataMemeberWrapper(DataType *dataMem, const arglist &... initargs) :
                     dataMember(dataMem) {
-                new(dataMember) DATA_TYPE{initargs ...};
+                new(dataMember) DataType{initargs ...};
             }
 
             ~DataMemeberWrapper() override
             {
-                dataMember->~DATA_TYPE();
+                dataMember->~DataType();
             }
         };
 
@@ -208,10 +208,10 @@ namespace fakeit {
             _offsets[methodProxy.getOffset()] = methodProxy.getId();
         }
 
-        template<typename DATA_TYPE>
-        DATA_TYPE getMethodMock(unsigned int offset) {
+        template<typename DataType>
+        DataType getMethodMock(unsigned int offset) {
             std::shared_ptr<Destructible> ptr = _methodMocks[offset];
-            return dynamic_cast<DATA_TYPE>(ptr.get());
+            return dynamic_cast<DataType>(ptr.get());
         }
 
         template<typename BaseClass>

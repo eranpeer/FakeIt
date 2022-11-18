@@ -6,7 +6,7 @@
 namespace fakeit {
 
     struct VerificationException : public std::exception {
-        virtual ~VerificationException() NO_THROWS{};
+        virtual ~VerificationException() FAKEIT_NO_THROWS{};
         
         VerificationException(std::string format) : //
             _format(format) { //
@@ -33,7 +33,7 @@ namespace fakeit {
             return _callingMethod;
         }
 
-        const char* what() const NO_THROWS override{
+        const char* what() const FAKEIT_NO_THROWS override{
             return _format.c_str();
         }
     private:

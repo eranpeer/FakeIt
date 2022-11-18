@@ -44,7 +44,7 @@ namespace fakeit {
     template<typename R, typename ... arglist>
     struct MethodStubbingProgress {
 
-        virtual ~MethodStubbingProgress() THROWS {
+        virtual ~MethodStubbingProgress() FAKEIT_THROWS {
         }
 
         template<typename U = R>
@@ -229,7 +229,7 @@ namespace fakeit {
     template<typename ... arglist>
     struct MethodStubbingProgress<void, arglist...> {
 
-        virtual ~MethodStubbingProgress() THROWS {
+        virtual ~MethodStubbingProgress() FAKEIT_THROWS {
         }
 
         MethodStubbingProgress<void, arglist...> &Return() {
