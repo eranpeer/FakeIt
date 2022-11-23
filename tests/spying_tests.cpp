@@ -28,7 +28,8 @@ struct SpyingTests: tpunit::TestFixture {
 					TEST(SpyingTests::callMemberMethodFromSpiedMethod),
 					TEST(SpyingTests::spyThenVerifyValueArg),
 					TEST(SpyingTests::spyMoveOnlyPassedByRef),
-					TEST(SpyingTests::spyMoveOnlyWithoutVerify)
+					TEST(SpyingTests::spyMoveOnlyWithoutVerify),
+					TEST(SpyingTests::spyVectorOfMoveOnly)
 					//
 	) //
 	{
@@ -61,6 +62,13 @@ struct SpyingTests: tpunit::TestFixture {
 		}
 		virtual int funcMoveOnlyByValue(MoveOnlyType arg) {
 			return arg.i_;
+		}
+		virtual int funcVectorOfMoveOnly(std::vector<MoveOnlyType> arg) {
+			int sum = 0;
+			for (const auto& moveOnly : arg){
+				sum += moveOnly.i_;
+			}
+			return sum;
 		}
 	};
 
@@ -241,6 +249,15 @@ struct SpyingTests: tpunit::TestFixture {
 
 		SomeClass &i = mock.get();
 		ASSERT_EQUAL(10, i.funcMoveOnlyByValue(MoveOnlyType{10}));
+	}
+
+	void spyVectorOfMoveOnly()
+	{
+		SomeClass obj;
+		Mock<SomeClass> mock(obj);
+		
+		// Won't compile if parameters of type std::vector<MoveOnly> are not handled properly
+		SpyWithoutVerify(Method(mock, funcVectorOfMoveOnly));
 	}
 
 } __SpyingTests;

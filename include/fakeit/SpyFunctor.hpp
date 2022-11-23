@@ -19,7 +19,7 @@ namespace fakeit {
     class SpyFunctor {
     private:
 
-        template<typename R, typename ... arglist, typename std::enable_if<all_true<std::is_copy_constructible<arglist>::value...>::value, int>::type = 0>
+        template<typename R, typename ... arglist, typename std::enable_if<all_true<smart_is_copy_constructible<arglist>::value...>::value, int>::type = 0>
         void spy(const SpyingContext<R, arglist...> &root, int) {
             SpyingContext<R, arglist...> &rootWithoutConst = const_cast<SpyingContext<R, arglist...> &>(root);
             auto methodFromOriginalVT = rootWithoutConst.getOriginalMethodCopyArgs();
