@@ -24,7 +24,7 @@ namespace fakeit {
 
             friend class WhenFunctor;
 
-            virtual ~StubbingChange() THROWS {
+            virtual ~StubbingChange() FAKEIT_THROWS {
 
                 if (UncaughtException()) {
                     return;

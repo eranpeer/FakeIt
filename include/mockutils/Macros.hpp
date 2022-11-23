@@ -8,9 +8,9 @@
 #pragma once
 
 #if defined (__GNUG__) || _MSC_VER >= 1900
-#define THROWS noexcept(false)
-#define NO_THROWS noexcept(true)
+#define FAKEIT_THROWS noexcept(false)
+#define FAKEIT_NO_THROWS noexcept(true)
 #elif defined (_MSC_VER)
-#define THROWS throw(...)
-#define NO_THROWS
+#define FAKEIT_THROWS throw(...)
+#define FAKEIT_NO_THROWS
 #endif

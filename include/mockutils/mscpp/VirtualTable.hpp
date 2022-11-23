@@ -26,7 +26,7 @@ namespace fakeit {
         char name[8];
     };
 
-    struct PMD {
+    struct PmdInfo {
 
         /************************************************************************/
         /* member displacement.
@@ -39,7 +39,7 @@ namespace fakeit {
         int pdisp;  // vtable displacement
         int vdisp;  //displacement inside vtable
 
-        PMD() :
+        PmdInfo() :
                 mdisp(0), pdisp(-1), vdisp(0) {
         }
     };
@@ -51,7 +51,7 @@ namespace fakeit {
 
         const std::type_info *pTypeDescriptor; //type descriptor of the class
         dword_ numContainedBases; //number of nested classes following in the Base Class Array
-        struct PMD where;        //pointer-to-member displacement info
+        struct PmdInfo where;        //pointer-to-member displacement info
         dword_ attributes;        //flags, usually 0
     };
 
@@ -91,11 +91,11 @@ namespace fakeit {
             numBaseClasses++;
         }
 
-        template<typename head, typename B1, typename... tail>
+        template<typename head, typename Base1, typename... tail>
         void addBaseClass() {
-            static_assert(std::is_base_of<B1, head>::value, "invalid inheritance list");
+            static_assert(std::is_base_of<Base1, head>::value, "invalid inheritance list");
             addBaseClass<head>();
-            addBaseClass<B1, tail...>();
+            addBaseClass<Base1, tail...>();
         }
 
     };

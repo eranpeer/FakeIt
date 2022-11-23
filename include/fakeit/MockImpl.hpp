@@ -37,7 +37,7 @@ namespace fakeit {
             fake->getVirtualTable().setCookie(1, this);
         }
 
-        virtual ~MockImpl() NO_THROWS {
+        virtual ~MockImpl() FAKEIT_NO_THROWS {
             _proxy.detach();
         }
 
@@ -83,10 +83,10 @@ namespace fakeit {
             return _fakeit;
         }
 
-        template<class DATA_TYPE, typename T, typename ... arglist, class = typename std::enable_if<std::is_base_of<T, C>::value>::type>
-        DataMemberStubbingRoot<C, DATA_TYPE> stubDataMember(DATA_TYPE T::*member, const arglist &... ctorargs) {
+        template<class DataType, typename T, typename ... arglist, class = typename std::enable_if<std::is_base_of<T, C>::value>::type>
+        DataMemberStubbingRoot<C, DataType> stubDataMember(DataType T::*member, const arglist &... ctorargs) {
             _proxy.stubDataMember(member, ctorargs...);
-            return DataMemberStubbingRoot<T, DATA_TYPE>();
+            return DataMemberStubbingRoot<T, DataType>();
         }
 
         template<int id, typename R, typename T, typename ... arglist, class = typename std::enable_if<std::is_base_of<T, C>::value>::type>

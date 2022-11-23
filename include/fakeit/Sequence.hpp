@@ -25,7 +25,7 @@ namespace fakeit {
         Sequence() {
         }
 
-        virtual ~Sequence() THROWS {
+        virtual ~Sequence() FAKEIT_THROWS {
         }
 
     public:
