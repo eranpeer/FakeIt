@@ -8,6 +8,7 @@
 
 #include "tpunit++.hpp"
 #include "fakeit.hpp"
+#include "testutils.hpp"
 
 using namespace fakeit;
 
@@ -255,9 +256,10 @@ struct SpyingTests: tpunit::TestFixture {
 	{
 		SomeClass obj;
 		Mock<SomeClass> mock(obj);
-		
-		// Won't compile if parameters of type std::vector<MoveOnly> are not handled properly
-		SpyWithoutVerify(Method(mock, funcVectorOfMoveOnly));
+		SpyWithoutVerify(Method(mock,funcVectorOfMoveOnly));
+
+		SomeClass &i = mock.get();
+		ASSERT_EQUAL(15, i.funcVectorOfMoveOnly(testutils::multi_emplace(std::vector<MoveOnlyType>{}, MoveOnlyType{5}, MoveOnlyType{10})));
 	}
 
 } __SpyingTests;

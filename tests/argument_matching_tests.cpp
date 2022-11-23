@@ -9,6 +9,7 @@
 #include <string>
 #include "tpunit++.hpp"
 #include "fakeit.hpp"
+#include "testutils.hpp"
 
 using namespace fakeit;
 
@@ -58,7 +59,7 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 					TEST(ArgumentMatchingTests::format_ApproxEq),
 					TEST(ArgumentMatchingTests::test_move_only_type),
 					TEST(ArgumentMatchingTests::test_vector_of_move_only_type),
-				    TEST(ArgumentMatchingTests::test_no_slicing)
+					TEST(ArgumentMatchingTests::test_no_slicing)
 			) //
 	{
 	}
@@ -625,9 +626,15 @@ struct ArgumentMatchingTests: tpunit::TestFixture {
 	void test_vector_of_move_only_type() {
 		Mock<SomeInterface> mock;
 
-		// Won't compile if parameters of type std::vector<MoveOnly> are not handled properly
-		Fake(Method(mock, funcVectorOfMoveOnly));
-		When(Method(mock, funcVectorOfMoveOnly));
+		When(Method(mock, funcVectorOfMoveOnly).Using(testutils::multi_emplace(std::vector<MoveOnlyType>{}, MoveOnlyType{10}, MoveOnlyType{15}))).Return(1);
+		When(Method(mock, funcVectorOfMoveOnly).Using(Eq(testutils::multi_emplace(std::vector<MoveOnlyType>{}, MoveOnlyType{20}, MoveOnlyType{25})))).Return(2);
+
+		SomeInterface& i = mock.get();
+		ASSERT_EQUAL(1, i.funcVectorOfMoveOnly(testutils::multi_emplace(std::vector<MoveOnlyType>{}, MoveOnlyType{10}, MoveOnlyType{15})));
+		ASSERT_EQUAL(2, i.funcVectorOfMoveOnly(testutils::multi_emplace(std::vector<MoveOnlyType>{}, MoveOnlyType{20}, MoveOnlyType{25})));
+
+		Verify(Method(mock, funcVectorOfMoveOnly).Using(testutils::multi_emplace(std::vector<MoveOnlyType>{}, MoveOnlyType{10}, MoveOnlyType{15}))).Once();
+		Verify(Method(mock, funcVectorOfMoveOnly).Using(Eq(testutils::multi_emplace(std::vector<MoveOnlyType>{}, MoveOnlyType{20}, MoveOnlyType{25})))).Once();
 	}
 
 	void test_no_slicing() {
