@@ -44,7 +44,10 @@ namespace fakeit {
             Action<R, arglist...> &action = dynamic_cast<Action<R, arglist...> &>(destructable);
             std::function<void()> finallyClause = [&]() -> void {
                 if (action.isDone())
+                {
                     _recordedActions.erase(_recordedActions.begin());
+                    _usedActions.push_back(destructablePtr);
+                }
             };
             Finally onExit(finallyClause);
             return action.invoke(args);
@@ -76,11 +79,13 @@ namespace fakeit {
 
         void clear() {
             _recordedActions.clear();
+            _usedActions.clear();
             auto actionPtr = std::shared_ptr<Destructible> {new NoMoreRecordedAction()};
             _recordedActions.push_back(actionPtr);
         }
 
         std::vector<std::shared_ptr<Destructible>> _recordedActions;
+        std::vector<std::shared_ptr<Destructible>> _usedActions;
     };
 
 }
