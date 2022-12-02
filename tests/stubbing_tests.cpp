@@ -54,7 +54,8 @@ struct BasicStubbing : tpunit::TestFixture {
                     TEST(BasicStubbing::exception_while_stubbing_should_cancel_stubbing),
                     TEST(BasicStubbing::reset_mock_to_initial_state),
                     TEST(BasicStubbing::use_lambda_to_change_ptr_value),
-                    TEST(BasicStubbing::assingOutParamsWithLambda)
+                    TEST(BasicStubbing::assingOutParamsWithLambda),
+                    TEST(BasicStubbing::return_ref_to_lambda_member)
             ) {
     }
 
@@ -63,6 +64,7 @@ struct BasicStubbing : tpunit::TestFixture {
         virtual int funcNoArgs() = 0;
         virtual int funcRefArgs(int*, int&) = 0;
         virtual int funcConvertibleNotAssignableArgs1(int&, int) = 0;
+        virtual const std::string& funcRetStrRef(int) = 0;
 
         virtual void proc(int) = 0;
         virtual void procRefArgs(int*, int&) = 0;
@@ -866,6 +868,19 @@ struct BasicStubbing : tpunit::TestFixture {
         int result;
         ASSERT_TRUE(mock.get().apiMethod(1,2,result));
         ASSERT_EQUAL(3,result);
+    }
+
+    void return_ref_to_lambda_member() {
+        Mock<SomeInterface> mock;
+
+        std::string str = "Some string with some content inside it";
+        When(Method(mock, funcRetStrRef)).Do([str](int) -> const std::string& {return str;});
+
+        SomeInterface& i = mock.get();
+
+        ASSERT_EQUAL(i.funcRetStrRef(5), str);
+
+        ASSERT_THROW(i.funcRetStrRef(5), fakeit::UnexpectedMethodCallException);
     }
 
 } __BasicStubbing;
