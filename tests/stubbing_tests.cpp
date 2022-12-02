@@ -26,6 +26,7 @@ struct BasicStubbing : tpunit::TestFixture {
                     TEST(BasicStubbing::stub_a_function_to_return_a_specified_value_always),
                     TEST(BasicStubbing::stub_a_function_to_set_specified_values_once),
                     TEST(BasicStubbing::stub_a_function_to_set_specified_values_once_form2),
+                    TEST(BasicStubbing::stub_a_function_to_set_specified_values_once_form2_convertible_not_assignable),
                     TEST(BasicStubbing::stub_a_function_to_set_specified_value_with_incompatible_params),
                     TEST(BasicStubbing::stub_a_function_to_set_specified_values_always),
                     TEST(BasicStubbing::stub_a_function_to_set_specified_values_always_form2),
@@ -53,7 +54,8 @@ struct BasicStubbing : tpunit::TestFixture {
                     TEST(BasicStubbing::exception_while_stubbing_should_cancel_stubbing),
                     TEST(BasicStubbing::reset_mock_to_initial_state),
                     TEST(BasicStubbing::use_lambda_to_change_ptr_value),
-                    TEST(BasicStubbing::assingOutParamsWithLambda)
+                    TEST(BasicStubbing::assingOutParamsWithLambda),
+                    TEST(BasicStubbing::return_ref_to_lambda_member)
             ) {
     }
 
@@ -61,10 +63,13 @@ struct BasicStubbing : tpunit::TestFixture {
         virtual int func(int) = 0;
         virtual int funcNoArgs() = 0;
         virtual int funcRefArgs(int*, int&) = 0;
+        virtual int funcConvertibleNotAssignableArgs1(int&, int) = 0;
+        virtual const std::string& funcRetStrRef(int) = 0;
 
         virtual void proc(int) = 0;
         virtual void procRefArgs(int*, int&) = 0;
         virtual void procIncompatArgs(std::string&, std::vector<std::string>&) = 0;
+        virtual void procConvertibleNotAssignableArgs2(int, int&) = 0;
     };
 
     void calling_an_unstubbed_method_should_raise_UnmockedMethodCallException() {
@@ -194,6 +199,28 @@ struct BasicStubbing : tpunit::TestFixture {
             i.procRefArgs(&a, b);
             FAIL();
         } catch (fakeit::UnexpectedMethodCallException &) {
+        }
+    }
+
+    void stub_a_function_to_set_specified_values_once_form2_convertible_not_assignable() {
+        Mock<SomeInterface> mock;
+        When(Method(mock, funcConvertibleNotAssignableArgs1)).ReturnAndSet(1, _1 <= 3);
+        When(Method(mock, procConvertibleNotAssignableArgs2)).ReturnAndSet(_2 <= 5);
+
+        SomeInterface &i = mock.get();
+
+        {
+            int a1 = 0, b1 = 0;
+            ASSERT_EQUAL(1, i.funcConvertibleNotAssignableArgs1(a1, b1));
+            ASSERT_EQUAL(3, a1);
+            ASSERT_EQUAL(0, b1);
+        }
+
+        {
+            int a2 = 0, b2 = 0;
+            i.procConvertibleNotAssignableArgs2(a2, b2);
+            ASSERT_EQUAL(0, a2);
+            ASSERT_EQUAL(5, b2);
         }
     }
 
@@ -765,20 +792,21 @@ struct BasicStubbing : tpunit::TestFixture {
         ASSERT_THROW(i.func(1), fakeit::UnexpectedMethodCallException);
     }
 
+    struct SomeInterfaceWithMember {
+        virtual int func(int) = 0;
+
+        std::string state;
+    };
 
     void reset_mock_to_initial_state() {
-        struct SomeInterface {
-            virtual int func(int) = 0;
 
-            std::string state;
-        };
 
-        Mock<SomeInterface> mock;
+        Mock<SomeInterfaceWithMember> mock;
         When(Method(mock, func)).AlwaysReturn(0);
         When(Method(mock, func).Using(1)).AlwaysReturn(1);
-        mock.Stub(&SomeInterface::state, "state");
+        mock.Stub(&SomeInterfaceWithMember::state, "state");
 //
-        SomeInterface &i = mock.get();
+        SomeInterfaceWithMember&i = mock.get();
         i.func(0);
         i.func(1);
 
@@ -805,10 +833,12 @@ struct BasicStubbing : tpunit::TestFixture {
         Verify(Method(mock, func).Using(1));
     }
 
+    struct SomeClass {
+        virtual int foo(int* x) = 0;
+    };
+
     void use_lambda_to_change_ptr_value() {
-        struct SomeClass {
-            virtual int foo(int *x) = 0;
-        };
+
 
         Mock<SomeClass> mock;
 
@@ -823,10 +853,11 @@ struct BasicStubbing : tpunit::TestFixture {
         ASSERT_EQUAL(1, num);
     }
 
-    void assingOutParamsWithLambda(){
-        struct ApiInterface {
-            virtual bool apiMethod(int a, int b, int& result) = 0;
-        };
+    struct ApiInterface {
+        virtual bool apiMethod(int a, int b, int& result) = 0;
+    };
+	void assingOutParamsWithLambda(){
+
 
         Mock<ApiInterface> mock;
         When(Method(mock, apiMethod)).AlwaysDo([](int a, int b, int& result) {
@@ -837,6 +868,19 @@ struct BasicStubbing : tpunit::TestFixture {
         int result;
         ASSERT_TRUE(mock.get().apiMethod(1,2,result));
         ASSERT_EQUAL(3,result);
+    }
+
+    void return_ref_to_lambda_member() {
+        Mock<SomeInterface> mock;
+
+        std::string str = "Some string with some content inside it";
+        When(Method(mock, funcRetStrRef)).Do([str](int) -> const std::string& {return str;});
+
+        SomeInterface& i = mock.get();
+
+        ASSERT_EQUAL(i.funcRetStrRef(5), str);
+
+        ASSERT_THROW(i.funcRetStrRef(5), fakeit::UnexpectedMethodCallException);
     }
 
 } __BasicStubbing;

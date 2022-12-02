@@ -44,7 +44,7 @@ namespace fakeit {
     template<typename R, typename ... arglist>
     struct MethodStubbingProgress {
 
-        virtual ~MethodStubbingProgress() THROWS {
+        virtual ~MethodStubbingProgress() FAKEIT_THROWS {
         }
 
         template<typename U = R>
@@ -57,6 +57,15 @@ namespace fakeit {
         typename std::enable_if<std::is_reference<U>::value, MethodStubbingProgress<R, arglist...> &>::type
         Return(const R &r) {
             return Do([&r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
+        }
+
+        template<typename U = R>
+        typename std::enable_if<!std::is_copy_constructible<U>::value, MethodStubbingProgress<R, arglist...>&>::type
+            Return(R&& r) {
+            auto store = std::make_shared<R>(std::move(r)); // work around for lack of move_only_funciton( C++23) - move into a shared_ptr which we can copy.
+            return Do([store](const typename fakeit::test_arg<arglist>::type...) mutable -> R {
+                return std::move(*store);
+            });
         }
 
         MethodStubbingProgress<R, arglist...> &
@@ -220,7 +229,7 @@ namespace fakeit {
     template<typename ... arglist>
     struct MethodStubbingProgress<void, arglist...> {
 
-        virtual ~MethodStubbingProgress() THROWS {
+        virtual ~MethodStubbingProgress() FAKEIT_THROWS {
         }
 
         MethodStubbingProgress<void, arglist...> &Return() {
@@ -373,7 +382,7 @@ namespace fakeit {
             template <typename ...T, int ...N>
             static void CheckPositions(const std::tuple<ArgValue<T, N>...> arg_vals)
             {
-#if __cplusplus >= 201402L
+#if __cplusplus >= 201402L && !defined(_WIN32)
                 static_assert(std::get<tuple_index>(arg_vals).pos <= max_index,
                     "Argument index out of range");
                 ArgValidator<max_index, tuple_index - 1>::CheckPositions(arg_vals);
@@ -425,7 +434,7 @@ namespace fakeit {
         struct ArgLocator {
             template<typename current_arg, typename ...T, int ...N>
             static void AssignArg(current_arg &&p, std::tuple<ArgValue<T, N>...> arg_vals) {
-#if __cplusplus >= 201703L
+#if __cplusplus >= 201703L && !defined (_WIN32)
                 if constexpr (std::get<check_index>(arg_vals).pos == arg_index)
                     GetArg(std::forward<current_arg>(p)) = std::get<check_index>(arg_vals).value;
 #else
@@ -436,11 +445,11 @@ namespace fakeit {
                     ArgLocator<arg_index, check_index - 1>::AssignArg(std::forward<current_arg>(p), arg_vals);
             }
 
-#if __cplusplus < 201703L
+#if __cplusplus < 201703L || defined (_WIN32)
         private:
             template<typename T, typename U>
             static
-            typename std::enable_if<std::is_convertible<U, decltype(GetArg(std::declval<T>()))>::value, void>::type
+            typename std::enable_if<std::is_assignable<decltype(GetArg(std::declval<T>())), U>::value, void>::type
             Set(T &&p, U &&v)
             {
                 GetArg(std::forward<T>(p)) = v;
@@ -448,7 +457,7 @@ namespace fakeit {
 
             template<typename T, typename U>
             static
-            typename std::enable_if<!std::is_convertible<U, decltype(GetArg(std::declval<T>()))>::value, void>::type
+            typename std::enable_if<!std::is_assignable<decltype(GetArg(std::declval<T>())), U>::value, void>::type
             Set(T &&, U &&)
             {
                 throw std::logic_error("ReturnAndSet(): Invalid value type");

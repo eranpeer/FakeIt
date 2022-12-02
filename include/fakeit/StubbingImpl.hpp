@@ -21,7 +21,7 @@
 
 namespace fakeit {
 
-    template<typename C, typename DATA_TYPE>
+    template<typename C, typename DataType>
     class DataMemberStubbingRoot {
     private:
         //DataMemberStubbingRoot & operator= (const DataMemberStubbingRoot & other) = delete;
@@ -30,7 +30,7 @@ namespace fakeit {
 
         DataMemberStubbingRoot() = default;
 
-        void operator=(const DATA_TYPE&) {
+        void operator=(const DataType&) {
         }
     };
 

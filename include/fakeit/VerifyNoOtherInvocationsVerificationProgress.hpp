@@ -22,7 +22,7 @@ namespace fakeit {
 
             friend class VerifyNoOtherInvocationsVerificationProgress;
 
-            ~VerifyNoOtherInvocationsExpectation() THROWS {
+            ~VerifyNoOtherInvocationsExpectation() FAKEIT_THROWS {
                 if (UncaughtException()) {
                     return;
                 }
@@ -109,7 +109,7 @@ namespace fakeit {
     public:
 
 
-        ~VerifyNoOtherInvocationsVerificationProgress() THROWS {
+        ~VerifyNoOtherInvocationsVerificationProgress() FAKEIT_THROWS {
         };
 
         VerifyNoOtherInvocationsVerificationProgress setFileInfo(const char * file, int line,

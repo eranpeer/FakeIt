@@ -8,6 +8,7 @@
 
 #include "tpunit++.hpp"
 #include "fakeit.hpp"
+#include "testutils.hpp"
 
 using namespace fakeit;
 
@@ -28,7 +29,8 @@ struct SpyingTests: tpunit::TestFixture {
 					TEST(SpyingTests::callMemberMethodFromSpiedMethod),
 					TEST(SpyingTests::spyThenVerifyValueArg),
 					TEST(SpyingTests::spyMoveOnlyPassedByRef),
-					TEST(SpyingTests::spyMoveOnlyWithoutVerify)
+					TEST(SpyingTests::spyMoveOnlyWithoutVerify),
+					TEST(SpyingTests::spyVectorOfMoveOnly)
 					//
 	) //
 	{
@@ -61,6 +63,13 @@ struct SpyingTests: tpunit::TestFixture {
 		}
 		virtual int funcMoveOnlyByValue(MoveOnlyType arg) {
 			return arg.i_;
+		}
+		virtual int funcVectorOfMoveOnly(std::vector<MoveOnlyType> arg) {
+			int sum = 0;
+			for (const auto& moveOnly : arg){
+				sum += moveOnly.i_;
+			}
+			return sum;
 		}
 	};
 
@@ -241,6 +250,16 @@ struct SpyingTests: tpunit::TestFixture {
 
 		SomeClass &i = mock.get();
 		ASSERT_EQUAL(10, i.funcMoveOnlyByValue(MoveOnlyType{10}));
+	}
+
+	void spyVectorOfMoveOnly()
+	{
+		SomeClass obj;
+		Mock<SomeClass> mock(obj);
+		SpyWithoutVerify(Method(mock,funcVectorOfMoveOnly));
+
+		SomeClass &i = mock.get();
+		ASSERT_EQUAL(15, i.funcVectorOfMoveOnly(testutils::multi_emplace(std::vector<MoveOnlyType>{}, MoveOnlyType{5}, MoveOnlyType{10})));
 	}
 
 } __SpyingTests;

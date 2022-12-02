@@ -120,6 +120,12 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup>
+    <ClCompile Condition="'$(PlatformToolset)' != 'v140'">
+      <AdditionalOptions>/Zc:__cplusplus</AdditionalOptions>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="argument_matching_tests.cpp" />
     <ClCompile Include="cpp14_tests.cpp" />
@@ -133,6 +139,7 @@
     <ClCompile Include="gcc_stubbing_multiple_values_tests.cpp" />
     <ClCompile Include="gcc_type_info_tests.cpp" />
     <ClCompile Include="miscellaneous_tests.cpp" />
+    <ClCompile Include="move_only_return_tests.cpp" />
     <ClCompile Include="msc_stubbing_multiple_values_tests.cpp" />
     <ClCompile Include="msc_type_info_tests.cpp" />
     <ClCompile Include="overloadded_methods_tests.cpp" />

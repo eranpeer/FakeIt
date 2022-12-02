@@ -15,7 +15,7 @@ namespace fakeit {
 
     template<typename C>
     struct MockObject {
-        virtual ~MockObject() THROWS { };
+        virtual ~MockObject() FAKEIT_THROWS { };
 
         virtual C &get() = 0;
 

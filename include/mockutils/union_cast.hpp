@@ -15,13 +15,13 @@
 
 namespace fakeit {
 
-    template<typename TARGET, typename SOURCE>
+    template<typename TargetType, typename SourceType>
     FAKEIT_NO_DEVIRTUALIZE_ATTR
-    TARGET union_cast(SOURCE source) {
-        //static_assert(sizeof(TARGET) == sizeof(SOURCE), "can't convert");
+    TargetType union_cast(SourceType source) {
+        //static_assert(sizeof(TargetType) == sizeof(SourceType), "can't convert");
         union {
-            SOURCE source;
-            TARGET target;
+            SourceType source;
+            TargetType target;
         } u;
         u.source = source;
         return u.target;

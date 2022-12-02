@@ -48,11 +48,11 @@ namespace fakeit {
     class is_ostreamable {
         struct no {};
 #if defined(_MSC_VER) && _MSC_VER < 1900
-        template <typename T1>
-        static decltype(operator<<(std::declval<std::ostream&>(), std::declval<const T1>())) test(std::ostream &s, const T1 &t);
+        template <typename Type1>
+        static decltype(operator<<(std::declval<std::ostream&>(), std::declval<const Type1>())) test(std::ostream &s, const Type1 &t);
 #else
-        template <typename T1>
-        static auto test(std::ostream &s, const T1 &t) -> decltype(s << t);
+        template <typename Type1>
+        static auto test(std::ostream &s, const Type1 &t) -> decltype(s << t);
 #endif
         static no test(...);
     public:
@@ -91,4 +91,13 @@ namespace fakeit {
         typedef R(__thiscall *type)(void *, arglist...);
 #endif
     };
+
+    template<template<typename>class test, typename T>
+    struct smart_test : test<T> {};
+
+    template<template<typename>class test, typename T, typename A>
+    struct smart_test <test, std::vector<T, A>> : smart_test < test, T> {};
+
+    template<typename T>
+    using smart_is_copy_constructible = smart_test < std::is_copy_constructible, T >;
 }

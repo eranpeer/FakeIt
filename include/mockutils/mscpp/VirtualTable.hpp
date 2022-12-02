@@ -26,7 +26,7 @@ namespace fakeit {
         char name[8];
     };
 
-    struct PMD {
+    struct PmdInfo {
 
         /************************************************************************/
         /* member displacement.
@@ -39,7 +39,7 @@ namespace fakeit {
         int pdisp;  // vtable displacement
         int vdisp;  //displacement inside vtable
 
-        PMD() :
+        PmdInfo() :
                 mdisp(0), pdisp(-1), vdisp(0) {
         }
     };
@@ -51,7 +51,7 @@ namespace fakeit {
 
         const std::type_info *pTypeDescriptor; //type descriptor of the class
         dword_ numContainedBases; //number of nested classes following in the Base Class Array
-        struct PMD where;        //pointer-to-member displacement info
+        struct PmdInfo where;        //pointer-to-member displacement info
         dword_ attributes;        //flags, usually 0
     };
 
@@ -91,11 +91,11 @@ namespace fakeit {
             numBaseClasses++;
         }
 
-        template<typename head, typename B1, typename... tail>
+        template<typename head, typename Base1, typename... tail>
         void addBaseClass() {
-            static_assert(std::is_base_of<B1, head>::value, "invalid inheritance list");
+            static_assert(std::is_base_of<Base1, head>::value, "invalid inheritance list");
             addBaseClass<head>();
-            addBaseClass<B1, tail...>();
+            addBaseClass<Base1, tail...>();
         }
 
     };
@@ -193,6 +193,8 @@ namespace fakeit {
             for (unsigned int i = 0; i < size; i++) {
                 _firstMethod[i] = from.getMethod(i);
             }
+            if (VTUtils::hasVirtualDestructor<C>())
+                setCookie(dtorCookieIndex, from.getCookie(dtorCookieIndex));
         }
 
         VirtualTable() : VirtualTable(buildVTArray()) {
@@ -215,7 +217,7 @@ namespace fakeit {
             C *c = (C *) this;
             C &cRef = *c;
             auto vt = VirtualTable<C, baseclasses...>::getVTable(cRef);
-            void *dtorPtr = vt.getCookie(numOfCookies - 1); // read the last cookie
+            void *dtorPtr = vt.getCookie(dtorCookieIndex);
             void(*method)(C *) = reinterpret_cast<void (*)(C *)>(dtorPtr);
             method(c);
             return 0;
@@ -230,7 +232,7 @@ namespace fakeit {
             void *dtorPtr = union_cast<void *>(&VirtualTable<C, baseclasses...>::dtor);
             unsigned int index = VTUtils::getDestructorOffset<C>();
             _firstMethod[index] = dtorPtr;
-            setCookie(numOfCookies - 1, method); // use the last cookie
+            setCookie(dtorCookieIndex, method);
         }
 
         unsigned int getSize() {
@@ -257,6 +259,7 @@ namespace fakeit {
         static_assert(sizeof(unsigned int (SimpleType::*)()) == sizeof(unsigned int (C::*)()),
             "Can't mock a type with multiple inheritance or with non-polymorphic base class");
         static const unsigned int numOfCookies = 3;
+        static const unsigned int dtorCookieIndex = numOfCookies - 1; // use the last cookie
 
         static void **buildVTArray() {
             int vtSize = VTUtils::getVTSize<C>();

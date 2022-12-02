@@ -12,7 +12,7 @@ namespace fakeit {
 
         friend class SequenceVerificationProgress;
 
-        ~SequenceVerificationExpectation() THROWS {
+        ~SequenceVerificationExpectation() FAKEIT_THROWS {
             if (UncaughtException()) {
                 return;
             }

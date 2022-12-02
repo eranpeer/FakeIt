@@ -71,10 +71,12 @@ struct Cpp14Tests : tpunit::TestFixture {
 				), fakeit::VerificationException);
 	}
 
+	struct ApiInterface {
+		virtual bool apiMethod(int a, int b, int& result) = 0;
+	};
+
     void assingOutParamsWithLambdaCpp14(){
-        struct ApiInterface {
-            virtual bool apiMethod(int a, int b, int& result) = 0;
-        };
+
 
         Mock<ApiInterface> mock;
         When(Method(mock, apiMethod)).AlwaysDo([](auto a, auto b, auto& result) {

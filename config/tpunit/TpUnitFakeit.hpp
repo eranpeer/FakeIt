@@ -27,11 +27,11 @@ public:
 				: _msg(msg) {
 		}
 
-        const char* what() const NO_THROWS override{
+        const char* what() const FAKEIT_NO_THROWS override{
             return _msg.c_str();
         }
 
-        virtual ~AssertionException() NO_THROWS {}
+        virtual ~AssertionException() FAKEIT_NO_THROWS {}
 	};
 
 	virtual ~TpUnitAdapter() = default;
