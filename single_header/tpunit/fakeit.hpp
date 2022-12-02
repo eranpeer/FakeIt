@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2022-06-12 10:26:07.827575
+ *  Generated: 2022-12-02 14:52:45.548308
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -18,11 +18,11 @@
 #include <vector>
 #include <stdexcept>
 #if defined (__GNUG__) || _MSC_VER >= 1900
-#define THROWS noexcept(false)
-#define NO_THROWS noexcept(true)
+#define FAKEIT_THROWS noexcept(false)
+#define FAKEIT_NO_THROWS noexcept(true)
 #elif defined (_MSC_VER)
-#define THROWS throw(...)
-#define NO_THROWS
+#define FAKEIT_THROWS throw(...)
+#define FAKEIT_NO_THROWS
 #endif
 #include <typeinfo>
 #include <unordered_set>
@@ -70,11 +70,11 @@ namespace fakeit {
     class is_ostreamable {
         struct no {};
 #if defined(_MSC_VER) && _MSC_VER < 1900
-        template <typename T1>
-        static decltype(operator<<(std::declval<std::ostream&>(), std::declval<const T1>())) test(std::ostream &s, const T1 &t);
+        template <typename Type1>
+        static decltype(operator<<(std::declval<std::ostream&>(), std::declval<const Type1>())) test(std::ostream &s, const Type1 &t);
 #else
-        template <typename T1>
-        static auto test(std::ostream &s, const T1 &t) -> decltype(s << t);
+        template <typename Type1>
+        static auto test(std::ostream &s, const Type1 &t) -> decltype(s << t);
 #endif
         static no test(...);
     public:
@@ -113,6 +113,15 @@ namespace fakeit {
         typedef R(__thiscall *type)(void *, arglist...);
 #endif
     };
+
+    template<template<typename>class test, typename T>
+    struct smart_test : test<T> {};
+
+    template<template<typename>class test, typename T, typename A>
+    struct smart_test <test, std::vector<T, A>> : smart_test < test, T> {};
+
+    template<typename T>
+    using smart_is_copy_constructible = smart_test < std::is_copy_constructible, T >;
 }
 #include <typeinfo>
 #include <tuple>
@@ -127,7 +136,7 @@ namespace fakeit {
 
     template<typename C>
     struct MockObject {
-        virtual ~MockObject() THROWS { };
+        virtual ~MockObject() FAKEIT_THROWS { };
 
         virtual C &get() = 0;
 
@@ -189,7 +198,7 @@ namespace fakeit {
 
         struct Matcher {
 
-            virtual ~Matcher() THROWS {
+            virtual ~Matcher() FAKEIT_THROWS {
             }
 
             virtual bool matches(Invocation &invocation) = 0;
@@ -415,13 +424,13 @@ namespace fakeit {
 	struct ActualInvocationsContainer {
 		virtual void clear() = 0;
 
-		virtual ~ActualInvocationsContainer() NO_THROWS { }
+		virtual ~ActualInvocationsContainer() FAKEIT_NO_THROWS { }
 	};
 
     struct ActualInvocationsSource {
         virtual void getActualInvocations(std::unordered_set<fakeit::Invocation *> &into) const = 0;
 
-        virtual ~ActualInvocationsSource() NO_THROWS { }
+        virtual ~ActualInvocationsSource() FAKEIT_NO_THROWS { }
     };
 
     struct InvocationsSourceProxy : public ActualInvocationsSource {
@@ -498,7 +507,7 @@ namespace fakeit {
         Sequence() {
         }
 
-        virtual ~Sequence() THROWS {
+        virtual ~Sequence() FAKEIT_THROWS {
         }
 
     public:
@@ -1126,11 +1135,11 @@ namespace fakeit {
     };
 }
 #if defined (__GNUG__) || _MSC_VER >= 1900
-#define THROWS noexcept(false)
-#define NO_THROWS noexcept(true)
+#define FAKEIT_THROWS noexcept(false)
+#define FAKEIT_NO_THROWS noexcept(true)
 #elif defined (_MSC_VER)
-#define THROWS throw(...)
-#define NO_THROWS
+#define FAKEIT_THROWS throw(...)
+#define FAKEIT_NO_THROWS
 #endif
 #include <string>
 #include <sstream>
@@ -1169,11 +1178,11 @@ public:
 				: _msg(msg) {
 		}
 
-        const char* what() const NO_THROWS override{
+        const char* what() const FAKEIT_NO_THROWS override{
             return _msg.c_str();
         }
 
-        virtual ~AssertionException() NO_THROWS {}
+        virtual ~AssertionException() FAKEIT_NO_THROWS {}
 	};
 
 	virtual ~TpUnitAdapter() = default;
@@ -5272,13 +5281,13 @@ namespace fakeit {
 
 namespace fakeit {
 
-    template<typename TARGET, typename SOURCE>
+    template<typename TargetType, typename SourceType>
     FAKEIT_NO_DEVIRTUALIZE_ATTR
-    TARGET union_cast(SOURCE source) {
+    TargetType union_cast(SourceType source) {
 
         union {
-            SOURCE source;
-            TARGET target;
+            SourceType source;
+            TargetType target;
         } u;
         u.source = source;
         return u.target;
@@ -5369,7 +5378,7 @@ namespace fakeit {
         char name[8];
     };
 
-    struct PMD {
+    struct PmdInfo {
 
 
 
@@ -5378,7 +5387,7 @@ namespace fakeit {
         int pdisp;
         int vdisp;
 
-        PMD() :
+        PmdInfo() :
                 mdisp(0), pdisp(-1), vdisp(0) {
         }
     };
@@ -5390,7 +5399,7 @@ namespace fakeit {
 
         const std::type_info *pTypeDescriptor;
         dword_ numContainedBases;
-        struct PMD where;
+        struct PmdInfo where;
         dword_ attributes;
     };
 
@@ -5430,11 +5439,11 @@ namespace fakeit {
             numBaseClasses++;
         }
 
-        template<typename head, typename B1, typename... tail>
+        template<typename head, typename Base1, typename... tail>
         void addBaseClass() {
-            static_assert(std::is_base_of<B1, head>::value, "invalid inheritance list");
+            static_assert(std::is_base_of<Base1, head>::value, "invalid inheritance list");
             addBaseClass<head>();
-            addBaseClass<B1, tail...>();
+            addBaseClass<Base1, tail...>();
         }
 
     };
@@ -5532,6 +5541,8 @@ namespace fakeit {
             for (unsigned int i = 0; i < size; i++) {
                 _firstMethod[i] = from.getMethod(i);
             }
+            if (VTUtils::hasVirtualDestructor<C>())
+                setCookie(dtorCookieIndex, from.getCookie(dtorCookieIndex));
         }
 
         VirtualTable() : VirtualTable(buildVTArray()) {
@@ -5554,7 +5565,7 @@ namespace fakeit {
             C *c = (C *) this;
             C &cRef = *c;
             auto vt = VirtualTable<C, baseclasses...>::getVTable(cRef);
-            void *dtorPtr = vt.getCookie(numOfCookies - 1);
+            void *dtorPtr = vt.getCookie(dtorCookieIndex);
             void(*method)(C *) = reinterpret_cast<void (*)(C *)>(dtorPtr);
             method(c);
             return 0;
@@ -5569,7 +5580,7 @@ namespace fakeit {
             void *dtorPtr = union_cast<void *>(&VirtualTable<C, baseclasses...>::dtor);
             unsigned int index = VTUtils::getDestructorOffset<C>();
             _firstMethod[index] = dtorPtr;
-            setCookie(numOfCookies - 1, method);
+            setCookie(dtorCookieIndex, method);
         }
 
         unsigned int getSize() {
@@ -5596,6 +5607,7 @@ namespace fakeit {
         static_assert(sizeof(unsigned int (SimpleType::*)()) == sizeof(unsigned int (C::*)()),
             "Can't mock a type with multiple inheritance or with non-polymorphic base class");
         static const unsigned int numOfCookies = 3;
+        static const unsigned int dtorCookieIndex = numOfCookies - 1;
 
         static void **buildVTArray() {
             int vtSize = VTUtils::getVTSize<C>();
@@ -5618,17 +5630,17 @@ namespace fakeit {
 #include <tr2/type_traits>
 
 namespace fakeit {
-    template<typename ... T1>
+    template<typename ... Type1>
     class has_one_base {
     };
 
-    template<typename T1, typename T2, typename ... types>
-    class has_one_base<std::tr2::__reflection_typelist<T1, T2, types...>> : public std::false_type {
+    template<typename Type1, typename Type2, typename ... types>
+    class has_one_base<std::tr2::__reflection_typelist<Type1, Type2, types...>> : public std::false_type {
     };
 
-    template<typename T1>
-    class has_one_base<std::tr2::__reflection_typelist<T1>>
-            : public has_one_base<typename std::tr2::direct_bases<T1>::type> {
+    template<typename Type1>
+    class has_one_base<std::tr2::__reflection_typelist<Type1>>
+            : public has_one_base<typename std::tr2::direct_bases<Type1>::type> {
     };
 
     template<>
@@ -5903,14 +5915,14 @@ namespace fakeit {
 namespace fakeit {
 
     struct InvocationHandlerCollection {
-        static const unsigned int VT_COOKIE_INDEX = 0;
+        static const unsigned int VtCookieIndex = 0;
 
         virtual Destructible *getInvocatoinHandlerPtrById(unsigned int index) = 0;
 
         static InvocationHandlerCollection *getInvocationHandlerCollection(void *instance) {
             VirtualTableBase &vt = VirtualTableBase::getVTable(instance);
             InvocationHandlerCollection *invocationHandlerCollection = (InvocationHandlerCollection *) vt.getCookie(
-                    InvocationHandlerCollection::VT_COOKIE_INDEX);
+                    InvocationHandlerCollection::VtCookieIndex);
             return invocationHandlerCollection;
         }
     };
@@ -5994,7 +6006,7 @@ namespace fakeit {
                 _offsets(VTUtils::getVTSize<C>()),
                 _invocationHandlers(_methodMocks, _offsets) {
             _cloneVt.copyFrom(originalVtHandle.restore());
-            _cloneVt.setCookie(InvocationHandlerCollection::VT_COOKIE_INDEX, &_invocationHandlers);
+            _cloneVt.setCookie(InvocationHandlerCollection::VtCookieIndex, &_invocationHandlers);
             getFake().setVirtualTable(_cloneVt);
         }
 
@@ -6060,21 +6072,21 @@ namespace fakeit {
             return ptr.get();
         }
 
-        template<typename DATA_TYPE, typename ... arglist>
-        void stubDataMember(DATA_TYPE C::*member, const arglist &... initargs) {
-            DATA_TYPE C::*theMember = (DATA_TYPE C::*) member;
+        template<typename DataType, typename ... arglist>
+        void stubDataMember(DataType C::*member, const arglist &... initargs) {
+            DataType C::*theMember = (DataType C::*) member;
             C &mock = get();
-            DATA_TYPE *memberPtr = &(mock.*theMember);
+            DataType *memberPtr = &(mock.*theMember);
             _members.push_back(
-                    std::shared_ptr<DataMemeberWrapper < DATA_TYPE, arglist...> >
-                    {new DataMemeberWrapper < DATA_TYPE, arglist...>(memberPtr,
+                    std::shared_ptr<DataMemeberWrapper < DataType, arglist...> >
+                    {new DataMemeberWrapper < DataType, arglist...>(memberPtr,
                     initargs...)});
         }
 
-        template<typename DATA_TYPE>
-        void getMethodMocks(std::vector<DATA_TYPE> &into) const {
+        template<typename DataType>
+        void getMethodMocks(std::vector<DataType> &into) const {
             for (std::shared_ptr<Destructible> ptr : _methodMocks) {
-                DATA_TYPE p = dynamic_cast<DATA_TYPE>(ptr.get());
+                DataType p = dynamic_cast<DataType>(ptr.get());
                 if (p) {
                     into.push_back(p);
                 }
@@ -6088,19 +6100,19 @@ namespace fakeit {
 
     private:
 
-        template<typename DATA_TYPE, typename ... arglist>
+        template<typename DataType, typename ... arglist>
         class DataMemeberWrapper : public Destructible {
         private:
-            DATA_TYPE *dataMember;
+            DataType *dataMember;
         public:
-            DataMemeberWrapper(DATA_TYPE *dataMem, const arglist &... initargs) :
+            DataMemeberWrapper(DataType *dataMem, const arglist &... initargs) :
                     dataMember(dataMem) {
-                new(dataMember) DATA_TYPE{initargs ...};
+                new(dataMember) DataType{initargs ...};
             }
 
             ~DataMemeberWrapper() override
             {
-                dataMember->~DATA_TYPE();
+                dataMember->~DataType();
             }
         };
 
@@ -6131,10 +6143,10 @@ namespace fakeit {
             _offsets[methodProxy.getOffset()] = methodProxy.getId();
         }
 
-        template<typename DATA_TYPE>
-        DATA_TYPE getMethodMock(unsigned int offset) {
+        template<typename DataType>
+        DataType getMethodMock(unsigned int offset) {
             std::shared_ptr<Destructible> ptr = _methodMocks[offset];
-            return dynamic_cast<DATA_TYPE>(ptr.get());
+            return dynamic_cast<DataType>(ptr.get());
         }
 
         template<typename BaseClass>
@@ -7197,7 +7209,7 @@ namespace fakeit {
         RecordedMethodBody(FakeitContext &fakeit, std::string name) :
                 _fakeit(fakeit), _method{MethodInfo::nextMethodOrdinal(), name} { }
 
-        virtual ~RecordedMethodBody() NO_THROWS {
+        virtual ~RecordedMethodBody() FAKEIT_NO_THROWS {
         }
 
         MethodInfo &getMethod() {
@@ -7472,7 +7484,7 @@ namespace fakeit {
     template<typename R, typename ... arglist>
     struct MethodStubbingProgress {
 
-        virtual ~MethodStubbingProgress() THROWS {
+        virtual ~MethodStubbingProgress() FAKEIT_THROWS {
         }
 
         template<typename U = R>
@@ -7485,6 +7497,15 @@ namespace fakeit {
         typename std::enable_if<std::is_reference<U>::value, MethodStubbingProgress<R, arglist...> &>::type
         Return(const R &r) {
             return Do([&r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
+        }
+
+        template<typename U = R>
+        typename std::enable_if<!std::is_copy_constructible<U>::value, MethodStubbingProgress<R, arglist...>&>::type
+            Return(R&& r) {
+            auto store = std::make_shared<R>(std::move(r));
+            return Do([store](const typename fakeit::test_arg<arglist>::type...) mutable -> R {
+                return std::move(*store);
+            });
         }
 
         MethodStubbingProgress<R, arglist...> &
@@ -7648,7 +7669,7 @@ namespace fakeit {
     template<typename ... arglist>
     struct MethodStubbingProgress<void, arglist...> {
 
-        virtual ~MethodStubbingProgress() THROWS {
+        virtual ~MethodStubbingProgress() FAKEIT_THROWS {
         }
 
         MethodStubbingProgress<void, arglist...> &Return() {
@@ -7801,7 +7822,7 @@ namespace fakeit {
             template <typename ...T, int ...N>
             static void CheckPositions(const std::tuple<ArgValue<T, N>...> arg_vals)
             {
-#if __cplusplus >= 201402L
+#if __cplusplus >= 201402L && !defined(_WIN32)
                 static_assert(std::get<tuple_index>(arg_vals).pos <= max_index,
                     "Argument index out of range");
                 ArgValidator<max_index, tuple_index - 1>::CheckPositions(arg_vals);
@@ -7853,7 +7874,7 @@ namespace fakeit {
         struct ArgLocator {
             template<typename current_arg, typename ...T, int ...N>
             static void AssignArg(current_arg &&p, std::tuple<ArgValue<T, N>...> arg_vals) {
-#if __cplusplus >= 201703L
+#if __cplusplus >= 201703L && !defined (_WIN32)
                 if constexpr (std::get<check_index>(arg_vals).pos == arg_index)
                     GetArg(std::forward<current_arg>(p)) = std::get<check_index>(arg_vals).value;
 #else
@@ -7864,11 +7885,11 @@ namespace fakeit {
                     ArgLocator<arg_index, check_index - 1>::AssignArg(std::forward<current_arg>(p), arg_vals);
             }
 
-#if __cplusplus < 201703L
+#if __cplusplus < 201703L || defined (_WIN32)
         private:
             template<typename T, typename U>
             static
-            typename std::enable_if<std::is_convertible<U, decltype(GetArg(std::declval<T>()))>::value, void>::type
+            typename std::enable_if<std::is_assignable<decltype(GetArg(std::declval<T>())), U>::value, void>::type
             Set(T &&p, U &&v)
             {
                 GetArg(std::forward<T>(p)) = v;
@@ -7876,7 +7897,7 @@ namespace fakeit {
 
             template<typename T, typename U>
             static
-            typename std::enable_if<!std::is_convertible<U, decltype(GetArg(std::declval<T>()))>::value, void>::type
+            typename std::enable_if<!std::is_assignable<decltype(GetArg(std::declval<T>())), U>::value, void>::type
             Set(T &&, U &&)
             {
                 throw std::logic_error("ReturnAndSet(): Invalid value type");
@@ -7966,7 +7987,10 @@ namespace fakeit {
             Action<R, arglist...> &action = dynamic_cast<Action<R, arglist...> &>(destructable);
             std::function<void()> finallyClause = [&]() -> void {
                 if (action.isDone())
+                {
                     _recordedActions.erase(_recordedActions.begin());
+                    _usedActions.push_back(destructablePtr);
+                }
             };
             Finally onExit(finallyClause);
             return action.invoke(args);
@@ -7998,18 +8022,20 @@ namespace fakeit {
 
         void clear() {
             _recordedActions.clear();
+            _usedActions.clear();
             auto actionPtr = std::shared_ptr<Destructible> {new NoMoreRecordedAction()};
             _recordedActions.push_back(actionPtr);
         }
 
         std::vector<std::shared_ptr<Destructible>> _recordedActions;
+        std::vector<std::shared_ptr<Destructible>> _usedActions;
     };
 
 }
 
 namespace fakeit {
 
-    template<typename C, typename DATA_TYPE>
+    template<typename C, typename DataType>
     class DataMemberStubbingRoot {
     private:
 
@@ -8018,7 +8044,7 @@ namespace fakeit {
 
         DataMemberStubbingRoot() = default;
 
-        void operator=(const DATA_TYPE&) {
+        void operator=(const DataType&) {
         }
     };
 
@@ -8276,7 +8302,7 @@ namespace fakeit {
                 : _impl(std::move(other._impl)) {
         }
 
-        virtual ~MethodMockingContext() NO_THROWS { }
+        virtual ~MethodMockingContext() FAKEIT_NO_THROWS { }
 
         std::string format() const override {
             return _impl->format();
@@ -8512,7 +8538,7 @@ namespace fakeit {
             fake->getVirtualTable().setCookie(1, this);
         }
 
-        virtual ~MockImpl() NO_THROWS {
+        virtual ~MockImpl() FAKEIT_NO_THROWS {
             _proxy.detach();
         }
 
@@ -8556,10 +8582,10 @@ namespace fakeit {
             return _fakeit;
         }
 
-        template<class DATA_TYPE, typename T, typename ... arglist, class = typename std::enable_if<std::is_base_of<T, C>::value>::type>
-        DataMemberStubbingRoot<C, DATA_TYPE> stubDataMember(DATA_TYPE T::*member, const arglist &... ctorargs) {
+        template<class DataType, typename T, typename ... arglist, class = typename std::enable_if<std::is_base_of<T, C>::value>::type>
+        DataMemberStubbingRoot<C, DataType> stubDataMember(DataType T::*member, const arglist &... ctorargs) {
             _proxy.stubDataMember(member, ctorargs...);
-            return DataMemberStubbingRoot<T, DATA_TYPE>();
+            return DataMemberStubbingRoot<T, DataType>();
         }
 
         template<int id, typename R, typename T, typename ... arglist, class = typename std::enable_if<std::is_base_of<T, C>::value>::type>
@@ -8653,7 +8679,7 @@ namespace fakeit {
                     : MethodMockingContextBase<R, arglist...>(mock), _vMethod(vMethod) {
             }
 
-            template<typename ... T, typename std::enable_if<all_true<std::is_copy_constructible<T>::value...>::value, int>::type = 0>
+            template<typename ... T, typename std::enable_if<all_true<smart_is_copy_constructible<T>::value...>::value, int>::type = 0>
             std::function<R(arglist&...)> getOriginalMethodCopyArgsInternal(int) {
                 void *mPtr = MethodMockingContextBase<R, arglist...>::_mock.getOriginalMethod(_vMethod);
                 C * instance = &(MethodMockingContextBase<R, arglist...>::_mock.get());
@@ -8895,9 +8921,9 @@ namespace fakeit {
 			impl.clear();
 		}
 
-        template<class DATA_TYPE, typename ... arglist,
-                class = typename std::enable_if<std::is_member_object_pointer<DATA_TYPE C::*>::value>::type>
-        DataMemberStubbingRoot<C, DATA_TYPE> Stub(DATA_TYPE C::* member, const arglist &... ctorargs) {
+        template<class DataType, typename ... arglist,
+                class = typename std::enable_if<std::is_member_object_pointer<DataType C::*>::value>::type>
+        DataMemberStubbingRoot<C, DataType> Stub(DataType C::* member, const arglist &... ctorargs) {
             return impl.stubDataMember(member, ctorargs...);
         }
 
@@ -9007,7 +9033,7 @@ namespace fakeit {
             reference->AddRef();
         }
 
-        ~smart_ptr() THROWS {
+        ~smart_ptr() FAKEIT_THROWS {
             if (reference->Release() == 0) {
                 delete reference;
                 delete pData;
@@ -9051,7 +9077,7 @@ namespace fakeit {
 
             friend class WhenFunctor;
 
-            virtual ~StubbingChange() THROWS {
+            virtual ~StubbingChange() FAKEIT_THROWS {
 
                 if (UncaughtException()) {
                     return;
@@ -9312,7 +9338,7 @@ namespace fakeit {
 
         friend class SequenceVerificationProgress;
 
-        ~SequenceVerificationExpectation() THROWS {
+        ~SequenceVerificationExpectation() FAKEIT_THROWS {
             if (UncaughtException()) {
                 return;
             }
@@ -9511,7 +9537,7 @@ namespace fakeit {
 
     public:
 
-        ~SequenceVerificationProgress() THROWS { };
+        ~SequenceVerificationProgress() FAKEIT_THROWS { };
 
         operator bool() const {
             return Terminator(_expectationPtr);
@@ -9677,7 +9703,7 @@ namespace fakeit {
 
             friend class VerifyNoOtherInvocationsVerificationProgress;
 
-            ~VerifyNoOtherInvocationsExpectation() THROWS {
+            ~VerifyNoOtherInvocationsExpectation() FAKEIT_THROWS {
                 if (UncaughtException()) {
                     return;
                 }
@@ -9764,7 +9790,7 @@ namespace fakeit {
     public:
 
 
-        ~VerifyNoOtherInvocationsVerificationProgress() THROWS {
+        ~VerifyNoOtherInvocationsVerificationProgress() FAKEIT_THROWS {
         };
 
         VerifyNoOtherInvocationsVerificationProgress setFileInfo(const char * file, int line,
@@ -9816,7 +9842,7 @@ namespace fakeit {
     class SpyFunctor {
     private:
 
-        template<typename R, typename ... arglist, typename std::enable_if<all_true<std::is_copy_constructible<arglist>::value...>::value, int>::type = 0>
+        template<typename R, typename ... arglist, typename std::enable_if<all_true<smart_is_copy_constructible<arglist>::value...>::value, int>::type = 0>
         void spy(const SpyingContext<R, arglist...> &root, int) {
             SpyingContext<R, arglist...> &rootWithoutConst = const_cast<SpyingContext<R, arglist...> &>(root);
             auto methodFromOriginalVT = rootWithoutConst.getOriginalMethodCopyArgs();
@@ -9971,10 +9997,10 @@ namespace fakeit {
     std::remove_reference<decltype((mock).get())>::type
 
 #define OVERLOADED_METHOD_PTR(mock, method, prototype) \
-    fakeit::Prototype<prototype>::MemberType<typename MOCK_TYPE(mock)>::get(&MOCK_TYPE(mock)::method)
+    fakeit::Prototype<prototype>::template MemberType<typename MOCK_TYPE(mock)>::get(&MOCK_TYPE(mock)::method)
 
 #define CONST_OVERLOADED_METHOD_PTR(mock, method, prototype) \
-    fakeit::Prototype<prototype>::MemberType<typename MOCK_TYPE(mock)>::getconst(&MOCK_TYPE(mock)::method)
+    fakeit::Prototype<prototype>::template MemberType<typename MOCK_TYPE(mock)>::getconst(&MOCK_TYPE(mock)::method)
 
 #define Dtor(mock) \
     (mock).dtor().setMethodDetails(#mock,"destructor")
