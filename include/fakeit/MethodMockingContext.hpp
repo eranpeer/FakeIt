@@ -174,7 +174,7 @@ namespace fakeit {
                 : _impl{new Implementation(stubbingContext)} {
         }
 
-        MethodMockingContext(MethodMockingContext &) = default;
+        MethodMockingContext(const MethodMockingContext &) = default;
 
         //we have to write move ctor by hand since VC 2013 doesn't support defaulted
         //move constructor and move assignment
@@ -286,7 +286,7 @@ namespace fakeit {
                 : MethodMockingContext<R, arglist...>(stubbingContext) {
         }
 
-        MockingContext(MockingContext &) = default;
+        MockingContext(const MockingContext &) = default;
 
         MockingContext(MockingContext &&other)
                 : MethodMockingContext<R, arglist...>(std::move(other)) {
@@ -346,7 +346,7 @@ namespace fakeit {
                 : MethodMockingContext<void, arglist...>(stubbingContext) {
         }
 
-        MockingContext(MockingContext &) = default;
+        MockingContext(const MockingContext &) = default;
 
         MockingContext(MockingContext &&other)
                 : MethodMockingContext<void, arglist...>(std::move(other)) {
@@ -391,7 +391,7 @@ namespace fakeit {
                 : MethodMockingContext<void>(stubbingContext) {
         }
 
-        DtorMockingContext(DtorMockingContext &other) : MethodMockingContext<void>(other) {
+        DtorMockingContext(const DtorMockingContext &other) : MethodMockingContext<void>(other) {
         }
 
         DtorMockingContext(DtorMockingContext &&other) : MethodMockingContext<void>(std::move(other)) {

@@ -33,7 +33,7 @@ namespace fakeit {
                 _xaction.commit();
             }
 
-            StubbingChange(StubbingChange &other) :
+            StubbingChange(const StubbingChange &other) :
                     _xaction(other._xaction) {
             }
 
@@ -55,7 +55,7 @@ namespace fakeit {
 
             virtual ~MethodProgress() override = default;
 
-            MethodProgress(MethodProgress &other) :
+            MethodProgress(const MethodProgress &other) :
                     _progress(other._progress), _context(other._context) {
             }
 
