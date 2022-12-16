@@ -54,7 +54,7 @@ namespace fakeit {
                     _isVerified(false) {
             }
 
-            VerifyNoOtherInvocationsExpectation(VerifyNoOtherInvocationsExpectation &other) = default;
+            VerifyNoOtherInvocationsExpectation(const VerifyNoOtherInvocationsExpectation &other) = default;
 
             void VerifyExpectation(VerificationEventHandler &verificationErrorHandler) {
                 if (_isVerified)

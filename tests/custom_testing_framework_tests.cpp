@@ -69,7 +69,7 @@ struct CustomTestingFramework: tpunit::TestFixture {
 		virtual void handle(const NoMoreInvocationsVerificationEvent&) {
 		}
 
-		NullEventHandler(NullEventHandler&) = delete;
+		NullEventHandler(const NullEventHandler&) = delete;
 
 	public:
 		NullEventHandler() = default;
