@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2022-12-02 14:52:43.207489
+ *  Generated: 2022-12-16 13:26:48.801805
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -8282,7 +8282,7 @@ namespace fakeit {
                 : _impl{new Implementation(stubbingContext)} {
         }
 
-        MethodMockingContext(MethodMockingContext &) = default;
+        MethodMockingContext(const MethodMockingContext &) = default;
 
 
 
@@ -8386,7 +8386,7 @@ namespace fakeit {
                 : MethodMockingContext<R, arglist...>(stubbingContext) {
         }
 
-        MockingContext(MockingContext &) = default;
+        MockingContext(const MockingContext &) = default;
 
         MockingContext(MockingContext &&other)
                 : MethodMockingContext<R, arglist...>(std::move(other)) {
@@ -8446,7 +8446,7 @@ namespace fakeit {
                 : MethodMockingContext<void, arglist...>(stubbingContext) {
         }
 
-        MockingContext(MockingContext &) = default;
+        MockingContext(const MockingContext &) = default;
 
         MockingContext(MockingContext &&other)
                 : MethodMockingContext<void, arglist...>(std::move(other)) {
@@ -8491,7 +8491,7 @@ namespace fakeit {
                 : MethodMockingContext<void>(stubbingContext) {
         }
 
-        DtorMockingContext(DtorMockingContext &other) : MethodMockingContext<void>(other) {
+        DtorMockingContext(const DtorMockingContext &other) : MethodMockingContext<void>(other) {
         }
 
         DtorMockingContext(DtorMockingContext &&other) : MethodMockingContext<void>(std::move(other)) {
@@ -9074,7 +9074,7 @@ namespace fakeit {
                 _xaction.commit();
             }
 
-            StubbingChange(StubbingChange &other) :
+            StubbingChange(const StubbingChange &other) :
                     _xaction(other._xaction) {
             }
 
@@ -9096,7 +9096,7 @@ namespace fakeit {
 
             virtual ~MethodProgress() override = default;
 
-            MethodProgress(MethodProgress &other) :
+            MethodProgress(const MethodProgress &other) :
                     _progress(other._progress), _context(other._context) {
             }
 
@@ -9737,7 +9737,7 @@ namespace fakeit {
                     _isVerified(false) {
             }
 
-            VerifyNoOtherInvocationsExpectation(VerifyNoOtherInvocationsExpectation &other) = default;
+            VerifyNoOtherInvocationsExpectation(const VerifyNoOtherInvocationsExpectation &other) = default;
 
             void VerifyExpectation(VerificationEventHandler &verificationErrorHandler) {
                 if (_isVerified)
