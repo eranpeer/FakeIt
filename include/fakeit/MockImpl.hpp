@@ -89,7 +89,7 @@ namespace fakeit {
             return DataMemberStubbingRoot<T, DataType>();
         }
 
-        template<int id, typename R, typename T, typename ... arglist, class = typename std::enable_if<std::is_base_of<T, C>::value>::type>
+        template<size_t id, typename R, typename T, typename ... arglist, class = typename std::enable_if<std::is_base_of<T, C>::value>::type>
         MockingContext<R, arglist...> stubMethod(R(T::*vMethod)(arglist...)) {
             return MockingContext<R, arglist...>(new UniqueMethodMockingContextImpl < id, R, arglist... >
                    (*this, vMethod));
@@ -212,7 +212,7 @@ namespace fakeit {
         };
 
 
-        template<int id, typename R, typename ... arglist>
+        template<size_t id, typename R, typename ... arglist>
         class UniqueMethodMockingContextImpl : public MethodMockingContextImpl<R, arglist...> {
         protected:
 
@@ -304,7 +304,7 @@ namespace fakeit {
             return origMethodPtr;
         }
 
-        template<unsigned int id, typename R, typename ... arglist>
+        template<size_t id, typename R, typename ... arglist>
         RecordedMethodBody<R, arglist...> &stubMethodIfNotStubbed(DynamicProxy<C, baseclasses...> &proxy,
                                                                   R (C::*vMethod)(arglist...)) {
             if (!proxy.isMethodStubbed(vMethod)) {

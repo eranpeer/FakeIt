@@ -27,9 +27,9 @@ namespace fakeit {
 
     class InvocationHandlers : public InvocationHandlerCollection {
         std::vector<std::shared_ptr<Destructible>> &_methodMocks;
-        std::vector<unsigned int> &_offsets;
+        std::vector<size_t> &_offsets;
 
-        unsigned int getOffset(unsigned int id) const
+        unsigned int getOffset(size_t id) const
         {
             unsigned int offset = 0;
             for (; offset < _offsets.size(); offset++) {
@@ -43,15 +43,15 @@ namespace fakeit {
     public:
         InvocationHandlers(
                 std::vector<std::shared_ptr<Destructible>> &methodMocks,
-                std::vector<unsigned int> &offsets) :
+                std::vector<size_t> &offsets) :
                 _methodMocks(methodMocks), _offsets(offsets) {
-			for (std::vector<unsigned int>::iterator it = _offsets.begin(); it != _offsets.end(); ++it)
+			for (auto it = _offsets.begin(); it != _offsets.end(); ++it)
 			{
 				*it = std::numeric_limits<int>::max();
 			}
         }
 
-        Destructible *getInvocatoinHandlerPtrById(unsigned int id) override {
+        Destructible *getInvocatoinHandlerPtrById(size_t id) override {
             unsigned int offset = getOffset(id);
             std::shared_ptr<Destructible> ptr = _methodMocks[offset];
             return ptr.get();
@@ -100,7 +100,7 @@ namespace fakeit {
         {
         }
 
-        template<int id, typename R, typename ... arglist>
+        template<size_t id, typename R, typename ... arglist>
         void stubMethod(R(C::*vMethod)(arglist...), MethodInvocationHandler<R, arglist...> *methodInvocationHandler) {
             auto offset = VTUtils::getOffset(vMethod);
             MethodProxyCreator<R, arglist...> creator;
@@ -189,7 +189,7 @@ namespace fakeit {
         //
         std::vector<std::shared_ptr<Destructible>> _methodMocks;
         std::vector<std::shared_ptr<Destructible>> _members;
-        std::vector<unsigned int> _offsets;
+        std::vector<size_t> _offsets;
         InvocationHandlers _invocationHandlers;
 
         FakeObject<C, baseclasses...> &getFake() {
