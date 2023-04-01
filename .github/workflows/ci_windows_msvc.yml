@@ -1,0 +1,33 @@
+name: CI Windows/MSVC
+
+on:
+  push:
+  pull_request:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  msvc-windows-2022:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build project
+        run: |
+          cmake -S . -B build -G "Visual Studio 17 2022"
+          cmake --build build --config Debug -j
+      - name: Run tests
+        run: |
+          echo "Not yet because bugged but it needs to be fixed."
+  msvc-windows-2019:
+    runs-on: windows-2019
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build project
+        run: |
+          cmake -S . -B build -G "Visual Studio 16 2019"
+          cmake --build build --config Debug -j
+      - name: Run tests
+        run: |
+          echo "Not yet because bugged but it needs to be fixed."

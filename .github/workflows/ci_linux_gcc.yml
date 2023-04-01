@@ -17,15 +17,14 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build project
         run: |
-          cd build
-          make coverage
+          CC=gcc CXX=g++ cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON
+          cmake --build build -j
       - name: Run tests
         run: |
-          cd build
-          ./fakeit_tests.exe
+          build/tests/FakeIt_tests
       - name: Generate report
         run: |
-          cd build
+          cd build/tests/CMakeFiles/FakeIt_tests.dir
           gcov *.o
           lcov --directory . -c -o report.info
           lcov --remove report.info '/usr/*' '*/tests/*' -o report_filtered.info
@@ -33,28 +32,26 @@ jobs:
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./build/report_filtered.info
+          path-to-lcov: ./build/tests/CMakeFiles/FakeIt_tests.dir/report_filtered.info
   gcc-ubuntu-20-04:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - name: Build project
         run: |
-          cd build
-          make all
+          CC=gcc CXX=g++ cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+          cmake --build build -j
       - name: Run tests
         run: |
-          cd build
-          ./fakeit_tests.exe
+          build/tests/FakeIt_tests
   gcc-ubuntu-18-04:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
       - name: Build project
         run: |
-          cd build
-          make all
+          CC=gcc CXX=g++ cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+          cmake --build build -j
       - name: Run tests
         run: |
-          cd build
-          ./fakeit_tests.exe
+          build/tests/FakeIt_tests
