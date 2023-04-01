@@ -1,0 +1,17 @@
+function(add_configuration config_name)
+    add_library(FakeIt_config_${config_name} INTERFACE)
+
+    target_include_directories(FakeIt_config_${config_name} INTERFACE ${config_name})
+endfunction()
+
+add_configuration("boost")
+add_configuration("catch")
+add_configuration("cute")
+add_configuration("doctest")
+add_configuration("gtest")
+add_configuration("mettle")
+add_configuration("mstest")
+add_configuration("nunit")
+add_configuration("qtest")
+add_configuration("standalone")
+add_configuration("tpunit")
