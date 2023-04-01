@@ -41,6 +41,7 @@ tests/x64/
 
 # CLion files
 .idea/
+cmake-build-*/
 
 # bii
 bii/
