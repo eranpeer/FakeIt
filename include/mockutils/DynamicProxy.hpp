@@ -20,6 +20,7 @@
 #include "mockutils/MethodInvocationHandler.hpp"
 #include "mockutils/VTUtils.hpp"
 #include "mockutils/FakeObject.hpp"
+#include "mockutils/Finally.hpp"
 #include "mockutils/MethodProxy.hpp"
 #include "mockutils/MethodProxyCreator.hpp"
 
@@ -161,6 +162,18 @@ namespace fakeit {
         VirtualTable<C, baseclasses...> &getOriginalVT() {
             VirtualTable<C, baseclasses...> &vt = originalVtHandle.restore();
             return vt;
+        }
+
+        template<typename R, typename ... arglist>
+        Finally createRaiiMethodSwapper(R(C::*vMethod)(arglist...)) {
+            auto offset = VTUtils::getOffset(vMethod);
+            auto fakeMethod = getFake().getVirtualTable().getMethod(offset);
+            auto originalMethod = getOriginalVT().getMethod(offset);
+
+            getFake().setMethod(offset, originalMethod);
+            return Finally{[&, offset, fakeMethod](){
+                getFake().setMethod(offset, fakeMethod);
+            }};
         }
 
     private:
