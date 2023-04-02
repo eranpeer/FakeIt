@@ -22,7 +22,7 @@
 
 namespace fakeit {
 
-    
+
     template<typename C, typename ... baseclasses>
     class MockImpl : private MockObject<C>, public virtual ActualInvocationsSource {
     public:
@@ -107,7 +107,7 @@ namespace fakeit {
 
     private:
 		// Keep members in this order! _proxy should be deleted before _inatanceOwner.
-		// Not that the dtor of MockImpl calls _proxy.detach(), hence the detach happens 
+		// Not that the dtor of MockImpl calls _proxy.detach(), hence the detach happens
 		// before the destructor of the _proxy is invoked. As a result the dtor method in the virtual
 		// table of the fakedObject is reverted to unmockedDtor() before the proxy is deleted.
 		// This way, any recorded arguments in the proxy that capture the fakeObject itself will
@@ -172,7 +172,7 @@ namespace fakeit {
         protected:
 
             R (C::*_vMethod)(arglist...);
-            
+
         public:
             virtual ~MethodMockingContextImpl() = default;
 
@@ -182,11 +182,12 @@ namespace fakeit {
 
             template<typename ... T, typename std::enable_if<all_true<smart_is_copy_constructible<T>::value...>::value, int>::type = 0>
             std::function<R(arglist&...)> getOriginalMethodCopyArgsInternal(int) {
-                void *mPtr = MethodMockingContextBase<R, arglist...>::_mock.getOriginalMethod(_vMethod);
+                auto mPtr = _vMethod;
+                auto& mock = MethodMockingContextBase<R, arglist...>::_mock;
                 C * instance = &(MethodMockingContextBase<R, arglist...>::_mock.get());
-                return [=](arglist&... args) -> R {
-                    auto m = union_cast<typename VTableMethodType<R,arglist...>::type>(mPtr);
-                    return m(instance, args...);
+                return [=, &mock](arglist&... args) -> R {
+                    auto methodSwapper = mock.createRaiiMethodSwapper(mPtr);
+                    return (instance->*mPtr)(args...);
                 };
             }
 
@@ -202,11 +203,12 @@ namespace fakeit {
             }
 
             std::function<R(arglist&...)> getOriginalMethodForwardArgs() override {
-                void *mPtr = MethodMockingContextBase<R, arglist...>::_mock.getOriginalMethod(_vMethod);
+                auto mPtr = _vMethod;
+                auto& mock = MethodMockingContextBase<R, arglist...>::_mock;
                 C * instance = &(MethodMockingContextBase<R, arglist...>::_mock.get());
-                return [=](arglist&... args) -> R {
-                    auto m = union_cast<typename VTableMethodType<R,arglist...>::type>(mPtr);
-                    return m(instance, std::forward<arglist>(args)...);
+                return [=, &mock](arglist&... args) -> R {
+                    auto methodSwapper = mock.createRaiiMethodSwapper(mPtr);
+                    return (instance->*mPtr)(std::forward<arglist>(args)...);
                 };
             }
         };
@@ -287,6 +289,11 @@ namespace fakeit {
 			if (VTUtils::hasVirtualDestructor<C>())
 				fake->setDtor(unmockedDtorStubPtr);
 			return reinterpret_cast<C *>(fake);
+        }
+
+        template<typename R, typename ... arglist>
+        Finally createRaiiMethodSwapper(R(C::*vMethod)(arglist...)) {
+            return _proxy.createRaiiMethodSwapper(vMethod);
         }
 
         template<typename R, typename ... arglist>
