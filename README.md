@@ -124,7 +124,7 @@ For GCC, it is recommended to build the test project with -O1 or -O0 flags. Some
 
 #### Building and Running the Unit Tests with GCC
 ```
-CC=gcc CXX=g++ cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+CC=gcc CXX=g++ cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON
 cmake --build build -j
 ```
 Run the tests by typing:
@@ -134,7 +134,7 @@ Run the tests by typing:
 
 #### Building and Running the Unit Tests with Clang
 ```
-CC=clang CXX=clang++ cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+CC=clang CXX=clang++ cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON
 cmake --build build -j
 ```
 Run the tests by typing:
@@ -144,7 +144,7 @@ Run the tests by typing:
 
 #### Building and Running the Unit Tests with Visual Studio 
 ```
-cmake -S . -B build -G "Visual Studio 17 2022"
+cmake -S . -B build -G "Visual Studio 17 2022" -DENABLE_TESTING=ON
 cmake --build build --config Debug -j
 ```
 Run the tests by typing:
