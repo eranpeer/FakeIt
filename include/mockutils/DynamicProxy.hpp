@@ -111,7 +111,17 @@ namespace fakeit {
         void stubDtor(MethodInvocationHandler<void> *methodInvocationHandler) {
             auto offset = VTUtils::getDestructorOffset<C>();
             MethodProxyCreator<void> creator;
+            // MSVC use an indirection for destructors, the "initial" destructor (VirtualTable::dtor, an helper) will be
+            // called through a member-function call, but the "final" destructor (the method proxy) will be called through
+            // a free-function call (inside the initial destructor). Therefor we use the free-function version
+            // (static method, but it's the same) of MethodProxy.
+            // For GCC / Clang, the destructor is directly called, like normal methods, so we use the member-function
+            // version.
+#ifdef _MSC_VER
+            bindDtor(creator.createMethodProxyStatic<0>(offset), methodInvocationHandler);
+#else
             bindDtor(creator.createMethodProxy<0>(offset), methodInvocationHandler);
+#endif
         }
 
         template<typename R, typename ... arglist>
