@@ -40,6 +40,11 @@ elseif(MSVC)
     target_compile_options(FakeIt_tests PRIVATE /W3 /sdl /Od)
 endif()
 
+if(OVERRIDE_CXX_STANDARD_FOR_TESTS)
+    set_target_properties(FakeIt_tests PROPERTIES CXX_STANDARD ${OVERRIDE_CXX_STANDARD_FOR_TESTS})
+    message(STATUS "Building tests in C++${OVERRIDE_CXX_STANDARD_FOR_TESTS}.")
+endif()
+
 if(ENABLE_COVERAGE)
     if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "^(Apple)?Clang$")
         target_compile_options(FakeIt_tests PRIVATE --coverage)
