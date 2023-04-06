@@ -124,7 +124,7 @@ For GCC, it is recommended to build the test project with -O1 or -O0 flags. Some
 
 #### Building and Running the Unit Tests with GCC
 ```
-CC=gcc CXX=g++ cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+CC=gcc CXX=g++ cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON
 cmake --build build -j
 ```
 Run the tests by typing:
@@ -134,7 +134,7 @@ Run the tests by typing:
 
 #### Building and Running the Unit Tests with Clang
 ```
-CC=clang CXX=clang++ cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+CC=clang CXX=clang++ cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON
 cmake --build build -j
 ```
 Run the tests by typing:
@@ -142,9 +142,21 @@ Run the tests by typing:
 ./build/tests/FakeIt_tests
 ```
 
+### Building fakeit - Using vcpkg
+
+You can download and install fakeit using the [vcpkg](https://github.com/Microsoft/vcpkg) dependency manager:
+
+    git clone https://github.com/Microsoft/vcpkg.git
+    cd vcpkg
+    ./bootstrap-vcpkg.sh
+    ./vcpkg integrate install
+    ./vcpkg install fakeit
+
+The fakeit port in vcpkg is kept up to date by Microsoft team members and community contributors. If the version is out of date, please [create an issue or pull request](https://github.com/Microsoft/vcpkg) on the vcpkg repository.
+
 #### Building and Running the Unit Tests with Visual Studio 
 ```
-cmake -S . -B build -G "Visual Studio 17 2022"
+cmake -S . -B build -G "Visual Studio 17 2022" -DENABLE_TESTING=ON
 cmake --build build --config Debug -j
 ```
 Run the tests by typing:
