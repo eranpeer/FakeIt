@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.14)
 project(FakeIt VERSION 2.3.2 LANGUAGES CXX)
 
 option(ENABLE_COVERAGE "Enable coverage reporting for gcc/clang." OFF)
+option(ENABLE_TESTING "Enable building unit tests" ON)
 
 # Directory containing main targets of FakeIt.
 add_subdirectory(include)
@@ -12,7 +13,9 @@ add_subdirectory(include)
 add_subdirectory(config)
 
 # Directory containing test targets of FakeIt.
-add_subdirectory(tests)
+if(${ENABLE_TESTING})
+  add_subdirectory(tests)
+endif()
 
 # Directory containing single header targets of FakeIt.
 add_subdirectory(single_header)
