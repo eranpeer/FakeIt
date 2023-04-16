@@ -49,7 +49,6 @@
 #define ConstRRefOverloadedMethod(mock, method, prototype) \
     (mock).template stub<__COUNTER__>(CONST_RREF_OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
 
-
 #define Verify(...) \
         Verify( __VA_ARGS__ ).setFileInfo(__FILE__, __LINE__, __func__)
 

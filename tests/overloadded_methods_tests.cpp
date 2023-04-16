@@ -43,7 +43,8 @@ struct OverloadedMethods : tpunit::TestFixture {
                     TEST(OverloadedMethods::stub_overloaded_methods_with_templates<SomeInterface>),
                     TEST(OverloadedMethods::stub_modern_overloaded_methods),
                     TEST(OverloadedMethods::stub_modern_rref_overloaded_method),
-                    TEST(OverloadedMethods::stub_modern_constrref_overloaded_method)
+                    TEST(OverloadedMethods::stub_modern_constrref_overloaded_method),
+                    TEST(OverloadedMethods::stub_modern_overloaded_proc)
             ) {
     }
 
@@ -105,6 +106,11 @@ struct OverloadedMethods : tpunit::TestFixture {
         virtual int func(int) const& = 0;
         virtual int func(int) && = 0;
         virtual int func(int) const&& = 0;
+
+        virtual void proc(int) & = 0;
+        virtual void proc(int) const& = 0;
+        virtual void proc(int) && = 0;
+        virtual void proc(int) const&& = 0;
     };
 
     void stub_modern_overloaded_methods() {
@@ -148,6 +154,35 @@ struct OverloadedMethods : tpunit::TestFixture {
         ASSERT_EQUAL(4, std::move(refConstObj).func(1));
 
         Verify(ConstRRefOverloadedMethod(mock, func, int(int)).Using(1)).Exactly(1);
+
+        VerifyNoOtherInvocations(mock);
+    }
+
+    void stub_modern_overloaded_proc() {
+        Mock<SomeModernCppInterface> mock;
+        int ret = 0;
+
+        When(ConstRRefOverloadedMethod(mock, proc, void(int))).Do([&](int){ret = 4;});
+        When(ConstRefOverloadedMethod(mock, proc, void(int))).Do([&](int){ret = 3;});
+        When(RRefOverloadedMethod(mock, proc, void(int))).Do([&](int){ret = 2;});
+        When(RefOverloadedMethod(mock, proc, void(int))).Do([&](int){ret = 1;});
+
+        SomeModernCppInterface& refObj = mock.get();
+        const SomeModernCppInterface& refConstObj = mock.get();
+
+        refObj.proc(0);
+        ASSERT_EQUAL(1, ret);
+        std::move(refObj).proc(0);
+        ASSERT_EQUAL(2, ret);
+        refConstObj.proc(0);
+        ASSERT_EQUAL(3, ret);
+        std::move(refConstObj).proc(0);
+        ASSERT_EQUAL(4, ret);
+
+        Verify(RefOverloadedMethod(mock, proc, void(int))).Exactly(1);
+        Verify(RRefOverloadedMethod(mock, proc, void(int))).Exactly(1);
+        Verify(ConstRefOverloadedMethod(mock, proc, void(int))).Exactly(1);
+        Verify(ConstRRefOverloadedMethod(mock, proc, void(int))).Exactly(1);
 
         VerifyNoOtherInvocations(mock);
     }
