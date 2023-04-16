@@ -13,6 +13,18 @@
 #define CONST_OVERLOADED_METHOD_PTR(mock, method, prototype) \
     fakeit::Prototype<prototype>::template MemberType<typename MOCK_TYPE(mock)>::getconst(&MOCK_TYPE(mock)::method)
 
+#define REF_OVERLOADED_METHOD_PTR(mock, method, prototype) \
+    fakeit::Prototype<prototype>::MemberType<typename MOCK_TYPE(mock)>::getRef(&MOCK_TYPE(mock)::method)
+
+#define CONST_REF_OVERLOADED_METHOD_PTR(mock, method, prototype) \
+    fakeit::Prototype<prototype>::MemberType<typename MOCK_TYPE(mock)>::getConstRef(&MOCK_TYPE(mock)::method)
+
+#define RREF_OVERLOADED_METHOD_PTR(mock, method, prototype) \
+    fakeit::Prototype<prototype>::MemberType<typename MOCK_TYPE(mock)>::getRRef(&MOCK_TYPE(mock)::method)
+
+#define CONST_RREF_OVERLOADED_METHOD_PTR(mock, method, prototype) \
+    fakeit::Prototype<prototype>::MemberType<typename MOCK_TYPE(mock)>::getConstRRef(&MOCK_TYPE(mock)::method)
+
 #define Dtor(mock) \
     (mock).dtor().setMethodDetails(#mock,"destructor")
 
@@ -24,6 +36,19 @@
 
 #define ConstOverloadedMethod(mock, method, prototype) \
     (mock).template stub<__COUNTER__>(CONST_OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
+
+#define RefOverloadedMethod(mock, method, prototype) \
+    (mock).template stub<__COUNTER__>(REF_OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
+
+#define ConstRefOverloadedMethod(mock, method, prototype) \
+    (mock).template stub<__COUNTER__>(CONST_REF_OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
+
+#define RRefOverloadedMethod(mock, method, prototype) \
+    (mock).template stub<__COUNTER__>(RREF_OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
+
+#define ConstRRefOverloadedMethod(mock, method, prototype) \
+    (mock).template stub<__COUNTER__>(CONST_RREF_OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
+
 
 #define Verify(...) \
         Verify( __VA_ARGS__ ).setFileInfo(__FILE__, __LINE__, __func__)
