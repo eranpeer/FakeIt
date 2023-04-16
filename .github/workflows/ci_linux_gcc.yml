@@ -62,6 +62,13 @@ jobs:
             cc: "gcc-12", cxx: "g++-12",
             cxx_standard: 20
           }
+          - {
+            name: "Ubuntu 22.04 GCC with sanitizers",
+            os: ubuntu-22.04,
+            build_type: Debug,
+            cc: "gcc", cxx: "g++",
+            enable_sanitizers_in_tests: ON
+          }
     steps:
       - uses: actions/checkout@v2
       - name: Build project
@@ -69,7 +76,11 @@ jobs:
           CC: ${{ matrix.config.cc }}
           CXX: ${{ matrix.config.cxx }}
         run: |
-          cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} -DENABLE_TESTING=ON -DOVERRIDE_CXX_STANDARD_FOR_TESTS=${{ matrix.config.cxx_standard }}
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
+            -DENABLE_TESTING=ON \
+            -DOVERRIDE_CXX_STANDARD_FOR_TESTS=${{ matrix.config.cxx_standard }} \
+            -DENABLE_SANITIZERS_IN_TESTS=${{ matrix.config.enable_sanitizers_in_tests }}
           cmake --build build -j
       - name: Run tests
         run: |
