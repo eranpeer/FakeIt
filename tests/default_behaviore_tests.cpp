@@ -22,9 +22,13 @@ struct DefaultBehavioreTests : tpunit::TestFixture {
 			TEST(DefaultBehavioreTests::DefaultBeaviorOfVoidFunctionsIsToDoNothing), //
 			TEST(DefaultBehavioreTests::ReturnByValue_ReturnDefaultConstructedObject), //
 			TEST(DefaultBehavioreTests::ReturnByValue_ThrowExceptionIfNotDefaultConstructible), //
+#ifndef FAKEIT_DISABLE_UBSAN_TRIGGERING_TESTS
 			TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToNullIfAbstract), //
+#endif
 			TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToDefaultConstructedObject), //
+#ifndef FAKEIT_DISABLE_UBSAN_TRIGGERING_TESTS
 			TEST(DefaultBehavioreTests::ReturnByReference_ReturnReferenceToNullIfNotDefaultConstructible), //
+#endif
 			TEST(DefaultBehavioreTests::ReturnPtr_NullPtrIfPtrToAbstract),
 			TEST(DefaultBehavioreTests::production_shared_ptr_mock_used_in_invocation)
 			//TEST(DefaultBehavioreTests::should_survive_delete_of_mock_instance_by_user)

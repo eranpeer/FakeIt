@@ -20,3 +20,9 @@
 #else
 #   define FAKEIT_CPLUSPLUS __cplusplus
 #endif
+
+#ifdef __GNUG__
+#   define FAKEIT_DISARM_UBSAN __attribute__((no_sanitize("undefined")))
+#else
+#   define FAKEIT_DISARM_UBSAN
+#endif

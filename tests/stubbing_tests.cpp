@@ -9,8 +9,6 @@
 #include <string>
 #include <queue>
 
-#include "mockutils/Macros.hpp"
-
 #include "tpunit++.hpp"
 #include "fakeit.hpp"
 
