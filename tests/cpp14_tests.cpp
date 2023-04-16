@@ -6,7 +6,9 @@
  * Created on Mar 10, 2014
  */
 
-#if __cplusplus > 201103L
+#include "mockutils/Macros.hpp"
+
+#if FAKEIT_CPLUSPLUS > 201103L
 
 #include <string>
 #include "tpunit++.hpp"

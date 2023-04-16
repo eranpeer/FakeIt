@@ -7,12 +7,14 @@
  */
 #pragma once
 
-#include "fakeit/FakeitEvents.hpp"
 #include <exception>
 
+#include "mockutils/Macros.hpp"
+
+#include "fakeit/FakeitEvents.hpp"
 
 namespace fakeit {
-#if __cplusplus >= 201703L || defined(__cpp_lib_uncaught_exceptions)
+#if FAKEIT_CPLUSPLUS >= 201703L || defined(__cpp_lib_uncaught_exceptions)
     inline bool UncaughtException () {
         return std::uncaught_exceptions() >= 1;
     }
@@ -36,7 +38,7 @@ namespace fakeit {
     };
 
 
-    // Unlike verification exceptions (that are thrown from the test level), this exception 
+    // Unlike verification exceptions (that are thrown from the test level), this exception
     // should not inherit from std::exception so that production code will not catch it.
     struct UnexpectedMethodCallException : public FakeitException {
 
