@@ -10,6 +10,7 @@
 
 #include <functional>
 #include <type_traits>
+#include "mockutils/Macros.hpp"
 #include "mockutils/VirtualOffestSelector.hpp"
 #include "mockutils/union_cast.hpp"
 
@@ -37,10 +38,8 @@ namespace fakeit {
 #endif
 
         template<typename C>
+        FAKEIT_DISARM_UBSAN
         static typename std::enable_if<std::has_virtual_destructor<C>::value, unsigned int>::type
-#if defined(__clang__)
-__attribute__((no_sanitize("undefined")))
-#endif
         getDestructorOffset() {
             VirtualOffsetSelector offsetSelctor;
             union_cast<C *>(&offsetSelctor)->~C();

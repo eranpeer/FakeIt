@@ -57,11 +57,18 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 
 	void implicitStubbingDefaultReturnValues() {
 		Mock<ReferenceInterface> mock;
+#ifndef FAKEIT_DISABLE_UBSAN_TRIGGERING_TESTS
 		Fake( //
 				Method(mock,returnIntByRef), //
 				Method(mock,returnAbstractTypeByRef), //
 				Method(mock,returnConcreteTypeByRef) //
 				);
+#else
+		Fake( //
+				Method(mock,returnIntByRef), //
+				Method(mock,returnConcreteTypeByRef) //
+				);
+#endif
 
 		ReferenceInterface & i = mock.get();
 
@@ -69,18 +76,22 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 		// Return a reference to the default value.
 		ASSERT_EQUAL(0, i.returnIntByRef());
 
-		// Concrete types types are initiated by default ctor.
+		// Concrete types are initiated by default ctor.
 		// Return a reference to the default value.
 		ASSERT_EQUAL(ConcreteType(), i.returnConcreteTypeByRef());
 
+#ifndef FAKEIT_DISABLE_UBSAN_TRIGGERING_TESTS
 		// For abstract types return a reference to nullptr.
 		ASSERT_EQUAL(nullptr, &i.returnAbstractTypeByRef());
+#endif
 	}
 
 	void explicitStubbingDefualtReturnValues() {
 		Mock<ReferenceInterface> mock;		//
 		When(Method(mock,returnIntByRef)).Return(); //
+#ifndef FAKEIT_DISABLE_UBSAN_TRIGGERING_TESTS
 		When(Method(mock,returnAbstractTypeByRef)).Return(); //
+#endif
 		When(Method(mock,returnConcreteTypeByRef)).Return(); //
 
 		ReferenceInterface & i = mock.get();
@@ -89,12 +100,14 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 		// Return a reference to the default value.
 		ASSERT_EQUAL(0, i.returnIntByRef());
 
-		// Concrete types types are initiated by default ctor.
+		// Concrete types are initiated by default ctor.
 		// Return a reference to the default value.
 		ASSERT_EQUAL(ConcreteType(), i.returnConcreteTypeByRef());
 
+#ifndef FAKEIT_DISABLE_UBSAN_TRIGGERING_TESTS
 		// For abstract types return a reference to nullptr.
 		ASSERT_EQUAL(nullptr, &i.returnAbstractTypeByRef());
+#endif
 	}
 
 	void explicitStubbingReturnValues() {
@@ -113,7 +126,7 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 		// Return a reference to the default value.
 		ASSERT_EQUAL(1, i.returnIntByRef());
 
-		// Concrete types types are initiated by default ctor.
+		// Concrete types are initiated by default ctor.
 		// Return a reference to the default value.
 		ASSERT_EQUAL(&c, &i.returnConcreteTypeByRef());
 
@@ -137,7 +150,7 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 		// Return a reference to the default value.
 		ASSERT_EQUAL(1, i.returnIntByRef());
 
-		// Concrete types types are initiated by default ctor.
+		// Concrete types are initiated by default ctor.
 		// Return a reference to the default value.
 		ASSERT_EQUAL(&c, &i.returnConcreteTypeByRef());
 
@@ -161,7 +174,7 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 		// Return a reference to the default value.
 		ASSERT_EQUAL(1, i.returnIntByRef());
 
-		// Concrete types types are initiated by default ctor.
+		// Concrete types are initiated by default ctor.
 		// Return a reference to the default value.
 		ASSERT_EQUAL(&c, &i.returnConcreteTypeByRef());
 
@@ -172,7 +185,9 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 	void explicitStubbingDefualtReturnValues_with_AlwaysReturn() {
 		Mock<ReferenceInterface> mock;
 		When(Method(mock,returnIntByRef)).AlwaysReturn();
+#ifndef FAKEIT_DISABLE_UBSAN_TRIGGERING_TESTS
 		When(Method(mock,returnAbstractTypeByRef)).AlwaysReturn(); //
+#endif
 		When(Method(mock,returnConcreteTypeByRef)).AlwaysReturn(); //
 
 		ReferenceInterface & i = mock.get();
@@ -181,13 +196,14 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 		// Return a reference to the default value.
 		ASSERT_EQUAL(0, i.returnIntByRef());
 
-		// Concrete types types are initiated by default ctor.
+		// Concrete types are initiated by default ctor.
 		// Return a reference to the default value.
 		ASSERT_EQUAL(ConcreteType(), i.returnConcreteTypeByRef());
 
+#ifndef FAKEIT_DISABLE_UBSAN_TRIGGERING_TESTS
 		// For abstract types return a reference to nullptr.
 		ASSERT_EQUAL(nullptr, &i.returnAbstractTypeByRef());
+#endif
 	}
 
 } __ReferenceTypesTests;
-
