@@ -172,7 +172,7 @@ namespace fakeit {
         MethodStubbingProgress &operator=(const MethodStubbingProgress &other) = delete;
 
         template<typename ... valuelist>
-#if __cplusplus >= 201402L
+#if FAKEIT_CPLUSPLUS >= 201402L
         auto
 #else
         std::function<R (typename fakeit::test_arg<arglist>::type...)>
@@ -197,7 +197,7 @@ namespace fakeit {
         }
 
         template<typename ...T, int ...N>
-#if __cplusplus >= 201402L
+#if FAKEIT_CPLUSPLUS >= 201402L
         auto
 #else
         std::function<R (typename fakeit::test_arg<arglist>::type...)>
@@ -316,7 +316,7 @@ namespace fakeit {
         MethodStubbingProgress &operator=(const MethodStubbingProgress &other) = delete;
 
         template<typename ... valuelist>
-#if __cplusplus >= 201402L
+#if FAKEIT_CPLUSPLUS >= 201402L
         auto
 #else
         std::function<void (typename fakeit::test_arg<arglist>::type...)>
@@ -340,7 +340,7 @@ namespace fakeit {
         }
 
         template<typename ...T, int ...N>
-#if __cplusplus >= 201402L
+#if FAKEIT_CPLUSPLUS >= 201402L
         auto
 #else
         std::function<void (typename fakeit::test_arg<arglist>::type...)>
@@ -382,7 +382,7 @@ namespace fakeit {
             template <typename ...T, int ...N>
             static void CheckPositions(const std::tuple<ArgValue<T, N>...> arg_vals)
             {
-#if __cplusplus >= 201402L && !defined(_WIN32)
+#if FAKEIT_CPLUSPLUS >= 201402L && !defined(_WIN32)
                 static_assert(std::get<tuple_index>(arg_vals).pos <= max_index,
                     "Argument index out of range");
                 ArgValidator<max_index, tuple_index - 1>::CheckPositions(arg_vals);
@@ -434,7 +434,7 @@ namespace fakeit {
         struct ArgLocator {
             template<typename current_arg, typename ...T, int ...N>
             static void AssignArg(current_arg &&p, std::tuple<ArgValue<T, N>...> arg_vals) {
-#if __cplusplus >= 201703L && !defined (_WIN32)
+#if FAKEIT_CPLUSPLUS >= 201703L && !defined (_WIN32)
                 if constexpr (std::get<check_index>(arg_vals).pos == arg_index)
                     GetArg(std::forward<current_arg>(p)) = std::get<check_index>(arg_vals).value;
 #else
@@ -445,7 +445,7 @@ namespace fakeit {
                     ArgLocator<arg_index, check_index - 1>::AssignArg(std::forward<current_arg>(p), arg_vals);
             }
 
-#if __cplusplus < 201703L || defined (_WIN32)
+#if FAKEIT_CPLUSPLUS < 201703L || defined (_WIN32)
         private:
             template<typename T, typename U>
             static
