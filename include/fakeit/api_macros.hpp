@@ -11,7 +11,7 @@
     fakeit::Prototype<prototype>::template MemberType<typename MOCK_TYPE(mock)>::get(&MOCK_TYPE(mock)::method)
 
 #define CONST_OVERLOADED_METHOD_PTR(mock, method, prototype) \
-    fakeit::Prototype<prototype>::template MemberType<typename MOCK_TYPE(mock)>::getconst(&MOCK_TYPE(mock)::method)
+    fakeit::Prototype<prototype>::template MemberType<typename MOCK_TYPE(mock)>::getConst(&MOCK_TYPE(mock)::method)
 
 #define REF_OVERLOADED_METHOD_PTR(mock, method, prototype) \
     fakeit::Prototype<prototype>::MemberType<typename MOCK_TYPE(mock)>::getRef(&MOCK_TYPE(mock)::method)
@@ -64,4 +64,3 @@
 
 #define When(call) \
     When(call)
-

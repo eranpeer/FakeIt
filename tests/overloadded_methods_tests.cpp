@@ -99,7 +99,6 @@ struct OverloadedMethods : tpunit::TestFixture {
     }
 
     struct SomeModernCppInterface {
-
         virtual int func() & = 0;
 
         virtual int func(int) & = 0;
@@ -109,7 +108,6 @@ struct OverloadedMethods : tpunit::TestFixture {
     };
 
     void stub_modern_overloaded_methods() {
-
         Mock<SomeModernCppInterface> mock;
         When(RefOverloadedMethod(mock, func, int(int))).Return(1);
         When(ConstRefOverloadedMethod(mock, func, int(int))).Return(2);
@@ -117,27 +115,41 @@ struct OverloadedMethods : tpunit::TestFixture {
         SomeModernCppInterface& refObj = mock.get();
         const SomeModernCppInterface& refConstObj = mock.get();
 
-        ASSERT_EQUAL(1, refObj.func(1));
-        ASSERT_EQUAL(2, refConstObj.func(1));
+        ASSERT_EQUAL(1, refObj.func(10));
+        ASSERT_EQUAL(2, refConstObj.func(20));
+
+        Verify(RefOverloadedMethod(mock, func, int(int)).Using(10)).Exactly(1);
+        Verify(ConstRefOverloadedMethod(mock, func, int(int)).Using(20)).Exactly(1);
+
+        VerifyNoOtherInvocations(mock);
     }
 
     void stub_modern_rref_overloaded_method() {
-
         Mock<SomeModernCppInterface> mock;
+        When(RefOverloadedMethod(mock, func, int(int))).Return(1);
         When(RRefOverloadedMethod(mock, func, int(int))).Return(3);
 
         SomeModernCppInterface& refObj = mock.get();
 
+        ASSERT_EQUAL(1, refObj.func(1));
         ASSERT_EQUAL(3, std::move(refObj).func(1));
+
+        Verify(RefOverloadedMethod(mock, func, int(int))).Exactly(1);
+        Verify(RRefOverloadedMethod(mock, func, int(int))).Exactly(1);
+
+        VerifyNoOtherInvocations(mock);
     }
 
     void stub_modern_constrref_overloaded_method() {
-
         Mock<SomeModernCppInterface> mock;
         When(ConstRRefOverloadedMethod(mock, func, int(int))).Return(4);
 
         const SomeModernCppInterface& refConstObj = mock.get();
         ASSERT_EQUAL(4, std::move(refConstObj).func(1));
+
+        Verify(ConstRRefOverloadedMethod(mock, func, int(int)).Using(1)).Exactly(1);
+
+        VerifyNoOtherInvocations(mock);
     }
 
 } __OverloadedMethods;

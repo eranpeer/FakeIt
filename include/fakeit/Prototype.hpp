@@ -8,51 +8,40 @@ namespace fakeit {
     template<typename R, typename... Args>
     struct Prototype<R(Args...)> {
 
-        typedef R Type(Args...);
-
-        typedef R ConstType(Args...) const;
-
-        typedef R RefType(Args...) &;
-
-        typedef R ConstRefType(Args...) const&;
-
-    	typedef R RRefType(Args...) &&;
-
-        typedef R ConstRRefType(Args...) const&&;
-
-    	template<class C>
+        template<class C>
         struct MemberType {
 
-            typedef Type(C::*type);
-            typedef ConstType(C::* constType);
-            typedef RefType(C::* refType);
-            typedef ConstRefType(C::* constRefType);
-            typedef RRefType(C::* rRefType);
-            typedef ConstRRefType(C::* constRRefType);
+            using Type = R (C::*)(Args...);
+            using ConstType = R (C::*)(Args...) const;
+            using RefType = R (C::*)(Args...) &;
+            using ConstRefType = R (C::*)(Args...) const&;
+            using RRefType = R (C::*)(Args...) &&;
+            using ConstRRefType = R (C::*)(Args...) const&&;
 
-            static type get(type t) {
+            static Type get(Type t) {
                 return t;
             }
 
-            static constType getconst(constType t) {
+            static ConstType getConst(ConstType t) {
                 return t;
             }
 
-            static refType getRef(refType t) {
+            static RefType getRef(RefType t) {
                 return t;
             }
 
-            static constRefType getConstRef(constRefType t) {
+            static ConstRefType getConstRef(ConstRefType t) {
                 return t;
             }
 
-            static rRefType getRRef(rRefType t) {
+            static RRefType getRRef(RRefType t) {
                 return t;
             }
 
-            static constRRefType getConstRRef(constRRefType t) {
+            static ConstRRefType getConstRRef(ConstRRefType t) {
                 return t;
             }
+
         };
 
     };
@@ -73,4 +62,3 @@ namespace fakeit {
     };
 
 }
-
