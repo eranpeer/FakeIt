@@ -8,21 +8,37 @@ namespace fakeit {
     template<typename R, typename... Args>
     struct Prototype<R(Args...)> {
 
-        typedef R Type(Args...);
-
-        typedef R ConstType(Args...) const;
-
         template<class C>
         struct MemberType {
 
-            typedef Type(C::*type);
-            typedef ConstType(C::*cosntType);
+            using Type = R (C::*)(Args...);
+            using ConstType = R (C::*)(Args...) const;
+            using RefType = R (C::*)(Args...) &;
+            using ConstRefType = R (C::*)(Args...) const&;
+            using RRefType = R (C::*)(Args...) &&;
+            using ConstRRefType = R (C::*)(Args...) const&&;
 
-            static type get(type t) {
+            static Type get(Type t) {
                 return t;
             }
 
-            static cosntType getconst(cosntType t) {
+            static ConstType getConst(ConstType t) {
+                return t;
+            }
+
+            static RefType getRef(RefType t) {
+                return t;
+            }
+
+            static ConstRefType getConstRef(ConstRefType t) {
+                return t;
+            }
+
+            static RRefType getRRef(RRefType t) {
+                return t;
+            }
+
+            static ConstRRefType getConstRRef(ConstRRefType t) {
                 return t;
             }
 
@@ -46,4 +62,3 @@ namespace fakeit {
     };
 
 }
-
