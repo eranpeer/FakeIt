@@ -113,7 +113,12 @@ def create_fakeit_file_for_config(config):
 
 
 def get_all_configs():
-    return os.listdir(os.path.join(fakeit_path, 'config'))
+    configs = []
+    with os.scandir(os.path.join(fakeit_path, 'config')) as entries:
+        for entry in entries:
+            if entry.is_dir():
+                configs.append(entry.name)
+    return configs
 
 
 def get_parser():
