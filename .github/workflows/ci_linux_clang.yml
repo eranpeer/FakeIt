@@ -76,7 +76,7 @@ jobs:
             enable_sanitizers_in_tests: ON
           }
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Build project
         env:
           CC: ${{ matrix.config.cc }}
