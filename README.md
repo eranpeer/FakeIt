@@ -3,12 +3,12 @@ FakeIt
  
 [![Join the chat at https://gitter.im/eranpeer/FakeIt](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/eranpeer/FakeIt?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Linux / GCC: [![Build status Linux/GCC](https://github.com/eranpeer/FakeIt/actions/workflows/ci_linux_gcc.yml/badge.svg)](https://github.com/eranpeer/FakeIt/actions/workflows/ci_linux_gcc.yml)
+Linux / GCC: [![CI Linux/GCC](https://github.com/eranpeer/FakeIt/actions/workflows/ci_linux_gcc.yml/badge.svg?branch=master&event=push)](https://github.com/eranpeer/FakeIt/actions/workflows/ci_linux_gcc.yml?query=branch%3Amaster+event%3Apush)
 [![Coverage Status](https://coveralls.io/repos/github/eranpeer/FakeIt/badge.svg?branch=master)](https://coveralls.io/github/eranpeer/FakeIt?branch=master)
 
-Linux / Clang: [![Build status Linux/Clang](https://github.com/eranpeer/FakeIt/actions/workflows/ci_linux_clang.yml/badge.svg)](https://github.com/eranpeer/FakeIt/actions/workflows/ci_linux_clang.yml)
+Linux / Clang: [![CI Linux/Clang](https://github.com/eranpeer/FakeIt/actions/workflows/ci_linux_clang.yml/badge.svg?branch=master&event=push)](https://github.com/eranpeer/FakeIt/actions/workflows/ci_linux_clang.yml?query=branch%3Amaster+event%3Apush)
 
-MSVC: [![Build status Windows/MSVC](https://github.com/eranpeer/FakeIt/actions/workflows/ci_windows_msvc.yml/badge.svg)](https://github.com/eranpeer/FakeIt/actions/workflows/ci_windows_msvc.yml)
+MSVC: [![CI Windows/MSVC](https://github.com/eranpeer/FakeIt/actions/workflows/ci_windows_msvc.yml/badge.svg?branch=master&event=push)](https://github.com/eranpeer/FakeIt/actions/workflows/ci_windows_msvc.yml?query=branch%3Amaster+event%3Apush)
 
 FakeIt is a simple mocking framework for C++. It supports GCC, Clang and MS Visual C++.
 
