@@ -1,0 +1,38 @@
+name: Coverage
+
+on:
+  push:
+  pull_request:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  coverage:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Install LCOV
+        run: sudo apt install -y lcov
+      - uses: actions/checkout@v3
+      - name: Build project
+        env:
+          CC: gcc-9
+          CXX: g++-9
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DENABLE_TESTING=ON -DENABLE_COVERAGE=ON
+          cmake --build build -j
+      - name: Run tests
+        run: |
+          build/tests/FakeIt_tests
+      - name: Generate report
+        run: |
+          cd build/tests/CMakeFiles/FakeIt_tests.dir
+          gcov-9 *.o
+          lcov --gcov-tool gcov-9 --directory . -c -o report.info
+          lcov --gcov-tool gcov-9 --remove report.info '/usr/*' '*/tests/*' -o report_filtered.info
+      - name: Upload report
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./build/tests/CMakeFiles/FakeIt_tests.dir/report_filtered.info

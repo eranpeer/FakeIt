@@ -8,7 +8,7 @@ function(add_configuration config_name)
     # Add include directories to the interface library.
     # If we use FakeIt from build-tree then we use BUILD_INTERFACE wrapper.
     # If we use FakeIt from install-tree then we use INSTALL_INTERFACE wrapper.
-    target_include_directories(FakeIt-${config_name} INTERFACE
+    target_include_directories(FakeIt-${config_name} SYSTEM INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${config_name}>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${config_name}>
     )
@@ -50,7 +50,7 @@ write_basic_package_version_file("${PROJECT_BINARY_DIR}/FakeItConfigVersion.cmak
     VERSION
         ${PROJECT_VERSION}
     COMPATIBILITY
-        AnyNewerVersion
+        SameMajorVersion
     ARCH_INDEPENDENT
 )
 install(FILES "${PROJECT_BINARY_DIR}/FakeItConfigVersion.cmake" DESTINATION ${FakeIt_CONFIG_DIR})

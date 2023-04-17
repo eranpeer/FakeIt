@@ -24,13 +24,14 @@ struct SpyingTests: tpunit::TestFixture {
 					TEST(SpyingTests::mockDestructorDoesNotDeleteObject), //
 					TEST(SpyingTests::canVerifyMethodAfterSpying),//
 					TEST(SpyingTests::canVerifyProcedureAfterSpying),
-                    TEST(SpyingTests::restoreObjectOnMockDelete),
+					TEST(SpyingTests::restoreObjectOnMockDelete),
 					TEST(SpyingTests::spyMultipleMethods),
 					TEST(SpyingTests::callMemberMethodFromSpiedMethod),
 					TEST(SpyingTests::spyThenVerifyValueArg),
 					TEST(SpyingTests::spyMoveOnlyPassedByRef),
 					TEST(SpyingTests::spyMoveOnlyWithoutVerify),
-					TEST(SpyingTests::spyVectorOfMoveOnly)
+					TEST(SpyingTests::spyVectorOfMoveOnly),
+					TEST(SpyingTests::spyWorksWithDerivedClasses)
 					//
 	) //
 	{
@@ -53,6 +54,9 @@ struct SpyingTests: tpunit::TestFixture {
 		virtual int func2(int arg) {
 			return arg;
 		}
+		virtual int func3(int arg) {
+			return arg;
+		}
 		virtual void proc(){
 		}
 		virtual std::string funcTakeByValue(std::string arg) {
@@ -70,6 +74,19 @@ struct SpyingTests: tpunit::TestFixture {
 				sum += moveOnly.i_;
 			}
 			return sum;
+		}
+	};
+
+	class DerivedClass : public SomeClass {
+	public:
+		int func1(int arg) override {
+			return arg * 2;
+		}
+		int func2(int arg) override {
+			return arg * 2;
+		}
+		int func3(int arg) override {
+			return arg * 2;
 		}
 	};
 
@@ -260,6 +277,21 @@ struct SpyingTests: tpunit::TestFixture {
 
 		SomeClass &i = mock.get();
 		ASSERT_EQUAL(15, i.funcVectorOfMoveOnly(testutils::multi_emplace(std::vector<MoveOnlyType>{}, MoveOnlyType{5}, MoveOnlyType{10})));
+	}
+
+	void spyWorksWithDerivedClasses() {
+		DerivedClass derived;
+		SomeClass& objRef = derived;
+		Mock<SomeClass> spy(objRef);
+		Spy(Method(spy,func1));
+		Fake(Method(spy,func2));
+		ASSERT_EQUAL(2, objRef.func1(1)); // spied, should call original
+		ASSERT_EQUAL(0, objRef.func2(1)); // mocked, should call default impl
+		ASSERT_EQUAL(2, objRef.func3(1)); // not spied nor mocked, should call original
+
+		Verify(Method(spy,func1).Using(1)).Once();
+		Verify(Method(spy,func2).Using(1)).Once();
+		VerifyNoOtherInvocations(spy);
 	}
 
 } __SpyingTests;

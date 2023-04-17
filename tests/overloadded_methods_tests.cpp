@@ -40,7 +40,12 @@ struct OverloadedMethods : tpunit::TestFixture {
             tpunit::TestFixture(
                     TEST(OverloadedMethods::stub_overloaded_methods),
                     TEST(OverloadedMethods::stub_const_overloaded_methods),
-                    TEST(OverloadedMethods::stub_overloaded_methods_with_templates<SomeInterface>)) {
+                    TEST(OverloadedMethods::stub_overloaded_methods_with_templates<SomeInterface>),
+                    TEST(OverloadedMethods::stub_modern_overloaded_methods),
+                    TEST(OverloadedMethods::stub_modern_rvalref_overloaded_method),
+                    TEST(OverloadedMethods::stub_modern_constrvalref_overloaded_method),
+                    TEST(OverloadedMethods::stub_modern_overloaded_proc)
+            ) {
     }
 
     void stub_overloaded_methods() {
@@ -92,6 +97,94 @@ struct OverloadedMethods : tpunit::TestFixture {
         When(OverloadedMethod(mock, func, int(int))).AlwaysReturn(45);
 
         ASSERT_EQUAL(45, i.func(1));
+    }
+
+    struct SomeModernCppInterface {
+        virtual int func() & = 0;
+
+        virtual int func(int) & = 0;
+        virtual int func(int) const& = 0;
+        virtual int func(int) && = 0;
+        virtual int func(int) const&& = 0;
+
+        virtual void proc(int) & = 0;
+        virtual void proc(int) const& = 0;
+        virtual void proc(int) && = 0;
+        virtual void proc(int) const&& = 0;
+    };
+
+    void stub_modern_overloaded_methods() {
+        Mock<SomeModernCppInterface> mock;
+        When(RefOverloadedMethod(mock, func, int(int))).Return(1);
+        When(ConstRefOverloadedMethod(mock, func, int(int))).Return(2);
+
+        SomeModernCppInterface& refObj = mock.get();
+        const SomeModernCppInterface& refConstObj = mock.get();
+
+        ASSERT_EQUAL(1, refObj.func(10));
+        ASSERT_EQUAL(2, refConstObj.func(20));
+
+        Verify(RefOverloadedMethod(mock, func, int(int)).Using(10)).Exactly(1);
+        Verify(ConstRefOverloadedMethod(mock, func, int(int)).Using(20)).Exactly(1);
+
+        VerifyNoOtherInvocations(mock);
+    }
+
+    void stub_modern_rvalref_overloaded_method() {
+        Mock<SomeModernCppInterface> mock;
+        When(RefOverloadedMethod(mock, func, int(int))).Return(1);
+        When(RValRefOverloadedMethod(mock, func, int(int))).Return(3);
+
+        SomeModernCppInterface& refObj = mock.get();
+
+        ASSERT_EQUAL(1, refObj.func(1));
+        ASSERT_EQUAL(3, std::move(refObj).func(1));
+
+        Verify(RefOverloadedMethod(mock, func, int(int))).Exactly(1);
+        Verify(RValRefOverloadedMethod(mock, func, int(int))).Exactly(1);
+
+        VerifyNoOtherInvocations(mock);
+    }
+
+    void stub_modern_constrvalref_overloaded_method() {
+        Mock<SomeModernCppInterface> mock;
+        When(ConstRValRefOverloadedMethod(mock, func, int(int))).Return(4);
+
+        const SomeModernCppInterface& refConstObj = mock.get();
+        ASSERT_EQUAL(4, std::move(refConstObj).func(1));
+
+        Verify(ConstRValRefOverloadedMethod(mock, func, int(int)).Using(1)).Exactly(1);
+
+        VerifyNoOtherInvocations(mock);
+    }
+
+    void stub_modern_overloaded_proc() {
+        Mock<SomeModernCppInterface> mock;
+        int ret = 0;
+
+        When(ConstRValRefOverloadedMethod(mock, proc, void(int))).Do([&](int){ ret = 4;});
+        When(ConstRefOverloadedMethod(mock, proc, void(int))).Do([&](int){ret = 3;});
+        When(RValRefOverloadedMethod(mock, proc, void(int))).Do([&](int){ ret = 2;});
+        When(RefOverloadedMethod(mock, proc, void(int))).Do([&](int){ret = 1;});
+
+        SomeModernCppInterface& refObj = mock.get();
+        const SomeModernCppInterface& refConstObj = mock.get();
+
+        refObj.proc(0);
+        ASSERT_EQUAL(1, ret);
+        std::move(refObj).proc(0);
+        ASSERT_EQUAL(2, ret);
+        refConstObj.proc(0);
+        ASSERT_EQUAL(3, ret);
+        std::move(refConstObj).proc(0);
+        ASSERT_EQUAL(4, ret);
+
+        Verify(RefOverloadedMethod(mock, proc, void(int))).Exactly(1);
+        Verify(RValRefOverloadedMethod(mock, proc, void(int))).Exactly(1);
+        Verify(ConstRefOverloadedMethod(mock, proc, void(int))).Exactly(1);
+        Verify(ConstRValRefOverloadedMethod(mock, proc, void(int))).Exactly(1);
+
+        VerifyNoOtherInvocations(mock);
     }
 
 } __OverloadedMethods;

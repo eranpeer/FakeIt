@@ -236,7 +236,7 @@ struct BasicStubbing : tpunit::TestFixture {
         i.procIncompatArgs(s, chk_v);
         ASSERT_EQUAL(chk_v, v);
 
-#if __cplusplus < 201703L
+#if FAKEIT_CPLUSPLUS < 201703L || defined (_WIN32)
         When(Method(mock, procIncompatArgs)).ReturnAndSet(_1 <= v);
         try {
             i.procIncompatArgs(s, chk_v);
@@ -884,4 +884,3 @@ struct BasicStubbing : tpunit::TestFixture {
     }
 
 } __BasicStubbing;
-
