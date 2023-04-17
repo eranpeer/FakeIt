@@ -42,8 +42,8 @@ struct OverloadedMethods : tpunit::TestFixture {
                     TEST(OverloadedMethods::stub_const_overloaded_methods),
                     TEST(OverloadedMethods::stub_overloaded_methods_with_templates<SomeInterface>),
                     TEST(OverloadedMethods::stub_modern_overloaded_methods),
-                    TEST(OverloadedMethods::stub_modern_rref_overloaded_method),
-                    TEST(OverloadedMethods::stub_modern_constrref_overloaded_method),
+                    TEST(OverloadedMethods::stub_modern_rvalref_overloaded_method),
+                    TEST(OverloadedMethods::stub_modern_constrvalref_overloaded_method),
                     TEST(OverloadedMethods::stub_modern_overloaded_proc)
             ) {
     }
@@ -130,10 +130,10 @@ struct OverloadedMethods : tpunit::TestFixture {
         VerifyNoOtherInvocations(mock);
     }
 
-    void stub_modern_rref_overloaded_method() {
+    void stub_modern_rvalref_overloaded_method() {
         Mock<SomeModernCppInterface> mock;
         When(RefOverloadedMethod(mock, func, int(int))).Return(1);
-        When(RRefOverloadedMethod(mock, func, int(int))).Return(3);
+        When(RValRefOverloadedMethod(mock, func, int(int))).Return(3);
 
         SomeModernCppInterface& refObj = mock.get();
 
@@ -141,19 +141,19 @@ struct OverloadedMethods : tpunit::TestFixture {
         ASSERT_EQUAL(3, std::move(refObj).func(1));
 
         Verify(RefOverloadedMethod(mock, func, int(int))).Exactly(1);
-        Verify(RRefOverloadedMethod(mock, func, int(int))).Exactly(1);
+        Verify(RValRefOverloadedMethod(mock, func, int(int))).Exactly(1);
 
         VerifyNoOtherInvocations(mock);
     }
 
-    void stub_modern_constrref_overloaded_method() {
+    void stub_modern_constrvalref_overloaded_method() {
         Mock<SomeModernCppInterface> mock;
-        When(ConstRRefOverloadedMethod(mock, func, int(int))).Return(4);
+        When(ConstRValRefOverloadedMethod(mock, func, int(int))).Return(4);
 
         const SomeModernCppInterface& refConstObj = mock.get();
         ASSERT_EQUAL(4, std::move(refConstObj).func(1));
 
-        Verify(ConstRRefOverloadedMethod(mock, func, int(int)).Using(1)).Exactly(1);
+        Verify(ConstRValRefOverloadedMethod(mock, func, int(int)).Using(1)).Exactly(1);
 
         VerifyNoOtherInvocations(mock);
     }
@@ -162,9 +162,9 @@ struct OverloadedMethods : tpunit::TestFixture {
         Mock<SomeModernCppInterface> mock;
         int ret = 0;
 
-        When(ConstRRefOverloadedMethod(mock, proc, void(int))).Do([&](int){ret = 4;});
+        When(ConstRValRefOverloadedMethod(mock, proc, void(int))).Do([&](int){ ret = 4;});
         When(ConstRefOverloadedMethod(mock, proc, void(int))).Do([&](int){ret = 3;});
-        When(RRefOverloadedMethod(mock, proc, void(int))).Do([&](int){ret = 2;});
+        When(RValRefOverloadedMethod(mock, proc, void(int))).Do([&](int){ ret = 2;});
         When(RefOverloadedMethod(mock, proc, void(int))).Do([&](int){ret = 1;});
 
         SomeModernCppInterface& refObj = mock.get();
@@ -180,9 +180,9 @@ struct OverloadedMethods : tpunit::TestFixture {
         ASSERT_EQUAL(4, ret);
 
         Verify(RefOverloadedMethod(mock, proc, void(int))).Exactly(1);
-        Verify(RRefOverloadedMethod(mock, proc, void(int))).Exactly(1);
+        Verify(RValRefOverloadedMethod(mock, proc, void(int))).Exactly(1);
         Verify(ConstRefOverloadedMethod(mock, proc, void(int))).Exactly(1);
-        Verify(ConstRRefOverloadedMethod(mock, proc, void(int))).Exactly(1);
+        Verify(ConstRValRefOverloadedMethod(mock, proc, void(int))).Exactly(1);
 
         VerifyNoOtherInvocations(mock);
     }

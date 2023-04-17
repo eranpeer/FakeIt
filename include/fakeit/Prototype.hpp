@@ -15,8 +15,8 @@ namespace fakeit {
             using ConstType = R (C::*)(Args...) const;
             using RefType = R (C::*)(Args...) &;
             using ConstRefType = R (C::*)(Args...) const&;
-            using RRefType = R (C::*)(Args...) &&;
-            using ConstRRefType = R (C::*)(Args...) const&&;
+            using RValRefType = R (C::*)(Args...) &&;
+            using ConstRValRefType = R (C::*)(Args...) const&&;
 
             static Type get(Type t) {
                 return t;
@@ -34,11 +34,11 @@ namespace fakeit {
                 return t;
             }
 
-            static RRefType getRRef(RRefType t) {
+            static RValRefType getRValRef(RValRefType t) {
                 return t;
             }
 
-            static ConstRRefType getConstRRef(ConstRRefType t) {
+            static ConstRValRefType getConstRValRef(ConstRValRefType t) {
                 return t;
             }
 
