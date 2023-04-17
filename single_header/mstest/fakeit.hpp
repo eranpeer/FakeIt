@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2022-12-16 13:26:50.590953
+ *  Generated: 2023-04-17 21:28:51.558480
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -18,11 +18,23 @@
 #include <vector>
 #include <stdexcept>
 #if defined (__GNUG__) || _MSC_VER >= 1900
-#define FAKEIT_THROWS noexcept(false)
-#define FAKEIT_NO_THROWS noexcept(true)
+#   define FAKEIT_THROWS noexcept(false)
+#   define FAKEIT_NO_THROWS noexcept(true)
 #elif defined (_MSC_VER)
-#define FAKEIT_THROWS throw(...)
-#define FAKEIT_NO_THROWS
+#   define FAKEIT_THROWS throw(...)
+#   define FAKEIT_NO_THROWS
+#endif
+
+#ifdef _MSVC_LANG
+#   define FAKEIT_CPLUSPLUS _MSVC_LANG
+#else
+#   define FAKEIT_CPLUSPLUS __cplusplus
+#endif
+
+#ifdef __GNUG__
+#   define FAKEIT_DISARM_UBSAN __attribute__((no_sanitize("undefined")))
+#else
+#   define FAKEIT_DISARM_UBSAN
 #endif
 #include <typeinfo>
 #include <unordered_set>
@@ -1003,8 +1015,9 @@ namespace fakeit {
 #include <exception>
 
 
+
 namespace fakeit {
-#if __cplusplus >= 201703L || defined(__cpp_lib_uncaught_exceptions)
+#if FAKEIT_CPLUSPLUS >= 201703L || defined(__cpp_lib_uncaught_exceptions)
     inline bool UncaughtException () {
         return std::uncaught_exceptions() >= 1;
     }
@@ -5296,6 +5309,7 @@ namespace fakeit {
 #endif
 
         template<typename C>
+        FAKEIT_DISARM_UBSAN
         static typename std::enable_if<std::has_virtual_destructor<C>::value, unsigned int>::type
         getDestructorOffset() {
             VirtualOffsetSelector offsetSelctor;
@@ -5858,6 +5872,32 @@ namespace fakeit
         }
     };
 }
+#include <functional>
+
+namespace fakeit {
+
+    class Finally {
+    private:
+        std::function<void()> _finallyClause;
+
+        Finally(const Finally &) = delete;
+
+        Finally &operator=(const Finally &) = delete;
+
+    public:
+        explicit Finally(std::function<void()> f) :
+                _finallyClause(f) {
+        }
+
+        Finally(Finally&& other) {
+             _finallyClause.swap(other._finallyClause);
+        }
+
+        ~Finally() {
+            _finallyClause();
+        }
+    };
+}
 namespace fakeit {
 
     struct MethodProxy {
@@ -5917,6 +5957,11 @@ namespace fakeit {
             return MethodProxy(id, offset, union_cast<void *>(&MethodProxyCreator::methodProxyX < id > ));
         }
 
+        template<unsigned int id>
+        MethodProxy createMethodProxyStatic(unsigned int offset) {
+            return MethodProxy(id, offset, union_cast<void *>(&MethodProxyCreator::methodProxyXStatic < id > ));
+        }
+
     protected:
 
         R methodProxy(unsigned int id, const typename fakeit::production_arg<arglist>::type... args) {
@@ -5931,6 +5976,20 @@ namespace fakeit {
         template<int id>
         R methodProxyX(arglist ... args) {
             return methodProxy(id, std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
+        }
+
+        static R methodProxyStatic(void* instance, unsigned int id, const typename fakeit::production_arg<arglist>::type... args) {
+            InvocationHandlerCollection *invocationHandlerCollection = InvocationHandlerCollection::getInvocationHandlerCollection(
+                instance);
+            MethodInvocationHandler<R, arglist...> *invocationHandler =
+                (MethodInvocationHandler<R, arglist...> *) invocationHandlerCollection->getInvocatoinHandlerPtrById(
+                    id);
+            return invocationHandler->handleMethodInvocation(std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
+        }
+
+        template<int id>
+        static R methodProxyXStatic(void* instance, arglist ... args) {
+            return methodProxyStatic(instance, id, std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
         }
     };
 }
@@ -6022,7 +6081,17 @@ namespace fakeit {
         void stubDtor(MethodInvocationHandler<void> *methodInvocationHandler) {
             auto offset = VTUtils::getDestructorOffset<C>();
             MethodProxyCreator<void> creator;
+
+
+
+
+
+
+#ifdef _MSC_VER
+            bindDtor(creator.createMethodProxyStatic<0>(offset), methodInvocationHandler);
+#else
             bindDtor(creator.createMethodProxy<0>(offset), methodInvocationHandler);
+#endif
         }
 
         template<typename R, typename ... arglist>
@@ -6073,6 +6142,18 @@ namespace fakeit {
         VirtualTable<C, baseclasses...> &getOriginalVT() {
             VirtualTable<C, baseclasses...> &vt = originalVtHandle.restore();
             return vt;
+        }
+
+        template<typename R, typename ... arglist>
+        Finally createRaiiMethodSwapper(R(C::*vMethod)(arglist...)) {
+            auto offset = VTUtils::getOffset(vMethod);
+            auto fakeMethod = getFake().getVirtualTable().getMethod(offset);
+            auto originalMethod = getOriginalVT().getMethod(offset);
+
+            getFake().setMethod(offset, originalMethod);
+            return Finally{[&, offset, fakeMethod](){
+                getFake().setMethod(offset, fakeMethod);
+            }};
         }
 
     private:
@@ -7589,7 +7670,7 @@ namespace fakeit {
         MethodStubbingProgress &operator=(const MethodStubbingProgress &other) = delete;
 
         template<typename ... valuelist>
-#if __cplusplus >= 201402L
+#if FAKEIT_CPLUSPLUS >= 201402L
         auto
 #else
         std::function<R (typename fakeit::test_arg<arglist>::type...)>
@@ -7614,7 +7695,7 @@ namespace fakeit {
         }
 
         template<typename ...T, int ...N>
-#if __cplusplus >= 201402L
+#if FAKEIT_CPLUSPLUS >= 201402L
         auto
 #else
         std::function<R (typename fakeit::test_arg<arglist>::type...)>
@@ -7733,7 +7814,7 @@ namespace fakeit {
         MethodStubbingProgress &operator=(const MethodStubbingProgress &other) = delete;
 
         template<typename ... valuelist>
-#if __cplusplus >= 201402L
+#if FAKEIT_CPLUSPLUS >= 201402L
         auto
 #else
         std::function<void (typename fakeit::test_arg<arglist>::type...)>
@@ -7757,7 +7838,7 @@ namespace fakeit {
         }
 
         template<typename ...T, int ...N>
-#if __cplusplus >= 201402L
+#if FAKEIT_CPLUSPLUS >= 201402L
         auto
 #else
         std::function<void (typename fakeit::test_arg<arglist>::type...)>
@@ -7799,7 +7880,7 @@ namespace fakeit {
             template <typename ...T, int ...N>
             static void CheckPositions(const std::tuple<ArgValue<T, N>...> arg_vals)
             {
-#if __cplusplus >= 201402L && !defined(_WIN32)
+#if FAKEIT_CPLUSPLUS >= 201402L && !defined(_WIN32)
                 static_assert(std::get<tuple_index>(arg_vals).pos <= max_index,
                     "Argument index out of range");
                 ArgValidator<max_index, tuple_index - 1>::CheckPositions(arg_vals);
@@ -7851,7 +7932,7 @@ namespace fakeit {
         struct ArgLocator {
             template<typename current_arg, typename ...T, int ...N>
             static void AssignArg(current_arg &&p, std::tuple<ArgValue<T, N>...> arg_vals) {
-#if __cplusplus >= 201703L && !defined (_WIN32)
+#if FAKEIT_CPLUSPLUS >= 201703L && !defined (_WIN32)
                 if constexpr (std::get<check_index>(arg_vals).pos == arg_index)
                     GetArg(std::forward<current_arg>(p)) = std::get<check_index>(arg_vals).value;
 #else
@@ -7862,7 +7943,7 @@ namespace fakeit {
                     ArgLocator<arg_index, check_index - 1>::AssignArg(std::forward<current_arg>(p), arg_vals);
             }
 
-#if __cplusplus < 201703L || defined (_WIN32)
+#if FAKEIT_CPLUSPLUS < 201703L || defined (_WIN32)
         private:
             template<typename T, typename U>
             static
@@ -7920,28 +8001,8 @@ namespace fakeit {
     using placeholders::operator <=;
 }
 #include <vector>
-#include <functional>
 
-namespace fakeit {
 
-    class Finally {
-    private:
-        std::function<void()> _finallyClause;
-
-        Finally(const Finally &);
-
-        Finally &operator=(const Finally &);
-
-    public:
-        explicit Finally(std::function<void()> f) :
-                _finallyClause(f) {
-        }
-
-        ~Finally() {
-            _finallyClause();
-        }
-    };
-}
 
 namespace fakeit {
 
@@ -8658,11 +8719,12 @@ namespace fakeit {
 
             template<typename ... T, typename std::enable_if<all_true<smart_is_copy_constructible<T>::value...>::value, int>::type = 0>
             std::function<R(arglist&...)> getOriginalMethodCopyArgsInternal(int) {
-                void *mPtr = MethodMockingContextBase<R, arglist...>::_mock.getOriginalMethod(_vMethod);
+                auto mPtr = _vMethod;
+                auto& mock = MethodMockingContextBase<R, arglist...>::_mock;
                 C * instance = &(MethodMockingContextBase<R, arglist...>::_mock.get());
-                return [=](arglist&... args) -> R {
-                    auto m = union_cast<typename VTableMethodType<R,arglist...>::type>(mPtr);
-                    return m(instance, args...);
+                return [=, &mock](arglist&... args) -> R {
+                    auto methodSwapper = mock.createRaiiMethodSwapper(mPtr);
+                    return (instance->*mPtr)(args...);
                 };
             }
 
@@ -8678,11 +8740,12 @@ namespace fakeit {
             }
 
             std::function<R(arglist&...)> getOriginalMethodForwardArgs() override {
-                void *mPtr = MethodMockingContextBase<R, arglist...>::_mock.getOriginalMethod(_vMethod);
+                auto mPtr = _vMethod;
+                auto& mock = MethodMockingContextBase<R, arglist...>::_mock;
                 C * instance = &(MethodMockingContextBase<R, arglist...>::_mock.get());
-                return [=](arglist&... args) -> R {
-                    auto m = union_cast<typename VTableMethodType<R,arglist...>::type>(mPtr);
-                    return m(instance, std::forward<arglist>(args)...);
+                return [=, &mock](arglist&... args) -> R {
+                    auto methodSwapper = mock.createRaiiMethodSwapper(mPtr);
+                    return (instance->*mPtr)(std::forward<arglist>(args)...);
                 };
             }
         };
@@ -8766,6 +8829,11 @@ namespace fakeit {
         }
 
         template<typename R, typename ... arglist>
+        Finally createRaiiMethodSwapper(R(C::*vMethod)(arglist...)) {
+            return _proxy.createRaiiMethodSwapper(vMethod);
+        }
+
+        template<typename R, typename ... arglist>
         void *getOriginalMethod(R (C::*vMethod)(arglist...)) {
             auto vt = _proxy.getOriginalVT();
             auto offset = VTUtils::getOffset(vMethod);
@@ -8819,21 +8887,37 @@ namespace fakeit {
     template<typename R, typename... Args>
     struct Prototype<R(Args...)> {
 
-        typedef R Type(Args...);
-
-        typedef R ConstType(Args...) const;
-
         template<class C>
         struct MemberType {
 
-            typedef Type(C::*type);
-            typedef ConstType(C::*cosntType);
+            using Type = R (C::*)(Args...);
+            using ConstType = R (C::*)(Args...) const;
+            using RefType = R (C::*)(Args...) &;
+            using ConstRefType = R (C::*)(Args...) const&;
+            using RValRefType = R (C::*)(Args...) &&;
+            using ConstRValRefType = R (C::*)(Args...) const&&;
 
-            static type get(type t) {
+            static Type get(Type t) {
                 return t;
             }
 
-            static cosntType getconst(cosntType t) {
+            static ConstType getConst(ConstType t) {
+                return t;
+            }
+
+            static RefType getRef(RefType t) {
+                return t;
+            }
+
+            static ConstRefType getConstRef(ConstRefType t) {
+                return t;
+            }
+
+            static RValRefType getRValRef(RValRefType t) {
+                return t;
+            }
+
+            static ConstRValRefType getConstRValRef(ConstRValRefType t) {
                 return t;
             }
 
@@ -8858,11 +8942,25 @@ namespace fakeit {
 
 }
 
-
 namespace fakeit {
     namespace internal {
+        template<typename T, typename = void>
+        struct WithCommonVoid {
+            using type = T;
+        };
+
+
+
+
+
+        template<typename T>
+        struct WithCommonVoid<T, typename std::enable_if<std::is_void<T>::value, void>::type> {
+            using type = void;
+        };
+
+        template<typename T>
+        using WithCommonVoid_t = typename WithCommonVoid<T>::type;
     }
-    using namespace fakeit::internal;
 
     template<typename C, typename ... baseclasses>
     class Mock : public ActualInvocationsSource {
@@ -8904,58 +9002,67 @@ namespace fakeit {
             return impl.stubDataMember(member, ctorargs...);
         }
 
+
         template<int id, typename R, typename T, typename ... arglist, class = typename std::enable_if<
-                !std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
-        MockingContext<R, arglist...> stub(R (T::*vMethod)(arglist...) const) {
-            auto methodWithoutConstVolatile = reinterpret_cast<R (T::*)(arglist...)>(vMethod);
+                std::is_base_of<T, C>::value>::type>
+        MockingContext<internal::WithCommonVoid_t<R>, arglist...> stub(R (T::*vMethod)(arglist...) const) {
+            auto methodWithoutConstVolatile = reinterpret_cast<internal::WithCommonVoid_t<R> (T::*)(arglist...)>(vMethod);
             return impl.template stubMethod<id>(methodWithoutConstVolatile);
         }
 
+
         template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
-                !std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
-        MockingContext<R, arglist...> stub(R(T::*vMethod)(arglist...) volatile) {
-            auto methodWithoutConstVolatile = reinterpret_cast<R(T::*)(arglist...)>(vMethod);
+                std::is_base_of<T, C>::value>::type>
+        MockingContext<internal::WithCommonVoid_t<R>, arglist...> stub(R(T::*vMethod)(arglist...) volatile) {
+            auto methodWithoutConstVolatile = reinterpret_cast<internal::WithCommonVoid_t<R>(T::*)(arglist...)>(vMethod);
             return impl.template stubMethod<id>(methodWithoutConstVolatile);
         }
 
+
         template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
-                !std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
-        MockingContext<R, arglist...> stub(R(T::*vMethod)(arglist...) const volatile) {
-            auto methodWithoutConstVolatile = reinterpret_cast<R(T::*)(arglist...)>(vMethod);
+                std::is_base_of<T, C>::value>::type>
+        MockingContext<internal::WithCommonVoid_t<R>, arglist...> stub(R(T::*vMethod)(arglist...) const volatile) {
+            auto methodWithoutConstVolatile = reinterpret_cast<internal::WithCommonVoid_t<R>(T::*)(arglist...)>(vMethod);
             return impl.template stubMethod<id>(methodWithoutConstVolatile);
         }
 
-        template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
-                !std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
-        MockingContext<R, arglist...> stub(R(T::*vMethod)(arglist...)) {
-            return impl.template stubMethod<id>(vMethod);
-        }
 
         template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
-                std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
-        MockingContext<void, arglist...> stub(R(T::*vMethod)(arglist...) const) {
-            auto methodWithoutConstVolatile = reinterpret_cast<void (T::*)(arglist...)>(vMethod);
+                std::is_base_of<T, C>::value>::type>
+        MockingContext<internal::WithCommonVoid_t<R>, arglist...> stub(R(T::*vMethod)(arglist...)) {
+            auto methodWithoutConstVolatile = reinterpret_cast<internal::WithCommonVoid_t<R>(T::*)(arglist...)>(vMethod);
             return impl.template stubMethod<id>(methodWithoutConstVolatile);
         }
 
+
         template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
-                std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
-        MockingContext<void, arglist...> stub(R(T::*vMethod)(arglist...) volatile) {
-            auto methodWithoutConstVolatile = reinterpret_cast<void (T::*)(arglist...)>(vMethod);
+                std::is_base_of<T, C>::value>::type>
+        MockingContext<internal::WithCommonVoid_t<R>, arglist...> stub(R(T::*vMethod)(arglist...) &) {
+            auto methodWithoutConstVolatile = reinterpret_cast<internal::WithCommonVoid_t<R>(T::*)(arglist...)>(vMethod);
             return impl.template stubMethod<id>(methodWithoutConstVolatile);
         }
 
+
         template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
-                std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
-        MockingContext<void, arglist...> stub(R(T::*vMethod)(arglist...) const volatile) {
-            auto methodWithoutConstVolatile = reinterpret_cast<void (T::*)(arglist...)>(vMethod);
+                std::is_base_of<T, C>::value>::type>
+        MockingContext<internal::WithCommonVoid_t<R>, arglist...> stub(R(T::*vMethod)(arglist...) const&) {
+            auto methodWithoutConstVolatile = reinterpret_cast<internal::WithCommonVoid_t<R>(T::*)(arglist...)>(vMethod);
             return impl.template stubMethod<id>(methodWithoutConstVolatile);
         }
 
+
         template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
-                std::is_void<R>::value && std::is_base_of<T, C>::value>::type>
-        MockingContext<void, arglist...> stub(R(T::*vMethod)(arglist...)) {
-            auto methodWithoutConstVolatile = reinterpret_cast<void (T::*)(arglist...)>(vMethod);
+                std::is_base_of<T, C>::value>::type>
+        MockingContext<internal::WithCommonVoid_t<R>, arglist...> stub(R(T::*vMethod)(arglist...) &&) {
+            auto methodWithoutConstVolatile = reinterpret_cast<internal::WithCommonVoid_t<R>(T::*)(arglist...)>(vMethod);
+            return impl.template stubMethod<id>(methodWithoutConstVolatile);
+        }
+
+
+        template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
+                std::is_base_of<T, C>::value>::type>
+        MockingContext<internal::WithCommonVoid_t<R>, arglist...> stub(R(T::*vMethod)(arglist...) const&&) {
+            auto methodWithoutConstVolatile = reinterpret_cast<internal::WithCommonVoid_t<R>(T::*)(arglist...)>(vMethod);
             return impl.template stubMethod<id>(methodWithoutConstVolatile);
         }
 
@@ -9991,7 +10098,19 @@ namespace fakeit {
     fakeit::Prototype<prototype>::template MemberType<typename MOCK_TYPE(mock)>::get(&MOCK_TYPE(mock)::method)
 
 #define CONST_OVERLOADED_METHOD_PTR(mock, method, prototype) \
-    fakeit::Prototype<prototype>::template MemberType<typename MOCK_TYPE(mock)>::getconst(&MOCK_TYPE(mock)::method)
+    fakeit::Prototype<prototype>::template MemberType<typename MOCK_TYPE(mock)>::getConst(&MOCK_TYPE(mock)::method)
+
+#define REF_OVERLOADED_METHOD_PTR(mock, method, prototype) \
+    fakeit::Prototype<prototype>::MemberType<typename MOCK_TYPE(mock)>::getRef(&MOCK_TYPE(mock)::method)
+
+#define CONST_REF_OVERLOADED_METHOD_PTR(mock, method, prototype) \
+    fakeit::Prototype<prototype>::MemberType<typename MOCK_TYPE(mock)>::getConstRef(&MOCK_TYPE(mock)::method)
+
+#define R_VAL_REF_OVERLOADED_METHOD_PTR(mock, method, prototype) \
+    fakeit::Prototype<prototype>::MemberType<typename MOCK_TYPE(mock)>::getRValRef(&MOCK_TYPE(mock)::method)
+
+#define CONST_R_VAL_REF_OVERLOADED_METHOD_PTR(mock, method, prototype) \
+    fakeit::Prototype<prototype>::MemberType<typename MOCK_TYPE(mock)>::getConstRValRef(&MOCK_TYPE(mock)::method)
 
 #define Dtor(mock) \
     (mock).dtor().setMethodDetails(#mock,"destructor")
@@ -10004,6 +10123,18 @@ namespace fakeit {
 
 #define ConstOverloadedMethod(mock, method, prototype) \
     (mock).template stub<__COUNTER__>(CONST_OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
+
+#define RefOverloadedMethod(mock, method, prototype) \
+    (mock).template stub<__COUNTER__>(REF_OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
+
+#define ConstRefOverloadedMethod(mock, method, prototype) \
+    (mock).template stub<__COUNTER__>(CONST_REF_OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
+
+#define RValRefOverloadedMethod(mock, method, prototype) \
+    (mock).template stub<__COUNTER__>(R_VAL_REF_OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
+
+#define ConstRValRefOverloadedMethod(mock, method, prototype) \
+    (mock).template stub<__COUNTER__>(CONST_R_VAL_REF_OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
 
 #define Verify(...) \
         Verify( __VA_ARGS__ ).setFileInfo(__FILE__, __LINE__, __func__)
@@ -10019,6 +10150,5 @@ namespace fakeit {
 
 #define When(call) \
     When(call)
-
 
 #endif
