@@ -50,7 +50,7 @@ write_basic_package_version_file("${PROJECT_BINARY_DIR}/FakeItConfigVersion.cmak
     VERSION
         ${PROJECT_VERSION}
     COMPATIBILITY
-        AnyNewerVersion
+        SameMajorVersion
     ARCH_INDEPENDENT
 )
 install(FILES "${PROJECT_BINARY_DIR}/FakeItConfigVersion.cmake" DESTINATION ${FakeIt_CONFIG_DIR})

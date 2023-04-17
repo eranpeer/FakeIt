@@ -24,7 +24,7 @@ struct SpyingTests: tpunit::TestFixture {
 					TEST(SpyingTests::mockDestructorDoesNotDeleteObject), //
 					TEST(SpyingTests::canVerifyMethodAfterSpying),//
 					TEST(SpyingTests::canVerifyProcedureAfterSpying),
-                    TEST(SpyingTests::restoreObjectOnMockDelete),
+					TEST(SpyingTests::restoreObjectOnMockDelete),
 					TEST(SpyingTests::spyMultipleMethods),
 					TEST(SpyingTests::callMemberMethodFromSpiedMethod),
 					TEST(SpyingTests::spyThenVerifyValueArg),
@@ -51,12 +51,12 @@ struct SpyingTests: tpunit::TestFixture {
 		virtual int func1(int arg) {
 			return arg;
 		}
-                virtual int func2(int arg) {
-                        return arg;
-                }
-                virtual int func3(int arg) {
-                        return arg;
-                }
+		virtual int func2(int arg) {
+			return arg;
+		}
+		virtual int func3(int arg) {
+			return arg;
+		}
 		virtual void proc(){
 		}
 		virtual std::string funcTakeByValue(std::string arg) {
@@ -77,18 +77,18 @@ struct SpyingTests: tpunit::TestFixture {
 		}
 	};
 
-        class DerivedClass : public SomeClass {
-        public:
-                int func1(int arg) override {
-                        return arg * 2;
-                }
-                int func2(int arg) override {
-                        return arg * 2;
-                }
-                int func3(int arg) override {
-                        return arg * 2;
-                }
-        };
+	class DerivedClass : public SomeClass {
+	public:
+		int func1(int arg) override {
+			return arg * 2;
+		}
+		int func2(int arg) override {
+			return arg * 2;
+		}
+		int func3(int arg) override {
+			return arg * 2;
+		}
+	};
 
 	void useOriginalClassMethodIfNotFaked() {
 		SomeClass obj;
