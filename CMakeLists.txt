@@ -1,10 +1,10 @@
 # ARCH_INDEPENDENT option at write_basic_package_version_file requires 3.14 version of CMake.
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.14...3.26)
 
 project(FakeIt VERSION 2.4.0 LANGUAGES CXX)
 
 option(ENABLE_TESTING "Enable build of tests." OFF)
-option(OVERRIDE_CXX_STANDARD_FOR_TESTS "Override the C++ standard used for building tests." "")
+set(OVERRIDE_CXX_STANDARD_FOR_TESTS "" CACHE STRING "Override the C++ standard used for building tests.")
 option(ENABLE_SANITIZERS_IN_TESTS "Enable address / undefined sanitizers in tests." OFF)
 option(ENABLE_COVERAGE "Enable coverage reporting for gcc/clang." OFF)
 
@@ -15,6 +15,7 @@ add_subdirectory(include)
 add_subdirectory(config)
 
 if(ENABLE_TESTING)
+    enable_testing()
     # Directory containing test targets of FakeIt.
     add_subdirectory(tests)
 endif()
