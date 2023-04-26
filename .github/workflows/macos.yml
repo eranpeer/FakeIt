@@ -1,5 +1,5 @@
 ---
-name: macos
+name: CI OSX/AppleClang
 
 on: [push, pull_request]
 
@@ -27,7 +27,7 @@ jobs:
           cmake -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
                 -DENABLE_TESTING=ON \
                 -DCMAKE_CXX_EXTENSIONS=OFF \
-                -DOVERRIDE_CXX_STANDARD_FOR_TESTS=${{ matrix.config.cxx_std }} \
+                -DOVERRIDE_CXX_STANDARD_FOR_TESTS=${{matrix.cxx_std}} \
                 -DENABLE_SANITIZERS_IN_TESTS=ON \
                 $GITHUB_WORKSPACE
 
