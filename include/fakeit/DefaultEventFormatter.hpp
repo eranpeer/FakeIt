@@ -15,7 +15,7 @@ namespace fakeit {
 
     struct DefaultEventFormatter : public EventFormatter {
 
-        virtual std::string format(const UnexpectedMethodCallEvent &e) override {
+        std::string format(const UnexpectedMethodCallEvent &e) override {
             std::ostringstream out;
             out << "Unexpected method invocation: ";
             out << e.getInvocation().format() << std::endl;
@@ -34,7 +34,7 @@ namespace fakeit {
          Actual matches  : 0
          Actual sequence : no actual invocations
          */
-        virtual std::string format(const SequenceVerificationEvent &e) override {
+        std::string format(const SequenceVerificationEvent &e) override {
             std::ostringstream out;
             out << "Verification error" << std::endl;
 
@@ -60,7 +60,7 @@ namespace fakeit {
             return out.str();
         }
 
-        virtual std::string format(const NoMoreInvocationsVerificationEvent &e) override {
+        std::string format(const NoMoreInvocationsVerificationEvent &e) override {
             std::ostringstream out;
             out << "Verification error" << std::endl;
             out << "Expected no more invocations!! but the following unverified invocations were found:" << std::endl;

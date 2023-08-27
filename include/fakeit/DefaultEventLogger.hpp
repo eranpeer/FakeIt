@@ -18,15 +18,15 @@ namespace fakeit {
 
         DefaultEventLogger(EventFormatter &formatter) : _formatter(formatter), _out(std::cout) { }
 
-        virtual void handle(const UnexpectedMethodCallEvent &e) override {
+        void handle(const UnexpectedMethodCallEvent &e) override {
             _out << _formatter.format(e) << std::endl;
         }
 
-        virtual void handle(const SequenceVerificationEvent &e) override {
+        void handle(const SequenceVerificationEvent &e) override {
             _out << _formatter.format(e) << std::endl;
         }
 
-        virtual void handle(const NoMoreInvocationsVerificationEvent &e) override {
+        void handle(const NoMoreInvocationsVerificationEvent &e) override {
             _out << _formatter.format(e) << std::endl;
         }
 

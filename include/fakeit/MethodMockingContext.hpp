@@ -182,7 +182,7 @@ namespace fakeit {
                 : _impl(std::move(other._impl)) {
         }
 
-        virtual ~MethodMockingContext() FAKEIT_NO_THROWS { }
+        ~MethodMockingContext() FAKEIT_NO_THROWS override { }
 
         std::string format() const override {
             return _impl->format();

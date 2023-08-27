@@ -29,15 +29,15 @@ struct CustomEventFormatting : tpunit::TestFixture {
 
 	class CustomEventFormatter : public EventFormatter {
 
-		virtual std::string format(const fakeit::UnexpectedMethodCallEvent&) {
+		std::string format(const fakeit::UnexpectedMethodCallEvent&) override {
 			return{ "UnexpectedMethodCallEvent" };
 		}
 
-		virtual std::string format(const fakeit::SequenceVerificationEvent&) {
+		std::string format(const fakeit::SequenceVerificationEvent&) override {
 			return{ "SequenceVerificationEvent" };
 		}
 
-		virtual std::string format(const fakeit::NoMoreInvocationsVerificationEvent&) {
+		std::string format(const fakeit::NoMoreInvocationsVerificationEvent&) override {
 			return{ "NoMoreInvocationsVerificationEvent" };
 		}
 

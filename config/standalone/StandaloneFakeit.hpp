@@ -6,7 +6,7 @@
 namespace fakeit {
 
     struct VerificationException : public std::exception {
-        virtual ~VerificationException() FAKEIT_NO_THROWS{};
+        ~VerificationException() FAKEIT_NO_THROWS override {};
         
         VerificationException(std::string format) : //
             _format(format) { //
@@ -33,7 +33,7 @@ namespace fakeit {
             return _callingMethod;
         }
 
-        const char* what() const FAKEIT_NO_THROWS override{
+        const char* what() const FAKEIT_NO_THROWS override {
             return _format.c_str();
         }
     private:
@@ -71,20 +71,20 @@ namespace fakeit {
             : _formatter(formatter) {
         }
 
-        virtual void handle(const UnexpectedMethodCallEvent &evt) override {
+        void handle(const UnexpectedMethodCallEvent &evt) override {
             std::string format = _formatter.format(evt);
             UnexpectedMethodCallException ex(format);
             throw ex;
         }
 
-        virtual void handle(const SequenceVerificationEvent &evt) override {
+        void handle(const SequenceVerificationEvent &evt) override {
             std::string format(formatLineNumner(evt.file(), evt.line()) + ": " + _formatter.format(evt));
             SequenceVerificationException e(format);
             e.setFileInfo(evt.file(), evt.line(), evt.callingMethod());
             throw e;
         }
 
-        virtual void handle(const NoMoreInvocationsVerificationEvent &evt) override {
+        void handle(const NoMoreInvocationsVerificationEvent &evt) override {
             std::string format(formatLineNumner(evt.file(), evt.line()) + ": " + _formatter.format(evt));
             NoMoreInvocationsVerificationException e(format);
             e.setFileInfo(evt.file(), evt.line(), evt.callingMethod());
@@ -98,7 +98,7 @@ namespace fakeit {
     class StandaloneFakeit : public DefaultFakeit {
 
     public:
-        virtual ~StandaloneFakeit() = default;
+        ~StandaloneFakeit() override = default;
 
         StandaloneFakeit() : _standaloneAdapter(*this) {
         }

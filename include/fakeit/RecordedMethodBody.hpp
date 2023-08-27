@@ -37,7 +37,7 @@ namespace fakeit {
                     _matcher{matcher}, _invocationHandler{invocationHandler} {
             }
 
-            virtual R handleMethodInvocation(ArgumentsTuple<arglist...> & args) override
+            R handleMethodInvocation(ArgumentsTuple<arglist...> & args) override
             {
                 Destructible &destructable = *_invocationHandler;
                 ActualInvocationHandler<R, arglist...> &invocationHandler = dynamic_cast<ActualInvocationHandler<R, arglist...> &>(destructable);
@@ -95,7 +95,7 @@ namespace fakeit {
         RecordedMethodBody(FakeitContext &fakeit, std::string name) :
                 _fakeit(fakeit), _method{MethodInfo::nextMethodOrdinal(), name} { }
 
-        virtual ~RecordedMethodBody() FAKEIT_NO_THROWS {
+        ~RecordedMethodBody() FAKEIT_NO_THROWS override {
         }
 
         MethodInfo &getMethod() {

@@ -30,10 +30,10 @@ struct MoveOnlyReturnTests: tpunit::TestFixture {
 		ConcreteType(const ConcreteType&) = delete;
 		ConcreteType(ConcreteType&&) = default;
 
-		virtual void foo() override {
+		void foo() override {
 		}
 
-		bool operator==(const ConcreteType& other) {
+		bool operator==(const ConcreteType& other) const {
 			return (other.state == this->state);
 		}
 

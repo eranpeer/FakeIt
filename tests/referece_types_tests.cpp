@@ -27,10 +27,10 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 		ConcreteType() :
 				state(10) {
 		}
-		virtual void foo() override {
+		void foo() override {
 		}
 
-		bool operator==(const ConcreteType& other) {
+		bool operator==(const ConcreteType& other) const {
 			return (other.state == this->state);
 		}
 

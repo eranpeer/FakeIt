@@ -45,28 +45,28 @@ struct CustomTestingFramework: tpunit::TestFixture {
 			std::string _msg;
 		};
 
-		virtual void handle(const UnexpectedMethodCallEvent&) {
+		void handle(const UnexpectedMethodCallEvent&) override {
 			throw AssertionException("UnexpectedMethodCallEvent");
 		}
 
-		virtual void handle(const SequenceVerificationEvent&) {
+		void handle(const SequenceVerificationEvent&) override {
 			throw AssertionException("SequenceVerificationEvent");
 		}
 
-		virtual void handle(const NoMoreInvocationsVerificationEvent&) {
+		void handle(const NoMoreInvocationsVerificationEvent&) override {
 			throw AssertionException("NoMoreInvocationsVerificationEvent");
 		}
 	};
 
 	class NullEventHandler: public fakeit::EventHandler {
 
-		virtual void handle(const UnexpectedMethodCallEvent&) {
+		void handle(const UnexpectedMethodCallEvent&) override {
 		}
 
-		virtual void handle(const SequenceVerificationEvent&) {
+		void handle(const SequenceVerificationEvent&) override {
 		}
 
-		virtual void handle(const NoMoreInvocationsVerificationEvent&) {
+		void handle(const NoMoreInvocationsVerificationEvent&) override {
 		}
 
 		NullEventHandler(const NullEventHandler&) = delete;

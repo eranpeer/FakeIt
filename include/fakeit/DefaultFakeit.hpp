@@ -14,7 +14,7 @@ namespace fakeit {
 
     class AbstractFakeit : public FakeitContext {
     public:
-        virtual ~AbstractFakeit() = default;
+        ~AbstractFakeit() override = default;
 
     protected:
 
@@ -35,7 +35,7 @@ namespace fakeit {
                           _testingFrameworkAdapter(nullptr) {
         }
 
-        virtual ~DefaultFakeit() = default;
+        ~DefaultFakeit() override = default;
 
         void setCustomEventFormatter(fakeit::EventFormatter &customEventFormatter) {
             _customFormatter = &customEventFormatter;

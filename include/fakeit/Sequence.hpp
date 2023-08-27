@@ -57,7 +57,7 @@ namespace fakeit {
 
     public:
 
-        virtual ~ConcatenatedSequence() {
+        ~ConcatenatedSequence() override {
         }
 
         unsigned int size() const override {
@@ -77,7 +77,7 @@ namespace fakeit {
             s2.getExpectedSequence(into);
         }
 
-        virtual void getInvolvedMocks(std::vector<ActualInvocationsSource *> &into) const override {
+        void getInvolvedMocks(std::vector<ActualInvocationsSource *> &into) const override {
             s1.getInvolvedMocks(into);
             s2.getInvolvedMocks(into);
         }
@@ -97,7 +97,7 @@ namespace fakeit {
 
     public:
 
-        ~RepeatedSequence() {
+        ~RepeatedSequence() override {
         }
 
         unsigned int size() const override {

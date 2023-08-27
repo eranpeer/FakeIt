@@ -40,12 +40,12 @@ namespace fakeit {
                 f(func), times(t) {
         }
 
-        virtual R invoke(const ArgumentsTuple<arglist...> & args) override {
+        R invoke(const ArgumentsTuple<arglist...> & args) override {
             times--;
             return TupleDispatcher::invoke<R, arglist...>(f, args);
         }
 
-        virtual bool isDone() override {
+        bool isDone() override {
             return times == 0;
         }
 
@@ -63,11 +63,11 @@ namespace fakeit {
                 f(func) {
         }
 
-        virtual R invoke(const ArgumentsTuple<arglist...> & args) override {
+        R invoke(const ArgumentsTuple<arglist...> & args) override {
             return TupleDispatcher::invoke<R, arglist...>(f, args);
         }
 
-        virtual bool isDone() override {
+        bool isDone() override {
             return false;
         }
 
@@ -79,11 +79,11 @@ namespace fakeit {
     struct ReturnDefaultValue : public Action<R, arglist...> {
         virtual ~ReturnDefaultValue() = default;
 
-        virtual R invoke(const ArgumentsTuple<arglist...> &) override {
+        R invoke(const ArgumentsTuple<arglist...> &) override {
             return DefaultValue<R>::value();
         }
 
-        virtual bool isDone() override {
+        bool isDone() override {
             return false;
         }
     };
@@ -95,11 +95,11 @@ namespace fakeit {
 
         virtual ~ReturnDelegateValue() = default;
 
-        virtual R invoke(const ArgumentsTuple<arglist...> & args) override {
+        R invoke(const ArgumentsTuple<arglist...> & args) override {
             return TupleDispatcher::invoke<R, arglist...>(_delegate, args);
         }
 
-        virtual bool isDone() override {
+        bool isDone() override {
             return false;
         }
 

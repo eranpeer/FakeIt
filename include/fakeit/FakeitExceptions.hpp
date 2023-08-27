@@ -46,7 +46,7 @@ namespace fakeit {
                 _format(format) {
         }
 
-        virtual std::string what() const override {
+        std::string what() const override {
             return _format;
         }
 

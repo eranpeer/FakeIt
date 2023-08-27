@@ -39,7 +39,7 @@ namespace fakeit {
                 _ordinal(ordinal), _method(method), _isVerified(false) {
         }
 
-        virtual ~Invocation() override = default;
+        ~Invocation() override = default;
 
         unsigned int getOrdinal() const {
             return _ordinal;

@@ -37,7 +37,7 @@ namespace fakeit {
             fake->getVirtualTable().setCookie(1, this);
         }
 
-        virtual ~MockImpl() FAKEIT_NO_THROWS {
+        ~MockImpl() FAKEIT_NO_THROWS override {
             _proxy.detach();
         }
 
@@ -75,11 +75,11 @@ namespace fakeit {
 			initDataMembersIfOwner();
         }
 
-        virtual C &get() override {
+        C &get() override {
             return _proxy.get();
         }
 
-        virtual FakeitContext &getFakeIt() override {
+        FakeitContext &getFakeIt() override {
             return _fakeit;
         }
 
@@ -141,27 +141,27 @@ namespace fakeit {
             virtual ~MethodMockingContextBase() = default;
 
             void addMethodInvocationHandler(typename ActualInvocation<arglist...>::Matcher *matcher,
-                ActualInvocationHandler<R, arglist...> *invocationHandler) {
+                ActualInvocationHandler<R, arglist...> *invocationHandler) override {
                 getRecordedMethodBody().addMethodInvocationHandler(matcher, invocationHandler);
             }
 
-            void scanActualInvocations(const std::function<void(ActualInvocation<arglist...> &)> &scanner) {
+            void scanActualInvocations(const std::function<void(ActualInvocation<arglist...> &)> &scanner) override {
                 getRecordedMethodBody().scanActualInvocations(scanner);
             }
 
-            void setMethodDetails(std::string mockName, std::string methodName) {
+            void setMethodDetails(std::string mockName, std::string methodName) override {
                 getRecordedMethodBody().setMethodDetails(mockName, methodName);
             }
 
-            bool isOfMethod(MethodInfo &method) {
+            bool isOfMethod(MethodInfo &method) override {
                 return getRecordedMethodBody().isOfMethod(method);
             }
 
-            ActualInvocationsSource &getInvolvedMock() {
+            ActualInvocationsSource &getInvolvedMock() override {
                 return _mock;
             }
 
-            std::string getMethodName() {
+            std::string getMethodName() override {
                 return getRecordedMethodBody().getMethod().name();
             }
 
@@ -218,7 +218,7 @@ namespace fakeit {
         class UniqueMethodMockingContextImpl : public MethodMockingContextImpl<R, arglist...> {
         protected:
 
-            virtual RecordedMethodBody<R, arglist...> &getRecordedMethodBody() override {
+            RecordedMethodBody<R, arglist...> &getRecordedMethodBody() override {
                 return MethodMockingContextBase<R, arglist...>::_mock.template stubMethodIfNotStubbed<id>(
                         MethodMockingContextBase<R, arglist...>::_mock._proxy,
                         MethodMockingContextImpl<R, arglist...>::_vMethod);
@@ -235,7 +235,7 @@ namespace fakeit {
 
         protected:
 
-            virtual RecordedMethodBody<void> &getRecordedMethodBody() override {
+            RecordedMethodBody<void> &getRecordedMethodBody() override {
                 return MethodMockingContextBase<void>::_mock.stubDtorIfNotStubbed(
                         MethodMockingContextBase<void>::_mock._proxy);
             }
