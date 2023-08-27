@@ -67,4 +67,4 @@ jobs:
           cmake --build build --config ${{ matrix.config.build_type }} -j
       - name: Run tests
         run: |
-          build/tests/Debug/FakeIt_tests.exe
+          ctest --test-dir build/ --verbose -C ${{ matrix.config.build_type }}

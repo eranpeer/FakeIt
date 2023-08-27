@@ -1,4 +1,4 @@
-name: CI Linux/GCC
+name: CI macOS/AppleClang
 
 on:
   push:
@@ -17,64 +17,45 @@ jobs:
       matrix:
         config:
           - {
-            name: "Ubuntu 20.04 GCC 9",
-            os: ubuntu-20.04,
+            name: "macOS 11 AppleClang 13",
+            os: macos-11,
             build_type: Debug,
-            cc: "gcc-9", cxx: "g++-9"
-          }
-          - {
-            name: "Ubuntu 20.04 GCC 10",
-            os: ubuntu-20.04,
-            build_type: Debug,
-            cc: "gcc-10", cxx: "g++-10"
-          }
-          - {
-            name: "Ubuntu 22.04 GCC 11",
-            os: ubuntu-22.04,
-            build_type: Debug,
-            cc: "gcc-11", cxx: "g++-11"
-          }
-          - {
-            name: "Ubuntu 22.04 GCC 12 C++11",
-            os: ubuntu-22.04,
-            build_type: Debug,
-            cc: "gcc-12", cxx: "g++-12",
-            cxx_standard: 11
-          }
-          - {
-            name: "Ubuntu 22.04 GCC 12 C++14",
-            os: ubuntu-22.04,
-            build_type: Debug,
-            cc: "gcc-12", cxx: "g++-12",
-            cxx_standard: 14
-          }
-          - {
-            name: "Ubuntu 22.04 GCC 12 C++17",
-            os: ubuntu-22.04,
-            build_type: Debug,
-            cc: "gcc-12", cxx: "g++-12",
             cxx_standard: 17
           }
           - {
-            name: "Ubuntu 22.04 GCC 12 C++20",
-            os: ubuntu-22.04,
+            name: "macOS 13 AppleClang 14 C++11",
+            os: macos-13,
             build_type: Debug,
-            cc: "gcc-12", cxx: "g++-12",
+            cxx_standard: 11
+          }
+          - {
+            name: "macOS 13 AppleClang 14 C++14",
+            os: macos-13,
+            build_type: Debug,
+            cxx_standard: 14
+          }
+          - {
+            name: "macOS 13 AppleClang 14 C++17",
+            os: macos-13,
+            build_type: Debug,
+            cxx_standard: 17
+          }
+          - {
+            name: "macOS 13 AppleClang 14 C++20",
+            os: macos-13,
+            build_type: Debug,
             cxx_standard: 20
           }
           - {
-            name: "Ubuntu 22.04 GCC with sanitizers",
-            os: ubuntu-22.04,
+            name: "macOS 13 AppleClang with sanitizers",
+            os: macos-13,
             build_type: Debug,
-            cc: "gcc", cxx: "g++",
+            cxx_standard: 17,
             enable_sanitizers_in_tests: ON
           }
     steps:
       - uses: actions/checkout@v3
       - name: Build project
-        env:
-          CC: ${{ matrix.config.cc }}
-          CXX: ${{ matrix.config.cxx }}
         run: |
           cmake -S . -B build \
             -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \

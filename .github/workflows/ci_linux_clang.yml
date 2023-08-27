@@ -90,4 +90,4 @@ jobs:
           cmake --build build -j
       - name: Run tests
         run: |
-          build/tests/FakeIt_tests
+          ctest --test-dir build/ --verbose
