@@ -62,3 +62,8 @@ bii/
 *.*~
 *.nupkg
 
+# Build
+build/
+
+# Testing
+Testing/
