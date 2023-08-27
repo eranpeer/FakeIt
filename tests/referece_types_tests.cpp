@@ -24,8 +24,8 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 	class ConcreteType: public AbstractType {
 	public:
 		int state;
-		ConcreteType() :
-				state(10) {
+		ConcreteType(int value = 10) :
+				state(value) {
 		}
 		void foo() override {
 		}
@@ -40,15 +40,21 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 		virtual int& returnIntByRef() = 0;
 		virtual AbstractType& returnAbstractTypeByRef() = 0;
 		virtual ConcreteType& returnConcreteTypeByRef() = 0;
+		virtual const std::string& returnStringByConstRef() = 0;
+		virtual std::string& returnStringByRef() = 0;
 	};
 
 	ReferenceTypesTests() :
 			tpunit::TestFixture(
 					//
 					TEST(ReferenceTypesTests::implicitStubbingDefaultReturnValues),
-					TEST(ReferenceTypesTests::explicitStubbingDefualtReturnValues),
-					TEST(ReferenceTypesTests::explicitStubbingDefualtReturnValues_with_AlwaysReturn),
+					TEST(ReferenceTypesTests::explicitStubbingDefaultReturnValues),
+					TEST(ReferenceTypesTests::explicitStubbingReturnCopyValuesForRef),
+					TEST(ReferenceTypesTests::explicitStubbingReturnValuesCopyForRRef),
+					TEST(ReferenceTypesTests::explicitStubbingDefaultReturnValues_with_AlwaysReturn),
 					TEST(ReferenceTypesTests::explicitStubbingReturnValues_with_AlwaysReturn),
+					TEST(ReferenceTypesTests::explicitStubbingReturnCopyValuesForRef_with_AlwaysReturn),
+					TEST(ReferenceTypesTests::explicitStubbingReturnCopyValues_with_AlwaysReturn),
 					TEST(ReferenceTypesTests::explicitStubbingReturnValues_by_assignment),
 					TEST(ReferenceTypesTests::explicitStubbingReturnValues)
 					//
@@ -86,7 +92,7 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 #endif
 	}
 
-	void explicitStubbingDefualtReturnValues() {
+	void explicitStubbingDefaultReturnValues() {
 		Mock<ReferenceInterface> mock;		//
 		When(Method(mock,returnIntByRef)).Return(); //
 #ifndef FAKEIT_DISABLE_UBSAN_TRIGGERING_TESTS
@@ -134,6 +140,66 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 		ASSERT_EQUAL(&c, &i.returnAbstractTypeByRef());
 	}
 
+	void explicitStubbingReturnCopyValuesForRef() {
+		Mock<ReferenceInterface> mock;
+
+		// add scope so we know we are copying
+		{
+			std::string a_string{"myString"};
+			int num{ 1 };
+
+			// explicit copy here
+			When(Method(mock, returnStringByConstRef)).ReturnCopy(a_string);
+			When(Method(mock, returnIntByRef)).ReturnCopy(num);
+
+			// modify now so know whether or not is was copied
+			a_string = "modified";
+			num = 2;
+		}
+
+		ReferenceInterface& i = mock.get();
+
+		// Fundamental types are initiated to 0.
+		EXPECT_EQUAL("myString", i.returnStringByConstRef());
+		EXPECT_EQUAL(1, i.returnIntByRef());
+	}
+
+	void explicitStubbingReturnValuesCopyForRRef() {
+		Mock<ReferenceInterface> mock;
+
+		{
+			When(Method(mock, returnStringByConstRef)).Return(std::string{ "myConstRefString" });
+			When(Method(mock, returnStringByRef)).Return(std::string{ "myRefString" });
+			When(Method(mock, returnConcreteTypeByRef)).Return(ConcreteType(20));
+			When(Method(mock, returnIntByRef)).Return(1);
+		}
+
+		ReferenceInterface& i = mock.get();
+
+		EXPECT_EQUAL("myConstRefString", i.returnStringByConstRef());
+		EXPECT_EQUAL("myRefString", i.returnStringByRef());
+		EXPECT_EQUAL(ConcreteType(20), i.returnConcreteTypeByRef());
+		EXPECT_EQUAL(1, i.returnIntByRef());
+	}
+
+	void explicitStubbingReturnCopyValuesForRef_with_AlwaysReturn() {
+		Mock<ReferenceInterface> mock;
+
+		{
+			When(Method(mock, returnStringByConstRef)).AlwaysReturn(std::string{ "myConstRefString" });
+			When(Method(mock, returnStringByRef)).AlwaysReturn(std::string{ "myRefString" });
+			When(Method(mock, returnConcreteTypeByRef)).AlwaysReturn(ConcreteType(20));
+			When(Method(mock, returnIntByRef)).AlwaysReturn(1);
+		}
+
+		ReferenceInterface& i = mock.get();
+
+		EXPECT_EQUAL("myConstRefString", i.returnStringByConstRef());
+		EXPECT_EQUAL("myRefString", i.returnStringByRef());
+		EXPECT_EQUAL(ConcreteType(20), i.returnConcreteTypeByRef());
+		EXPECT_EQUAL(1, i.returnIntByRef());
+	}
+
 	void explicitStubbingReturnValues_with_AlwaysReturn() {
 		Mock<ReferenceInterface> mock;		//
 
@@ -156,6 +222,33 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 
 		// For abstract types return a reference to nullptr.
 		ASSERT_EQUAL(&c, &i.returnAbstractTypeByRef());
+	}
+	
+	void explicitStubbingReturnCopyValues_with_AlwaysReturn() {
+		Mock<ReferenceInterface> mock;
+
+		// add scope so we know we are copying
+		{
+			std::string a_string{ "myString" };
+			int num{ 1 };
+
+			// explicit copy here
+			When(Method(mock, returnStringByConstRef)).AlwaysReturnCopy(a_string);
+			When(Method(mock, returnIntByRef)).AlwaysReturnCopy(num);
+
+			// modify now so know whether or not is was copied
+			a_string = "modified";
+			num = 2;
+		}
+
+		ReferenceInterface& i = mock.get();
+
+		// Fundamental types are initiated to 0.
+		EXPECT_EQUAL("myString", i.returnStringByConstRef());
+		EXPECT_EQUAL("myString", i.returnStringByConstRef());
+
+		EXPECT_EQUAL(1, i.returnIntByRef());
+		EXPECT_EQUAL(1, i.returnIntByRef());
 	}
 
 	void explicitStubbingReturnValues_by_assignment() {
@@ -182,7 +275,7 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 		ASSERT_EQUAL(&c, &i.returnAbstractTypeByRef());
 	}
 
-	void explicitStubbingDefualtReturnValues_with_AlwaysReturn() {
+	void explicitStubbingDefaultReturnValues_with_AlwaysReturn() {
 		Mock<ReferenceInterface> mock;
 		When(Method(mock,returnIntByRef)).AlwaysReturn();
 #ifndef FAKEIT_DISABLE_UBSAN_TRIGGERING_TESTS

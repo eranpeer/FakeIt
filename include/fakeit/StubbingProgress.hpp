@@ -50,7 +50,17 @@ namespace fakeit {
         template<typename U = R>
         typename std::enable_if<!std::is_reference<U>::value, MethodStubbingProgress<R, arglist...> &>::type
         Return(const R &r) {
-            return Do([r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
+            return Do([r](const typename fakeit::test_arg<arglist>::type...) mutable -> R { return r; });
+        }
+
+        template<typename T>
+        typename std::enable_if<!std::is_reference<T>::value && std::is_copy_constructible<T>::value, MethodStubbingProgress<R, arglist...>&>::type
+    	Return(T&& t) {
+            auto store = std::make_shared<T>(std::move(t));
+            return Do([store](const typename fakeit::test_arg<arglist>::type...) mutable->R
+            {
+                return *store;
+            });
         }
 
         template<typename U = R>
@@ -61,11 +71,17 @@ namespace fakeit {
 
         template<typename U = R>
         typename std::enable_if<!std::is_copy_constructible<U>::value, MethodStubbingProgress<R, arglist...>&>::type
-            Return(R&& r) {
+    	Return(R&& r) {
             auto store = std::make_shared<R>(std::move(r)); // work around for lack of move_only_funciton( C++23) - move into a shared_ptr which we can copy.
             return Do([store](const typename fakeit::test_arg<arglist>::type...) mutable -> R {
                 return std::move(*store);
-            });
+                });
+        }
+
+        template<typename U = R>
+        typename std::enable_if<std::is_copy_constructible<U>::value, MethodStubbingProgress<R, arglist...>&>::type
+        ReturnCopy(const R& r) {
+            return Do([r](const typename fakeit::test_arg<arglist>::type...) mutable -> R { return r; });
         }
 
         MethodStubbingProgress<R, arglist...> &
@@ -89,10 +105,26 @@ namespace fakeit {
             return AlwaysDo([r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
         }
 
+        template<typename T>
+        typename std::enable_if<!std::is_reference<T>::value && std::is_copy_constructible<T>::value, void>::type
+            AlwaysReturn(T&& t) {
+            auto store = std::make_shared<T>(std::move(t));
+            return AlwaysDo([store](const typename fakeit::test_arg<arglist>::type...) mutable -> R
+                {
+                    return *store;
+                });
+        }
+
         template<typename U = R>
         typename std::enable_if<std::is_reference<U>::value, void>::type
         AlwaysReturn(const R &r) {
             return AlwaysDo([&r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
+        }
+
+        template<typename U = R>
+        typename std::enable_if<std::is_copy_constructible<U>::value, void>::type
+            AlwaysReturnCopy(const R& r) {
+            return AlwaysDo([r](const typename fakeit::test_arg<arglist>::type...) mutable -> R { return r; });
         }
 
         MethodStubbingProgress<R, arglist...> &
