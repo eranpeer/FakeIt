@@ -62,7 +62,7 @@ namespace fakeit {
 
     struct NoMoreInvocationsVerificationEvent : public VerificationEvent {
 
-        ~NoMoreInvocationsVerificationEvent() = default;
+        ~NoMoreInvocationsVerificationEvent() override = default;
 
         NoMoreInvocationsVerificationEvent( //
                 std::vector<Invocation *> &allTheIvocations, //
@@ -87,7 +87,7 @@ namespace fakeit {
 
     struct SequenceVerificationEvent : public VerificationEvent {
 
-        ~SequenceVerificationEvent() = default;
+        ~SequenceVerificationEvent() override = default;
 
         SequenceVerificationEvent(VerificationType aVerificationType, //
                                   std::vector<Sequence *> &anExpectedPattern, //

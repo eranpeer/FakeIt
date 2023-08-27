@@ -37,7 +37,7 @@ namespace fakeit {
             append(action);
         }
 
-        virtual R handleMethodInvocation(ArgumentsTuple<arglist...> & args) override
+        R handleMethodInvocation(ArgumentsTuple<arglist...> & args) override
         {
             std::shared_ptr<Destructible> destructablePtr = _recordedActions.front();
             Destructible &destructable = *destructablePtr;
@@ -63,11 +63,11 @@ namespace fakeit {
 //                throw NoMoreRecordedActionException();
 //            }
 
-            virtual R invoke(const ArgumentsTuple<arglist...> &) override {
+            R invoke(const ArgumentsTuple<arglist...> &) override {
                 throw NoMoreRecordedActionException();
             }
 
-            virtual bool isDone() override {
+            bool isDone() override {
                 return false;
             }
         };

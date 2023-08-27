@@ -34,13 +34,13 @@ namespace fakeit {
                 : _matchers(args) {
         }
 
-        virtual bool matches(ActualInvocation<arglist...> &invocation) override {
+        bool matches(ActualInvocation<arglist...> &invocation) override {
             if (invocation.getActualMatcher() == this)
                 return true;
             return matches(invocation.getActualArguments());
         }
 
-        virtual std::string format() const override {
+        std::string format() const override {
             std::ostringstream out;
             out << "(";
             for (unsigned int i = 0; i < _matchers.size(); i++) {
@@ -124,13 +124,13 @@ namespace fakeit {
                 : matcher{match} {
         }
 
-        virtual bool matches(ActualInvocation<arglist...> &invocation) override {
+        bool matches(ActualInvocation<arglist...> &invocation) override {
             if (invocation.getActualMatcher() == this)
                 return true;
             return matches(invocation.getActualArguments());
         }
 
-        virtual std::string format() const override {
+        std::string format() const override {
             return {"( user defined matcher )"};
         }
 
@@ -150,11 +150,11 @@ namespace fakeit {
         DefaultInvocationMatcher() {
         }
 
-        virtual bool matches(ActualInvocation<arglist...> &invocation) override {
+        bool matches(ActualInvocation<arglist...> &invocation) override {
             return matches(invocation.getActualArguments());
         }
 
-        virtual std::string format() const override {
+        std::string format() const override {
             return {"( Any arguments )"};
         }
 

@@ -75,7 +75,7 @@ struct MscTypeInfoTests : tpunit::TestFixture {
 	class Bclass :public Aclass
 	{
 	public:
-		virtual void setA(int tmp)
+		void setA(int tmp) override
 		{
 			a = tmp + 10;
 			std::cout << a << std::endl;

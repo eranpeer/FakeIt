@@ -53,7 +53,7 @@ namespace fakeit {
 
             friend class WhenFunctor;
 
-            virtual ~MethodProgress() override = default;
+            ~MethodProgress() override = default;
 
             MethodProgress(const MethodProgress &other) :
                     _progress(other._progress), _context(other._context) {

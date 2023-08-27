@@ -18,7 +18,7 @@ struct RValueTypesTests : tpunit::TestFixture {
         ConcreteType() :
             state(10) {
         }
-        virtual void foo() override {
+        void foo() override {
         }
 
         bool operator==(const ConcreteType& other) {

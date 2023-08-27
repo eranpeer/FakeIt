@@ -54,7 +54,7 @@ namespace fakeit {
             return _matcher;
         }
 
-        virtual std::string format() const override {
+        std::string format() const override {
             std::ostringstream out;
             out << getMethod().name();
             print(out, actualArguments);

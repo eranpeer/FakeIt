@@ -48,7 +48,7 @@ struct TypeInfoTests : tpunit::TestFixture {
 
 	struct Left : public TopLeft {
 		int left;
-		virtual int l() override = 0;
+		int l() override = 0;
 	};
 
 	struct TopRight {
@@ -58,14 +58,14 @@ struct TypeInfoTests : tpunit::TestFixture {
 
 	struct Right : public TopRight {
 		int right;
-		virtual int r() override = 0;
+		int r() override = 0;
 	};
 
 	struct A : public Left
 	//, public Right
 	{
 		int a;
-		virtual int l() override { return 0; };
+		int l() override { return 0; };
 		//virtual int r() override { return 0; };
 	};
 
