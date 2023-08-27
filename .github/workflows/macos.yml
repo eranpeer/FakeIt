@@ -1,0 +1,44 @@
+---
+name: CI OSX/AppleClang
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [Debug]
+        cxx_std: [17, 20, 23]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create Build Environment
+        run: cmake -E make_directory ${{runner.workspace}}/build
+
+      - name: Configure
+        working-directory: ${{runner.workspace}}/build
+        run: |
+          cmake -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
+                -DENABLE_TESTING=ON \
+                -DCMAKE_CXX_EXTENSIONS=OFF \
+                -DOVERRIDE_CXX_STANDARD_FOR_TESTS=${{matrix.cxx_std}} \
+                -DENABLE_SANITIZERS_IN_TESTS=ON \
+                $GITHUB_WORKSPACE
+
+      - name: Build
+        working-directory: ${{runner.workspace}}/build
+        run: |
+          threads=`sysctl -n hw.logicalcpu`
+          cmake --build . --config ${{matrix.build_type}} --parallel $threads
+
+      - name: Test
+        working-directory: ${{runner.workspace}}/build
+        run: ctest -C ${{matrix.build_type}}
+        env:
+          CTEST_OUTPUT_ON_FAILURE: True
