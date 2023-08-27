@@ -30,7 +30,7 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 		void foo() override {
 		}
 
-		bool operator==(const ConcreteType& other) {
+		bool operator==(const ConcreteType& other) const {
 			return (other.state == this->state);
 		}
 
