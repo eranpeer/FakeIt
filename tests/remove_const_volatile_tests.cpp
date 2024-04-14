@@ -82,7 +82,11 @@ public:
 		}
 
 		struct ConstVolatileParameters{
+#if FAKEIT_CPLUSPLUS >= 202002L
+			virtual int func1(const int a, const std::string s) = 0;
+#else
 			virtual int func1(const int a, const volatile std::string s) = 0;
+#endif
 		};
 
 		void TestConstParameters()

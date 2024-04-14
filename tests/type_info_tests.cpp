@@ -33,7 +33,8 @@ struct TypeInfoTests : tpunit::TestFixture {
 
 	void mock_should_use_same_typeid_as_mocked_class() {
 		Mock<SomeInterface> mock;
-		ASSERT_EQUAL(typeid(mock.get()), typeid(SomeInterface));
+		auto& mockRef = mock.get();
+		ASSERT_EQUAL(typeid(mockRef), typeid(SomeInterface));
 	}
 
 	struct ConcreteType {
