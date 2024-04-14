@@ -18,10 +18,11 @@ struct MoveOnlyReturnTests: tpunit::TestFixture {
 
 	class AbstractType {
 	public:
+		virtual ~AbstractType() = default;
 		virtual void foo() = 0;
 	};
 
-	class ConcreteType: public AbstractType {
+	class ConcreteType : public AbstractType {
 	public:
 		int state;
 		ConcreteType(int value) :
@@ -84,4 +85,3 @@ struct MoveOnlyReturnTests: tpunit::TestFixture {
 		ASSERT_EQUAL(ConcreteType(10), i.returnMoveOnlyConcreteTypeByRef());
 	}
 } __MoveOnlyReturnTests;
-

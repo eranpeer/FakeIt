@@ -391,8 +391,8 @@ struct BasicVerification: tpunit::TestFixture {
 		{
 			try {
 				const auto a = VerifyNoOtherInvocations(Method(mock,func));
-				if (&a == &a) // use a to avoid unused variable compilation warning.
-					throw std::runtime_error("some exception");
+				(void)a; // use a to avoid unused variable compilation warning.
+				throw std::runtime_error("some exception");
 			} catch (std::runtime_error &) {
 			}
 		}
@@ -405,8 +405,8 @@ struct BasicVerification: tpunit::TestFixture {
 			try {
 				const auto a = Verify(Method(mock,func));
 				//const auto b = Verify(Method(mock, func)).Exactly(1);
-				if (&a == &a) // use a to avoid unused variable compilation warning.
-					throw std::runtime_error("some exception");
+				(void)a; // use a to avoid unused variable compilation warning.
+				throw std::runtime_error("some exception");
 			} catch (std::runtime_error &) {
 			}
 		}
