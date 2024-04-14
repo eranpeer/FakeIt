@@ -23,6 +23,9 @@
 
 namespace fakeit {
 
+    template<typename R, typename ... arglist>
+    struct MethodStubbingProgress;
+
     namespace helper
     {
         template <typename T, int N>
@@ -38,35 +41,63 @@ namespace fakeit {
         template<int N>
         struct ParamWalker;
 
+        template<typename R, typename ... arglist>
+        struct BasicDoImpl {
+            virtual ~BasicDoImpl() FAKEIT_THROWS {
+            }
+
+            virtual MethodStubbingProgress<R, arglist...>& Do(std::function<R(const typename fakeit::test_arg<arglist>::type...)> method) {
+                return DoImpl(new Repeat<R, arglist...>(method));
+            }
+
+        protected:
+            virtual MethodStubbingProgress<R, arglist...>& DoImpl(Action<R, arglist...> *action) = 0;
+        };
+
+        template<typename R, bool RIsARef, typename ... arglist>
+        struct BasicReturnImpl;
+
+        // If R is a reference.
+        template<typename R, typename ... arglist>
+        struct BasicReturnImpl<R, true, arglist...> : public BasicDoImpl<R, arglist...> {
+            using BasicDoImpl<R, arglist...>::Do;
+
+            MethodStubbingProgress<R, arglist...>& Return(const R& r) {
+                return Do([&r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
+            }
+        };
+
+        // If R is not a reference.
+        template<typename R, typename ... arglist>
+        struct BasicReturnImpl<R, false, arglist...> : public BasicDoImpl<R, arglist...> {
+            using BasicDoImpl<R, arglist...>::Do;
+
+            MethodStubbingProgress<R, arglist...>& Return(const R& r) {
+                return Do([r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
+            }
+
+            MethodStubbingProgress<R, arglist...>& Return(R&& r) {
+                auto store = std::make_shared<R>(std::move(r)); // work around for lack of move_only_funciton( C++23) - move into a shared_ptr which we can copy.
+                return Do([store](const typename fakeit::test_arg<arglist>::type...) mutable -> R {
+                    return std::move(*store);
+                });
+            }
+        };
+
+        template<typename R, typename ... arglist>
+        using BasicReturnImplHelper = BasicReturnImpl<R, std::is_reference<R>::value, arglist...>;
     }  // namespace helper
 
 
     template<typename R, typename ... arglist>
-    struct MethodStubbingProgress {
+    struct MethodStubbingProgress : public helper::BasicReturnImplHelper<R, arglist...> {
 
-        virtual ~MethodStubbingProgress() FAKEIT_THROWS {
-        }
+    protected:
+        using helper::BasicReturnImplHelper<R, arglist...>::DoImpl;
 
-        template<typename U = R>
-        typename std::enable_if<!std::is_reference<U>::value, MethodStubbingProgress<R, arglist...> &>::type
-        Return(const R &r) {
-            return Do([r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
-        }
-
-        template<typename U = R>
-        typename std::enable_if<std::is_reference<U>::value, MethodStubbingProgress<R, arglist...> &>::type
-        Return(const R &r) {
-            return Do([&r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
-        }
-
-        template<typename U = R>
-        typename std::enable_if<!std::is_copy_constructible<U>::value, MethodStubbingProgress<R, arglist...>&>::type
-            Return(R&& r) {
-            auto store = std::make_shared<R>(std::move(r)); // work around for lack of move_only_funciton( C++23) - move into a shared_ptr which we can copy.
-            return Do([store](const typename fakeit::test_arg<arglist>::type...) mutable -> R {
-                return std::move(*store);
-            });
-        }
+    public:
+        using helper::BasicReturnImplHelper<R, arglist...>::Do;
+        using helper::BasicReturnImplHelper<R, arglist...>::Return;
 
         MethodStubbingProgress<R, arglist...> &
         Return(const Quantifier<R> &q) {
@@ -75,11 +106,11 @@ namespace fakeit {
             return DoImpl(new Repeat<R, arglist...>(method, q.quantity));
         }
 
-        template<typename first, typename second, typename ... tail>
+        template<typename First, typename Second, typename... Tail>
         MethodStubbingProgress<R, arglist...> &
-        Return(const first &f, const second &s, const tail &... t) {
-            Return(f);
-            return Return(s, t...);
+        Return(First&& f, Second&& s, Tail&&... t) {
+            Return(std::forward<First>(f));
+            return Return(std::forward<Second>(s), std::forward<Tail>(t)...);
         }
 
 
@@ -142,11 +173,6 @@ namespace fakeit {
                 std::forward<valuelist>(arg_vals)...));
         }
 
-        virtual MethodStubbingProgress<R, arglist...> &
-            Do(std::function<R(const typename fakeit::test_arg<arglist>::type...)> method) {
-            return DoImpl(new Repeat<R, arglist...>(method));
-        }
-
         template<typename F>
         MethodStubbingProgress<R, arglist...> &
         Do(const Quantifier<F> &q) {
@@ -163,10 +189,6 @@ namespace fakeit {
         virtual void AlwaysDo(std::function<R(const typename fakeit::test_arg<arglist>::type...)> method) {
             DoImpl(new RepeatForever<R, arglist...>(method));
         }
-
-    protected:
-
-        virtual MethodStubbingProgress<R, arglist...> &DoImpl(Action<R, arglist...> *action) = 0;
 
     private:
         MethodStubbingProgress &operator=(const MethodStubbingProgress &other) = delete;
