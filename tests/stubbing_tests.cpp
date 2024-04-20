@@ -412,7 +412,8 @@ struct BasicStubbing : tpunit::TestFixture {
     void stub_a_method_with_mutable_lambda_delegate_always() {
         Mock<SomeInterface> mock;
 
-        When(Method(mock, funcNoArgs)).AlwaysDo([mutableVar = 0]() mutable {
+        int mutableVar = 0;
+        When(Method(mock, funcNoArgs)).AlwaysDo([mutableVar]() mutable {
             return ++mutableVar;
         });
 
