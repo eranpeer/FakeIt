@@ -50,6 +50,10 @@ namespace fakeit {
                 return DoImpl(new Repeat<R, arglist...>(method));
             }
 
+            virtual void AlwaysDo(std::function<R(const typename fakeit::test_arg<arglist>::type...)> method) {
+                DoImpl(new RepeatForever<R, arglist...>(method));
+            }
+
         protected:
             virtual MethodStubbingProgress<R, arglist...>& DoImpl(Action<R, arglist...> *action) = 0;
         };
@@ -61,9 +65,45 @@ namespace fakeit {
         template<typename R, typename ... arglist>
         struct BasicReturnImpl<R, true, arglist...> : public BasicDoImpl<R, arglist...> {
             using BasicDoImpl<R, arglist...>::Do;
+            using BasicDoImpl<R, arglist...>::AlwaysDo;
 
             MethodStubbingProgress<R, arglist...>& Return(const R& r) {
                 return Do([&r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
+            }
+
+            template <typename U = R>
+            MethodStubbingProgress<R, arglist...>& Return(fk_remove_cvref_t<R>&& r) {
+                static_assert(sizeof(U) != sizeof(U), "Return() cannot take an rvalue references for functions returning a reference because it would make it dangling, use ReturnCapture() instead.");
+                return Return(r); // Only written to silence warning about not returning from a non-void function, but will never be executed.
+            }
+
+            void AlwaysReturn(const R &r) {
+                return AlwaysDo([&r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
+            }
+
+            template <typename U = R>
+            void AlwaysReturn(fk_remove_cvref_t<R>&&) {
+                static_assert(sizeof(U) != sizeof(U), "AlwaysReturn() cannot take an rvalue references for functions returning a reference because it would make it dangling, use AlwaysReturnCapture() instead.");
+            }
+
+            template<typename T>
+            MethodStubbingProgress<R, arglist...>& ReturnCapture(T&& r) {
+                static_assert(std::is_constructible<fk_remove_cvref_t<R>&, fk_remove_cvref_t<T>&>::value,
+                        "The type captured by ReturnCapture() (named T) must be compatible with the return type of the function (named R), i.e. T t{...}; R& r = t; must compile without creating temporaries.");
+                auto store = std::make_shared<fk_remove_cvref_t<T>>(std::forward<T>(r));
+                return Do([store](const typename fakeit::test_arg<arglist>::type...) mutable -> R {
+                    return std::forward<R>(*store);
+                });
+            }
+
+            template<typename T>
+            void AlwaysReturnCapture(T&& r) {
+                static_assert(std::is_constructible<fk_remove_cvref_t<R>&, fk_remove_cvref_t<T>&>::value,
+                        "The type captured by AlwaysReturnCapture() (named T) must be compatible with the return type of the function (named R), i.e. T t{...}; R& r = t; must compile without creating temporaries.");
+                auto store = std::make_shared<fk_remove_cvref_t<T>>(std::forward<T>(r));
+                return AlwaysDo([store](const typename fakeit::test_arg<arglist>::type...) mutable -> R {
+                    return std::forward<R>(*store);
+                });
             }
         };
 
@@ -71,6 +111,7 @@ namespace fakeit {
         template<typename R, typename ... arglist>
         struct BasicReturnImpl<R, false, arglist...> : public BasicDoImpl<R, arglist...> {
             using BasicDoImpl<R, arglist...>::Do;
+            using BasicDoImpl<R, arglist...>::AlwaysDo;
 
             MethodStubbingProgress<R, arglist...>& Return(const R& r) {
                 return Do([r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
@@ -81,6 +122,10 @@ namespace fakeit {
                 return Do([store](const typename fakeit::test_arg<arglist>::type...) mutable -> R {
                     return std::move(*store);
                 });
+            }
+
+            void AlwaysReturn(const R &r) {
+                return AlwaysDo([r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
             }
         };
 
@@ -97,23 +142,9 @@ namespace fakeit {
 
     public:
         using helper::BasicReturnImplHelper<R, arglist...>::Do;
+        using helper::BasicReturnImplHelper<R, arglist...>::AlwaysDo;
         using helper::BasicReturnImplHelper<R, arglist...>::Return;
-
-        template<typename T>
-        typename std::enable_if<!std::is_reference<T>::value && std::is_copy_constructible<T>::value, MethodStubbingProgress<R, arglist...>&>::type
-    	Return(T&& t) {
-            auto store = std::make_shared<T>(std::move(t));
-            return Do([store](const typename fakeit::test_arg<arglist>::type...) mutable->R
-            {
-                return *store;
-            });
-        }
-
-        template<typename U = R>
-        typename std::enable_if<std::is_copy_constructible<U>::value, MethodStubbingProgress<R, arglist...>&>::type
-        ReturnCopy(const R& r) {
-            return Do([r](const typename fakeit::test_arg<arglist>::type...) mutable -> R { return r; });
-        }
+        using helper::BasicReturnImplHelper<R, arglist...>::AlwaysReturn;
 
         MethodStubbingProgress<R, arglist...> &
         Return(const Quantifier<R> &q) {
@@ -127,35 +158,6 @@ namespace fakeit {
         Return(First&& f, Second&& s, Tail&&... t) {
             Return(std::forward<First>(f));
             return Return(std::forward<Second>(s), std::forward<Tail>(t)...);
-        }
-
-
-        template<typename U = R>
-        typename std::enable_if<!std::is_reference<U>::value, void>::type
-        AlwaysReturn(const R &r) {
-            return AlwaysDo([r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
-        }
-
-        template<typename T>
-        typename std::enable_if<!std::is_reference<T>::value && std::is_copy_constructible<T>::value, void>::type
-        AlwaysReturn(T&& t) {
-            auto store = std::make_shared<T>(std::move(t));
-            return AlwaysDo([store](const typename fakeit::test_arg<arglist>::type...) mutable -> R
-                {
-                    return *store;
-                });
-        }
-
-        template<typename U = R>
-        typename std::enable_if<std::is_reference<U>::value, void>::type
-        AlwaysReturn(const R &r) {
-            return AlwaysDo([&r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
-        }
-
-        template<typename U = R>
-        typename std::enable_if<std::is_copy_constructible<U>::value, void>::type
-            AlwaysReturnCopy(const R& r) {
-            return AlwaysDo([r](const typename fakeit::test_arg<arglist>::type...) mutable -> R { return r; });
         }
 
         MethodStubbingProgress<R, arglist...> &
@@ -216,10 +218,6 @@ namespace fakeit {
         Do(const first &f, const second &s, const tail &... t) {
             Do(f);
             return Do(s, t...);
-        }
-
-        virtual void AlwaysDo(std::function<R(const typename fakeit::test_arg<arglist>::type...)> method) {
-            DoImpl(new RepeatForever<R, arglist...>(method));
         }
 
     private:
