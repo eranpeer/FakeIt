@@ -35,7 +35,7 @@ target_link_libraries(FakeIt_tests PRIVATE
 )
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "^(Apple)?Clang$")
-    target_compile_options(FakeIt_tests PRIVATE -Wall -Wextra -Wno-ignored-qualifiers -Wno-uninitialized -O0 -g3)
+    target_compile_options(FakeIt_tests PRIVATE -Wall -Wextra -Wno-ignored-qualifiers -O0 -g3)
 elseif(MSVC)
     target_compile_options(FakeIt_tests PRIVATE /W3 /sdl /Od)
 endif()
@@ -43,6 +43,14 @@ endif()
 if(OVERRIDE_CXX_STANDARD_FOR_TESTS)
     set_target_properties(FakeIt_tests PROPERTIES CXX_STANDARD ${OVERRIDE_CXX_STANDARD_FOR_TESTS})
     message(STATUS "Building tests in C++${OVERRIDE_CXX_STANDARD_FOR_TESTS}.")
+endif()
+
+if(WARNINGS_AS_ERRORS_FOR_TESTS)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "^(Apple)?Clang$")
+        target_compile_options(FakeIt_tests PRIVATE -Werror)
+    elseif(MSVC)
+        target_compile_options(FakeIt_tests PRIVATE /WX)
+    endif()
 endif()
 
 if(ENABLE_SANITIZERS_IN_TESTS)
