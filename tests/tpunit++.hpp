@@ -155,11 +155,11 @@
  * used by all test functions.
  * TEST(function); registers a function to run as a test within a test fixture.
  */
-#define AFTER(M)        tpunit_detail_method(&M, #M, method::AFTER_METHOD)
-#define AFTER_CLASS(M)  tpunit_detail_method(&M, #M, method::AFTER_CLASS_METHOD)
-#define BEFORE(M)       tpunit_detail_method(&M, #M, method::BEFORE_METHOD)
-#define BEFORE_CLASS(M) tpunit_detail_method(&M, #M, method::BEFORE_CLASS_METHOD)
-#define TEST(M)         tpunit_detail_method(&M, #M, method::TEST_METHOD)
+#define AFTER(M)        tpunit_detail_method(this, &M, #M, method::AFTER_METHOD)
+#define AFTER_CLASS(M)  tpunit_detail_method(this, &M, #M, method::AFTER_CLASS_METHOD)
+#define BEFORE(M)       tpunit_detail_method(this, &M, #M, method::BEFORE_METHOD)
+#define BEFORE_CLASS(M) tpunit_detail_method(this, &M, #M, method::BEFORE_CLASS_METHOD)
+#define TEST(M)         tpunit_detail_method(this, &M, #M, method::TEST_METHOD)
 
 /**
  * Try our best to detect compiler support for exception handling so
@@ -297,12 +297,14 @@ namespace tpunit {
          /**
           * Create a new method to register with the test fixture.
           *
+          * @param[in] obj The test fixture for which the new method will be registered.
           * @param[in] _method A method to register with the test fixture.
           * @param[in] _name The internal name of the method used when status messages are displayed.
+          * @param[in] _type The type of method to register.
           */
          template <typename C>
-         method* tpunit_detail_method(void (C::*_method)(), const char* _name, unsigned char _type) {
-            return new method(this, static_cast<void (TestFixture::*)()>(_method), _name, _type);
+         static method* tpunit_detail_method(TestFixture* obj, void (C::*_method)(), const char* _name, unsigned char _type) {
+            return new method(obj, static_cast<void (TestFixture::*)()>(_method), _name, _type);
          }
 
          /**

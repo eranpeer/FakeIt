@@ -35,7 +35,7 @@ target_link_libraries(FakeIt_tests PRIVATE
 )
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "^(Apple)?Clang$")
-    target_compile_options(FakeIt_tests PRIVATE -Wall -Wextra -Wno-ignored-qualifiers -Wno-uninitialized -O0 -g3)
+    target_compile_options(FakeIt_tests PRIVATE -Wall -Wextra -Wno-ignored-qualifiers -O0 -g3)
 elseif(MSVC)
     target_compile_options(FakeIt_tests PRIVATE /W3 /sdl /Od)
 endif()
