@@ -9,12 +9,15 @@
 #pragma once
 
 #include <tuple>
-
+#include <type_traits>
 
 namespace fakeit {
 
     template<class...>
     using fk_void_t = void;
+
+    template<typename T>
+    using fk_remove_cvref_t = typename std::remove_cv<typename std::remove_reference<T>::type>::type;
 
     template <bool...> struct bool_pack;
 
