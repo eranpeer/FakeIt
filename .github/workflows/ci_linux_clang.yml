@@ -85,6 +85,7 @@ jobs:
           cmake -S . -B build \
             -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
             -DENABLE_TESTING=ON \
+            -DWARNINGS_AS_ERRORS_FOR_TESTS=ON \
             -DOVERRIDE_CXX_STANDARD_FOR_TESTS=${{ matrix.config.cxx_standard }} \
             -DENABLE_SANITIZERS_IN_TESTS=${{ matrix.config.enable_sanitizers_in_tests }}
           cmake --build build -j

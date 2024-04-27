@@ -63,6 +63,7 @@ jobs:
             -G "${{ matrix.config.generator }}" \
             -A ${{ matrix.config.architecture }} \
             -DENABLE_TESTING=ON \
+            -DWARNINGS_AS_ERRORS_FOR_TESTS=ON \
             -DOVERRIDE_CXX_STANDARD_FOR_TESTS=${{ matrix.config.cxx_standard }}
           cmake --build build --config ${{ matrix.config.build_type }} -j
       - name: Run tests

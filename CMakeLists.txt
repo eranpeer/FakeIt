@@ -5,6 +5,7 @@ project(FakeIt VERSION 2.4.0 LANGUAGES CXX)
 
 option(ENABLE_TESTING "Enable build of tests." OFF)
 set(OVERRIDE_CXX_STANDARD_FOR_TESTS "" CACHE STRING "Override the C++ standard used for building tests.")
+option(WARNINGS_AS_ERRORS_FOR_TESTS "Treat warnings as errors when building tests." OFF)
 option(ENABLE_SANITIZERS_IN_TESTS "Enable address / undefined sanitizers in tests." OFF)
 option(ENABLE_COVERAGE "Enable coverage reporting for gcc/clang." OFF)
 
