@@ -12,6 +12,7 @@ add_executable(FakeIt_tests
     gcc_type_info_tests.cpp
     miscellaneous_tests.cpp
     move_only_return_tests.cpp
+    moving_mocks_around.cpp
     msc_stubbing_multiple_values_tests.cpp
     msc_type_info_tests.cpp
     overloadded_methods_tests.cpp

@@ -36,8 +36,6 @@ namespace fakeit {
     class Mock : public ActualInvocationsSource {
         MockImpl<C, baseclasses...> impl;
     public:
-        ~Mock() override = default;
-
         static_assert(std::is_polymorphic<C>::value, "Can only mock a polymorphic type");
 
         Mock() : impl(Fakeit) {
