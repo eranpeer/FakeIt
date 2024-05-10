@@ -38,6 +38,11 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "^(Appl
     target_compile_options(FakeIt_tests PRIVATE -Wall -Wextra -Wno-ignored-qualifiers -O0 -g3)
 elseif(MSVC)
     target_compile_options(FakeIt_tests PRIVATE /W3 /sdl /Od)
+
+    if("${CMAKE_GENERATOR_PLATFORM}" STREQUAL "x64")
+        target_compile_definitions(FakeIt_tests PRIVATE FAKEIT_DISABLE_RTTI_DEPENDENT_TESTS)
+        message(STATUS "MSVC 64 bits detected: disabling RTTI-dependent tests as it isn't supported for this configuration.")
+    endif()
 endif()
 
 if(OVERRIDE_CXX_STANDARD_FOR_TESTS)

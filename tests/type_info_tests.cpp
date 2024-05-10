@@ -16,14 +16,17 @@ using namespace fakeit;
 struct TypeInfoTests : tpunit::TestFixture {
 
 	TypeInfoTests() :
-	tpunit::TestFixture(
-	//
-	TEST(TypeInfoTests::mock_should_use_same_typeid_as_mocked_class), //
-	TEST(TypeInfoTests::simple_inheritance_upcast), //
-	TEST(TypeInfoTests::dynamic_cast_to_same_type__with_concrete_type),
-	TEST(TypeInfoTests::dynamic_cast_to_same_type__with_abstract_type),
-	TEST(TypeInfoTests::simple_inheritance_dynamic_down_cast) //
-	)  //
+		tpunit::TestFixture(
+#ifndef FAKEIT_DISABLE_RTTI_DEPENDENT_TESTS
+			TEST(TypeInfoTests::mock_should_use_same_typeid_as_mocked_class),
+#endif
+			TEST(TypeInfoTests::simple_inheritance_upcast),
+#ifndef FAKEIT_DISABLE_RTTI_DEPENDENT_TESTS
+			TEST(TypeInfoTests::simple_inheritance_dynamic_down_cast),
+#endif
+			TEST(TypeInfoTests::dynamic_cast_to_same_type__with_concrete_type),
+			TEST(TypeInfoTests::dynamic_cast_to_same_type__with_abstract_type)
+		)
 	{
 	}
 
