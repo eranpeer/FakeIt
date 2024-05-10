@@ -58,11 +58,6 @@ namespace fakeit
             this->initializeDataMembersArea();
         }
 
-        ~FakeObject()
-        {
-            this->vtable.dispose();
-        }
-
         void setMethod(unsigned int index, void* method)
         {
             this->vtable.setMethod(index, method);
@@ -73,9 +68,9 @@ namespace fakeit
             return this->vtable;
         }
 
-        void setVirtualTable(VirtualTable<C, BaseClasses...>& t)
+        void swapVirtualTable(VirtualTable<C, BaseClasses...>& t)
         {
-            this->vtable = t;
+            std::swap(this->vtable, t);
         }
 
         void setDtor(void* dtor)

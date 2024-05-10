@@ -7,11 +7,15 @@
  */
 #pragma once
 
+#include <utility>
+
 #ifndef __clang__
 
 #include "mockutils/gcc/is_simple_inheritance_layout.hpp"
 
 #endif
+
+#include "mockutils/Macros.hpp"
 
 namespace fakeit {
 
@@ -23,6 +27,26 @@ namespace fakeit {
         }
 
         VirtualTableBase(void **firstMethod) : _firstMethod(firstMethod) { }
+
+        VirtualTableBase(const VirtualTableBase&) = delete;
+        VirtualTableBase(VirtualTableBase&& other) FAKEIT_NO_THROWS {
+            std::swap(_firstMethod, other._firstMethod);
+        }
+
+        VirtualTableBase& operator=(const VirtualTableBase&) = delete;
+        VirtualTableBase& operator=(VirtualTableBase&& other) FAKEIT_NO_THROWS {
+            std::swap(_firstMethod, other._firstMethod);
+            return *this;
+        }
+
+        ~VirtualTableBase() {
+            if (_firstMethod != nullptr) {
+                _firstMethod--; // type_info
+                _firstMethod--; // top_offset
+                _firstMethod -= numOfCookies; // skip cookies
+                delete[] _firstMethod;
+            }
+        }
 
         void *getCookie(int index) {
             return _firstMethod[-3 - index];
@@ -41,7 +65,8 @@ namespace fakeit {
         }
 
     protected:
-        void **_firstMethod;
+        static const unsigned int numOfCookies = 2;
+        void **_firstMethod = nullptr;
     };
 
     template<class C, class ... baseclasses>
@@ -50,23 +75,6 @@ namespace fakeit {
 #ifndef __clang__
         static_assert(is_simple_inheritance_layout<C>::value, "Can't mock a type with multiple inheritance");
 #endif
-
-        class Handle {
-
-            friend struct VirtualTable<C, baseclasses...>;
-            void **firstMethod;
-
-            Handle(void **method) :
-                    firstMethod(method) {
-            }
-
-        public:
-
-            VirtualTable<C, baseclasses...> &restore() {
-                VirtualTable<C, baseclasses...> *vt = (VirtualTable<C, baseclasses...> *) this;
-                return *vt;
-            }
-        };
 
         static VirtualTable<C, baseclasses...> &getVTable(C &instance) {
             fakeit::VirtualTable<C, baseclasses...> *vt = (fakeit::VirtualTable<C, baseclasses...> *) (&instance);
@@ -85,24 +93,16 @@ namespace fakeit {
                 VirtualTable(buildVTArray()) {
         }
 
-        void dispose() {
-            _firstMethod--; // type_info
-            _firstMethod--; // top_offset
-            _firstMethod -= numOfCookies; // skip cookies
-            delete[] _firstMethod;
-        }
-
         unsigned int dtor(int) {
             C *c = (C *) this;
             C &cRef = *c;
-            auto vt = VirtualTable<C, baseclasses...>::getVTable(cRef);
+            auto& vt = VirtualTable<C, baseclasses...>::getVTable(cRef);
             unsigned int index = VTUtils::getDestructorOffset<C>();
             void *dtorPtr = vt.getMethod(index);
             void(*method)(C *) = union_cast<void (*)(C *)>(dtorPtr);
             method(c);
             return 0;
         }
-
 
         void setDtor(void *method) {
             unsigned int index = VTUtils::getDestructorOffset<C>();
@@ -113,7 +113,6 @@ namespace fakeit {
             // replace the deleting destructor with a method that calls the non deleting one
             _firstMethod[index + 1] = dtorPtr;
         }
-
 
         unsigned int getSize() {
             return VTUtils::getVTSize<C>();
@@ -130,14 +129,7 @@ namespace fakeit {
             return (const std::type_info *) (_firstMethod[-1]);
         }
 
-        Handle createHandle() {
-            Handle h(_firstMethod);
-            return h;
-        }
-
     private:
-        static const unsigned int numOfCookies = 2;
-
         static void **buildVTArray() {
             int size = VTUtils::getVTSize<C>();
             auto array = new void *[size + 2 + numOfCookies]{};

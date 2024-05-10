@@ -33,9 +33,21 @@ namespace fakeit {
 
         MockImpl(FakeitContext &fakeit)
                 : MockImpl<C, baseclasses...>(fakeit, *(createFakeInstance()), false){
-            FakeObject<C, baseclasses...> *fake = asFakeObject(_instanceOwner.get());
-            fake->getVirtualTable().setCookie(1, this);
+            _instanceOwner.get()->getVirtualTable().setCookie(1, this);
         }
+
+        MockImpl(const MockImpl&) = delete;
+        MockImpl(MockImpl&& other) FAKEIT_NO_THROWS
+            : _instanceOwner(std::move(other._instanceOwner))
+            , _proxy(std::move(other._proxy))
+            , _fakeit(other._fakeit) {
+            if (isOwner()) {
+                _instanceOwner.get()->getVirtualTable().setCookie(1, this);
+            }
+        }
+
+        MockImpl& operator=(const MockImpl&) = delete;
+        MockImpl& operator=(MockImpl&&) = delete;
 
         ~MockImpl() FAKEIT_NO_THROWS override {
             _proxy.detach();

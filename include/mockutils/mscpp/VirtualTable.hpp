@@ -7,6 +7,11 @@
  */
 #pragma once
 
+#include <utility>
+#include <typeinfo>
+
+#include "mockutils/Macros.hpp"
+
 namespace fakeit {
 
     typedef unsigned long dword_;
@@ -167,22 +172,6 @@ namespace fakeit {
     template<class C, class... baseclasses>
     struct VirtualTable : public VirtualTableBase {
 
-        class Handle {
-
-            friend struct VirtualTable<C, baseclasses...>;
-
-            void **firstMethod;
-
-            Handle(void **method) : firstMethod(method) { }
-
-        public:
-
-            VirtualTable<C, baseclasses...> &restore() {
-                VirtualTable<C, baseclasses...> *vt = (VirtualTable<C, baseclasses...> *) this;
-                return *vt;
-            }
-        };
-
         static VirtualTable<C, baseclasses...> &getVTable(C &instance) {
             fakeit::VirtualTable<C, baseclasses...> *vt = (fakeit::VirtualTable<C, baseclasses...> *) (&instance);
             return *vt;
@@ -200,23 +189,33 @@ namespace fakeit {
         VirtualTable() : VirtualTable(buildVTArray()) {
         }
 
-        ~VirtualTable() {
-
+        VirtualTable(const VirtualTable&) = delete;
+        VirtualTable(VirtualTable&& other) FAKEIT_NO_THROWS
+            : VirtualTableBase(nullptr) {
+            std::swap(_firstMethod, other._firstMethod);
         }
 
-        void dispose() {
-            _firstMethod--; // skip objectLocator
-            RTTICompleteObjectLocator<C, baseclasses...> *locator = (RTTICompleteObjectLocator<C, baseclasses...> *) _firstMethod[0];
-            delete locator;
-            _firstMethod -= numOfCookies; // skip cookies
-            delete[] _firstMethod;
+        VirtualTable& operator=(const VirtualTable&) = delete;
+        VirtualTable& operator=(VirtualTable&& other) FAKEIT_NO_THROWS {
+            std::swap(_firstMethod, other._firstMethod);
+            return *this;
+        }
+
+        ~VirtualTable() {
+            if (_firstMethod != nullptr) {
+                _firstMethod--; // skip objectLocator
+                RTTICompleteObjectLocator<C, baseclasses...> *locator = (RTTICompleteObjectLocator<C, baseclasses...> *) _firstMethod[0];
+                delete locator;
+                _firstMethod -= numOfCookies; // skip cookies
+                delete[] _firstMethod;
+            }
         }
 
         // the dtor VC++ must of the format: int dtor(int)
         unsigned int dtor(int) {
             C *c = (C *) this;
             C &cRef = *c;
-            auto vt = VirtualTable<C, baseclasses...>::getVTable(cRef);
+            auto& vt = VirtualTable<C, baseclasses...>::getVTable(cRef);
             void *dtorPtr = vt.getCookie(dtorCookieIndex);
             void(*method)(C *) = reinterpret_cast<void (*)(C *)>(dtorPtr);
             method(c);
@@ -246,18 +245,13 @@ namespace fakeit {
             }
         }
 
-        Handle createHandle() {
-            Handle h(_firstMethod);
-            return h;
-        }
-
     private:
-
         class SimpleType {
         };
 
         static_assert(sizeof(unsigned int (SimpleType::*)()) == sizeof(unsigned int (C::*)()),
             "Can't mock a type with multiple inheritance or with non-polymorphic base class");
+
         static const unsigned int numOfCookies = 3;
         static const unsigned int dtorCookieIndex = numOfCookies - 1; // use the last cookie
 

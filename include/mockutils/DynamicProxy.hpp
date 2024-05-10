@@ -42,14 +42,8 @@ namespace fakeit {
         }
 
     public:
-        InvocationHandlers(
-                std::vector<std::shared_ptr<Destructible>> &methodMocks,
-                std::vector<unsigned int> &offsets) :
-                _methodMocks(methodMocks), _offsets(offsets) {
-			for (std::vector<unsigned int>::iterator it = _offsets.begin(); it != _offsets.end(); ++it)
-			{
-				*it = std::numeric_limits<int>::max();
-			}
+        InvocationHandlers(std::vector<std::shared_ptr<Destructible>> &methodMocks, std::vector<unsigned int> &offsets)
+                : _methodMocks(methodMocks), _offsets(offsets) {
         }
 
         Destructible *getInvocatoinHandlerPtrById(unsigned int id) override {
@@ -66,26 +60,39 @@ namespace fakeit {
         static_assert(std::is_polymorphic<C>::value, "DynamicProxy requires a polymorphic type");
 
         DynamicProxy(C &inst) :
-                instance(inst),
-                originalVtHandle(VirtualTable<C, baseclasses...>::getVTable(instance).createHandle()),
+                _instancePtr(&inst),
                 _methodMocks(VTUtils::getVTSize<C>()),
-                _offsets(VTUtils::getVTSize<C>()),
+                _offsets(VTUtils::getVTSize<C>(), std::numeric_limits<int>::max()),
                 _invocationHandlers(_methodMocks, _offsets) {
-            _cloneVt.copyFrom(originalVtHandle.restore());
-            _cloneVt.setCookie(InvocationHandlerCollection::VtCookieIndex, &_invocationHandlers);
-            getFake().setVirtualTable(_cloneVt);
+            _originalVt.copyFrom(VirtualTable<C, baseclasses...>::getVTable(*_instancePtr));
+            _originalVt.setCookie(InvocationHandlerCollection::VtCookieIndex, &_invocationHandlers);
+            getFake().swapVirtualTable(_originalVt);
         }
+
+        DynamicProxy(const DynamicProxy&) = delete;
+        DynamicProxy(DynamicProxy&& other) FAKEIT_NO_THROWS
+            : _originalVt(std::move(other._originalVt))
+            , _methodMocks(std::move(other._methodMocks))
+            , _members(std::move(other._members))
+            , _offsets(std::move(other._offsets))
+            , _invocationHandlers(_methodMocks, _offsets) {
+            std::swap(_instancePtr, other._instancePtr);
+            VirtualTable<C, baseclasses...>::getVTable(*_instancePtr).setCookie(InvocationHandlerCollection::VtCookieIndex, &_invocationHandlers);
+        }
+
+        DynamicProxy& operator=(const DynamicProxy&) = delete;
+        DynamicProxy& operator=(DynamicProxy&&) = delete;
+
+        ~DynamicProxy() = default;
 
         void detach() {
-            getFake().setVirtualTable(originalVtHandle.restore());
-        }
-
-        ~DynamicProxy() {
-            _cloneVt.dispose();
+            if (_instancePtr != nullptr) {
+                getFake().swapVirtualTable(_originalVt);
+            }
         }
 
         C &get() {
-            return instance;
+            return *_instancePtr;
         }
 
         void Reset() {
@@ -94,7 +101,7 @@ namespace fakeit {
             _members = {};
 			_offsets = {};
             _offsets.resize(VTUtils::getVTSize<C>());
-            _cloneVt.copyFrom(originalVtHandle.restore());
+            VirtualTable<C, baseclasses...>::getVTable(*_instancePtr).copyFrom(_originalVt);
         }
 
 		void Clear()
@@ -170,8 +177,7 @@ namespace fakeit {
         }
 
         VirtualTable<C, baseclasses...> &getOriginalVT() {
-            VirtualTable<C, baseclasses...> &vt = originalVtHandle.restore();
-            return vt;
+            return _originalVt;
         }
 
         template<typename R, typename ... arglist>
@@ -206,9 +212,8 @@ namespace fakeit {
 
         static_assert(sizeof(C) == sizeof(FakeObject<C, baseclasses...>), "This is a problem");
 
-        C &instance;
-        typename VirtualTable<C, baseclasses...>::Handle originalVtHandle; // avoid delete!! this is the original!
-        VirtualTable<C, baseclasses...> _cloneVt;
+        C* _instancePtr = nullptr;
+        VirtualTable<C, baseclasses...> _originalVt; // avoid delete!! this is the original!
         //
         std::vector<std::shared_ptr<Destructible>> _methodMocks;
         std::vector<std::shared_ptr<Destructible>> _members;
@@ -216,7 +221,7 @@ namespace fakeit {
         InvocationHandlers _invocationHandlers;
 
         FakeObject<C, baseclasses...> &getFake() {
-            return reinterpret_cast<FakeObject<C, baseclasses...> &>(instance);
+            return reinterpret_cast<FakeObject<C, baseclasses...> &>(*_instancePtr);
         }
 
         void bind(const MethodProxy &methodProxy, Destructible *invocationHandler) {
