@@ -15,6 +15,8 @@ add_executable(FakeIt_tests
     moving_mocks_around.cpp
     msc_stubbing_multiple_values_tests.cpp
     msc_type_info_tests.cpp
+    multiple_translation_units_stub.cpp
+    multiple_translation_units_stub_test.cpp
     overloadded_methods_tests.cpp
     referece_types_tests.cpp
     remove_const_volatile_tests.cpp

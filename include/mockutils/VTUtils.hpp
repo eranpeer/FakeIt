@@ -65,7 +65,7 @@ namespace fakeit {
 		}
 
         template<typename C>
-        static unsigned int getVTSize() {
+        static size_t getVTSize() {
             struct Derrived : public C {
                 virtual void endOfVt() {
                 }
