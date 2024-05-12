@@ -4,9 +4,23 @@
 
 namespace fakeit {
 
+    // A bunch of functions used by the method id mechanism. We use a pointer to them to represent the ID of a unique
+    // mockable method.
+    // Those methods are never called, we only use their address, this is why they are excluded from code coverage analysis.
+    /* LCOV_EXCL_START */
+    template<typename MethodPtrType, MethodPtrType MethodPtr>
+    void funcIdMethod() {}
+
+    inline void funcIdDestructor() {}
+
+    inline void funcIdNotStubbed() {}
+    /* LCOV_EXCL_STOP */
+
+    using MethodIdType = void(*)();
+
     struct MethodProxy {
 
-        MethodProxy(size_t id, unsigned int offset, void *vMethod) :
+        MethodProxy(MethodIdType id, unsigned int offset, void *vMethod) :
                 _id(id),
                 _offset(offset),
                 _vMethod(vMethod) {
@@ -16,7 +30,7 @@ namespace fakeit {
             return _offset;
         }
 
-        size_t getId() const {
+        MethodIdType getId() const {
             return _id;
         }
 
@@ -25,7 +39,7 @@ namespace fakeit {
         }
 
     private:
-        size_t _id;
+        MethodIdType _id;
         unsigned int _offset;
         void *_vMethod;
     };

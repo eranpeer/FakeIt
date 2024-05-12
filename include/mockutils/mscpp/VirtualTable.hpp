@@ -178,7 +178,7 @@ namespace fakeit {
         }
 
         void copyFrom(VirtualTable<C, baseclasses...> &from) {
-            auto size = VTUtils::getVTSize<C>();
+            unsigned int size = VTUtils::getVTSize<C>();
             for (unsigned int i = 0; i < size; i++) {
                 _firstMethod[i] = from.getMethod(i);
             }
@@ -234,7 +234,7 @@ namespace fakeit {
             setCookie(dtorCookieIndex, method);
         }
 
-        size_t getSize() {
+        unsigned int getSize() {
             return VTUtils::getVTSize<C>();
         }
 
@@ -256,7 +256,7 @@ namespace fakeit {
         static const unsigned int dtorCookieIndex = numOfCookies - 1; // use the last cookie
 
         static void **buildVTArray() {
-            auto vtSize = VTUtils::getVTSize<C>();
+            unsigned int vtSize = VTUtils::getVTSize<C>();
             auto array = new void *[vtSize + numOfCookies + 1]{};
             RTTICompleteObjectLocator<C, baseclasses...> *objectLocator = new RTTICompleteObjectLocator<C, baseclasses...>(
                     typeid(C));

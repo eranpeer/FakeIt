@@ -71,7 +71,7 @@ namespace fakeit {
         }
 
         // const
-        template<size_t id, typename R, typename T, typename ... arglist, class = typename std::enable_if<
+        template<MethodIdType id, typename R, typename T, typename ... arglist, class = typename std::enable_if<
                 std::is_base_of<T, C>::value>::type>
         MockingContext<internal::WithCommonVoid_t<R>, arglist...> stub(R (T::*vMethod)(arglist...) const) {
             auto methodWithoutConstVolatile = reinterpret_cast<internal::WithCommonVoid_t<R> (T::*)(arglist...)>(vMethod);
@@ -79,7 +79,7 @@ namespace fakeit {
         }
 
         // volatile
-        template<size_t id, typename R, typename T, typename... arglist, class = typename std::enable_if<
+        template<MethodIdType id, typename R, typename T, typename... arglist, class = typename std::enable_if<
                 std::is_base_of<T, C>::value>::type>
         MockingContext<internal::WithCommonVoid_t<R>, arglist...> stub(R(T::*vMethod)(arglist...) volatile) {
             auto methodWithoutConstVolatile = reinterpret_cast<internal::WithCommonVoid_t<R>(T::*)(arglist...)>(vMethod);
@@ -87,7 +87,7 @@ namespace fakeit {
         }
 
         // const volatile
-        template<size_t id, typename R, typename T, typename... arglist, class = typename std::enable_if<
+        template<MethodIdType id, typename R, typename T, typename... arglist, class = typename std::enable_if<
                 std::is_base_of<T, C>::value>::type>
         MockingContext<internal::WithCommonVoid_t<R>, arglist...> stub(R(T::*vMethod)(arglist...) const volatile) {
             auto methodWithoutConstVolatile = reinterpret_cast<internal::WithCommonVoid_t<R>(T::*)(arglist...)>(vMethod);
@@ -95,7 +95,7 @@ namespace fakeit {
         }
 
         // no qualifier
-        template<size_t id, typename R, typename T, typename... arglist, class = typename std::enable_if<
+        template<MethodIdType id, typename R, typename T, typename... arglist, class = typename std::enable_if<
                 std::is_base_of<T, C>::value>::type>
         MockingContext<internal::WithCommonVoid_t<R>, arglist...> stub(R(T::*vMethod)(arglist...)) {
             auto methodWithoutConstVolatile = reinterpret_cast<internal::WithCommonVoid_t<R>(T::*)(arglist...)>(vMethod);
@@ -103,7 +103,7 @@ namespace fakeit {
         }
 
         // ref
-        template<size_t id, typename R, typename T, typename... arglist, class = typename std::enable_if<
+        template<MethodIdType id, typename R, typename T, typename... arglist, class = typename std::enable_if<
                 std::is_base_of<T, C>::value>::type>
         MockingContext<internal::WithCommonVoid_t<R>, arglist...> stub(R(T::*vMethod)(arglist...) &) {
             auto methodWithoutConstVolatile = reinterpret_cast<internal::WithCommonVoid_t<R>(T::*)(arglist...)>(vMethod);
@@ -111,7 +111,7 @@ namespace fakeit {
         }
 
         // const ref
-        template<size_t id, typename R, typename T, typename... arglist, class = typename std::enable_if<
+        template<MethodIdType id, typename R, typename T, typename... arglist, class = typename std::enable_if<
                 std::is_base_of<T, C>::value>::type>
         MockingContext<internal::WithCommonVoid_t<R>, arglist...> stub(R(T::*vMethod)(arglist...) const&) {
             auto methodWithoutConstVolatile = reinterpret_cast<internal::WithCommonVoid_t<R>(T::*)(arglist...)>(vMethod);
@@ -119,7 +119,7 @@ namespace fakeit {
         }
 
         // rval ref
-        template<size_t id, typename R, typename T, typename... arglist, class = typename std::enable_if<
+        template<MethodIdType id, typename R, typename T, typename... arglist, class = typename std::enable_if<
                 std::is_base_of<T, C>::value>::type>
         MockingContext<internal::WithCommonVoid_t<R>, arglist...> stub(R(T::*vMethod)(arglist...) &&) {
             auto methodWithoutConstVolatile = reinterpret_cast<internal::WithCommonVoid_t<R>(T::*)(arglist...)>(vMethod);
@@ -127,7 +127,7 @@ namespace fakeit {
         }
 
         // const rval ref
-        template<size_t id, typename R, typename T, typename... arglist, class = typename std::enable_if<
+        template<MethodIdType id, typename R, typename T, typename... arglist, class = typename std::enable_if<
                 std::is_base_of<T, C>::value>::type>
         MockingContext<internal::WithCommonVoid_t<R>, arglist...> stub(R(T::*vMethod)(arglist...) const&&) {
             auto methodWithoutConstVolatile = reinterpret_cast<internal::WithCommonVoid_t<R>(T::*)(arglist...)>(vMethod);

@@ -131,7 +131,7 @@ namespace fakeit {
 
     private:
         static void **buildVTArray() {
-            int size = VTUtils::getVTSize<C>();
+            unsigned int size = VTUtils::getVTSize<C>();
             auto array = new void *[size + 2 + numOfCookies]{};
             array += numOfCookies; // skip cookies
             array++; // skip top_offset

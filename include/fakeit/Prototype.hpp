@@ -18,27 +18,27 @@ namespace fakeit {
             using RValRefType = R (C::*)(Args...) &&;
             using ConstRValRefType = R (C::*)(Args...) const&&;
 
-            static Type get(Type t) {
+            static constexpr Type get(Type t) {
                 return t;
             }
 
-            static ConstType getConst(ConstType t) {
+            static constexpr ConstType getConst(ConstType t) {
                 return t;
             }
 
-            static RefType getRef(RefType t) {
+            static constexpr RefType getRef(RefType t) {
                 return t;
             }
 
-            static ConstRefType getConstRef(ConstRefType t) {
+            static constexpr ConstRefType getConstRef(ConstRefType t) {
                 return t;
             }
 
-            static RValRefType getRValRef(RValRefType t) {
+            static constexpr RValRefType getRValRef(RValRefType t) {
                 return t;
             }
 
-            static ConstRValRefType getConstRValRef(ConstRValRefType t) {
+            static constexpr ConstRValRefType getConstRValRef(ConstRValRefType t) {
                 return t;
             }
 

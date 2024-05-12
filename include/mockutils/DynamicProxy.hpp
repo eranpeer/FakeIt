@@ -13,10 +13,8 @@
 #include <vector>
 #include <array>
 #include <new>
-#include <limits>
 
 #include "mockutils/VirtualTable.hpp"
-#include "mockutils/union_cast.hpp"
 #include "mockutils/MethodInvocationHandler.hpp"
 #include "mockutils/VTUtils.hpp"
 #include "mockutils/FakeObject.hpp"
@@ -28,9 +26,9 @@ namespace fakeit {
 
     class InvocationHandlers : public InvocationHandlerCollection {
         std::vector<std::shared_ptr<Destructible>> &_methodMocks;
-        std::vector<size_t> &_offsets;
+        std::vector<MethodIdType> &_offsets;
 
-        unsigned int getOffset(size_t id) const
+        unsigned int getOffset(MethodIdType id) const
         {
             unsigned int offset = 0;
             for (; offset < _offsets.size(); offset++) {
@@ -42,11 +40,11 @@ namespace fakeit {
         }
 
     public:
-        InvocationHandlers(std::vector<std::shared_ptr<Destructible>> &methodMocks, std::vector<size_t> &offsets)
+        InvocationHandlers(std::vector<std::shared_ptr<Destructible>> &methodMocks, std::vector<MethodIdType> &offsets)
                 : _methodMocks(methodMocks), _offsets(offsets) {
         }
 
-        Destructible *getInvocatoinHandlerPtrById(size_t id) override {
+        Destructible *getInvocatoinHandlerPtrById(MethodIdType id) override {
             unsigned int offset = getOffset(id);
             std::shared_ptr<Destructible> ptr = _methodMocks[offset];
             return ptr.get();
@@ -62,7 +60,7 @@ namespace fakeit {
         DynamicProxy(C &inst) :
                 _instancePtr(&inst),
                 _methodMocks(VTUtils::getVTSize<C>()),
-                _offsets(VTUtils::getVTSize<C>(), std::numeric_limits<int>::max()),
+                _offsets(VTUtils::getVTSize<C>(), &funcIdNotStubbed),
                 _invocationHandlers(_methodMocks, _offsets) {
             _originalVt.copyFrom(VirtualTable<C, baseclasses...>::getVTable(*_instancePtr));
             _originalVt.setCookie(InvocationHandlerCollection::VtCookieIndex, &_invocationHandlers);
@@ -108,11 +106,11 @@ namespace fakeit {
         {
         }
 
-        template<size_t id, typename R, typename ... arglist>
+        template<MethodIdType id, typename R, typename ... arglist>
         void stubMethod(R(C::*vMethod)(arglist...), MethodInvocationHandler<R, arglist...> *methodInvocationHandler) {
             auto offset = VTUtils::getOffset(vMethod);
             MethodProxyCreator<R, arglist...> creator;
-            bind(creator.template createMethodProxy<id + 1>(offset), methodInvocationHandler);
+            bind(creator.template createMethodProxy<id>(offset), methodInvocationHandler);
         }
 
         void stubDtor(MethodInvocationHandler<void> *methodInvocationHandler) {
@@ -125,9 +123,9 @@ namespace fakeit {
             // For GCC / Clang, the destructor is directly called, like normal methods, so we use the member-function
             // version.
 #ifdef _MSC_VER
-            bindDtor(creator.createMethodProxyStatic<0>(offset), methodInvocationHandler);
+            bindDtor(creator.createMethodProxyStatic<&funcIdDestructor>(offset), methodInvocationHandler);
 #else
-            bindDtor(creator.createMethodProxy<0>(offset), methodInvocationHandler);
+            bindDtor(creator.createMethodProxy<&funcIdDestructor>(offset), methodInvocationHandler);
 #endif
         }
 
@@ -217,7 +215,7 @@ namespace fakeit {
         //
         std::vector<std::shared_ptr<Destructible>> _methodMocks;
         std::vector<std::shared_ptr<Destructible>> _members;
-        std::vector<size_t> _offsets;
+        std::vector<MethodIdType> _offsets;
         InvocationHandlers _invocationHandlers;
 
         FakeObject<C, baseclasses...> &getFake() {
