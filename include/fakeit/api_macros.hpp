@@ -10,22 +10,22 @@
     std::remove_reference<decltype((mock).get())>::type
 
 #define OVERLOADED_METHOD_PTR(mock, method, prototype) \
-    fakeit::Prototype<prototype>::template MemberType<typename MOCK_TYPE(mock)>::get(&MOCK_TYPE(mock)::method)
+    fakeit::Prototype<prototype>::get(&MOCK_TYPE(mock)::method)
 
 #define CONST_OVERLOADED_METHOD_PTR(mock, method, prototype) \
-    fakeit::Prototype<prototype>::template MemberType<typename MOCK_TYPE(mock)>::getConst(&MOCK_TYPE(mock)::method)
+    fakeit::Prototype<prototype>::getConst(&MOCK_TYPE(mock)::method)
 
 #define REF_OVERLOADED_METHOD_PTR(mock, method, prototype) \
-    fakeit::Prototype<prototype>::MemberType<typename MOCK_TYPE(mock)>::getRef(&MOCK_TYPE(mock)::method)
+    fakeit::Prototype<prototype>::getRef(&MOCK_TYPE(mock)::method)
 
 #define CONST_REF_OVERLOADED_METHOD_PTR(mock, method, prototype) \
-    fakeit::Prototype<prototype>::MemberType<typename MOCK_TYPE(mock)>::getConstRef(&MOCK_TYPE(mock)::method)
+    fakeit::Prototype<prototype>::getConstRef(&MOCK_TYPE(mock)::method)
 
 #define R_VAL_REF_OVERLOADED_METHOD_PTR(mock, method, prototype) \
-    fakeit::Prototype<prototype>::MemberType<typename MOCK_TYPE(mock)>::getRValRef(&MOCK_TYPE(mock)::method)
+    fakeit::Prototype<prototype>::getRValRef(&MOCK_TYPE(mock)::method)
 
 #define CONST_R_VAL_REF_OVERLOADED_METHOD_PTR(mock, method, prototype) \
-    fakeit::Prototype<prototype>::MemberType<typename MOCK_TYPE(mock)>::getConstRValRef(&MOCK_TYPE(mock)::method)
+    fakeit::Prototype<prototype>::getConstRValRef(&MOCK_TYPE(mock)::method)
 
 #define Dtor(mock) \
     (mock).dtor().setMethodDetails(#mock,"destructor")

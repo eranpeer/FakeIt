@@ -9,40 +9,47 @@ namespace fakeit {
     struct Prototype<R(Args...)> {
 
         template<class C>
-        struct MemberType {
+        using Type = R (C::*)(Args...);
+        template<class C>
+        using ConstType = R (C::*)(Args...) const;
+        template<class C>
+        using RefType = R (C::*)(Args...) &;
+        template<class C>
+        using ConstRefType = R (C::*)(Args...) const&;
+        template<class C>
+        using RValRefType = R (C::*)(Args...) &&;
+        template<class C>
+        using ConstRValRefType = R (C::*)(Args...) const&&;
 
-            using Type = R (C::*)(Args...);
-            using ConstType = R (C::*)(Args...) const;
-            using RefType = R (C::*)(Args...) &;
-            using ConstRefType = R (C::*)(Args...) const&;
-            using RValRefType = R (C::*)(Args...) &&;
-            using ConstRValRefType = R (C::*)(Args...) const&&;
+        template<class C>
+        static constexpr Type<C> get(Type<C> t) {
+            return t;
+        }
 
-            static constexpr Type get(Type t) {
-                return t;
-            }
+        template<class C>
+        static constexpr ConstType<C> getConst(ConstType<C> t) {
+            return t;
+        }
 
-            static constexpr ConstType getConst(ConstType t) {
-                return t;
-            }
+        template<class C>
+        static constexpr RefType<C> getRef(RefType<C> t) {
+            return t;
+        }
 
-            static constexpr RefType getRef(RefType t) {
-                return t;
-            }
+        template<class C>
+        static constexpr ConstRefType<C> getConstRef(ConstRefType<C> t) {
+            return t;
+        }
 
-            static constexpr ConstRefType getConstRef(ConstRefType t) {
-                return t;
-            }
+        template<class C>
+        static constexpr RValRefType<C> getRValRef(RValRefType<C> t) {
+            return t;
+        }
 
-            static constexpr RValRefType getRValRef(RValRefType t) {
-                return t;
-            }
-
-            static constexpr ConstRValRefType getConstRValRef(ConstRValRefType t) {
-                return t;
-            }
-
-        };
+        template<class C>
+        static constexpr ConstRValRefType<C> getConstRValRef(ConstRValRefType<C> t) {
+            return t;
+        }
 
     };
 
