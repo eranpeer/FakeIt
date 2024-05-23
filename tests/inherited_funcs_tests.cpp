@@ -16,7 +16,8 @@ struct InheritedFuncsTests : tpunit::TestFixture
 
     InheritedFuncsTests() :
         TestFixture(
-            TEST(InheritedFuncsTests::mock_base_functions)
+                TEST(InheritedFuncsTests::mock_base_overloaded_functions),
+                TEST(InheritedFuncsTests::mock_base_and_child_overloaded_functions)
         )
     {
     }
@@ -29,15 +30,18 @@ struct InheritedFuncsTests : tpunit::TestFixture
         virtual double nonOverloadedMethod() = 0;
         virtual double overloadedMethod() = 0;
         virtual double overloadedMethod() const = 0;
+        virtual double overloadedInChildMethod() = 0;
     };
 
     class Interface : public BaseInterface
     {
     public:
         ~Interface() override = default;
+        using BaseInterface::overloadedInChildMethod;
+        virtual double overloadedInChildMethod() const = 0;
     };
 
-    void mock_base_functions()
+    void mock_base_overloaded_functions()
     {
         Mock<Interface> mock;
 
@@ -55,6 +59,23 @@ struct InheritedFuncsTests : tpunit::TestFixture
         Verify(Method(mock, nonOverloadedMethod)).Exactly(1);
         Verify(OverloadedMethod(mock, overloadedMethod, double())).Exactly(1);
         Verify(ConstOverloadedMethod(mock, overloadedMethod, double())).Exactly(1);
+    }
+
+    void mock_base_and_child_overloaded_functions()
+    {
+        Mock<Interface> mock;
+
+        When(OverloadedMethod(mock, overloadedInChildMethod, double())).Return(4.5);
+        When(ConstOverloadedMethod(mock, overloadedInChildMethod, double())).Return(5.5);
+
+        Interface& interface = mock.get();
+        const Interface& constInterface = mock.get();
+
+        EXPECT_EQUAL(interface.overloadedInChildMethod(), 4.5);
+        EXPECT_EQUAL(constInterface.overloadedInChildMethod(), 5.5);
+
+        Verify(OverloadedMethod(mock, overloadedInChildMethod, double())).Exactly(1);
+        Verify(ConstOverloadedMethod(mock, overloadedInChildMethod, double())).Exactly(1);
     }
 
 } __InheritedFuncsTests;
