@@ -11,15 +11,15 @@
 
 using namespace fakeit;
 
-struct MovingMocksAround : tpunit::TestFixture
+struct MovingMocksAroundTests : tpunit::TestFixture
 {
 
-    MovingMocksAround() :
+    MovingMocksAroundTests() :
         TestFixture(
-            TEST(MovingMocksAround::move_mock),
-            TEST(MovingMocksAround::move_mock_then_delete),
-            TEST(MovingMocksAround::create_mock_from_function),
-            TEST(MovingMocksAround::create_multiple_mocks_from_function)
+            TEST(MovingMocksAroundTests::move_mock),
+            TEST(MovingMocksAroundTests::move_mock_then_delete),
+            TEST(MovingMocksAroundTests::create_mock_from_function),
+            TEST(MovingMocksAroundTests::create_multiple_mocks_from_function)
         )
     {
     }
@@ -98,4 +98,4 @@ struct MovingMocksAround : tpunit::TestFixture
         Verify(Method(mock2, function).Using(paramString2)).Exactly(1);
     }
 
-} __MovingMocksAround;
+} __MovingMocksAroundTests;
