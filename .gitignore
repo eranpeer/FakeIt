@@ -69,4 +69,4 @@ build/
 Testing/
 
 # Benchmark
-benchmark/bench*/
+/benchmark/bench*/
