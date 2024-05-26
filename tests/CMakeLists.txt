@@ -10,9 +10,10 @@ add_executable(FakeIt_tests
     functional.cpp
     gcc_stubbing_multiple_values_tests.cpp
     gcc_type_info_tests.cpp
+    inherited_funcs_tests.cpp
     miscellaneous_tests.cpp
     move_only_return_tests.cpp
-    moving_mocks_around.cpp
+    moving_mocks_around_tests.cpp
     msc_stubbing_multiple_values_tests.cpp
     msc_type_info_tests.cpp
     overloadded_methods_tests.cpp

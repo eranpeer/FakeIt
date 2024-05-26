@@ -4,10 +4,16 @@
 
 #include "fakeit.hpp"
 
-struct SomeInterface {
-	virtual int func() = 0;
-	virtual std::string func2() = 0;
-};
+namespace multiple_tu {
 
-void stubFunc2(fakeit::Mock<SomeInterface>& mock);
-void stubFunc(fakeit::Mock<SomeInterface>& mock);
+	struct SomeInterface {
+		virtual int func(int) = 0;
+		virtual std::string func2(int) = 0;
+	};
+
+	void stubFunc(fakeit::Mock<SomeInterface>& mock);
+	void stubFunc2(fakeit::Mock<SomeInterface>& mock);
+	void stubMoreFunc(fakeit::Mock<SomeInterface>& mock);
+	void stubMoreFunc2(fakeit::Mock<SomeInterface>& mock);
+
+}
