@@ -67,3 +67,6 @@ build/
 
 # Testing
 Testing/
+
+# Benchmark
+benchmark/bench*/
