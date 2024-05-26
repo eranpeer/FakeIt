@@ -36,7 +36,7 @@ namespace fakeit {
             return MethodProxy(id, offset, union_cast<void *>(&MethodProxyCreator::methodProxyX < id > ));
         }
 
-        template<unsigned int id>
+        template<size_t id>
         MethodProxy createMethodProxyStatic(unsigned int offset) {
             return MethodProxy(id, offset, union_cast<void *>(&MethodProxyCreator::methodProxyXStatic < id > ));
         }
@@ -57,7 +57,7 @@ namespace fakeit {
             return methodProxy(id, std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
         }
 
-        static R methodProxyStatic(void* instance, unsigned int id, const typename fakeit::production_arg<arglist>::type... args) {
+        static R methodProxyStatic(void* instance, size_t id, const typename fakeit::production_arg<arglist>::type... args) {
             InvocationHandlerCollection *invocationHandlerCollection = InvocationHandlerCollection::getInvocationHandlerCollection(
                 instance);
             MethodInvocationHandler<R, arglist...> *invocationHandler =
@@ -66,7 +66,7 @@ namespace fakeit {
             return invocationHandler->handleMethodInvocation(std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
         }
 
-        template<int id>
+        template<size_t id>
         static R methodProxyXStatic(void* instance, arglist ... args) {
             return methodProxyStatic(instance, id, std::forward<const typename fakeit::production_arg<arglist>::type>(args)...);
         }

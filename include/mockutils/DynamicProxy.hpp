@@ -13,10 +13,8 @@
 #include <vector>
 #include <array>
 #include <new>
-#include <limits>
 
 #include "mockutils/VirtualTable.hpp"
-#include "mockutils/union_cast.hpp"
 #include "mockutils/MethodInvocationHandler.hpp"
 #include "mockutils/VTUtils.hpp"
 #include "mockutils/FakeObject.hpp"
@@ -34,7 +32,8 @@ namespace fakeit {
         {
             unsigned int offset = 0;
             for (; offset < _offsets.size(); offset++) {
-                if (_offsets[offset] == id) {
+                // Only check _offsets for methods that were mocked.
+                if (_methodMocks[offset] != nullptr && _offsets[offset] == id) {
                     break;
                 }
             }
@@ -61,8 +60,8 @@ namespace fakeit {
 
         DynamicProxy(C &inst) :
                 _instancePtr(&inst),
-                _methodMocks(VTUtils::getVTSize<C>()),
-                _offsets(VTUtils::getVTSize<C>(), std::numeric_limits<int>::max()),
+                _methodMocks(VTUtils::getVTSize<C>(), nullptr),
+                _offsets(VTUtils::getVTSize<C>(), 0),
                 _invocationHandlers(_methodMocks, _offsets) {
             _originalVt.copyFrom(VirtualTable<C, baseclasses...>::getVTable(*_instancePtr));
             _originalVt.setCookie(InvocationHandlerCollection::VtCookieIndex, &_invocationHandlers);
@@ -97,10 +96,10 @@ namespace fakeit {
 
         void Reset() {
 			_methodMocks = {};
-            _methodMocks.resize(VTUtils::getVTSize<C>());
+            _methodMocks.resize(VTUtils::getVTSize<C>(), nullptr);
             _members = {};
 			_offsets = {};
-            _offsets.resize(VTUtils::getVTSize<C>());
+            _offsets.resize(VTUtils::getVTSize<C>(), 0);
             VirtualTable<C, baseclasses...>::getVTable(*_instancePtr).copyFrom(_originalVt);
         }
 

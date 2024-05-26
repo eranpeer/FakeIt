@@ -127,7 +127,7 @@ namespace fakeit {
         }
 
         // const rval ref
-        template<int id, typename R, typename T, typename... arglist, class = typename std::enable_if<
+        template<size_t id, typename R, typename T, typename... arglist, class = typename std::enable_if<
                 std::is_base_of<T, C>::value>::type>
         MockingContext<internal::WithCommonVoid_t<R>, arglist...> stub(R(T::*vMethod)(arglist...) const&&) {
             auto methodWithoutConstVolatile = reinterpret_cast<internal::WithCommonVoid_t<R>(T::*)(arglist...)>(vMethod);
