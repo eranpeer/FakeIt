@@ -59,7 +59,7 @@ namespace fakeit {
 
         DynamicProxy(C &inst) :
                 _instancePtr(&inst),
-                _methodMocks(VTUtils::getVTSize<C>()),
+                _methodMocks(VTUtils::getVTSize<C>(), nullptr),
                 _offsets(VTUtils::getVTSize<C>(), &funcIdNotStubbed),
                 _invocationHandlers(_methodMocks, _offsets) {
             _originalVt.copyFrom(VirtualTable<C, baseclasses...>::getVTable(*_instancePtr));
@@ -95,10 +95,10 @@ namespace fakeit {
 
         void Reset() {
 			_methodMocks = {};
-            _methodMocks.resize(VTUtils::getVTSize<C>());
+            _methodMocks.resize(VTUtils::getVTSize<C>(), nullptr);
             _members = {};
 			_offsets = {};
-            _offsets.resize(VTUtils::getVTSize<C>());
+            _offsets.resize(VTUtils::getVTSize<C>(), &funcIdNotStubbed);
             VirtualTable<C, baseclasses...>::getVTable(*_instancePtr).copyFrom(_originalVt);
         }
 
