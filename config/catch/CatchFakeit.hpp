@@ -49,18 +49,18 @@ namespace fakeit {
             INTERNAL_CATCH_TRY { \
                 CATCH_INTERNAL_START_WARNINGS_SUPPRESSION \
                 CATCH_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS \
-                catchAssertionHandler.handleMessage(resultWas, fomattedMessage); \
+                catchAssertionHandler.handleMessage(resultWas, std::move(fomattedMessage)); \
                 CATCH_INTERNAL_STOP_WARNINGS_SUPPRESSION \
             } INTERNAL_CATCH_CATCH(catchAssertionHandler) { \
-                INTERNAL_CATCH_REACT(catchAssertionHandler) \
+                catchAssertionHandler.complete(); \
             }
 #else
             INTERNAL_CATCH_TRY { \
                 CATCH_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS \
-                catchAssertionHandler.handleMessage(resultWas, fomattedMessage); \
+                catchAssertionHandler.handleMessage(resultWas, std::move(fomattedMessage)); \
                 CATCH_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS \
             } INTERNAL_CATCH_CATCH(catchAssertionHandler) { \
-                INTERNAL_CATCH_REACT(catchAssertionHandler) \
+                catchAssertionHandler.complete(); \
             }
 #endif
         }
