@@ -2,7 +2,7 @@
 /*
  *  FakeIt - A Simplified C++ Mocking Framework
  *  Copyright (c) Eran Pe'er 2013
- *  Generated: 2023-04-17 21:28:50.210014
+ *  Generated: 2024-10-06 20:50:22.219617
  *  Distributed under the MIT License. Please refer to the LICENSE file at:
  *  https://github.com/eranpeer/FakeIt
  */
@@ -1207,7 +1207,7 @@ namespace fakeit {
             INTERNAL_CATCH_TRY { \
                 CATCH_INTERNAL_START_WARNINGS_SUPPRESSION \
                 CATCH_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS \
-                catchAssertionHandler.handleMessage(resultWas, std::move(fomattedMessage); \
+                catchAssertionHandler.handleMessage(resultWas, std::move(fomattedMessage)); \
                 CATCH_INTERNAL_STOP_WARNINGS_SUPPRESSION \
             } INTERNAL_CATCH_CATCH(catchAssertionHandler) { \
                 catchAssertionHandler.complete(); \
