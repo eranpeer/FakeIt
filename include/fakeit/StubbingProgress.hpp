@@ -83,7 +83,9 @@ namespace fakeit {
                 return AlwaysDo([&r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
             }
 
-            template <typename U = R>
+            // The std::enable_if is only there to disambiguate with the deprecated version of .AlwaysReturn<type>(val), and
+            // can be removed once that deprecated version is removed.
+            template <typename U = R, typename std::enable_if<std::is_reference<U>::value, bool>::type = true>
             void AlwaysReturn(fk_remove_cvref_t<R>&&) {
                 static_assert(sizeof(U) != sizeof(U), "AlwaysReturn() cannot take an rvalue references for functions returning a reference because it would make it dangling, use AlwaysReturnCapture() instead.");
             }
@@ -174,6 +176,14 @@ namespace fakeit {
         template<typename TypeUsedToForceCapture, typename RealType, typename std::enable_if<!std::is_reference<TypeUsedToForceCapture>::value, bool>::type = true>
         MethodStubbingProgress<R, arglist...>& Return(RealType&& ret) {
             return this->ReturnCapture(TypeUsedToForceCapture(std::forward<RealType>(ret)));
+        }
+
+        // DEPRECATED: This should ideally be removed, it allows writing .AlwaysReturn<std::string>("ok") when a function
+        // returns "const std::string&" (for example) to have the same behavior has .AlwaysReturnCapture("ok"). But it is prone
+        // to errors (because you have to specify the type). .AlwaysReturnCapture("ok") is superior and should be used instead.
+        template<typename TypeUsedToForceCapture, typename RealType, typename std::enable_if<!std::is_reference<TypeUsedToForceCapture>::value, bool>::type = true>
+        void AlwaysReturn(RealType&& ret) {
+            return this->AlwaysReturnCapture(TypeUsedToForceCapture(std::forward<RealType>(ret)));
         }
 
         MethodStubbingProgress<R, arglist...> &
