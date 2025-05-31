@@ -17,82 +17,98 @@ jobs:
       matrix:
         config:
           - {
-            name: "Windows 2019 MSVC 2019 Win32",
-            os: windows-2019,
+            name: "Windows 2022 MSVC 2022 Win32",
+            os: windows-2022,
             build_type: Debug,
-            generator: "Visual Studio 16 2019",
+            generator: "Visual Studio 17 2022",
             architecture: "Win32"
           }
           - {
-            name: "Windows 2019 MSVC 2019 x64",
-            os: windows-2019,
+            name: "Windows 2022 MSVC 2022 x64",
+            os: windows-2022,
             build_type: Debug,
-            generator: "Visual Studio 16 2019",
+            generator: "Visual Studio 17 2022",
             architecture: "x64"
           }
           - {
-            name: "Windows 2022 MSVC 2022 Win32 C++11",
-            os: windows-2022,
+            name: "Windows 2025 MSVC 2022 Win32 C++11",
+            os: windows-2025,
             build_type: Debug,
             generator: "Visual Studio 17 2022",
             architecture: "Win32",
             cxx_standard: 11
           }
           - {
-            name: "Windows 2022 MSVC 2022 x64 C++11",
-            os: windows-2022,
+            name: "Windows 2025 MSVC 2022 x64 C++11",
+            os: windows-2025,
             build_type: Debug,
             generator: "Visual Studio 17 2022",
             architecture: "x64",
             cxx_standard: 11
           }
           - {
-            name: "Windows 2022 MSVC 2022 Win32 C++14",
-            os: windows-2022,
+            name: "Windows 2025 MSVC 2022 Win32 C++14",
+            os: windows-2025,
             build_type: Debug,
             generator: "Visual Studio 17 2022",
             architecture: "Win32",
             cxx_standard: 14
           }
           - {
-            name: "Windows 2022 MSVC 2022 x64 C++14",
-            os: windows-2022,
+            name: "Windows 2025 MSVC 2022 x64 C++14",
+            os: windows-2025,
             build_type: Debug,
             generator: "Visual Studio 17 2022",
             architecture: "x64",
             cxx_standard: 14
           }
           - {
-            name: "Windows 2022 MSVC 2022 Win32 C++17",
-            os: windows-2022,
+            name: "Windows 2025 MSVC 2022 Win32 C++17",
+            os: windows-2025,
             build_type: Debug,
             generator: "Visual Studio 17 2022",
             architecture: "Win32",
             cxx_standard: 17
           }
           - {
-            name: "Windows 2022 MSVC 2022 x64 C++17",
-            os: windows-2022,
+            name: "Windows 2025 MSVC 2022 x64 C++17",
+            os: windows-2025,
             build_type: Debug,
             generator: "Visual Studio 17 2022",
             architecture: "x64",
             cxx_standard: 17
           }
           - {
-            name: "Windows 2022 MSVC 2022 Win32 C++20",
-            os: windows-2022,
+            name: "Windows 2025 MSVC 2022 Win32 C++20",
+            os: windows-2025,
             build_type: Debug,
             generator: "Visual Studio 17 2022",
             architecture: "Win32",
             cxx_standard: 20
           }
           - {
-            name: "Windows 2022 MSVC 2022 x64 C++20",
-            os: windows-2022,
+            name: "Windows 2025 MSVC 2022 x64 C++20",
+            os: windows-2025,
             build_type: Debug,
             generator: "Visual Studio 17 2022",
             architecture: "x64",
             cxx_standard: 20
+          }
+          - {
+            name: "Windows 2025 MSVC 2022 Win32 C++23",
+            os: windows-2025,
+            build_type: Debug,
+            generator: "Visual Studio 17 2022",
+            architecture: "Win32",
+            cxx_standard: 23
+          }
+          - {
+            name: "Windows 2025 MSVC 2022 x64 C++23",
+            os: windows-2025,
+            build_type: Debug,
+            generator: "Visual Studio 17 2022",
+            architecture: "x64",
+            cxx_standard: 23
           }
     steps:
       - uses: actions/checkout@v3
