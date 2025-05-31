@@ -17,38 +17,38 @@ jobs:
       matrix:
         config:
           - {
-            name: "macOS 11 AppleClang 13",
-            os: macos-11,
-            build_type: Debug,
-            cxx_standard: 17
-          }
-          - {
-            name: "macOS 13 AppleClang 14 C++11",
-            os: macos-13,
+            name: "macOS 15 AppleClang 15 C++11",
+            os: macos-15,
             build_type: Debug,
             cxx_standard: 11
           }
           - {
-            name: "macOS 13 AppleClang 14 C++14",
-            os: macos-13,
+            name: "macOS 15 AppleClang 15 C++14",
+            os: macos-15,
             build_type: Debug,
             cxx_standard: 14
           }
           - {
-            name: "macOS 13 AppleClang 14 C++17",
-            os: macos-13,
+            name: "macOS 15 AppleClang 15 C++17",
+            os: macos-15,
             build_type: Debug,
             cxx_standard: 17
           }
           - {
-            name: "macOS 13 AppleClang 14 C++20",
-            os: macos-13,
+            name: "macOS 15 AppleClang 15 C++20",
+            os: macos-15,
             build_type: Debug,
             cxx_standard: 20
           }
           - {
-            name: "macOS 13 AppleClang with sanitizers",
-            os: macos-13,
+            name: "macOS 15 AppleClang 15 C++23",
+            os: macos-15,
+            build_type: Debug,
+            cxx_standard: 23
+          }
+          - {
+            name: "macOS 15 AppleClang with sanitizers",
+            os: macos-15,
             build_type: Debug,
             cxx_standard: 17,
             enable_sanitizers_in_tests: ON

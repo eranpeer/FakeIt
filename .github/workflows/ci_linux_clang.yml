@@ -17,60 +17,73 @@ jobs:
       matrix:
         config:
           - {
-            name: "Ubuntu 20.04 Clang 10",
-            os: ubuntu-20.04,
-            build_type: Debug,
-            cc: "clang-10", cxx: "clang++-10"
-          }
-          - {
-            name: "Ubuntu 20.04 Clang 11",
-            os: ubuntu-20.04,
-            build_type: Debug,
-            cc: "clang-11", cxx: "clang++-11"
-          }
-          - {
-            name: "Ubuntu 20.04 Clang 12",
-            os: ubuntu-20.04,
-            build_type: Debug,
-            cc: "clang-12", cxx: "clang++-12"
-          }
-          - {
             name: "Ubuntu 22.04 Clang 13",
             os: ubuntu-22.04,
             build_type: Debug,
             cc: "clang-13", cxx: "clang++-13"
           }
           - {
-            name: "Ubuntu 22.04 Clang 14 C++11",
+            name: "Ubuntu 22.04 Clang 14",
             os: ubuntu-22.04,
             build_type: Debug,
-            cc: "clang-14", cxx: "clang++-14",
+            cc: "clang-14", cxx: "clang++-14"
+          }
+          - {
+            name: "Ubuntu 22.04 Clang 15",
+            os: ubuntu-22.04,
+            build_type: Debug,
+            cc: "clang-15", cxx: "clang++-15"
+          }
+          - {
+            name: "Ubuntu 24.04 Clang 16",
+            os: ubuntu-24.04,
+            build_type: Debug,
+            cc: "clang-16", cxx: "clang++-16"
+          }
+          - {
+            name: "Ubuntu 24.04 Clang 17",
+            os: ubuntu-24.04,
+            build_type: Debug,
+            cc: "clang-17", cxx: "clang++-17"
+          }
+          - {
+            name: "Ubuntu 24.04 Clang 18 C++11",
+            os: ubuntu-24.04,
+            build_type: Debug,
+            cc: "clang-18", cxx: "clang++-18",
             cxx_standard: 11
           }
           - {
-            name: "Ubuntu 22.04 Clang 14 C++14",
-            os: ubuntu-22.04,
+            name: "Ubuntu 24.04 Clang 18 C++14",
+            os: ubuntu-24.04,
             build_type: Debug,
-            cc: "clang-14", cxx: "clang++-14",
+            cc: "clang-18", cxx: "clang++-18",
             cxx_standard: 14
           }
           - {
-            name: "Ubuntu 22.04 Clang 14 C++17",
-            os: ubuntu-22.04,
+            name: "Ubuntu 24.04 Clang 18 C++17",
+            os: ubuntu-24.04,
             build_type: Debug,
-            cc: "clang-14", cxx: "clang++-14",
+            cc: "clang-18", cxx: "clang++-18",
             cxx_standard: 17
           }
           - {
-            name: "Ubuntu 22.04 Clang 14 C++20",
-            os: ubuntu-22.04,
+            name: "Ubuntu 24.04 Clang 18 C++20",
+            os: ubuntu-24.04,
             build_type: Debug,
-            cc: "clang-14", cxx: "clang++-14",
+            cc: "clang-18", cxx: "clang++-18",
             cxx_standard: 20
           }
           - {
-            name: "Ubuntu 22.04 Clang with sanitizers",
-            os: ubuntu-22.04,
+            name: "Ubuntu 24.04 Clang 18 C++23",
+            os: ubuntu-24.04,
+            build_type: Debug,
+            cc: "clang-18", cxx: "clang++-18",
+            cxx_standard: 23
+          }
+          - {
+            name: "Ubuntu 24.04 Clang with sanitizers",
+            os: ubuntu-24.04,
             build_type: Debug,
             cc: "clang", cxx: "clang++",
             enable_sanitizers_in_tests: ON

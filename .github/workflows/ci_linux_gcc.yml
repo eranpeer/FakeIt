@@ -17,14 +17,8 @@ jobs:
       matrix:
         config:
           - {
-            name: "Ubuntu 20.04 GCC 9",
-            os: ubuntu-20.04,
-            build_type: Debug,
-            cc: "gcc-9", cxx: "g++-9"
-          }
-          - {
-            name: "Ubuntu 20.04 GCC 10",
-            os: ubuntu-20.04,
+            name: "Ubuntu 22.04 GCC 10",
+            os: ubuntu-22.04,
             build_type: Debug,
             cc: "gcc-10", cxx: "g++-10"
           }
@@ -35,36 +29,55 @@ jobs:
             cc: "gcc-11", cxx: "g++-11"
           }
           - {
-            name: "Ubuntu 22.04 GCC 12 C++11",
+            name: "Ubuntu 22.04 GCC 12",
             os: ubuntu-22.04,
             build_type: Debug,
-            cc: "gcc-12", cxx: "g++-12",
+            cc: "gcc-12", cxx: "g++-12"
+          }
+          - {
+            name: "Ubuntu 24.04 GCC 13",
+            os: ubuntu-24.04,
+            build_type: Debug,
+            cc: "gcc-13", cxx: "g++-13"
+          }
+          - {
+            name: "Ubuntu 24.04 GCC 14 C++11",
+            os: ubuntu-24.04,
+            build_type: Debug,
+            cc: "gcc-14", cxx: "g++-14",
             cxx_standard: 11
           }
           - {
-            name: "Ubuntu 22.04 GCC 12 C++14",
-            os: ubuntu-22.04,
+            name: "Ubuntu 24.04 GCC 14 C++14",
+            os: ubuntu-24.04,
             build_type: Debug,
-            cc: "gcc-12", cxx: "g++-12",
+            cc: "gcc-14", cxx: "g++-14",
             cxx_standard: 14
           }
           - {
-            name: "Ubuntu 22.04 GCC 12 C++17",
-            os: ubuntu-22.04,
+            name: "Ubuntu 24.04 GCC 14 C++17",
+            os: ubuntu-24.04,
             build_type: Debug,
-            cc: "gcc-12", cxx: "g++-12",
+            cc: "gcc-14", cxx: "g++-14",
             cxx_standard: 17
           }
           - {
-            name: "Ubuntu 22.04 GCC 12 C++20",
-            os: ubuntu-22.04,
+            name: "Ubuntu 24.04 GCC 14 C++20",
+            os: ubuntu-24.04,
             build_type: Debug,
-            cc: "gcc-12", cxx: "g++-12",
+            cc: "gcc-14", cxx: "g++-14",
             cxx_standard: 20
           }
           - {
-            name: "Ubuntu 22.04 GCC with sanitizers",
-            os: ubuntu-22.04,
+            name: "Ubuntu 24.04 GCC 14 C++23",
+            os: ubuntu-24.04,
+            build_type: Debug,
+            cc: "gcc-14", cxx: "g++-14",
+            cxx_standard: 23
+          }
+          - {
+            name: "Ubuntu 24.04 GCC with sanitizers",
+            os: ubuntu-24.04,
             build_type: Debug,
             cc: "gcc", cxx: "g++",
             enable_sanitizers_in_tests: ON
