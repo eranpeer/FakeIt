@@ -15,13 +15,13 @@ struct ReturnTemplateSpecializationTests : tpunit::TestFixture {
 
     ReturnTemplateSpecializationTests()
         : tpunit::TestFixture(
-            TEST(ReturnTemplateSpecializationTests::return_ref_specialization_from_same_type_temp),
-            TEST(ReturnTemplateSpecializationTests::return_ref_capture_from_same_type_temp),
-            TEST(ReturnTemplateSpecializationTests::return_ref_specialization_from_other_type_temp),
-            TEST(ReturnTemplateSpecializationTests::return_ref_capture_from_other_type_temp),
-            TEST(ReturnTemplateSpecializationTests::return_ref_default_from_variable),
-            TEST(ReturnTemplateSpecializationTests::return_ref_specialization_from_variable),
-            TEST(ReturnTemplateSpecializationTests::return_ref_capture_from_variable)
+            TEST(ReturnTemplateSpecializationTests::return_specialization_from_same_type_temp),
+            TEST(ReturnTemplateSpecializationTests::return_capture_from_same_type_temp),
+            TEST(ReturnTemplateSpecializationTests::return_specialization_from_other_type_temp),
+            TEST(ReturnTemplateSpecializationTests::return_capture_from_other_type_temp),
+            TEST(ReturnTemplateSpecializationTests::return_default_from_variable),
+            TEST(ReturnTemplateSpecializationTests::return_specialization_from_variable),
+            TEST(ReturnTemplateSpecializationTests::return_capture_from_variable)
         ) {
     }
 
@@ -40,9 +40,11 @@ struct ReturnTemplateSpecializationTests : tpunit::TestFixture {
         virtual const MoveOnly& returnRefMo() = 0;
 
         virtual std::string returnVal() = 0;
+
+        virtual MoveOnly returnValMo() = 0;
     };
 
-    void return_ref_specialization_from_same_type_temp() {
+    void return_specialization_from_same_type_temp() {
         Mock<SomeStruct> mock;
 
         When(Method(mock, returnRef)).Return<std::string>(std::string("something"));
@@ -52,9 +54,17 @@ struct ReturnTemplateSpecializationTests : tpunit::TestFixture {
         When(Method(mock, returnRefMo)).Return<MoveOnly>(MoveOnly{5});
         ASSERT_EQUAL(mock.get().returnRefMo().i, 5);
         Verify(Method(mock, returnRefMo)).Once();
+
+        When(Method(mock, returnVal)).Return<std::string>(std::string("something"));
+        ASSERT_EQUAL(mock.get().returnVal(), "something");
+        Verify(Method(mock, returnVal)).Once();
+
+        When(Method(mock, returnValMo)).Return<MoveOnly>(MoveOnly{5});
+        ASSERT_EQUAL(mock.get().returnValMo().i, 5);
+        Verify(Method(mock, returnValMo)).Once();
     }
 
-    void return_ref_capture_from_same_type_temp() {
+    void return_capture_from_same_type_temp() {
         Mock<SomeStruct> mock;
 
         When(Method(mock, returnRef)).ReturnCapture(std::string("something"));
@@ -64,9 +74,17 @@ struct ReturnTemplateSpecializationTests : tpunit::TestFixture {
         When(Method(mock, returnRefMo)).ReturnCapture(MoveOnly{5});
         ASSERT_EQUAL(mock.get().returnRefMo().i, 5);
         Verify(Method(mock, returnRefMo)).Once();
+
+        When(Method(mock, returnVal)).ReturnCapture(std::string("something"));
+        ASSERT_EQUAL(mock.get().returnVal(), "something");
+        Verify(Method(mock, returnVal)).Once();
+
+        When(Method(mock, returnValMo)).ReturnCapture(MoveOnly{5});
+        ASSERT_EQUAL(mock.get().returnValMo().i, 5);
+        Verify(Method(mock, returnValMo)).Once();
     }
 
-    void return_ref_specialization_from_other_type_temp() {
+    void return_specialization_from_other_type_temp() {
         Mock<SomeStruct> mock;
 
         When(Method(mock, returnRef)).Return<std::string>("something");
@@ -76,9 +94,17 @@ struct ReturnTemplateSpecializationTests : tpunit::TestFixture {
         When(Method(mock, returnRefMo)).Return<MoveOnly>(5);
         ASSERT_EQUAL(mock.get().returnRefMo().i, 5);
         Verify(Method(mock, returnRefMo)).Once();
+
+        When(Method(mock, returnVal)).Return<std::string>("something");
+        ASSERT_EQUAL(mock.get().returnVal(), "something");
+        Verify(Method(mock, returnVal)).Once();
+
+        When(Method(mock, returnValMo)).Return<MoveOnly>(5);
+        ASSERT_EQUAL(mock.get().returnValMo().i, 5);
+        Verify(Method(mock, returnValMo)).Once();
     }
 
-    void return_ref_capture_from_other_type_temp() {
+    void return_capture_from_other_type_temp() {
         Mock<SomeStruct> mock;
 
         When(Method(mock, returnRef)).ReturnCapture("something");
@@ -88,54 +114,116 @@ struct ReturnTemplateSpecializationTests : tpunit::TestFixture {
         When(Method(mock, returnRefMo)).ReturnCapture(5);
         ASSERT_EQUAL(mock.get().returnRefMo().i, 5);
         Verify(Method(mock, returnRefMo)).Once();
+
+        When(Method(mock, returnVal)).ReturnCapture("something");
+        ASSERT_EQUAL(mock.get().returnVal(), "something");
+        Verify(Method(mock, returnVal)).Once();
+
+        When(Method(mock, returnValMo)).ReturnCapture(5);
+        ASSERT_EQUAL(mock.get().returnValMo().i, 5);
+        Verify(Method(mock, returnValMo)).Once();
     }
 
-    void return_ref_default_from_variable() {
-        std::string something = "something";
-        MoveOnly mo = 5;
+    void return_default_from_variable() {
         Mock<SomeStruct> mock;
 
-        When(Method(mock, returnRef)).Return(something);
-        something = "a different thing";
-        ASSERT_EQUAL(mock.get().returnRef(), "a different thing");
-        Verify(Method(mock, returnRef)).Once();
+        {
+            std::string something = "something";
+            MoveOnly mo = 5;
 
-        When(Method(mock, returnRefMo)).Return(mo);
-        mo.i = 10;
-        ASSERT_EQUAL(mock.get().returnRefMo().i, 10);
-        Verify(Method(mock, returnRefMo)).Once();
+            When(Method(mock, returnRef)).Return(something);
+            something = "a different thing";
+            ASSERT_EQUAL(mock.get().returnRef(), "a different thing");
+            Verify(Method(mock, returnRef)).Once();
+
+            When(Method(mock, returnRefMo)).Return(mo);
+            mo.i = 10;
+            ASSERT_EQUAL(mock.get().returnRefMo().i, 10);
+            Verify(Method(mock, returnRefMo)).Once();
+        }
+
+        {
+            std::string something = "something";
+            MoveOnly mo = 5;
+
+            When(Method(mock, returnVal)).Return(something);
+            something = "a different thing";
+            ASSERT_EQUAL(mock.get().returnVal(), "something");
+            Verify(Method(mock, returnVal)).Once();
+
+            When(Method(mock, returnValMo)).Return(std::move(mo));
+            mo.i = 10;
+            ASSERT_EQUAL(mock.get().returnValMo().i, 5);
+            Verify(Method(mock, returnValMo)).Once();
+        }
     }
 
-    void return_ref_specialization_from_variable() {
-        std::string something = "something";
-        MoveOnly mo = 5;
+    void return_specialization_from_variable() {
         Mock<SomeStruct> mock;
 
-        When(Method(mock, returnRef)).Return<std::string>(something);
-        something = "a different thing";
-        ASSERT_EQUAL(mock.get().returnRef(), "something");
-        Verify(Method(mock, returnRef)).Once();
+        {
+            std::string something = "something";
+            MoveOnly mo = 5;
 
-        When(Method(mock, returnRefMo)).Return<MoveOnly>(std::move(mo));
-        mo.i = 10;
-        ASSERT_EQUAL(mock.get().returnRefMo().i, 5);
-        Verify(Method(mock, returnRefMo)).Once();
+            When(Method(mock, returnRef)).Return<std::string>(something);
+            something = "a different thing";
+            ASSERT_EQUAL(mock.get().returnRef(), "something");
+            Verify(Method(mock, returnRef)).Once();
+
+            When(Method(mock, returnRefMo)).Return<MoveOnly>(std::move(mo));
+            mo.i = 10;
+            ASSERT_EQUAL(mock.get().returnRefMo().i, 5);
+            Verify(Method(mock, returnRefMo)).Once();
+        }
+
+        {
+            std::string something = "something";
+            MoveOnly mo = 5;
+
+            When(Method(mock, returnVal)).Return<std::string>(something);
+            something = "a different thing";
+            ASSERT_EQUAL(mock.get().returnVal(), "something");
+            Verify(Method(mock, returnVal)).Once();
+
+            When(Method(mock, returnValMo)).Return<MoveOnly>(std::move(mo));
+            mo.i = 10;
+            ASSERT_EQUAL(mock.get().returnValMo().i, 5);
+            Verify(Method(mock, returnValMo)).Once();
+        }
     }
 
-    void return_ref_capture_from_variable() {
-        std::string something = "something";
-        MoveOnly mo = 5;
+    void return_capture_from_variable() {
         Mock<SomeStruct> mock;
 
-        When(Method(mock, returnRef)).ReturnCapture(something);
-        something = "a different thing";
-        ASSERT_EQUAL(mock.get().returnRef(), "something");
-        Verify(Method(mock, returnRef)).Once();
+        {
+            std::string something = "something";
+            MoveOnly mo = 5;
 
-        When(Method(mock, returnRefMo)).ReturnCapture(std::move(mo));
-        mo.i = 10;
-        ASSERT_EQUAL(mock.get().returnRefMo().i, 5);
-        Verify(Method(mock, returnRefMo)).Once();
+            When(Method(mock, returnRef)).ReturnCapture(something);
+            something = "a different thing";
+            ASSERT_EQUAL(mock.get().returnRef(), "something");
+            Verify(Method(mock, returnRef)).Once();
+
+            When(Method(mock, returnRefMo)).ReturnCapture(std::move(mo));
+            mo.i = 10;
+            ASSERT_EQUAL(mock.get().returnRefMo().i, 5);
+            Verify(Method(mock, returnRefMo)).Once();
+        }
+
+        {
+            std::string something = "something";
+            MoveOnly mo = 5;
+
+            When(Method(mock, returnVal)).ReturnCapture(something);
+            something = "a different thing";
+            ASSERT_EQUAL(mock.get().returnVal(), "something");
+            Verify(Method(mock, returnVal)).Once();
+
+            When(Method(mock, returnValMo)).ReturnCapture(std::move(mo));
+            mo.i = 10;
+            ASSERT_EQUAL(mock.get().returnValMo().i, 5);
+            Verify(Method(mock, returnValMo)).Once();
+        }
     }
 
 } __ReturnTemplateSpecializationTests;
