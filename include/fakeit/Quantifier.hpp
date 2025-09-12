@@ -65,16 +65,12 @@ namespace fakeit {
 #if defined (__GNUG__) || (_MSC_VER >= 1900)
 
     inline QuantifierFunctor operator
-    ""
-
-    _Times(unsigned long long n) {
+    ""_Times(unsigned long long n) {
         return QuantifierFunctor((int) n);
     }
 
     inline QuantifierFunctor operator
-    ""
-
-    _Time(unsigned long long n) {
+    ""_Time(unsigned long long n) {
         if (n != 1)
             throw std::invalid_argument("Only 1_Time is supported. Use X_Times (with s) if X is bigger than 1");
         return QuantifierFunctor((int) n);
