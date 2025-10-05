@@ -117,6 +117,16 @@ namespace fakeit {
                     return std::forward<R>(*store);
                 });
             }
+
+            template<typename T>
+            MethodStubbingProgress<R, arglist...>& ReturnRefCapt(T&& r) {
+                return Return(std::forward<T>(r));
+            }
+
+            template<typename T>
+            MethodStubbingProgress<R, arglist...>& AlwaysReturnRefCapt(T&& r) {
+                return AlwaysReturn(std::forward<T>(r));
+            }
         };
 
         // If R is not a reference.
@@ -150,6 +160,18 @@ namespace fakeit {
 
             void AlwaysReturnValCapt(const R &r) {
                 return AlwaysReturn(r);
+            }
+
+            template<typename T>
+            MethodStubbingProgress<R, arglist...>& ReturnRefCapt(T&& r) {
+                static_assert(std::is_lvalue_reference<T>::value, "ReturnRefCapt() cannot take an rvalue references because it would make it dangling, use ReturnValCapt() instead.");
+                return Do([&r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
+            }
+
+            template<typename T>
+            MethodStubbingProgress<R, arglist...>& AlwaysReturnRefCapt(T&& r) {
+                static_assert(std::is_lvalue_reference<T>::value, "AlwaysReturnRefCapt() cannot take an rvalue references because it would make it dangling, use AlwaysReturnValCapt() instead.");
+                return AlwaysDo([&r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
             }
         };
 

@@ -24,9 +24,11 @@ struct ReturnTemplateSpecializationTests : tpunit::TestFixture {
             TEST(ReturnTemplateSpecializationTests::return_default_from_same_type_variable),
             TEST(ReturnTemplateSpecializationTests::return_valspecialization_from_same_type_variable),
             TEST(ReturnTemplateSpecializationTests::return_valcapt_from_same_type_variable),
+            TEST(ReturnTemplateSpecializationTests::return_refcapt_from_same_type_variable),
             TEST(ReturnTemplateSpecializationTests::return_default_from_other_type_variable),
             TEST(ReturnTemplateSpecializationTests::return_valspecialization_from_other_type_variable),
             TEST(ReturnTemplateSpecializationTests::return_valcapt_from_other_type_variable),
+            TEST(ReturnTemplateSpecializationTests::return_refcapt_from_other_type_variable),
             TEST(ReturnTemplateSpecializationTests::always_return_default_from_same_type_temp),
             TEST(ReturnTemplateSpecializationTests::always_return_valspecialization_from_same_type_temp),
             TEST(ReturnTemplateSpecializationTests::always_return_valcapt_from_same_type_temp),
@@ -267,6 +269,34 @@ struct ReturnTemplateSpecializationTests : tpunit::TestFixture {
         }
     }
 
+    void return_refcapt_from_same_type_variable() {
+        Mock<SomeStruct> mock;
+
+        {
+            std::string something = "something";
+            MoveOnly mo = 5;
+
+            When(Method(mock, returnRef)).ReturnRefCapt(something);
+            something = "a different thing";
+            ASSERT_EQUAL(mock.get().returnRef(), "a different thing");
+            Verify(Method(mock, returnRef)).Once();
+
+            When(Method(mock, returnRefMo)).ReturnRefCapt(mo);
+            mo.i = 10;
+            ASSERT_EQUAL(mock.get().returnRefMo().i, 10);
+            Verify(Method(mock, returnRefMo)).Once();
+        }
+
+        {
+            std::string something = "something";
+
+            When(Method(mock, returnVal)).ReturnRefCapt(something);
+            something = "a different thing";
+            ASSERT_EQUAL(mock.get().returnVal(), "a different thing");
+            Verify(Method(mock, returnVal)).Once();
+        }
+    }
+
     void return_default_from_other_type_variable() {
         Mock<SomeStruct> mock;
 
@@ -350,6 +380,25 @@ struct ReturnTemplateSpecializationTests : tpunit::TestFixture {
             When(Method(mock, returnValMo)).ReturnValCapt(num);
             num = 10;
             ASSERT_EQUAL(mock.get().returnValMo().i, 5);
+            Verify(Method(mock, returnValMo)).Once();
+        }
+    }
+
+    void return_refcapt_from_other_type_variable() {
+        Mock<SomeStruct> mock;
+
+        {
+            const char* something = "something";
+            int num = 5;
+
+            When(Method(mock, returnVal)).ReturnRefCapt(something);
+            something = "a different thing";
+            ASSERT_EQUAL(mock.get().returnVal(), "a different thing");
+            Verify(Method(mock, returnVal)).Once();
+
+            When(Method(mock, returnValMo)).ReturnRefCapt(num);
+            num = 10;
+            ASSERT_EQUAL(mock.get().returnValMo().i, 10);
             Verify(Method(mock, returnValMo)).Once();
         }
     }
