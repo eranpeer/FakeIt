@@ -80,7 +80,7 @@ namespace fakeit {
             }
 
             void AlwaysReturn(const R &r) {
-                return AlwaysDo([&r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
+                AlwaysDo([&r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
             }
 
             // The std::enable_if is only there to disambiguate with the deprecated version of .AlwaysReturn<type>(val), and
@@ -113,7 +113,7 @@ namespace fakeit {
                     fk_remove_cvref_t<T>,
                     fk_remove_cvref_t<R>>::type;
                 auto store = std::make_shared<StoredType>(std::forward<T>(r));
-                return AlwaysDo([store](const typename fakeit::test_arg<arglist>::type...) mutable -> R {
+                AlwaysDo([store](const typename fakeit::test_arg<arglist>::type...) mutable -> R {
                     return std::forward<R>(*store);
                 });
             }
@@ -124,8 +124,8 @@ namespace fakeit {
             }
 
             template<typename T>
-            MethodStubbingProgress<R, arglist...>& AlwaysReturnRefCapt(T&& r) {
-                return AlwaysReturn(std::forward<T>(r));
+            void AlwaysReturnRefCapt(T&& r) {
+                AlwaysReturn(std::forward<T>(r));
             }
         };
 
@@ -147,7 +147,7 @@ namespace fakeit {
             }
 
             void AlwaysReturn(const R &r) {
-                return AlwaysDo([r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
+                AlwaysDo([r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
             }
 
             MethodStubbingProgress<R, arglist...>& ReturnValCapt(const R& r) {
@@ -159,7 +159,7 @@ namespace fakeit {
             }
 
             void AlwaysReturnValCapt(const R &r) {
-                return AlwaysReturn(r);
+                AlwaysReturn(r);
             }
 
             template<typename T>
@@ -169,9 +169,9 @@ namespace fakeit {
             }
 
             template<typename T>
-            MethodStubbingProgress<R, arglist...>& AlwaysReturnRefCapt(T&& r) {
+            void AlwaysReturnRefCapt(T&& r) {
                 static_assert(std::is_lvalue_reference<T>::value, "AlwaysReturnRefCapt() cannot take an rvalue references because it would make it dangling, use AlwaysReturnValCapt() instead.");
-                return AlwaysDo([&r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
+                AlwaysDo([&r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
             }
         };
 
@@ -205,7 +205,23 @@ namespace fakeit {
         // to errors (because you have to specify the type). .AlwaysReturnValCapt("ok") is superior and should be used instead.
         template<typename TypeUsedToForceCapture, typename RealType, typename std::enable_if<!std::is_reference<TypeUsedToForceCapture>::value, bool>::type = true>
         void AlwaysReturn(RealType&& ret) {
-            return this->AlwaysReturnValCapt(TypeUsedToForceCapture(std::forward<RealType>(ret)));
+            this->AlwaysReturnValCapt(TypeUsedToForceCapture(std::forward<RealType>(ret)));
+        }
+
+        // DEPRECATED: This should ideally be removed, it allows writing .Return<std::string&>(str) when a function
+        // returns "std::string" (for example) to have the same behavior has .ReturnRefCapt(str). But it is prone
+        // to errors (because you have to specify the type). .ReturnRefCapt(str) is superior and should be used instead.
+        template<typename TypeUsedToForceCapture, typename RealType, typename std::enable_if<std::is_reference<TypeUsedToForceCapture>::value, bool>::type = true>
+        MethodStubbingProgress<R, arglist...>& Return(RealType&& ret) {
+            return this->ReturnRefCapt(std::forward<RealType>(ret));
+        }
+
+        // DEPRECATED: This should ideally be removed, it allows writing .AlwaysReturn<std::string&>(str) when a function
+        // returns "std::string" (for example) to have the same behavior has .AlwaysReturnRefCapt(str). But it is prone
+        // to errors (because you have to specify the type). .AlwaysReturnRefCapt(str) is superior and should be used instead.
+        template<typename TypeUsedToForceCapture, typename RealType, typename std::enable_if<std::is_reference<TypeUsedToForceCapture>::value, bool>::type = true>
+        void AlwaysReturn(RealType&& ret) {
+            this->AlwaysReturnRefCapt(std::forward<RealType>(ret));
         }
 
         MethodStubbingProgress<R, arglist...> &
