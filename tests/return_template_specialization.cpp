@@ -17,22 +17,28 @@ struct ReturnTemplateSpecializationTests : tpunit::TestFixture {
         : tpunit::TestFixture(
             TEST(ReturnTemplateSpecializationTests::return_default_from_same_type_temp),
             TEST(ReturnTemplateSpecializationTests::return_valspecialization_from_same_type_temp),
-            TEST(ReturnTemplateSpecializationTests::return_capture_from_same_type_temp),
+            TEST(ReturnTemplateSpecializationTests::return_valcapt_from_same_type_temp),
             TEST(ReturnTemplateSpecializationTests::return_default_from_other_type_temp),
             TEST(ReturnTemplateSpecializationTests::return_valspecialization_from_other_type_temp),
-            TEST(ReturnTemplateSpecializationTests::return_capture_from_other_type_temp),
-            TEST(ReturnTemplateSpecializationTests::return_default_from_variable),
-            TEST(ReturnTemplateSpecializationTests::return_valspecialization_from_variable),
-            TEST(ReturnTemplateSpecializationTests::return_capture_from_variable),
+            TEST(ReturnTemplateSpecializationTests::return_valcapt_from_other_type_temp),
+            TEST(ReturnTemplateSpecializationTests::return_default_from_same_type_variable),
+            TEST(ReturnTemplateSpecializationTests::return_valspecialization_from_same_type_variable),
+            TEST(ReturnTemplateSpecializationTests::return_valcapt_from_same_type_variable),
+            TEST(ReturnTemplateSpecializationTests::return_default_from_other_type_variable),
+            TEST(ReturnTemplateSpecializationTests::return_valspecialization_from_other_type_variable),
+            TEST(ReturnTemplateSpecializationTests::return_valcapt_from_other_type_variable),
             TEST(ReturnTemplateSpecializationTests::always_return_default_from_same_type_temp),
             TEST(ReturnTemplateSpecializationTests::always_return_valspecialization_from_same_type_temp),
-            TEST(ReturnTemplateSpecializationTests::always_return_capture_from_same_type_temp),
+            TEST(ReturnTemplateSpecializationTests::always_return_valcapt_from_same_type_temp),
             TEST(ReturnTemplateSpecializationTests::always_return_default_from_other_type_temp),
             TEST(ReturnTemplateSpecializationTests::always_return_valspecialization_from_other_type_temp),
-            TEST(ReturnTemplateSpecializationTests::always_return_capture_from_other_type_temp),
-            TEST(ReturnTemplateSpecializationTests::always_return_default_from_variable),
-            TEST(ReturnTemplateSpecializationTests::always_return_valspecialization_from_variable),
-            TEST(ReturnTemplateSpecializationTests::always_return_capture_from_variable)
+            TEST(ReturnTemplateSpecializationTests::always_return_valcapt_from_other_type_temp),
+            TEST(ReturnTemplateSpecializationTests::always_return_default_from_same_type_variable),
+            TEST(ReturnTemplateSpecializationTests::always_return_valspecialization_from_same_type_variable),
+            TEST(ReturnTemplateSpecializationTests::always_return_valcapt_from_same_type_variable),
+            TEST(ReturnTemplateSpecializationTests::always_return_default_from_other_type_variable),
+            TEST(ReturnTemplateSpecializationTests::always_return_valspecialization_from_other_type_variable),
+            TEST(ReturnTemplateSpecializationTests::always_return_valcapt_from_other_type_variable)
         ) {
     }
 
@@ -87,22 +93,22 @@ struct ReturnTemplateSpecializationTests : tpunit::TestFixture {
         Verify(Method(mock, returnValMo)).Once();
     }
 
-    void return_capture_from_same_type_temp() {
+    void return_valcapt_from_same_type_temp() {
         Mock<SomeStruct> mock;
 
-        When(Method(mock, returnRef)).ReturnCapture(std::string("something"));
+        When(Method(mock, returnRef)).ReturnValCapt(std::string("something"));
         ASSERT_EQUAL(mock.get().returnRef(), "something");
         Verify(Method(mock, returnRef)).Once();
 
-        When(Method(mock, returnRefMo)).ReturnCapture(MoveOnly{5});
+        When(Method(mock, returnRefMo)).ReturnValCapt(MoveOnly{5});
         ASSERT_EQUAL(mock.get().returnRefMo().i, 5);
         Verify(Method(mock, returnRefMo)).Once();
 
-        When(Method(mock, returnVal)).ReturnCapture(std::string("something"));
+        When(Method(mock, returnVal)).ReturnValCapt(std::string("something"));
         ASSERT_EQUAL(mock.get().returnVal(), "something");
         Verify(Method(mock, returnVal)).Once();
 
-        When(Method(mock, returnValMo)).ReturnCapture(MoveOnly{5});
+        When(Method(mock, returnValMo)).ReturnValCapt(MoveOnly{5});
         ASSERT_EQUAL(mock.get().returnValMo().i, 5);
         Verify(Method(mock, returnValMo)).Once();
     }
@@ -139,27 +145,27 @@ struct ReturnTemplateSpecializationTests : tpunit::TestFixture {
         Verify(Method(mock, returnValMo)).Once();
     }
 
-    void return_capture_from_other_type_temp() {
+    void return_valcapt_from_other_type_temp() {
         Mock<SomeStruct> mock;
 
-        When(Method(mock, returnRef)).ReturnCapture("something");
+        When(Method(mock, returnRef)).ReturnValCapt("something");
         ASSERT_EQUAL(mock.get().returnRef(), "something");
         Verify(Method(mock, returnRef)).Once();
 
-        When(Method(mock, returnRefMo)).ReturnCapture(5);
+        When(Method(mock, returnRefMo)).ReturnValCapt(5);
         ASSERT_EQUAL(mock.get().returnRefMo().i, 5);
         Verify(Method(mock, returnRefMo)).Once();
 
-        When(Method(mock, returnVal)).ReturnCapture("something");
+        When(Method(mock, returnVal)).ReturnValCapt("something");
         ASSERT_EQUAL(mock.get().returnVal(), "something");
         Verify(Method(mock, returnVal)).Once();
 
-        When(Method(mock, returnValMo)).ReturnCapture(5);
+        When(Method(mock, returnValMo)).ReturnValCapt(5);
         ASSERT_EQUAL(mock.get().returnValMo().i, 5);
         Verify(Method(mock, returnValMo)).Once();
     }
 
-    void return_default_from_variable() {
+    void return_default_from_same_type_variable() {
         Mock<SomeStruct> mock;
 
         {
@@ -193,7 +199,7 @@ struct ReturnTemplateSpecializationTests : tpunit::TestFixture {
         }
     }
 
-    void return_valspecialization_from_variable() {
+    void return_valspecialization_from_same_type_variable() {
         Mock<SomeStruct> mock;
 
         {
@@ -227,19 +233,19 @@ struct ReturnTemplateSpecializationTests : tpunit::TestFixture {
         }
     }
 
-    void return_capture_from_variable() {
+    void return_valcapt_from_same_type_variable() {
         Mock<SomeStruct> mock;
 
         {
             std::string something = "something";
             MoveOnly mo = 5;
 
-            When(Method(mock, returnRef)).ReturnCapture(something);
+            When(Method(mock, returnRef)).ReturnValCapt(something);
             something = "a different thing";
             ASSERT_EQUAL(mock.get().returnRef(), "something");
             Verify(Method(mock, returnRef)).Once();
 
-            When(Method(mock, returnRefMo)).ReturnCapture(std::move(mo));
+            When(Method(mock, returnRefMo)).ReturnValCapt(std::move(mo));
             mo.i = 10;
             ASSERT_EQUAL(mock.get().returnRefMo().i, 5);
             Verify(Method(mock, returnRefMo)).Once();
@@ -249,13 +255,100 @@ struct ReturnTemplateSpecializationTests : tpunit::TestFixture {
             std::string something = "something";
             MoveOnly mo = 5;
 
-            When(Method(mock, returnVal)).ReturnCapture(something);
+            When(Method(mock, returnVal)).ReturnValCapt(something);
             something = "a different thing";
             ASSERT_EQUAL(mock.get().returnVal(), "something");
             Verify(Method(mock, returnVal)).Once();
 
-            When(Method(mock, returnValMo)).ReturnCapture(std::move(mo));
+            When(Method(mock, returnValMo)).ReturnValCapt(std::move(mo));
             mo.i = 10;
+            ASSERT_EQUAL(mock.get().returnValMo().i, 5);
+            Verify(Method(mock, returnValMo)).Once();
+        }
+    }
+
+    void return_default_from_other_type_variable() {
+        Mock<SomeStruct> mock;
+
+        {
+            const char* something = "something";
+            int num = 5;
+
+            When(Method(mock, returnVal)).Return(something);
+            something = "a different thing";
+            ASSERT_EQUAL(mock.get().returnVal(), "something");
+            Verify(Method(mock, returnVal)).Once();
+
+            When(Method(mock, returnValMo)).Return(num);
+            num = 10;
+            ASSERT_EQUAL(mock.get().returnValMo().i, 5);
+            Verify(Method(mock, returnValMo)).Once();
+        }
+    }
+
+    void return_valspecialization_from_other_type_variable() {
+        Mock<SomeStruct> mock;
+
+        {
+            const char* something = "something";
+            int num = 5;
+
+            When(Method(mock, returnRef)).Return<std::string>(something);
+            something = "a different thing";
+            ASSERT_EQUAL(mock.get().returnRef(), "something");
+            Verify(Method(mock, returnRef)).Once();
+
+            When(Method(mock, returnRefMo)).Return<MoveOnly>(num);
+            num = 10;
+            ASSERT_EQUAL(mock.get().returnRefMo().i, 5);
+            Verify(Method(mock, returnRefMo)).Once();
+        }
+
+        {
+            const char* something = "something";
+            int num = 5;
+
+            When(Method(mock, returnVal)).Return<std::string>(something);
+            something = "a different thing";
+            ASSERT_EQUAL(mock.get().returnVal(), "something");
+            Verify(Method(mock, returnVal)).Once();
+
+            When(Method(mock, returnValMo)).Return<MoveOnly>(num);
+            num = 10;
+            ASSERT_EQUAL(mock.get().returnValMo().i, 5);
+            Verify(Method(mock, returnValMo)).Once();
+        }
+    }
+
+    void return_valcapt_from_other_type_variable() {
+        Mock<SomeStruct> mock;
+
+        {
+            const char* something = "something";
+            int num = 5;
+
+            When(Method(mock, returnRef)).ReturnValCapt(something);
+            something = "a different thing";
+            ASSERT_EQUAL(mock.get().returnRef(), "something");
+            Verify(Method(mock, returnRef)).Once();
+
+            When(Method(mock, returnRefMo)).ReturnValCapt(num);
+            num = 10;
+            ASSERT_EQUAL(mock.get().returnRefMo().i, 5);
+            Verify(Method(mock, returnRefMo)).Once();
+        }
+
+        {
+            const char* something = "something";
+            int num = 5;
+
+            When(Method(mock, returnVal)).ReturnValCapt(something);
+            something = "a different thing";
+            ASSERT_EQUAL(mock.get().returnVal(), "something");
+            Verify(Method(mock, returnVal)).Once();
+
+            When(Method(mock, returnValMo)).ReturnValCapt(num);
+            num = 10;
             ASSERT_EQUAL(mock.get().returnValMo().i, 5);
             Verify(Method(mock, returnValMo)).Once();
         }
@@ -289,20 +382,20 @@ struct ReturnTemplateSpecializationTests : tpunit::TestFixture {
         Verify(Method(mock, returnVal)).Exactly(2);
     }
 
-    void always_return_capture_from_same_type_temp() {
+    void always_return_valcapt_from_same_type_temp() {
         Mock<SomeStruct> mock;
 
-        When(Method(mock, returnRef)).AlwaysReturnCapture(std::string("something"));
+        When(Method(mock, returnRef)).AlwaysReturnValCapt(std::string("something"));
         ASSERT_EQUAL(mock.get().returnRef(), "something");
         ASSERT_EQUAL(mock.get().returnRef(), "something");
         Verify(Method(mock, returnRef)).Exactly(2);
 
-        When(Method(mock, returnRefMo)).AlwaysReturnCapture(MoveOnly{5});
+        When(Method(mock, returnRefMo)).AlwaysReturnValCapt(MoveOnly{5});
         ASSERT_EQUAL(mock.get().returnRefMo().i, 5);
         ASSERT_EQUAL(mock.get().returnRefMo().i, 5);
         Verify(Method(mock, returnRefMo)).Exactly(2);
 
-        When(Method(mock, returnVal)).AlwaysReturnCapture(std::string("something"));
+        When(Method(mock, returnVal)).AlwaysReturnValCapt(std::string("something"));
         ASSERT_EQUAL(mock.get().returnVal(), "something");
         ASSERT_EQUAL(mock.get().returnVal(), "something");
         Verify(Method(mock, returnVal)).Exactly(2);
@@ -336,26 +429,26 @@ struct ReturnTemplateSpecializationTests : tpunit::TestFixture {
         Verify(Method(mock, returnVal)).Exactly(2);
     }
 
-    void always_return_capture_from_other_type_temp() {
+    void always_return_valcapt_from_other_type_temp() {
         Mock<SomeStruct> mock;
 
-        When(Method(mock, returnRef)).AlwaysReturnCapture("something");
+        When(Method(mock, returnRef)).AlwaysReturnValCapt("something");
         ASSERT_EQUAL(mock.get().returnRef(), "something");
         ASSERT_EQUAL(mock.get().returnRef(), "something");
         Verify(Method(mock, returnRef)).Exactly(2);
 
-        When(Method(mock, returnRefMo)).AlwaysReturnCapture(5);
+        When(Method(mock, returnRefMo)).AlwaysReturnValCapt(5);
         ASSERT_EQUAL(mock.get().returnRefMo().i, 5);
         ASSERT_EQUAL(mock.get().returnRefMo().i, 5);
         Verify(Method(mock, returnRefMo)).Exactly(2);
 
-        When(Method(mock, returnVal)).AlwaysReturnCapture("something");
+        When(Method(mock, returnVal)).AlwaysReturnValCapt("something");
         ASSERT_EQUAL(mock.get().returnVal(), "something");
         ASSERT_EQUAL(mock.get().returnVal(), "something");
         Verify(Method(mock, returnVal)).Exactly(2);
     }
 
-    void always_return_default_from_variable() {
+    void always_return_default_from_same_type_variable() {
         Mock<SomeStruct> mock;
 
         {
@@ -389,7 +482,7 @@ struct ReturnTemplateSpecializationTests : tpunit::TestFixture {
         }
     }
 
-    void always_return_valspecialization_from_variable() {
+    void always_return_valspecialization_from_same_type_variable() {
         Mock<SomeStruct> mock;
 
         {
@@ -423,21 +516,21 @@ struct ReturnTemplateSpecializationTests : tpunit::TestFixture {
         }
     }
 
-    void always_return_capture_from_variable() {
+    void always_return_valcapt_from_same_type_variable() {
         Mock<SomeStruct> mock;
 
         {
             std::string something = "something";
             MoveOnly mo = 5;
 
-            When(Method(mock, returnRef)).AlwaysReturnCapture(something);
+            When(Method(mock, returnRef)).AlwaysReturnValCapt(something);
             something = "a different thing";
             ASSERT_EQUAL(mock.get().returnRef(), "something");
             something = "another different thing";
             ASSERT_EQUAL(mock.get().returnRef(), "something");
             Verify(Method(mock, returnRef)).Exactly(2);
 
-            When(Method(mock, returnRefMo)).AlwaysReturnCapture(std::move(mo));
+            When(Method(mock, returnRefMo)).AlwaysReturnValCapt(std::move(mo));
             mo.i = 10;
             ASSERT_EQUAL(mock.get().returnRefMo().i, 5);
             mo.i = 50;
@@ -448,7 +541,90 @@ struct ReturnTemplateSpecializationTests : tpunit::TestFixture {
         {
             std::string something = "something";
 
-            When(Method(mock, returnVal)).AlwaysReturnCapture(something);
+            When(Method(mock, returnVal)).AlwaysReturnValCapt(something);
+            something = "a different thing";
+            ASSERT_EQUAL(mock.get().returnVal(), "something");
+            something = "another different thing";
+            ASSERT_EQUAL(mock.get().returnVal(), "something");
+            Verify(Method(mock, returnVal)).Exactly(2);
+        }
+    }
+
+    void always_return_default_from_other_type_variable() {
+        Mock<SomeStruct> mock;
+
+        {
+            const char* something = "something";
+
+            When(Method(mock, returnVal)).AlwaysReturn(something);
+            something = "a different thing";
+            ASSERT_EQUAL(mock.get().returnVal(), "something");
+            something = "another different thing";
+            ASSERT_EQUAL(mock.get().returnVal(), "something");
+            Verify(Method(mock, returnVal)).Exactly(2);
+        }
+    }
+
+    void always_return_valspecialization_from_other_type_variable() {
+        Mock<SomeStruct> mock;
+
+        {
+            const char* something = "something";
+            int num = 5;
+
+            When(Method(mock, returnRef)).AlwaysReturn<std::string>(something);
+            something = "a different thing";
+            ASSERT_EQUAL(mock.get().returnRef(), "something");
+            something = "another different thing";
+            ASSERT_EQUAL(mock.get().returnRef(), "something");
+            Verify(Method(mock, returnRef)).Exactly(2);
+
+            When(Method(mock, returnRefMo)).AlwaysReturn<MoveOnly>(num);
+            num = 10;
+            ASSERT_EQUAL(mock.get().returnRefMo().i, 5);
+            num = 50;
+            ASSERT_EQUAL(mock.get().returnRefMo().i, 5);
+            Verify(Method(mock, returnRefMo)).Exactly(2);
+        }
+
+        {
+            const char* something = "something";
+
+            When(Method(mock, returnVal)).AlwaysReturn<std::string>(something);
+            something = "a different thing";
+            ASSERT_EQUAL(mock.get().returnVal(), "something");
+            something = "another different thing";
+            ASSERT_EQUAL(mock.get().returnVal(), "something");
+            Verify(Method(mock, returnVal)).Exactly(2);
+        }
+    }
+
+    void always_return_valcapt_from_other_type_variable() {
+        Mock<SomeStruct> mock;
+
+        {
+            const char* something = "something";
+            int num = 5;
+
+            When(Method(mock, returnRef)).AlwaysReturnValCapt(something);
+            something = "a different thing";
+            ASSERT_EQUAL(mock.get().returnRef(), "something");
+            something = "another different thing";
+            ASSERT_EQUAL(mock.get().returnRef(), "something");
+            Verify(Method(mock, returnRef)).Exactly(2);
+
+            When(Method(mock, returnRefMo)).AlwaysReturnValCapt(num);
+            num = 10;
+            ASSERT_EQUAL(mock.get().returnRefMo().i, 5);
+            num = 50;
+            ASSERT_EQUAL(mock.get().returnRefMo().i, 5);
+            Verify(Method(mock, returnRefMo)).Exactly(2);
+        }
+
+        {
+            const char* something = "something";
+
+            When(Method(mock, returnVal)).AlwaysReturnValCapt(something);
             something = "a different thing";
             ASSERT_EQUAL(mock.get().returnVal(), "something");
             something = "another different thing";
