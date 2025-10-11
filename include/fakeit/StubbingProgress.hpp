@@ -90,7 +90,7 @@ namespace fakeit {
                 static_assert(sizeof(U) != sizeof(U), "AlwaysReturn() cannot take an rvalue references for functions returning a reference because it would make it dangling, use AlwaysReturnValCapt() instead.");
             }
 
-            template<typename T>
+            template<typename T = R>
             MethodStubbingProgress<R, arglist...>& ReturnValCapt(T&& r) {
                 // If a ref to T can be cast to a ref to R, then store T.
                 // Otherwise, create an object R constructed from the received T and store it.
@@ -104,7 +104,7 @@ namespace fakeit {
                 });
             }
 
-            template<typename T>
+            template<typename T = R>
             void AlwaysReturnValCapt(T&& r) {
                 // If a ref to T can be cast to a ref to R, then store T.
                 // Otherwise, create an object R constructed from the received T and store it.

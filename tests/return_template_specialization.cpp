@@ -46,7 +46,8 @@ struct ReturnTemplateSpecializationTests : tpunit::TestFixture {
             TEST(ReturnTemplateSpecializationTests::always_return_valspecialization_from_other_type_variable),
             TEST(ReturnTemplateSpecializationTests::always_return_refspecialization_from_other_type_variable),
             TEST(ReturnTemplateSpecializationTests::always_return_valcapt_from_other_type_variable),
-            TEST(ReturnTemplateSpecializationTests::always_return_refcapt_from_other_type_variable)
+            TEST(ReturnTemplateSpecializationTests::always_return_refcapt_from_other_type_variable),
+            TEST(ReturnTemplateSpecializationTests::test_implicitly_deduced_type)
         ) {
     }
 
@@ -67,6 +68,10 @@ struct ReturnTemplateSpecializationTests : tpunit::TestFixture {
         virtual std::string returnVal() = 0;
 
         virtual MoveOnly returnValMo() = 0;
+
+        virtual std::pair<int, int> returnPair() = 0;
+
+        virtual const std::pair<int, int>& returnRefPair() = 0;
     };
 
     void return_default_from_same_type_temp() {
@@ -831,6 +836,28 @@ struct ReturnTemplateSpecializationTests : tpunit::TestFixture {
             ASSERT_EQUAL(mock.get().returnVal(), "another different thing");
             Verify(Method(mock, returnVal)).Exactly(2);
         }
+    }
+
+    void test_implicitly_deduced_type() {
+        Mock<SomeStruct> mock;
+
+        When(Method(mock, returnPair)).ReturnValCapt({1, 2});
+        ASSERT_EQUAL(mock.get().returnPair(), (std::pair<int, int>{1, 2}));
+        Verify(Method(mock, returnPair)).Once();
+
+        When(Method(mock, returnRefPair)).ReturnValCapt({10, 20});
+        ASSERT_EQUAL(mock.get().returnRefPair(), (std::pair<int, int>{10, 20}));
+        Verify(Method(mock, returnRefPair)).Once();
+
+        When(Method(mock, returnPair)).AlwaysReturnValCapt({3, 4});
+        ASSERT_EQUAL(mock.get().returnPair(), (std::pair<int, int>{3, 4}));
+        ASSERT_EQUAL(mock.get().returnPair(), (std::pair<int, int>{3, 4}));
+        Verify(Method(mock, returnPair)).Exactly(3);
+
+        When(Method(mock, returnRefPair)).AlwaysReturnValCapt({30, 40});
+        ASSERT_EQUAL(mock.get().returnRefPair(), (std::pair<int, int>{30, 40}));
+        ASSERT_EQUAL(mock.get().returnRefPair(), (std::pair<int, int>{30, 40}));
+        Verify(Method(mock, returnRefPair)).Exactly(3);
     }
 
 } __ReturnTemplateSpecializationTests;
