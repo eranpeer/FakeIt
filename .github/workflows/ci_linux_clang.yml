@@ -82,6 +82,13 @@ jobs:
             cxx_standard: 23
           }
           - {
+            name: "Ubuntu 24.04 Clang 18 C++26",
+            os: ubuntu-24.04,
+            build_type: Debug,
+            cc: "clang-18", cxx: "clang++-18",
+            cxx_standard: 26
+          }
+          - {
             name: "Ubuntu 24.04 Clang with sanitizers",
             os: ubuntu-24.04,
             build_type: Debug,
