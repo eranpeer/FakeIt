@@ -26,6 +26,9 @@ namespace fakeit {
 #if defined(__GNUG__) && !defined(__clang__) && __GNUC__ >= 8
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-function-type"
+#elif defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-function-type-mismatch"
 #endif
         template<typename C, typename R, typename ... arglist>
         static unsigned int getOffset(R (C::*vMethod)(arglist...)) {
@@ -35,6 +38,8 @@ namespace fakeit {
         }
 #if defined(__GNUG__) && !defined(__clang__) && __GNUC__ >= 8
 #pragma GCC diagnostic pop
+#elif defined(__clang__)
+#pragma clang diagnostic pop
 #endif
 
         template<typename C>
