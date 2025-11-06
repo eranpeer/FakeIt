@@ -76,6 +76,13 @@ jobs:
             cxx_standard: 23
           }
           - {
+            name: "Ubuntu 24.04 GCC 14 C++26",
+            os: ubuntu-24.04,
+            build_type: Debug,
+            cc: "gcc-14", cxx: "g++-14",
+            cxx_standard: 26
+          }
+          - {
             name: "Ubuntu 24.04 GCC with sanitizers",
             os: ubuntu-24.04,
             build_type: Debug,

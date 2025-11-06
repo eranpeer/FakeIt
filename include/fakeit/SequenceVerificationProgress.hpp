@@ -62,7 +62,7 @@ namespace fakeit {
 
     public:
 
-        ~SequenceVerificationProgress() FAKEIT_THROWS { };
+        virtual ~SequenceVerificationProgress() FAKEIT_THROWS = default;
 
         operator bool() const {
             return Terminator(_expectationPtr);

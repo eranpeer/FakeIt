@@ -11,6 +11,8 @@ namespace fakeit {
     struct InvocationHandlerCollection {
         static const unsigned int VtCookieIndex = 0;
 
+        virtual ~InvocationHandlerCollection() = default;
+
         virtual Destructible *getInvocatoinHandlerPtrById(unsigned int index) = 0;
 
         static InvocationHandlerCollection *getInvocationHandlerCollection(void *instance) {
