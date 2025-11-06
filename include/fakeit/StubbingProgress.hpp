@@ -71,39 +71,61 @@ namespace fakeit {
                 return Do([&r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
             }
 
-            template <typename U = R>
+            // The std::enable_if is only there to disambiguate with the deprecated version of .Return<type>(val), and
+            // can be removed once that deprecated version is removed.
+            template <typename U = R, typename std::enable_if<std::is_reference<U>::value, bool>::type = true>
             MethodStubbingProgress<R, arglist...>& Return(fk_remove_cvref_t<R>&& r) {
-                static_assert(sizeof(U) != sizeof(U), "Return() cannot take an rvalue references for functions returning a reference because it would make it dangling, use ReturnCapture() instead.");
+                static_assert(sizeof(U) != sizeof(U), "Return() cannot take an rvalue references for functions returning a reference because it would make it dangling, use ReturnValCapt() instead.");
                 return Return(r); // Only written to silence warning about not returning from a non-void function, but will never be executed.
             }
 
             void AlwaysReturn(const R &r) {
-                return AlwaysDo([&r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
+                AlwaysDo([&r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
             }
 
-            template <typename U = R>
+            // The std::enable_if is only there to disambiguate with the deprecated version of .AlwaysReturn<type>(val), and
+            // can be removed once that deprecated version is removed.
+            template <typename U = R, typename std::enable_if<std::is_reference<U>::value, bool>::type = true>
             void AlwaysReturn(fk_remove_cvref_t<R>&&) {
-                static_assert(sizeof(U) != sizeof(U), "AlwaysReturn() cannot take an rvalue references for functions returning a reference because it would make it dangling, use AlwaysReturnCapture() instead.");
+                static_assert(sizeof(U) != sizeof(U), "AlwaysReturn() cannot take an rvalue references for functions returning a reference because it would make it dangling, use AlwaysReturnValCapt() instead.");
             }
 
-            template<typename T>
-            MethodStubbingProgress<R, arglist...>& ReturnCapture(T&& r) {
-                static_assert(std::is_constructible<fk_remove_cvref_t<R>&, fk_remove_cvref_t<T>&>::value,
-                        "The type captured by ReturnCapture() (named T) must be compatible with the return type of the function (named R), i.e. T t{...}; R& r = t; must compile without creating temporaries.");
-                auto store = std::make_shared<fk_remove_cvref_t<T>>(std::forward<T>(r));
+            template<typename T = R>
+            MethodStubbingProgress<R, arglist...>& ReturnValCapt(T&& r) {
+                // If a ref to T can be cast to a ref to R, then store T.
+                // Otherwise, create an object R constructed from the received T and store it.
+                using StoredType = typename std::conditional<
+                    std::is_constructible<fk_remove_cvref_t<R>&, fk_remove_cvref_t<T>&>::value,
+                    fk_remove_cvref_t<T>,
+                    fk_remove_cvref_t<R>>::type;
+                auto store = std::make_shared<StoredType>(std::forward<T>(r));
                 return Do([store](const typename fakeit::test_arg<arglist>::type...) mutable -> R {
                     return std::forward<R>(*store);
                 });
             }
 
-            template<typename T>
-            void AlwaysReturnCapture(T&& r) {
-                static_assert(std::is_constructible<fk_remove_cvref_t<R>&, fk_remove_cvref_t<T>&>::value,
-                        "The type captured by AlwaysReturnCapture() (named T) must be compatible with the return type of the function (named R), i.e. T t{...}; R& r = t; must compile without creating temporaries.");
-                auto store = std::make_shared<fk_remove_cvref_t<T>>(std::forward<T>(r));
-                return AlwaysDo([store](const typename fakeit::test_arg<arglist>::type...) mutable -> R {
+            template<typename T = R>
+            void AlwaysReturnValCapt(T&& r) {
+                // If a ref to T can be cast to a ref to R, then store T.
+                // Otherwise, create an object R constructed from the received T and store it.
+                using StoredType = typename std::conditional<
+                    std::is_constructible<fk_remove_cvref_t<R>&, fk_remove_cvref_t<T>&>::value,
+                    fk_remove_cvref_t<T>,
+                    fk_remove_cvref_t<R>>::type;
+                auto store = std::make_shared<StoredType>(std::forward<T>(r));
+                AlwaysDo([store](const typename fakeit::test_arg<arglist>::type...) mutable -> R {
                     return std::forward<R>(*store);
                 });
+            }
+
+            template<typename T>
+            MethodStubbingProgress<R, arglist...>& ReturnRefCapt(T&& r) {
+                return Return(std::forward<T>(r));
+            }
+
+            template<typename T>
+            void AlwaysReturnRefCapt(T&& r) {
+                AlwaysReturn(std::forward<T>(r));
             }
         };
 
@@ -125,7 +147,31 @@ namespace fakeit {
             }
 
             void AlwaysReturn(const R &r) {
-                return AlwaysDo([r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
+                AlwaysDo([r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
+            }
+
+            MethodStubbingProgress<R, arglist...>& ReturnValCapt(const R& r) {
+                return Return(r);
+            }
+
+            MethodStubbingProgress<R, arglist...>& ReturnValCapt(R&& r) {
+                return Return(std::move(r));
+            }
+
+            void AlwaysReturnValCapt(const R &r) {
+                AlwaysReturn(r);
+            }
+
+            template<typename T>
+            MethodStubbingProgress<R, arglist...>& ReturnRefCapt(T&& r) {
+                static_assert(std::is_lvalue_reference<T>::value, "ReturnRefCapt() cannot take an rvalue references because it would make it dangling, use ReturnValCapt() instead.");
+                return Do([&r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
+            }
+
+            template<typename T>
+            void AlwaysReturnRefCapt(T&& r) {
+                static_assert(std::is_lvalue_reference<T>::value, "AlwaysReturnRefCapt() cannot take an rvalue references because it would make it dangling, use AlwaysReturnValCapt() instead.");
+                AlwaysDo([&r](const typename fakeit::test_arg<arglist>::type...) -> R { return r; });
             }
         };
 
@@ -145,6 +191,38 @@ namespace fakeit {
         using helper::BasicReturnImplHelper<R, arglist...>::AlwaysDo;
         using helper::BasicReturnImplHelper<R, arglist...>::Return;
         using helper::BasicReturnImplHelper<R, arglist...>::AlwaysReturn;
+
+        // DEPRECATED: This should ideally be removed, it allows writing .Return<std::string>("ok") when a function
+        // returns "const std::string&" (for example) to have the same behavior has .ReturnValCapt("ok"). But it is prone
+        // to errors (because you have to specify the type). .ReturnValCapt("ok") is superior and should be used instead.
+        template<typename TypeUsedToForceCapture, typename RealType, typename std::enable_if<!std::is_reference<TypeUsedToForceCapture>::value, bool>::type = true>
+        MethodStubbingProgress<R, arglist...>& Return(RealType&& ret) {
+            return this->ReturnValCapt(TypeUsedToForceCapture(std::forward<RealType>(ret)));
+        }
+
+        // DEPRECATED: This should ideally be removed, it allows writing .AlwaysReturn<std::string>("ok") when a function
+        // returns "const std::string&" (for example) to have the same behavior has .AlwaysReturnValCapt("ok"). But it is prone
+        // to errors (because you have to specify the type). .AlwaysReturnValCapt("ok") is superior and should be used instead.
+        template<typename TypeUsedToForceCapture, typename RealType, typename std::enable_if<!std::is_reference<TypeUsedToForceCapture>::value, bool>::type = true>
+        void AlwaysReturn(RealType&& ret) {
+            this->AlwaysReturnValCapt(TypeUsedToForceCapture(std::forward<RealType>(ret)));
+        }
+
+        // DEPRECATED: This should ideally be removed, it allows writing .Return<std::string&>(str) when a function
+        // returns "std::string" (for example) to have the same behavior has .ReturnRefCapt(str). But it is prone
+        // to errors (because you have to specify the type). .ReturnRefCapt(str) is superior and should be used instead.
+        template<typename TypeUsedToForceCapture, typename RealType, typename std::enable_if<std::is_reference<TypeUsedToForceCapture>::value, bool>::type = true>
+        MethodStubbingProgress<R, arglist...>& Return(RealType&& ret) {
+            return this->ReturnRefCapt(std::forward<RealType>(ret));
+        }
+
+        // DEPRECATED: This should ideally be removed, it allows writing .AlwaysReturn<std::string&>(str) when a function
+        // returns "std::string" (for example) to have the same behavior has .AlwaysReturnRefCapt(str). But it is prone
+        // to errors (because you have to specify the type). .AlwaysReturnRefCapt(str) is superior and should be used instead.
+        template<typename TypeUsedToForceCapture, typename RealType, typename std::enable_if<std::is_reference<TypeUsedToForceCapture>::value, bool>::type = true>
+        void AlwaysReturn(RealType&& ret) {
+            this->AlwaysReturnRefCapt(std::forward<RealType>(ret));
+        }
 
         MethodStubbingProgress<R, arglist...> &
         Return(const Quantifier<R> &q) {

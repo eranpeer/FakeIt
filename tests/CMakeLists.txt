@@ -18,6 +18,7 @@ add_executable(FakeIt_tests
     overloadded_methods_tests.cpp
     referece_types_tests.cpp
     remove_const_volatile_tests.cpp
+    return_template_specialization.cpp
     rvalue_arguments_tests.cpp
     sequence_verification_tests.cpp
     spying_tests.cpp

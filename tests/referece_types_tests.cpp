@@ -240,10 +240,10 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 			ConcreteType concrete{"myConcreteType"};
 
 			// explicit copy here
-			When(Method(mock, returnStringByConstRef)).ReturnCapture(aString);
-			When(Method(mock, returnStringByRValRef)).ReturnCapture(bString);
-			When(Method(mock, returnIntByRef)).ReturnCapture(num);
-			When(Method(mock, returnAbstractTypeByRef)).ReturnCapture(concrete);
+			When(Method(mock, returnStringByConstRef)).ReturnValCapt(aString);
+			When(Method(mock, returnStringByRValRef)).ReturnValCapt(bString);
+			When(Method(mock, returnIntByRef)).ReturnValCapt(num);
+			When(Method(mock, returnAbstractTypeByRef)).ReturnValCapt(concrete);
 
 			// modify now so know whether or not is was copied
 			aString = "modified";
@@ -276,13 +276,13 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 			ConcreteType concrete{"myConcreteType"};
 
 			// explicit move here
-			When(Method(mock, returnStringByConstRef)).ReturnCapture(std::move(aString));
-			When(Method(mock, returnStringByRef)).ReturnCapture(std::move(bString));
-			When(Method(mock, returnStringByRValRef)).ReturnCapture(std::move(cString));
-			When(Method(mock, returnMoveOnlyByConstRef)).ReturnCapture(std::move(aPtrString));
-			When(Method(mock, returnMoveOnlyByRef)).ReturnCapture(std::move(bPtrString));
-			When(Method(mock, returnMoveOnlyByRValRef)).ReturnCapture(std::move(cPtrString));
-			When(Method(mock, returnAbstractTypeByRef)).ReturnCapture(std::move(concrete));
+			When(Method(mock, returnStringByConstRef)).ReturnValCapt(std::move(aString));
+			When(Method(mock, returnStringByRef)).ReturnValCapt(std::move(bString));
+			When(Method(mock, returnStringByRValRef)).ReturnValCapt(std::move(cString));
+			When(Method(mock, returnMoveOnlyByConstRef)).ReturnValCapt(std::move(aPtrString));
+			When(Method(mock, returnMoveOnlyByRef)).ReturnValCapt(std::move(bPtrString));
+			When(Method(mock, returnMoveOnlyByRValRef)).ReturnValCapt(std::move(cPtrString));
+			When(Method(mock, returnAbstractTypeByRef)).ReturnValCapt(std::move(concrete));
 
 			// Verify objects were moved.
 			EXPECT_TRUE(aString.empty());
@@ -311,13 +311,13 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 		Mock<ReferenceInterface> mock;
 
 		{
-			When(Method(mock, returnStringByConstRef)).ReturnCapture(std::string{"aString"});
-			When(Method(mock, returnStringByRef)).ReturnCapture(std::string{"bString"});
-			When(Method(mock, returnStringByRValRef)).ReturnCapture(std::string{"cString"});
-			When(Method(mock, returnMoveOnlyByConstRef)).ReturnCapture(std::unique_ptr<std::string>(new std::string{"aPtrString"}));
-			When(Method(mock, returnMoveOnlyByRef)).ReturnCapture(std::unique_ptr<std::string>(new std::string{"bPtrString"}));
-			When(Method(mock, returnMoveOnlyByRValRef)).ReturnCapture(std::unique_ptr<std::string>(new std::string{"cPtrString"}));
-			When(Method(mock, returnAbstractTypeByRef)).ReturnCapture(ConcreteType{"myConcreteType"});
+			When(Method(mock, returnStringByConstRef)).ReturnValCapt(std::string{"aString"});
+			When(Method(mock, returnStringByRef)).ReturnValCapt(std::string{"bString"});
+			When(Method(mock, returnStringByRValRef)).ReturnValCapt(std::string{"cString"});
+			When(Method(mock, returnMoveOnlyByConstRef)).ReturnValCapt(std::unique_ptr<std::string>(new std::string{"aPtrString"}));
+			When(Method(mock, returnMoveOnlyByRef)).ReturnValCapt(std::unique_ptr<std::string>(new std::string{"bPtrString"}));
+			When(Method(mock, returnMoveOnlyByRValRef)).ReturnValCapt(std::unique_ptr<std::string>(new std::string{"cPtrString"}));
+			When(Method(mock, returnAbstractTypeByRef)).ReturnValCapt(ConcreteType{"myConcreteType"});
 		}
 
 		ReferenceInterface& i = mock.get();
@@ -344,10 +344,10 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 			ConcreteType concrete{"myConcreteType"};
 
 			// explicit copy here
-			When(Method(mock, returnStringByConstRef)).AlwaysReturnCapture(aString);
-			When(Method(mock, returnStringByRValRef)).AlwaysReturnCapture(bString);
-			When(Method(mock, returnIntByRef)).AlwaysReturnCapture(num);
-			When(Method(mock, returnAbstractTypeByRef)).AlwaysReturnCapture(concrete);
+			When(Method(mock, returnStringByConstRef)).AlwaysReturnValCapt(aString);
+			When(Method(mock, returnStringByRValRef)).AlwaysReturnValCapt(bString);
+			When(Method(mock, returnIntByRef)).AlwaysReturnValCapt(num);
+			When(Method(mock, returnAbstractTypeByRef)).AlwaysReturnValCapt(concrete);
 
 			// modify now so know whether or not is was copied
 			aString = "modified";
@@ -395,13 +395,13 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 			ConcreteType concrete{"myConcreteType"};
 
 			// explicit move here
-			When(Method(mock, returnStringByConstRef)).AlwaysReturnCapture(std::move(aString));
-			When(Method(mock, returnStringByRef)).AlwaysReturnCapture(std::move(bString));
-			When(Method(mock, returnStringByRValRef)).AlwaysReturnCapture(std::move(cString));
-			When(Method(mock, returnMoveOnlyByConstRef)).AlwaysReturnCapture(std::move(aPtrString));
-			When(Method(mock, returnMoveOnlyByRef)).AlwaysReturnCapture(std::move(bPtrString));
-			When(Method(mock, returnMoveOnlyByRValRef)).AlwaysReturnCapture(std::move(cPtrString));
-			When(Method(mock, returnAbstractTypeByRef)).AlwaysReturnCapture(std::move(concrete));
+			When(Method(mock, returnStringByConstRef)).AlwaysReturnValCapt(std::move(aString));
+			When(Method(mock, returnStringByRef)).AlwaysReturnValCapt(std::move(bString));
+			When(Method(mock, returnStringByRValRef)).AlwaysReturnValCapt(std::move(cString));
+			When(Method(mock, returnMoveOnlyByConstRef)).AlwaysReturnValCapt(std::move(aPtrString));
+			When(Method(mock, returnMoveOnlyByRef)).AlwaysReturnValCapt(std::move(bPtrString));
+			When(Method(mock, returnMoveOnlyByRValRef)).AlwaysReturnValCapt(std::move(cPtrString));
+			When(Method(mock, returnAbstractTypeByRef)).AlwaysReturnValCapt(std::move(concrete));
 
 			// Verify objects were moved.
 			EXPECT_TRUE(aString.empty());
@@ -453,13 +453,13 @@ struct ReferenceTypesTests: tpunit::TestFixture {
 		Mock<ReferenceInterface> mock;
 
 		{
-			When(Method(mock, returnStringByConstRef)).AlwaysReturnCapture(std::string{"aString"});
-			When(Method(mock, returnStringByRef)).AlwaysReturnCapture(std::string{"bString"});
-			When(Method(mock, returnStringByRValRef)).AlwaysReturnCapture(std::string{"cString"});
-			When(Method(mock, returnMoveOnlyByConstRef)).AlwaysReturnCapture(std::unique_ptr<std::string>(new std::string{"aPtrString"}));
-			When(Method(mock, returnMoveOnlyByRef)).AlwaysReturnCapture(std::unique_ptr<std::string>(new std::string{"bPtrString"}));
-			When(Method(mock, returnMoveOnlyByRValRef)).AlwaysReturnCapture(std::unique_ptr<std::string>(new std::string{"cPtrString"}));
-			When(Method(mock, returnAbstractTypeByRef)).AlwaysReturnCapture(ConcreteType{"myConcreteType"});
+			When(Method(mock, returnStringByConstRef)).AlwaysReturnValCapt(std::string{"aString"});
+			When(Method(mock, returnStringByRef)).AlwaysReturnValCapt(std::string{"bString"});
+			When(Method(mock, returnStringByRValRef)).AlwaysReturnValCapt(std::string{"cString"});
+			When(Method(mock, returnMoveOnlyByConstRef)).AlwaysReturnValCapt(std::unique_ptr<std::string>(new std::string{"aPtrString"}));
+			When(Method(mock, returnMoveOnlyByRef)).AlwaysReturnValCapt(std::unique_ptr<std::string>(new std::string{"bPtrString"}));
+			When(Method(mock, returnMoveOnlyByRValRef)).AlwaysReturnValCapt(std::unique_ptr<std::string>(new std::string{"cPtrString"}));
+			When(Method(mock, returnAbstractTypeByRef)).AlwaysReturnValCapt(ConcreteType{"myConcreteType"});
 		}
 
 		ReferenceInterface& i = mock.get();
