@@ -12,6 +12,8 @@
 namespace fakeit {
 
     struct VerificationEventHandler {
+        virtual ~VerificationEventHandler() = default;
+
         virtual void handle(const SequenceVerificationEvent &e) = 0;
 
         virtual void handle(const NoMoreInvocationsVerificationEvent &e) = 0;

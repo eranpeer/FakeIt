@@ -11,6 +11,8 @@
 namespace fakeit {
 
     struct Xaction {
+        virtual ~Xaction() = default;
+
         virtual void commit() = 0;
     };
 }
