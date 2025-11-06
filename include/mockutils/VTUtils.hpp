@@ -26,7 +26,7 @@ namespace fakeit {
 #if defined(__GNUG__) && !defined(__clang__) && __GNUC__ >= 8
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-function-type"
-#elif defined(__clang__) && __clang_major__ >= 19
+#elif defined(__clang__) && ((defined(__apple_build_version__) && __clang_major__ >= 17) || (!defined(__apple_build_version__) && __clang_major__ >= 19))
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wcast-function-type-mismatch"
 #endif
@@ -38,7 +38,7 @@ namespace fakeit {
         }
 #if defined(__GNUG__) && !defined(__clang__) && __GNUC__ >= 8
 #pragma GCC diagnostic pop
-#elif defined(__clang__) && __clang_major__ >= 19
+#elif defined(__clang__) && ((defined(__apple_build_version__) && __clang_major__ >= 17) || (!defined(__apple_build_version__) && __clang_major__ >= 19))
 #pragma clang diagnostic pop
 #endif
 
