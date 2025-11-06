@@ -17,9 +17,16 @@ jobs:
       matrix:
         config:
           - {
-            name: "macOS 14 AppleClang 15",
+            name: "macOS 14 AppleClang 15 C++11",
             os: macos-14,
-            build_type: Debug
+            build_type: Debug,
+            cxx_standard: 11
+          }
+          - {
+            name: "macOS 14 AppleClang 15 C++20",
+            os: macos-14,
+            build_type: Debug,
+            cxx_standard: 20
           }
           - {
             name: "macOS 15 AppleClang 17 C++11",
