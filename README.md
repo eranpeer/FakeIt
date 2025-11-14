@@ -2,13 +2,10 @@ FakeIt
 ======
 
 Linux / GCC: [![CI Linux/GCC](https://github.com/eranpeer/FakeIt/actions/workflows/ci_linux_gcc.yml/badge.svg?branch=master&event=push)](https://github.com/eranpeer/FakeIt/actions/workflows/ci_linux_gcc.yml?query=branch%3Amaster+event%3Apush)
-[![Coverage Status](https://coveralls.io/repos/github/eranpeer/FakeIt/badge.svg?branch=master)](https://coveralls.io/github/eranpeer/FakeIt?branch=master)
-
-Linux / Clang: [![CI Linux/Clang](https://github.com/eranpeer/FakeIt/actions/workflows/ci_linux_clang.yml/badge.svg?branch=master&event=push)](https://github.com/eranpeer/FakeIt/actions/workflows/ci_linux_clang.yml?query=branch%3Amaster+event%3Apush)
-
-macOS / AppleClang: [![CI macOS/AppleClang](https://github.com/eranpeer/FakeIt/actions/workflows/ci_macos_appleclang.yml/badge.svg?branch=master&event=push)](https://github.com/eranpeer/FakeIt/actions/workflows/ci_macos_appleclang.yml?query=branch%3Amaster+event%3Apush)
-
-MSVC: [![CI Windows/MSVC](https://github.com/eranpeer/FakeIt/actions/workflows/ci_windows_msvc.yml/badge.svg?branch=master&event=push)](https://github.com/eranpeer/FakeIt/actions/workflows/ci_windows_msvc.yml?query=branch%3Amaster+event%3Apush)
+[![Coverage Status](https://coveralls.io/repos/github/eranpeer/FakeIt/badge.svg?branch=master)](https://coveralls.io/github/eranpeer/FakeIt?branch=master)  
+Linux / Clang: [![CI Linux/Clang](https://github.com/eranpeer/FakeIt/actions/workflows/ci_linux_clang.yml/badge.svg?branch=master&event=push)](https://github.com/eranpeer/FakeIt/actions/workflows/ci_linux_clang.yml?query=branch%3Amaster+event%3Apush)  
+macOS / AppleClang: [![CI macOS/AppleClang](https://github.com/eranpeer/FakeIt/actions/workflows/ci_macos_appleclang.yml/badge.svg?branch=master&event=push)](https://github.com/eranpeer/FakeIt/actions/workflows/ci_macos_appleclang.yml?query=branch%3Amaster+event%3Apush)  
+MSVC: [![CI Windows/MSVC](https://github.com/eranpeer/FakeIt/actions/workflows/ci_windows_msvc.yml/badge.svg?branch=master&event=push)](https://github.com/eranpeer/FakeIt/actions/workflows/ci_windows_msvc.yml?query=branch%3Amaster+event%3Apush)  
 
 FakeIt is a simple mocking framework for C++. It supports GCC, Clang, AppleClang and MS Visual C++ (MSVC).
 
