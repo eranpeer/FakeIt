@@ -8,9 +8,11 @@ Linux / GCC: [![CI Linux/GCC](https://github.com/eranpeer/FakeIt/actions/workflo
 
 Linux / Clang: [![CI Linux/Clang](https://github.com/eranpeer/FakeIt/actions/workflows/ci_linux_clang.yml/badge.svg?branch=master&event=push)](https://github.com/eranpeer/FakeIt/actions/workflows/ci_linux_clang.yml?query=branch%3Amaster+event%3Apush)
 
+macOS / AppleClang: [![CI macOS/AppleClang](https://github.com/eranpeer/FakeIt/actions/workflows/ci_macos_appleclang.yml/badge.svg?branch=master&event=push)](https://github.com/eranpeer/FakeIt/actions/workflows/ci_macos_appleclang.yml?query=branch%3Amaster+event%3Apush)
+
 MSVC: [![CI Windows/MSVC](https://github.com/eranpeer/FakeIt/actions/workflows/ci_windows_msvc.yml/badge.svg?branch=master&event=push)](https://github.com/eranpeer/FakeIt/actions/workflows/ci_windows_msvc.yml?query=branch%3Amaster+event%3Apush)
 
-FakeIt is a simple mocking framework for C++. It supports GCC, Clang and MS Visual C++.
+FakeIt is a simple mocking framework for C++. It supports GCC, Clang, AppleClang and MS Visual C++ (MSVC).
 
 FakeIt is written in C++11 and can be used for testing both C++11 and C++ projects.
 
@@ -61,7 +63,7 @@ The master branch has the stable version of FakeIt. Include the most suitable si
 ## Features
 * Packaged as a **single header file**.
 * Very simple API based on the expressiveness of C++11.
-* Supports all major compilers: GCC, Clang and MSC++.
+* Supports all major compilers: GCC, Clang, AppleClang and MSVC.
 * Easily integrated with [**GTest**](https://code.google.com/p/googletest/), [**MS Test**](http://en.wikipedia.org/wiki/Visual_Studio_Unit_Testing_Framework) and [**Boost Test**](http://www.boost.org/doc/libs/1_56_0/libs/test/doc/html/index.html).
 * Expressive [Arrange-Act-Assert](http://xp123.com/articles/3a-arrange-act-assert/) syntax.
 * Create mock classes or **spy existing objects** instantly in one simple line.
@@ -207,9 +209,9 @@ Run the tests by typing:
 ```
 
 ## Limitations
-* Currently only GCC, Clang and MSC++ are supported.
+* Currently only GCC, Clang, AppleClang and MSVC are supported.
 * On GCC, optimization flag O2 and O3 are not supported. You must compile the test project with -O1 or -O0.
-* In MSC++, your project must have Edit And Continue debug mode on (https://msdn.microsoft.com/en-us/library/esaeyddf.aspx) which is same of /ZI compiler switch. If you don't use this, you will have exceptions mocking destructors (which includes unique_ptr and other smart pointers). 
+* In MSVC, your project must have Edit And Continue debug mode on (https://msdn.microsoft.com/en-us/library/esaeyddf.aspx) which is same of /ZI compiler switch. If you don't use this, you will have exceptions mocking destructors (which includes unique_ptr and other smart pointers).
 * Can't mock classes with multiple inheritance.
 * Can't mock classes with virtual inheritance.
-* Currently mocks are not thread safe. 
+* Currently mocks are not thread safe.
