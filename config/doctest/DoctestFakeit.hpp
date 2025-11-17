@@ -3,7 +3,15 @@
 #include "fakeit/DefaultFakeit.hpp"
 #include "fakeit/EventHandler.hpp"
 #include "mockutils/to_string.hpp"
-#include <doctest.h>
+#if defined __has_include
+#   if __has_include("doctest/doctest.h")
+#      include <doctest/doctest.h>
+#   else
+#      include <doctest.h>
+#   endif
+#else
+#   include <doctest.h>
+#endif
 
 namespace fakeit
 {
