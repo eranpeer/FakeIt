@@ -5,6 +5,7 @@
 using namespace fakeit;
 using namespace multiple_tu;
 
+#ifdef FAKEIT_CROSS_TRANSLATION_UNITS_MOCKS
 struct MultipleTranslationUnitsStub : tpunit::TestFixture {
 
 	MultipleTranslationUnitsStub() :
@@ -126,3 +127,4 @@ struct MultipleTranslationUnitsStub : tpunit::TestFixture {
 	}
 
 } __MultipleTranslationUnitsStub;
+#endif

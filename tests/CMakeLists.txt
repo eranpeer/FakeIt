@@ -84,4 +84,9 @@ if(ENABLE_COVERAGE)
     endif()
 endif()
 
+if(ENABLE_FAKEIT_CROSS_TRANSLATION_UNITS_MOCKS_IN_TESTS)
+    target_compile_definitions(FakeIt_tests PRIVATE FAKEIT_CROSS_TRANSLATION_UNITS_MOCKS)
+    message(STATUS "Cross-translation units mocks enabled.")
+endif()
+
 add_test(NAME FakeIt_tests COMMAND FakeIt_tests)

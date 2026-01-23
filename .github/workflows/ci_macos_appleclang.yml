@@ -17,6 +17,13 @@ jobs:
       matrix:
         config:
           - {
+            name: "macOS 14 AppleClang 15 C++11 with cross-translation units mocks",
+            os: macos-14,
+            build_type: Debug,
+            cxx_standard: 11,
+            additional_parameters: "-DENABLE_FAKEIT_CROSS_TRANSLATION_UNITS_MOCKS_IN_TESTS=ON"
+          }
+          - {
             name: "macOS 14 AppleClang 15 C++11",
             os: macos-14,
             build_type: Debug,
@@ -65,6 +72,13 @@ jobs:
             cxx_standard: 26
           }
           - {
+            name: "macOS 15 AppleClang 17 C++26 with cross-translation units mocks",
+            os: macos-15,
+            build_type: Debug,
+            cxx_standard: 26,
+            additional_parameters: "-DENABLE_FAKEIT_CROSS_TRANSLATION_UNITS_MOCKS_IN_TESTS=ON"
+          }
+          - {
             name: "macOS 15 AppleClang with sanitizers",
             os: macos-15,
             build_type: Debug,
@@ -80,7 +94,8 @@ jobs:
             -DENABLE_TESTING=ON \
             -DWARNINGS_AS_ERRORS_FOR_TESTS=ON \
             -DOVERRIDE_CXX_STANDARD_FOR_TESTS=${{ matrix.config.cxx_standard }} \
-            -DENABLE_SANITIZERS_IN_TESTS=${{ matrix.config.enable_sanitizers_in_tests }}
+            -DENABLE_SANITIZERS_IN_TESTS=${{ matrix.config.enable_sanitizers_in_tests }} \
+            ${{ matrix.config.additional_parameters }}
           cmake --build build -j
       - name: Run tests
         run: |

@@ -11,8 +11,13 @@
 #define STUB_ID_STR( counter ) \
     __FILE__ COUNTER_STRINGIFY(counter)
 
-#define STUB_ID(counter) \
-    fakeit::constExprHash(STUB_ID_STR(counter))
+#ifdef FAKEIT_CROSS_TRANSLATION_UNITS_MOCKS
+    #define STUB_ID(counter) \
+        fakeit::constExprHash(STUB_ID_STR(counter))
+#else
+    #define STUB_ID(counter) \
+        counter
+#endif
 
 #define MOCK_TYPE(mock) \
     std::remove_reference<decltype((mock).get())>::type

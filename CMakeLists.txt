@@ -8,6 +8,7 @@ set(OVERRIDE_CXX_STANDARD_FOR_TESTS "" CACHE STRING "Override the C++ standard u
 option(WARNINGS_AS_ERRORS_FOR_TESTS "Treat warnings as errors when building tests." OFF)
 option(ENABLE_SANITIZERS_IN_TESTS "Enable address / undefined sanitizers in tests." OFF)
 option(ENABLE_COVERAGE "Enable coverage reporting for gcc/clang." OFF)
+option(ENABLE_FAKEIT_CROSS_TRANSLATION_UNITS_MOCKS_IN_TESTS "Enable cross-translation units mocks in tests." OFF)
 
 # Directory containing main targets of FakeIt.
 add_subdirectory(include)
