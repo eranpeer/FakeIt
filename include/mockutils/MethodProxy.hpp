@@ -6,7 +6,7 @@ namespace fakeit {
 
     struct MethodProxy {
 
-        MethodProxy(unsigned int id, unsigned int offset, void *vMethod) :
+        MethodProxy(size_t id, unsigned int offset, void *vMethod) :
                 _id(id),
                 _offset(offset),
                 _vMethod(vMethod) {
@@ -16,7 +16,7 @@ namespace fakeit {
             return _offset;
         }
 
-        unsigned int getId() const {
+        size_t getId() const {
             return _id;
         }
 
@@ -25,7 +25,7 @@ namespace fakeit {
         }
 
     private:
-        unsigned int _id;
+        size_t _id;
         unsigned int _offset;
         void *_vMethod;
     };
