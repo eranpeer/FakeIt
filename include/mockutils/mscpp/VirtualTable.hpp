@@ -239,7 +239,7 @@ namespace fakeit {
         }
 
         void initAll(void *value) {
-            auto size = getSize();
+            unsigned int size = getSize();
             for (unsigned int i = 0; i < size; i++) {
                 setMethod(i, value);
             }
@@ -256,7 +256,7 @@ namespace fakeit {
         static const unsigned int dtorCookieIndex = numOfCookies - 1; // use the last cookie
 
         static void **buildVTArray() {
-            int vtSize = VTUtils::getVTSize<C>();
+            unsigned int vtSize = VTUtils::getVTSize<C>();
             auto array = new void *[vtSize + numOfCookies + 1]{};
             RTTICompleteObjectLocator<C, baseclasses...> *objectLocator = new RTTICompleteObjectLocator<C, baseclasses...>(
                     typeid(C));

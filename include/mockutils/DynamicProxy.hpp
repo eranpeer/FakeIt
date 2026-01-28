@@ -13,10 +13,8 @@
 #include <vector>
 #include <array>
 #include <new>
-#include <limits>
 
 #include "mockutils/VirtualTable.hpp"
-#include "mockutils/union_cast.hpp"
 #include "mockutils/MethodInvocationHandler.hpp"
 #include "mockutils/VTUtils.hpp"
 #include "mockutils/FakeObject.hpp"
@@ -28,13 +26,14 @@ namespace fakeit {
 
     class InvocationHandlers : public InvocationHandlerCollection {
         std::vector<std::shared_ptr<Destructible>> &_methodMocks;
-        std::vector<unsigned int> &_offsets;
+        std::vector<size_t> &_offsets;
 
-        unsigned int getOffset(unsigned int id) const
+        unsigned int getOffset(size_t id) const
         {
             unsigned int offset = 0;
             for (; offset < _offsets.size(); offset++) {
-                if (_offsets[offset] == id) {
+                // Only check _offsets for methods that were mocked.
+                if (_methodMocks[offset] != nullptr && _offsets[offset] == id) {
                     break;
                 }
             }
@@ -42,11 +41,11 @@ namespace fakeit {
         }
 
     public:
-        InvocationHandlers(std::vector<std::shared_ptr<Destructible>> &methodMocks, std::vector<unsigned int> &offsets)
+        InvocationHandlers(std::vector<std::shared_ptr<Destructible>> &methodMocks, std::vector<size_t> &offsets)
                 : _methodMocks(methodMocks), _offsets(offsets) {
         }
 
-        Destructible *getInvocatoinHandlerPtrById(unsigned int id) override {
+        Destructible *getInvocatoinHandlerPtrById(size_t id) override {
             unsigned int offset = getOffset(id);
             std::shared_ptr<Destructible> ptr = _methodMocks[offset];
             return ptr.get();
@@ -61,8 +60,8 @@ namespace fakeit {
 
         DynamicProxy(C &inst) :
                 _instancePtr(&inst),
-                _methodMocks(VTUtils::getVTSize<C>()),
-                _offsets(VTUtils::getVTSize<C>(), std::numeric_limits<int>::max()),
+                _methodMocks(VTUtils::getVTSize<C>(), nullptr),
+                _offsets(VTUtils::getVTSize<C>(), 0),
                 _invocationHandlers(_methodMocks, _offsets) {
             _originalVt.copyFrom(VirtualTable<C, baseclasses...>::getVTable(*_instancePtr));
             _originalVt.setCookie(InvocationHandlerCollection::VtCookieIndex, &_invocationHandlers);
@@ -97,10 +96,10 @@ namespace fakeit {
 
         void Reset() {
 			_methodMocks = {};
-            _methodMocks.resize(VTUtils::getVTSize<C>());
+            _methodMocks.resize(VTUtils::getVTSize<C>(), nullptr);
             _members = {};
 			_offsets = {};
-            _offsets.resize(VTUtils::getVTSize<C>());
+            _offsets.resize(VTUtils::getVTSize<C>(), 0);
             VirtualTable<C, baseclasses...>::getVTable(*_instancePtr).copyFrom(_originalVt);
         }
 
@@ -108,7 +107,7 @@ namespace fakeit {
         {
         }
 
-        template<int id, typename R, typename ... arglist>
+        template<size_t id, typename R, typename ... arglist>
         void stubMethod(R(C::*vMethod)(arglist...), MethodInvocationHandler<R, arglist...> *methodInvocationHandler) {
             auto offset = VTUtils::getOffset(vMethod);
             MethodProxyCreator<R, arglist...> creator;
@@ -217,7 +216,7 @@ namespace fakeit {
         //
         std::vector<std::shared_ptr<Destructible>> _methodMocks;
         std::vector<std::shared_ptr<Destructible>> _members;
-        std::vector<unsigned int> _offsets;
+        std::vector<size_t> _offsets;
         InvocationHandlers _invocationHandlers;
 
         FakeObject<C, baseclasses...> &getFake() {

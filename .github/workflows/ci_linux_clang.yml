@@ -17,6 +17,14 @@ jobs:
       matrix:
         config:
           - {
+            name: "Ubuntu 22.04 Clang 13 C++11 with cross-translation units mocks",
+            os: ubuntu-22.04,
+            build_type: Debug,
+            cc: "clang-13", cxx: "clang++-13",
+            cxx_standard: 11,
+            additional_parameters: "-DENABLE_FAKEIT_CROSS_TRANSLATION_UNITS_MOCKS_IN_TESTS=ON"
+          }
+          - {
             name: "Ubuntu 22.04 Clang 13",
             os: ubuntu-22.04,
             build_type: Debug,
@@ -89,6 +97,14 @@ jobs:
             cxx_standard: 26
           }
           - {
+            name: "Ubuntu 24.04 Clang 18 C++26 with cross-translation units mocks",
+            os: ubuntu-24.04,
+            build_type: Debug,
+            cc: "clang-18", cxx: "clang++-18",
+            cxx_standard: 26,
+            additional_parameters: "-DENABLE_FAKEIT_CROSS_TRANSLATION_UNITS_MOCKS_IN_TESTS=ON"
+          }
+          - {
             name: "Ubuntu 24.04 Clang with sanitizers",
             os: ubuntu-24.04,
             build_type: Debug,
@@ -107,7 +123,8 @@ jobs:
             -DENABLE_TESTING=ON \
             -DWARNINGS_AS_ERRORS_FOR_TESTS=ON \
             -DOVERRIDE_CXX_STANDARD_FOR_TESTS=${{ matrix.config.cxx_standard }} \
-            -DENABLE_SANITIZERS_IN_TESTS=${{ matrix.config.enable_sanitizers_in_tests }}
+            -DENABLE_SANITIZERS_IN_TESTS=${{ matrix.config.enable_sanitizers_in_tests }} \
+            ${{ matrix.config.additional_parameters }}
           cmake --build build -j
       - name: Run tests
         run: |

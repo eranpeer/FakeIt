@@ -17,6 +17,15 @@ jobs:
       matrix:
         config:
           - {
+            name: "Windows 2022 MSVC 2022 Win32 C++11 with cross-translation units mocks",
+            os: windows-2022,
+            build_type: Debug,
+            generator: "Visual Studio 17 2022",
+            architecture: "Win32",
+            cxx_standard: 11,
+            additional_parameters: "-DENABLE_FAKEIT_CROSS_TRANSLATION_UNITS_MOCKS_IN_TESTS=ON"
+          }
+          - {
             name: "Windows 2022 MSVC 2022 Win32",
             os: windows-2022,
             build_type: Debug,
@@ -126,6 +135,15 @@ jobs:
             architecture: "x64",
             cxx_standard: 26
           }
+          - {
+            name: "Windows 2025 MSVC 2022 x64 C++26 with cross-translation units mocks",
+            os: windows-2025,
+            build_type: Debug,
+            generator: "Visual Studio 17 2022",
+            architecture: "x64",
+            cxx_standard: 26,
+            additional_parameters: "-DENABLE_FAKEIT_CROSS_TRANSLATION_UNITS_MOCKS_IN_TESTS=ON"
+          }
     steps:
       - uses: actions/checkout@v3
       - name: Build project
@@ -135,7 +153,8 @@ jobs:
             -A ${{ matrix.config.architecture }} \
             -DENABLE_TESTING=ON \
             -DWARNINGS_AS_ERRORS_FOR_TESTS=ON \
-            -DOVERRIDE_CXX_STANDARD_FOR_TESTS=${{ matrix.config.cxx_standard }}
+            -DOVERRIDE_CXX_STANDARD_FOR_TESTS=${{ matrix.config.cxx_standard }} \
+            ${{ matrix.config.additional_parameters }}
           cmake --build build --config ${{ matrix.config.build_type }} -j
       - name: Run tests
         run: |

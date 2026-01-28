@@ -70,3 +70,6 @@ Testing/
 
 # Benchmark
 /benchmark/bench*/
+
+# Cache
+/.cache

@@ -1,7 +1,22 @@
 #pragma once
 
+#include "mockutils/constexpr_hash.hpp"
+
 #ifdef _MSC_VER
 #define __func__ __FUNCTION__
+#endif
+
+#define COUNTER_STRINGIFY( counter ) #counter
+
+#define STUB_ID_STR( counter ) \
+    __FILE__ COUNTER_STRINGIFY(counter)
+
+#ifdef FAKEIT_CROSS_TRANSLATION_UNITS_MOCKS
+    #define STUB_ID(counter) \
+        fakeit::constExprHash(STUB_ID_STR(counter))
+#else
+    #define STUB_ID(counter) \
+        counter
 #endif
 
 #define MOCK_TYPE(mock) \
@@ -29,25 +44,25 @@
     (mock).dtor().setMethodDetails(#mock,"destructor")
 
 #define Method(mock, method) \
-    (mock).template stub<__COUNTER__>(&MOCK_TYPE(mock)::method).setMethodDetails(#mock,#method)
+    (mock).template stub<STUB_ID(__COUNTER__)>(&MOCK_TYPE(mock)::method).setMethodDetails(#mock,#method)
 
 #define OverloadedMethod(mock, method, prototype) \
-    (mock).template stub<__COUNTER__>(OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
+    (mock).template stub<STUB_ID(__COUNTER__)>(OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
 
 #define ConstOverloadedMethod(mock, method, prototype) \
-    (mock).template stub<__COUNTER__>(CONST_OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
+    (mock).template stub<STUB_ID(__COUNTER__)>(CONST_OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
 
 #define RefOverloadedMethod(mock, method, prototype) \
-    (mock).template stub<__COUNTER__>(REF_OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
+    (mock).template stub<STUB_ID(__COUNTER__)>(REF_OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
 
 #define ConstRefOverloadedMethod(mock, method, prototype) \
-    (mock).template stub<__COUNTER__>(CONST_REF_OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
+    (mock).template stub<STUB_ID(__COUNTER__)>(CONST_REF_OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
 
 #define RValRefOverloadedMethod(mock, method, prototype) \
-    (mock).template stub<__COUNTER__>(R_VAL_REF_OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
+    (mock).template stub<STUB_ID(__COUNTER__)>(R_VAL_REF_OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
 
 #define ConstRValRefOverloadedMethod(mock, method, prototype) \
-    (mock).template stub<__COUNTER__>(CONST_R_VAL_REF_OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
+    (mock).template stub<STUB_ID(__COUNTER__)>(CONST_R_VAL_REF_OVERLOADED_METHOD_PTR( mock , method, prototype )).setMethodDetails(#mock,#method)
 
 #define Verify(...) \
         Verify( __VA_ARGS__ ).setFileInfo(__FILE__, __LINE__, __func__)

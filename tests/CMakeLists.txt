@@ -10,11 +10,14 @@ add_executable(FakeIt_tests
     functional.cpp
     gcc_stubbing_multiple_values_tests.cpp
     gcc_type_info_tests.cpp
+    inherited_funcs_tests.cpp
     miscellaneous_tests.cpp
     move_only_return_tests.cpp
-    moving_mocks_around.cpp
+    moving_mocks_around_tests.cpp
     msc_stubbing_multiple_values_tests.cpp
     msc_type_info_tests.cpp
+    multiple_translation_units_stub.cpp
+    multiple_translation_units_stub_test.cpp
     overloadded_methods_tests.cpp
     referece_types_tests.cpp
     remove_const_volatile_tests.cpp
@@ -79,6 +82,11 @@ if(ENABLE_COVERAGE)
     else()
         message(SEND_ERROR "Code coverage requested but compiler is not compatible.")
     endif()
+endif()
+
+if(ENABLE_FAKEIT_CROSS_TRANSLATION_UNITS_MOCKS_IN_TESTS)
+    target_compile_definitions(FakeIt_tests PRIVATE FAKEIT_CROSS_TRANSLATION_UNITS_MOCKS)
+    message(STATUS "Cross-translation units mocks enabled.")
 endif()
 
 add_test(NAME FakeIt_tests COMMAND FakeIt_tests)
