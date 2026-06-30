@@ -30,6 +30,12 @@ namespace fakeit
                   std::string fomattedMessage,
                   bool fatalFailure)
         {
+#ifdef DOCTEST_CONFIG_DISABLE
+            (void)fileName;
+            (void)lineNumber;
+            (void)fomattedMessage;
+#endif
+            
             if (fatalFailure)
             {
                 DOCTEST_ADD_FAIL_AT(fileName, lineNumber, fomattedMessage);
