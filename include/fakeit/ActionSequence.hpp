@@ -41,7 +41,7 @@ namespace fakeit {
         {
             std::shared_ptr<Destructible> destructablePtr = _recordedActions.front();
             Destructible &destructable = *destructablePtr;
-            Action<R, arglist...> &action = dynamic_cast<Action<R, arglist...> &>(destructable);
+            Action<R, arglist...> &action = static_cast<Action<R, arglist...> &>(destructable);
             std::function<void()> finallyClause = [&]() -> void {
                 if (action.isDone())
                 {

@@ -89,4 +89,13 @@ if(ENABLE_FAKEIT_CROSS_TRANSLATION_UNITS_MOCKS_IN_TESTS)
     message(STATUS "Cross-translation units mocks enabled.")
 endif()
 
+if(DISABLE_RTTI_IN_TESTS)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "^(Apple)?Clang$")
+        target_compile_options(FakeIt_tests PRIVATE -fno-rtti)
+    elseif(MSVC)
+        target_compile_options(FakeIt_tests PRIVATE /GR-)
+    endif()
+    message(STATUS "RTTI disabled.")
+endif()
+
 add_test(NAME FakeIt_tests COMMAND FakeIt_tests)

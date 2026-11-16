@@ -178,7 +178,7 @@ struct DefaultBehavioreTests : tpunit::TestFixture {
 				;
 		}
 		catch (fakeit::DefaultValueInstatiationException& e) {
-			auto expected = std::string("Type ") + std::string(typeid(NotDefaultConstructible).name())
+			auto expected = std::string("Type ") + fakeit::type_name<NotDefaultConstructible>()
 				+ std::string(" is not default constructible. Could not instantiate a default return value");
 			std::string actual(e.what());
 			ASSERT_EQUAL(expected, actual);

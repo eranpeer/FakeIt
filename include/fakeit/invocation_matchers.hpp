@@ -45,7 +45,7 @@ namespace fakeit {
             out << "(";
             for (unsigned int i = 0; i < _matchers.size(); i++) {
                 if (i > 0) out << ", ";
-                IMatcher *m = dynamic_cast<IMatcher *>(_matchers[i]);
+                IMatcher *m = static_cast<IMatcher *>(_matchers[i]);
                 out << m->format();
             }
             out << ")";
@@ -62,7 +62,7 @@ namespace fakeit {
             template<typename A>
             void operator()(int index, A &actualArg) {
                 TypedMatcher<typename naked_type<A>::type> *matcher =
-                        dynamic_cast<TypedMatcher<typename naked_type<A>::type> *>(_matchers[index]);
+                        static_cast<TypedMatcher<typename naked_type<A>::type> *>(_matchers[index]);
                 if (_matching)
                     _matching = matcher->matches(actualArg);
             }

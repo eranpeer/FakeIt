@@ -9,14 +9,19 @@
 
 #include "mockutils/Destructible.hpp"
 #include "mockutils/type_utils.hpp"
+#include "fakeit/ActualInvocationsSource.hpp"
 
 namespace fakeit {
 
     struct NoMoreRecordedActionException {
     };
 
+    // Non-template base so DynamicProxy can reach any method mock's invocations without dynamic_cast.
+    struct MethodInvocationHandlerBase : Destructible, ActualInvocationsSource, ActualInvocationsContainer {
+    };
+
     template<typename R, typename ... arglist>
-    struct MethodInvocationHandler : Destructible {
+    struct MethodInvocationHandler : MethodInvocationHandlerBase {
         virtual R handleMethodInvocation(const typename fakeit::production_arg<arglist>::type... args) = 0;
     };
 

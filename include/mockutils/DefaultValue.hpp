@@ -8,7 +8,6 @@
 #pragma once
 
 #include <type_traits>
-#include <typeinfo>
 #include "mockutils/type_utils.hpp"
 
 namespace fakeit {
@@ -42,7 +41,7 @@ namespace fakeit {
                 virtual std::string what() const
 
                 override {
-                    return (std::string("Type ") + std::string(typeid(C).name())
+                    return (std::string("Type ") + type_name<C>()
                             + std::string(
                             " is not default constructible. Could not instantiate a default return value")).c_str();
                 }

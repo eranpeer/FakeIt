@@ -64,6 +64,7 @@ The master branch has the stable version of FakeIt. Include the most suitable si
 * Create mock classes or **spy existing objects** instantly in one simple line.
 * No limitation on number of method arguments.
 * Supports dynamic casting.
+* Works with RTTI disabled (`-fno-rtti` or `/GR-`).
 
 ## Installation
 FakeIt is a header only framework. It does not require any installation. For extra simplicity fakeit is packaged as a single header file.

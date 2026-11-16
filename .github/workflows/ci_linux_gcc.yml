@@ -99,6 +99,14 @@ jobs:
             additional_parameters: "-DENABLE_FAKEIT_CROSS_TRANSLATION_UNITS_MOCKS_IN_TESTS=ON"
           }
           - {
+            name: "Ubuntu 24.04 GCC 14 C++26 without RTTI",
+            os: ubuntu-24.04,
+            build_type: Debug,
+            cc: "gcc-14", cxx: "g++-14",
+            cxx_standard: 26,
+            additional_parameters: "-DDISABLE_RTTI_IN_TESTS=ON"
+          }
+          - {
             name: "Ubuntu 24.04 GCC with sanitizers",
             os: ubuntu-24.04,
             build_type: Debug,

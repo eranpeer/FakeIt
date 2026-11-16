@@ -79,6 +79,13 @@ jobs:
             additional_parameters: "-DENABLE_FAKEIT_CROSS_TRANSLATION_UNITS_MOCKS_IN_TESTS=ON"
           }
           - {
+            name: "macOS 15 AppleClang 17 C++26 without RTTI",
+            os: macos-15,
+            build_type: Debug,
+            cxx_standard: 26,
+            additional_parameters: "-DDISABLE_RTTI_IN_TESTS=ON"
+          }
+          - {
             name: "macOS 15 AppleClang with sanitizers",
             os: macos-15,
             build_type: Debug,
