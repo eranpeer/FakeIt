@@ -296,11 +296,18 @@ namespace fakeit {
         static C *createFakeInstance() {
             FakeObject<C, baseclasses...> *fake = new FakeObject<C, baseclasses...>();
             void *unmockedMethodStubPtr = union_cast<void *>(&MockImpl<C, baseclasses...>::unmocked);
-			void *unmockedDtorStubPtr = union_cast<void *>(&MockImpl<C, baseclasses...>::unmockedDtor);
 			fake->getVirtualTable().initAll(unmockedMethodStubPtr);
-			if (VTUtils::hasVirtualDestructor<C>())
-				fake->setDtor(unmockedDtorStubPtr);
+			setUnmockedDtor(*fake, std::has_virtual_destructor<C>());
 			return reinterpret_cast<C *>(fake);
+        }
+
+        // Dispatched at compile time so setDtor() is never compiled for a class without a virtual destructor. There,
+        // VTUtils::getDestructorOffset() always throws and MSVC reports the rest of setDtor() as unreachable (C4702).
+        static void setUnmockedDtor(FakeObject<C, baseclasses...> &fake, std::true_type) {
+            fake.setDtor(union_cast<void *>(&MockImpl<C, baseclasses...>::unmockedDtor));
+        }
+
+        static void setUnmockedDtor(FakeObject<C, baseclasses...> &, std::false_type) {
         }
 
         template<typename R, typename ... arglist>
