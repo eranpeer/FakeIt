@@ -1,6 +1,7 @@
 //
 // Created by eran on 01/04/2015.
 //
+#pragma once
 
 #include <unordered_set>
 #include "fakeit/Invocation.hpp"

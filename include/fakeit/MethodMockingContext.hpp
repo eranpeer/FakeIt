@@ -128,7 +128,7 @@ namespace fakeit {
                     return false;
                 }
 
-                ActualInvocation<arglist...> &actualInvocation = dynamic_cast<ActualInvocation<arglist...> &>(invocation);
+                ActualInvocation<arglist...> &actualInvocation = static_cast<ActualInvocation<arglist...> &>(invocation);
                 return _invocationMatcher->matches(actualInvocation);
             }
 

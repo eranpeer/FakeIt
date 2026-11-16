@@ -40,6 +40,14 @@ jobs:
             architecture: "x64"
           }
           - {
+            name: "Windows 2022 MSVC 2022 x64 without RTTI",
+            os: windows-2022,
+            build_type: Debug,
+            generator: "Visual Studio 17 2022",
+            architecture: "x64",
+            additional_parameters: "-DDISABLE_RTTI_IN_TESTS=ON"
+          }
+          - {
             name: "Windows 2025 MSVC 2022 Win32 C++11",
             os: windows-2025,
             build_type: Debug,

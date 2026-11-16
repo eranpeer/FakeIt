@@ -6,7 +6,7 @@
  * Created on Mar 10, 2014
  */
 
-#if defined (__GNUG__)
+#if defined (__GNUG__) && defined (__GXX_RTTI)
 
 #include <string>
 #include <iosfwd>

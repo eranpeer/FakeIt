@@ -17,6 +17,9 @@
 
 namespace fakeit {
 
+    class ConcatenatedSequence;
+    class RepeatedSequence;
+
     class Sequence {
     private:
 
@@ -41,6 +44,14 @@ namespace fakeit {
         virtual void getInvolvedMocks(std::vector<ActualInvocationsSource *> &into) const = 0;
 
         virtual unsigned int size() const = 0;
+
+        virtual const ConcatenatedSequence *asConcatenatedSequence() const {
+            return nullptr;
+        }
+
+        virtual const RepeatedSequence *asRepeatedSequence() const {
+            return nullptr;
+        }
 
         friend class VerifyFunctor;
     };
@@ -82,6 +93,10 @@ namespace fakeit {
             s2.getInvolvedMocks(into);
         }
 
+        const ConcatenatedSequence *asConcatenatedSequence() const override {
+            return this;
+        }
+
         friend inline ConcatenatedSequence operator+(const Sequence &s1, const Sequence &s2);
     };
 
@@ -115,6 +130,10 @@ namespace fakeit {
         void getExpectedSequence(std::vector<Invocation::Matcher *> &into) const override {
             for (int i = 0; i < times; i++)
                 _s.getExpectedSequence(into);
+        }
+
+        const RepeatedSequence *asRepeatedSequence() const override {
+            return this;
         }
 
         int getTimes() const {

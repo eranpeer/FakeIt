@@ -8,6 +8,7 @@
  */
 #pragma once
 
+#include <string>
 #include <tuple>
 #include <type_traits>
 
@@ -28,6 +29,30 @@ namespace fakeit {
     struct naked_type {
         typedef typename std::remove_cv<typename std::remove_reference<C>::type>::type type;
     };
+
+    template<typename T>
+    const char *type_signature() {
+#if defined(_MSC_VER) && !defined(__clang__)
+        return __FUNCSIG__;
+#else
+        return __PRETTY_FUNCTION__;
+#endif
+    }
+
+    // Name of T without RTTI, cut out of the compiler's signature for type_signature<T>.
+    template<typename T>
+    std::string type_name() {
+        const std::string signature = type_signature<T>();
+#if defined(_MSC_VER) && !defined(__clang__)
+        const std::string prefix = "type_signature<";
+        const std::string::size_type end = signature.rfind(">(void)");
+#else
+        const std::string prefix = "T = ";
+        const std::string::size_type end = signature.rfind(']');
+#endif
+        const std::string::size_type begin = signature.find(prefix) + prefix.size();
+        return signature.substr(begin, end - begin);
+    }
 
     template< class T > struct tuple_arg         { typedef T  type; };
     template< class T > struct tuple_arg < T& >  { typedef T& type; };

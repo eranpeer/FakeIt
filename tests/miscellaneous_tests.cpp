@@ -258,6 +258,7 @@ struct Miscellaneous : tpunit::TestFixture
         }
     };
 
+#if FAKEIT_HAS_RTTI
     void foo()
     {
         Mock<Derived> mock;
@@ -289,6 +290,7 @@ struct Miscellaneous : tpunit::TestFixture
         }
 
     }
+#endif
 
 
     class HandlerBase

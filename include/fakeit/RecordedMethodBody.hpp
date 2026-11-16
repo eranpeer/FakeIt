@@ -26,7 +26,7 @@ namespace fakeit {
  * A composite MethodInvocationHandler that holds a list of ActionSequence objects.
  */
     template<typename R, typename ... arglist>
-    class RecordedMethodBody : public MethodInvocationHandler<R, arglist...>, public ActualInvocationsSource, public ActualInvocationsContainer {
+    class RecordedMethodBody : public MethodInvocationHandler<R, arglist...> {
 
         struct MatchedInvocationHandler : ActualInvocationHandler<R, arglist...> {
 
@@ -39,20 +39,16 @@ namespace fakeit {
 
             R handleMethodInvocation(ArgumentsTuple<arglist...> & args) override
             {
-                Destructible &destructable = *_invocationHandler;
-                ActualInvocationHandler<R, arglist...> &invocationHandler = dynamic_cast<ActualInvocationHandler<R, arglist...> &>(destructable);
-                return invocationHandler.handleMethodInvocation(args);
+                return _invocationHandler->handleMethodInvocation(args);
             }
 
             typename ActualInvocation<arglist...>::Matcher &getMatcher() const {
-                Destructible &destructable = *_matcher;
-                typename ActualInvocation<arglist...>::Matcher &matcher = dynamic_cast<typename ActualInvocation<arglist...>::Matcher &>(destructable);
-                return matcher;
+                return *_matcher;
             }
 
         private:
-            std::shared_ptr<Destructible> _matcher;
-            std::shared_ptr<Destructible> _invocationHandler;
+            std::shared_ptr<typename ActualInvocation<arglist...>::Matcher> _matcher;
+            std::shared_ptr<ActualInvocationHandler<R, arglist...>> _invocationHandler;
         };
 
 
@@ -81,12 +77,12 @@ namespace fakeit {
         }
 
         MatchedInvocationHandler &asMatchedInvocationHandler(Destructible &destructable) {
-            MatchedInvocationHandler &im = dynamic_cast<MatchedInvocationHandler &>(destructable);
+            MatchedInvocationHandler &im = static_cast<MatchedInvocationHandler &>(destructable);
             return im;
         }
 
         ActualInvocation<arglist...> &asActualInvocation(Destructible &destructable) const {
-            ActualInvocation<arglist...> &invocation = dynamic_cast<ActualInvocation<arglist...> &>(destructable);
+            ActualInvocation<arglist...> &invocation = static_cast<ActualInvocation<arglist...> &>(destructable);
             return invocation;
         }
 

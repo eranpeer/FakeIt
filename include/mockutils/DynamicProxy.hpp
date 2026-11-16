@@ -168,9 +168,8 @@ namespace fakeit {
         template<typename DataType>
         void getMethodMocks(std::vector<DataType> &into) const {
             for (std::shared_ptr<Destructible> ptr : _methodMocks) {
-                DataType p = dynamic_cast<DataType>(ptr.get());
-                if (p) {
-                    into.push_back(p);
+                if (ptr) {
+                    into.push_back(static_cast<MethodInvocationHandlerBase *>(ptr.get()));
                 }
             }
         }
@@ -233,12 +232,6 @@ namespace fakeit {
             getFake().setDtor(methodProxy.getProxy());
             _methodMocks[methodProxy.getOffset()].reset(invocationHandler);
             _offsets[methodProxy.getOffset()] = methodProxy.getId();
-        }
-
-        template<typename DataType>
-        DataType getMethodMock(unsigned int offset) {
-            std::shared_ptr<Destructible> ptr = _methodMocks[offset];
-            return dynamic_cast<DataType>(ptr.get());
         }
 
         template<typename BaseClass>

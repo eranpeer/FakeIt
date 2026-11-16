@@ -330,7 +330,7 @@ namespace fakeit {
                 proxy.template stubMethod<id>(vMethod, createRecordedMethodBody < R, arglist... > (*this, vMethod));
             }
             Destructible *d = proxy.getMethodMock(vMethod);
-            RecordedMethodBody<R, arglist...> *methodMock = dynamic_cast<RecordedMethodBody<R, arglist...> *>(d);
+            RecordedMethodBody<R, arglist...> *methodMock = static_cast<RecordedMethodBody<R, arglist...> *>(d);
             return *methodMock;
         }
 
@@ -339,14 +339,14 @@ namespace fakeit {
                 proxy.stubDtor(createRecordedDtorBody(*this));
             }
             Destructible *d = proxy.getDtorMock();
-            RecordedMethodBody<void> *dtorMock = dynamic_cast<RecordedMethodBody<void> *>(d);
+            RecordedMethodBody<void> *dtorMock = static_cast<RecordedMethodBody<void> *>(d);
             return *dtorMock;
         }
 
         template<typename R, typename ... arglist>
         static RecordedMethodBody<R, arglist...> *createRecordedMethodBody(MockObject<C> &mock,
                                                                            R(C::*vMethod)(arglist...)) {
-            return new RecordedMethodBody<R, arglist...>(mock.getFakeIt(), typeid(vMethod).name());
+            return new RecordedMethodBody<R, arglist...>(mock.getFakeIt(), type_name<decltype(vMethod)>());
         }
 
         static RecordedMethodBody<void> *createRecordedDtorBody(MockObject<C> &mock) {

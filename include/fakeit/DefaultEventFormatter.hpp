@@ -82,11 +82,11 @@ namespace fakeit {
     private:
 
         static std::string formatSequence(const Sequence &val) {
-            const ConcatenatedSequence *cs = dynamic_cast<const ConcatenatedSequence *>(&val);
+            const ConcatenatedSequence *cs = val.asConcatenatedSequence();
             if (cs) {
                 return format(*cs);
             }
-            const RepeatedSequence *rs = dynamic_cast<const RepeatedSequence *>(&val);
+            const RepeatedSequence *rs = val.asRepeatedSequence();
             if (rs) {
                 return format(*rs);
             }
@@ -133,8 +133,8 @@ namespace fakeit {
 
         static std::string format(const RepeatedSequence &val) {
             std::ostringstream out;
-            const ConcatenatedSequence *cs = dynamic_cast<const ConcatenatedSequence *>(&val.getSequence());
-            const RepeatedSequence *rs = dynamic_cast<const RepeatedSequence *>(&val.getSequence());
+            const ConcatenatedSequence *cs = val.getSequence().asConcatenatedSequence();
+            const RepeatedSequence *rs = val.getSequence().asRepeatedSequence();
             if (rs || cs)
                 out << '(';
             out << formatSequence(val.getSequence());

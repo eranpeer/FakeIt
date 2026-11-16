@@ -6,7 +6,7 @@
  * Created on Mar 10, 2014
  */
 
-#ifdef _MSC_VER
+#if defined (_MSC_VER) && defined (_CPPRTTI)
 
 #include <string>
 #include <iosfwd>
