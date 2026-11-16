@@ -9,6 +9,7 @@
 
 #include <utility>
 #include <typeinfo>
+#include <type_traits>
 
 #include "mockutils/Macros.hpp"
 
@@ -182,8 +183,7 @@ namespace fakeit {
             for (unsigned int i = 0; i < size; i++) {
                 _firstMethod[i] = from.getMethod(i);
             }
-            if (VTUtils::hasVirtualDestructor<C>())
-                setCookie(dtorCookieIndex, from.getCookie(dtorCookieIndex));
+            copyDtorCookie(from, std::has_virtual_destructor<C>());
         }
 
         VirtualTable() : VirtualTable(buildVTArray()) {
@@ -228,9 +228,8 @@ namespace fakeit {
             // store the user method in a cookie and put the
             // correct format method in the virtual table.
             // the method stored in the vt will call the method in the cookie when invoked.
-            void *dtorPtr = union_cast<void *>(&VirtualTable<C, baseclasses...>::dtor);
             unsigned int index = VTUtils::getDestructorOffset<C>();
-            _firstMethod[index] = dtorPtr;
+            _firstMethod[index] = dtorForwarder();
             setCookie(dtorCookieIndex, method);
         }
 
@@ -254,6 +253,21 @@ namespace fakeit {
 
         static const unsigned int numOfCookies = 3;
         static const unsigned int dtorCookieIndex = numOfCookies - 1; // use the last cookie
+
+        static void *dtorForwarder() {
+            return union_cast<void *>(&VirtualTable<C, baseclasses...>::dtor);
+        }
+
+        // Only a table that went through setDtor() has a dtor cookie. The table of a spied object comes from the
+        // compiler and has no cookies, so reading one would read memory before the table. Dispatched at compile time
+        // for the same reason as MockImpl::setUnmockedDtor().
+        void copyDtorCookie(VirtualTable<C, baseclasses...> &from, std::true_type) {
+            if (from.getMethod(VTUtils::getDestructorOffset<C>()) == dtorForwarder())
+                setCookie(dtorCookieIndex, from.getCookie(dtorCookieIndex));
+        }
+
+        void copyDtorCookie(VirtualTable<C, baseclasses...> &, std::false_type) {
+        }
 
         static void **buildVTArray() {
             unsigned int vtSize = VTUtils::getVTSize<C>();

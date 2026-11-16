@@ -14,6 +14,7 @@ add_executable(FakeIt_tests
     miscellaneous_tests.cpp
     move_only_return_tests.cpp
     moving_mocks_around_tests.cpp
+    msc_spying_tests.cpp
     msc_stubbing_multiple_values_tests.cpp
     msc_type_info_tests.cpp
     multiple_translation_units_stub.cpp
